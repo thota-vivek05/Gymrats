@@ -1,1 +1,62 @@
 
+<link rel="stylesheet" href="trainer_form.css">
+
+<div class="trainer-container">
+    <h2>Trainer Registration</h2>
+    <form class="trainer-form" enctype="multipart/form-data">
+        <table>
+            <tr>
+                <td><label for="name">Full Name:</label></td>
+                <td><input type="text" id="name" name="name" required></td>
+            </tr>
+            <tr>
+                <td><label for="email">Email:</label></td>
+                <td><input type="email" id="email" name="email" required></td>
+            </tr>
+            <tr>
+                <td><label for="phone">Phone Number:</label></td>
+                <td><input type="tel" id="phone" name="phone" required></td>
+            </tr>
+            <tr>
+                <td><label for="experience">Experience (Years):</label></td>
+                <td><input type="number" id="experience" name="experience" min="0"></td>
+            </tr>
+            <tr>
+                <td><label for="specialization">Specialization:</label></td>
+                <td>
+                    <select id="specialization" name="specialization">
+                        <option value="yoga">Yoga</option>
+                        <option value="strength">Strength Training</option>
+                        <option value="cardio">Cardio</option>
+                        <option value="crossfit">CrossFit</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="diet_experience">Diet Planning Experience (Years):</label></td>
+                <td><input type="number" id="diet_experience" name="diet_experience" min="0"></td>
+            </tr>
+            <tr>
+                <td><label for="bio">Short Bio:</label></td>
+                <td><textarea id="bio" name="bio"></textarea></td>
+            </tr>
+            <tr>
+                <td><label for="profile_pic">Profile Picture:</label></td>
+                <td><input type="file" id="profile_pic" name="profile_pic" accept="image/*"></td>
+            </tr>
+            <tr>
+                <td><label for="client_worksheet">Previous Client Worksheet:</label></td>
+                <td><input type="file" id="client_worksheet" name="client_worksheet" accept=".pdf,.doc,.docx"></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">I agree to the terms and conditions</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><button type="submit">Register Trainer</button></td>
+            </tr>
+        </table>
+    </form>
+</div>
