@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>GymRats</title>
+        <link rel="stylesheet" type="text/css" href="../public/home/home.css" />
+    </head>
+    <body>
+        <div class="navbar">
+            <header>
+                <!-- Header Branding -->
+                <div class="badge">
+                    <a href="home.html" class="badge">GymRats</a>
+                </div>
+                <div class="search-bar">
+                    <img src="../public/home/icons8-search.svg" height="25px" alt="Search Icon" />
+                    <input type="text" placeholder="Search.." size="25" style="font-size: 20px;" />
+                </div>
+                
+                <div class="menu">
+                    <a href="./membership.html">Membership</a>
+                    <a href="./equipment.html">Equipment</a>
+                    <a href="./services.html">Services</a>
+                    <a href="./classes.html">Classes</a>
+                    <a href="login_signup.html">Login/SignUp</a>
+                </div>
+
+                <div class="menu-icon" id="menuIcon">
+                    <img src="../public/home/menu.jpg" alt="Menu" height="25px" />
+                </div>
+
+                <div class="side-navbar" id="sideNavbar">
+                    <a href="javascript:void(0)" class="close-btn" id="closeBtn">&times;</a>
+                    <a href="./membership.html">Membership</a>
+                    <a href="./equipment.html">Equipment</a>
+                    <a href="./services.html">Services</a>
+                    <a href="./classes.html">Classes</a>
+                    <a href="login_signup.html">Login/SignUp</a>
+                </div>
+                
+            </header>
+        </div>
+
+        <section class="image-card">
+            <div class="content startAnimation">
+                <div class="centered-text">
+                    <h1>Transform Your Body</h1>
+                    <p>With a workout plan tailored just for you</p>
+                    <button onclick="window.open('signup.html', '_self')">Get Started</button>
+                </div>
+            </div>
+            
+            <img src="./images/gym_banner.jpg" class="random-image image4" alt="Gym Banner" />
+        </section>
+
+        <section class="services-card autoshow">
+            <h1>Our Gym Services</h1>
+            <div class="card-container">
+                <div class="card">
+                    <a href="services/personal_training.html">
+                        <img src="images/personal_training.png" class="traning-image" alt="Personal Training" />
+                        <h2>Personal Training</h2>
+                        <p>Our personal training services offer expert guidance tailored to your fitness level. From initial assessments to customized workout plans, we ensure your progress is our top priority.</p>
+                    </a>
+                </div>
+
+                <div class="card">
+                    <a href="services/group_classes.html">
+                        <img src="images/group_classes.png" class="traning-image" alt="Group Classes" />
+                        <h2>Group Classes</h2>
+                        <p>Join our motivating group classes—from high-intensity interval training to yoga sessions. Our classes are designed to keep you engaged and help you achieve your fitness goals.</p>
+                    </a>
+                </div>
+
+                <div class="card">
+                    <a href="services/nutrition_consultation.html">
+                        <img src="images/nutrition_consultation.png" class="traning-image" alt="Nutrition Consultation" />
+                        <h2>Nutrition Consultation</h2>
+                        <p>Our nutrition experts offer personalized dietary advice to complement your workout routine and help you achieve optimal health and performance.</p>
+                    </a>
+                </div>
+            </div>
+            <button onclick="window.open('services.html', '_self')">Explore Services</button>
+        </section>
+
+        <!-- Updated section: Gym Plans -->
+        <section class="shop autoshow">
+            <h1>Gym Plans</h1>
+            <div class="card-container">
+                <div class="card">
+                    <div class="shop-image">
+                        <img src="./images/plan_standard.jpg" alt="Standard Plan" />
+                        <div class="quick-view">View Details</div>
+                    </div>
+                    <h2>Standard Plan</h2>
+                    <p>Enjoy basic gym access with unlimited facility usage and group classes at an affordable price.</p>
+                </div>
+
+                <div class="card">
+                    <div class="shop-image">
+                        <img src="./images/plan_gold.jpg" alt="Gold Plan">
+                        <div class="quick-view">View Details</div>
+                    </div>
+                    <h2>Gold Plan</h2>
+                    <p>Upgrade to our Gold Plan to receive additional benefits including personal training sessions and nutrition consultation.</p>
+                </div>
+
+                <div class="card">
+                    <div class="shop-image">
+                        <img src="./images/plan_platinum.jpg" alt="Platinum Plan">
+                        <div class="quick-view">View Details</div>
+                    </div>
+                    <h2>Platinum Plan</h2>
+                    <p>Experience premium services with exclusive access to advanced equipment, personalized coaching, and more.</p>
+                </div>
+            </div>
+            <button onclick="window.open('./gym_plans.html', '_self')">View All Plans</button>
+        </section>
+
+        <section class="about-us autoshow">
+            <div class="about-us-image">
+                <img src="./images/gym_about.jpg" alt="About GymRats" />
+            </div>
+
+            <div class="content">
+                <h2>About Us</h2>
+                <p>Welcome to GymRats, your ultimate destination for fitness enthusiasts! Our mission is to empower you to achieve your best self through state-of-the-art gym facilities, personalized training programs, and a vibrant community.
+                   Whether you're a beginner or a seasoned athlete, we have the perfect plan tailored for you. Join us and transform your fitness journey with expert trainers, modern equipment, and a supportive atmosphere.</p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3>GymRats</h3>
+                    <ul>
+                        <li><a href="./blog.html">Blog</a></li>
+                        <li><a href="./membership.html">Membership</a></li>
+                        <li><a href="./gym_plans.html">Gym Plans</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="services/personal_training.html">Personal Training</a></li>
+                        <li><a href="services/group_classes.html">Group Classes</a></li>
+                        <li><a href="services/nutrition_consultation.html">Nutrition Consultation</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Partner</h3>
+                    <ul>
+                        <li><a href="./service_login.html">Become a Trainer</a></li>
+                        <li><a href="./service_login.html">Corporate Membership</a></li>
+                        <li><a href="./service_login.html">Affiliate Program</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Policy</h3>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                        <li><a href="#">Cancellation Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                    <div class="footer-social">
+                        <a href="#"><img src="../public/home/icons8-facebook.svg" alt="Facebook"></a>
+                        <a href="#"><img src="../public/home/icons8-instagram.svg" alt="Instagram"></a>
+                        <a href="#"><img src="../public/home/icons8-youtube.svg" alt="YouTube"></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script>
+            document.getElementById('menuIcon').addEventListener('click', function() {
+                document.getElementById('sideNavbar').classList.toggle('open');
+            });
+
+            document.getElementById('closeBtn').addEventListener('click', function() {
+                document.getElementById('sideNavbar').classList.remove('open');
+            });
+        </script>
+
+    </body>
+</html>
