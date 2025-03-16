@@ -14,7 +14,7 @@ body {
 }
 
 /* Navbar */
-.navbar {
+.main-navbar {
     margin: 5px 5px;
 }
 
@@ -32,35 +32,39 @@ header a {
     font-weight: 500;
 }
 
-div .menu {
+div .nav-menu {
     display: flex;
-    gap: 3rem; 
+    gap: 3rem;
 }
 
-div .menu a {
+div .nav-menu a {
     cursor: pointer;
 }
 
-.badge {
+.brand-logo {
     color: #f1f1f1;
     font-size: 2rem;
     transition: 1s all ease;
 }
 
-.badge:hover {
+.brand-logo:hover {
     transform: scale(1.5);
 }
 
-.navbar .menu a {
+.brand-name{
+    font-size: 2rem;
+}
+
+.main-navbar .nav-menu a {
     position: relative;
     transition: 0.1s all ease;
 }
 
-.side-navbar {
+.mobile-sidebar {
     width: 0;
 }
 
-.navbar .menu a:hover::after {
+.main-navbar .nav-menu a:hover::after {
     position: absolute;
     content: '';
     left: 0;
@@ -70,40 +74,40 @@ div .menu a {
     background-color: #8A2BE2;
 }
 
-.search-bar {
+.search-container {
     display: flex;
     justify-content: center;
 }
 
-.search-bar img {
+.search-container img {
     margin-left: 50px;
     margin-top: 5px;
     margin-right: 5px;
 }
 
 input {
-    border: none; 
+    border: none;
     outline: none;
     border-bottom: 2px solid #8A2BE2;
-    background-color: transparent; 
+    background-color: transparent;
     padding: 5px;
     width: 100%;
-} 
-
-input:focus {
-    border-bottom: 2px solid #8A2BE2; 
 }
 
-.menu-icon {
+input:focus {
+    border-bottom: 2px solid #8A2BE2;
+}
+
+.mobile-menu-icon {
     display: none;
 }
 
 /* Image Card */
-.image-card {
+.hero-section {
     height: 100vh;
 }
 
-.centered-text {
+.hero-text {
     position: absolute;
     width: 100%;
     top: 66%;
@@ -115,20 +119,20 @@ input:focus {
     margin-top: 35px;
 }
 
-.centered-text h1 {
+.hero-text h1 {
     font-size: 5rem;
     font-weight: bold;
     color: #f1f1f1;
     margin-bottom: 20px;
 }
 
-.centered-text p {
+.hero-text p {
     font-size: 1.5rem;
     color: #f1f1f1;
     margin-bottom: 30px;
 }
 
-.centered-text button {
+.hero-text button {
     padding: 10px 20px;
     font-size: 1.2rem;
     font-weight: lighter;
@@ -140,14 +144,14 @@ input:focus {
     transition: 0.3s all ease;
 }
 
-.centered-text button:hover {
+.hero-text button:hover {
     background-color: transparent;
     color: #8A2BE2;
 }
 
 /* Random Images */
 .random-image {
-    position: absolute; 
+    position: absolute;
     width: 150px;
     height: 150px;
     object-fit: cover;
@@ -155,7 +159,7 @@ input:focus {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.image4 {
+.hero-background {
     width: 50%;
     height: 100%;
     object-fit: cover;
@@ -179,29 +183,29 @@ input:focus {
 }
 
 /* Services Section */
-.services-card {
+.services-section {
     display: flex;
-    flex-direction: column; 
-    align-items: center; 
+    flex-direction: column;
+    align-items: center;
     text-align: center;
     margin: 150px 75px;
 }
 
-.services-card h1 {
+.services-section h1 {
     font-size: 3rem;
     font-weight: bold;
-    margin-bottom: 30px; 
+    margin-bottom: 30px;
     color: #f1f1f1;
 }
 
-.services-card .card-container {
+.services-section .services-container {
     display: flex;
-    justify-content: space-around; 
-    gap: 30px; 
+    justify-content: space-around;
+    gap: 30px;
     width: 100%;
 }
 
-.card {
+.service-card {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -214,24 +218,24 @@ input:focus {
     width: 350px;
 }
 
-.card img {
+.service-card img {
     height: 100px;
     margin-bottom: 15px;
     outline: none;
 }
 
-.card a {
+.service-card a {
     text-decoration: none;
 }
 
-.card h2 {
+.service-card h2 {
     font-size: 1.5rem;
     font-weight: bold;
     color: #f1f1f1;
     margin-bottom: 10px;
 }
 
-.card p {
+.service-card p {
     font-size: 1rem;
     color: #cccccc;
     line-height: 1.5;
@@ -253,7 +257,7 @@ input:focus {
     }
 }
 
-.services-card button {
+.services-section button {
     margin-top: 40px;
     padding: 10px 20px;
     font-size: 1.2rem;
@@ -266,13 +270,13 @@ input:focus {
     transition: 0.3s all ease;
 }
 
-.services-card button:hover {
+.services-section button:hover {
     background-color: transparent;
     color: #8A2BE2;
 }
 
 /* Shop Section (Gym Plans) */
-.shop {
+.membership-plans {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -280,21 +284,21 @@ input:focus {
     margin: 50px 75px;
 }
 
-.shop h1 {
+.membership-plans h1 {
     font-size: 3rem;
     font-weight: bold;
     margin-bottom: 30px;
     color: #f1f1f1;
 }
 
-.shop .card-container {
+.membership-plans .plans-container {
     display: flex;
     justify-content: space-around;
     gap: 30px;
     width: 100%;
 }
 
-.shop .card-container .card {
+.membership-plans .plans-container .plan-card {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -309,7 +313,7 @@ input:focus {
     margin: 0;
 }
 
-.shop-image {
+.plan-image {
     position: relative;
     height: 450px;
     width: 450px;
@@ -317,7 +321,7 @@ input:focus {
     overflow: hidden;
 }
 
-.shop-image img {
+.plan-image img {
     height: 100%;
     width: 100%;
     object-fit: cover;
@@ -325,7 +329,7 @@ input:focus {
     transition: 0.5s all ease;
 }
 
-.quick-view {
+.plan-details {
     position: absolute;
     left: 50%;
     bottom: 0;
@@ -343,20 +347,20 @@ input:focus {
     align-items: center;
 }
 
-.shop-image:hover img {
+.plan-image:hover img {
     transform: scale(1.1);
 }
 
-.shop-image:hover .quick-view {
+.plan-image:hover .plan-details {
     opacity: 1;
     cursor: pointer;
 }
 
-.shop .card-container .card p {
+.membership-plans .plans-container .plan-card p {
     margin-bottom: 10px;
 }
 
-.shop button {
+.membership-plans button {
     margin-top: 40px;
     padding: 10px 20px;
     font-size: 1.2rem;
@@ -369,40 +373,40 @@ input:focus {
     transition: 0.3s all ease;
 }
 
-.shop button:hover {
+.membership-plans button:hover {
     background-color: transparent;
     color: #8A2BE2;
 }
 
 /* About Us Section */
-.about-us {
+.about-section {
     display: flex;
     gap: 50px;
     margin: 200px 75px 50px 75px;
     font-family: 'Outfit', sans-serif;
 }
 
-.about-us .content {
+.about-section .about-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     line-height: 2;
 }
 
-.about-us h2 {
+.about-section h2 {
     font-size: 3rem;
     font-weight: bold;
     color: #f1f1f1;
     margin-bottom: 30px;
 }
 
-.about-us p {
+.about-section p {
     font-size: 1.2rem;
     color: #cccccc;
     margin-bottom: 30px;
 }
 
-.about-us img {
+.about-section img {
     width: 500px;
     height: 500px;
     object-fit: cover;
@@ -411,14 +415,14 @@ input:focus {
 }
 
 /* Footer Section */
-.footer {
+.site-footer {
     background-color: #0e0e0e;
     color: #ffffff;
     padding: 40px 20px;
     font-family: 'Outfit', sans-serif;
 }
 
-.footer-container {
+.footer-content {
     margin: 50px 75px;
     display: flex;
     justify-content: space-around;
@@ -430,46 +434,46 @@ input:focus {
     min-width: 200px;
     margin: 10px;
 }
-  
+
 .footer-column h3 {
     margin-bottom: 15px;
 }
-  
+
 .footer-column ul {
     list-style: none;
     padding: 0;
 }
-  
+
 .footer-column ul li {
     margin-bottom: 10px;
 }
-  
+
 .footer-column ul li a {
     color: #ffffff;
     text-decoration: none;
 }
-  
+
 .footer-column ul li a:hover {
     text-decoration: underline;
 }
-  
-.footer-social a {
+
+.footer-social {
     justify-content: center;
     margin-right: 10px;
 }
-  
+
 .footer-social img {
     width: 24px;
     height: 24px;
 }
 
 /* Trainer Image adjustment */
-.traning-image {
+.service-image {
     zoom: 1.8;
 }
 
 /* Side Navbar */
-.side-navbar {
+.mobile-sidebar {
     height: 100%;
     width: 0;
     position: fixed;
@@ -482,7 +486,7 @@ input:focus {
     padding-top: 60px;
 }
 
-.side-navbar a {
+.mobile-sidebar a {
     padding: 10px 15px;
     text-decoration: none;
     font-size: 1.2rem;
@@ -491,11 +495,11 @@ input:focus {
     transition: 0.3s;
 }
 
-.side-navbar a:hover {
+.mobile-sidebar a:hover {
     color: #f1f1f1;
 }
 
-.side-navbar .close-btn {
+.mobile-sidebar .close-button {
     position: absolute;
     top: 0;
     right: 25px;
@@ -510,37 +514,37 @@ input:focus {
         width: 100%;
     }
 
-    .navbar {
+    .main-navbar {
         margin: 5px 20px;
     }
 
-    header { 
+    header {
         padding: 1rem;
     }
 
-    .menu-icon {
+    .mobile-menu-icon {
         padding: 5px;
         display: block;
     }
 
-    .badge {
+    .brand-logo {
         width: 100%;
         text-align: center;
     }
 
-    .menu a, .search-bar {
+    .nav-menu a, .search-container {
         display: none;
     }
 
-    .side-navbar.open {
+    .mobile-sidebar.open {
         width: 250px;
     }
 
-    .image-card {
+    .hero-section {
         height: 100vh;
     }
 
-    .image4 {
+    .hero-background {
         height: 105px;
         width: 105px;
         top: 25%;
@@ -548,51 +552,51 @@ input:focus {
         z-index: -1;
     }
 
-    .centered-text h1 {
+    .hero-text h1 {
         font-size: 2.5rem;
     }
 
-    .centered-text p {
+    .hero-text p {
         font-size: 1rem;
     }
 
-    .services-card .card-container {
+    .services-section .services-container {
         flex-direction: column;
         align-items: center;
     }
 
-    .card {
+    .service-card {
         width: 100%;
         margin-bottom: 20px;
     }
 
-    .shop .card-container {
+    .membership-plans .plans-container {
         flex-direction: column;
         align-items: center;
     }
 
-    .shop .card {
+    .membership-plans .plan-card {
         width: 350px;
         margin-bottom: 20px;
     }
 
-    .shop-image {
+    .plan-image {
         height: 300px;
         width: 300px;
     }
 
-    .about-us {
+    .about-section {
         flex-direction: column;
         align-items: center;
         margin: 50px 20px;
     }
 
-    .about-us img {
+    .about-section img {
         width: 100%;
         height: auto;
     }
 
-    .footer-container {
+    .footer-content {
         flex-direction: column;
         margin-left: 0;
     }
