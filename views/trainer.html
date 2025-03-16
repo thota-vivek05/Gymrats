@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymRats - Trainer Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="./trainer.css" />
-
+    <link rel="stylesheet" type="text/css" href="./Trainer_dashboard.css" />
 </head>
 <body>
     <!-- Navigation -->
@@ -51,9 +50,9 @@
         <p>Manage your clients and track their progress</p>
     </div>
 
-    <!-- Main Dashboard -->
-    <div class="dashboard-container">
-        <!-- Client List -->
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Client List - Extended to full height -->
         <div class="client-list-container">
             <h2>Client List</h2>
             <div class="client-list">
@@ -92,85 +91,89 @@
                         <span>Next Session: Mar 20</span>
                     </div>
                 </div>
+                <!-- Added more clients to fill the extended space -->
                 <div class="client-item" data-client="client6">
-                    <div class="client-name">Emily Parker</div>
+                    <div class="client-name">Emily Johnson</div>
                     <div class="client-stats">
-                        <span>Progress: 65%</span>
-                        <span>Next Session: Mar 20</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client7">
-                    <div class="client-name">John Smith</div>
-                    <div class="client-stats">
-                        <span>Progress: 40%</span>
+                        <span>Progress: 55%</span>
                         <span>Next Session: Mar 21</span>
                     </div>
                 </div>
-                <div class="client-item" data-client="client8">
-                    <div class="client-name">Lisa Johnson</div>
+                <div class="client-item" data-client="client7">
+                    <div class="client-name">James Brown</div>
                     <div class="client-stats">
-                        <span>Progress: 55%</span>
+                        <span>Progress: 68%</span>
                         <span>Next Session: Mar 22</span>
+                    </div>
+                </div>
+                <div class="client-item" data-client="client8">
+                    <div class="client-name">Lisa Martinez</div>
+                    <div class="client-stats">
+                        <span>Progress: 40%</span>
+                        <span>Next Session: Mar 23</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Client Details -->
+        <!-- Client Details Container with new layout -->
         <div class="client-details-container">
-            <!-- Client Profile -->
-            <div class="client-profile">
-                <h2>Client Profile: <span id="clientNameDisplay">Anvesh</span></h2>
-                <div class="profile-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">Age:</span>
-                        <span class="stat-value">28</span>
+            <!-- Top row with client profile and workout plan side by side -->
+            <div class="top-row">
+                <!-- Client Profile -->
+                <div class="client-profile">
+                    <h2>Client Profile: <span id="clientNameDisplay">Anvesh</span></h2>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Age:</span>
+                            <span class="stat-value">28</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Weight:</span>
+                            <span class="stat-value">75 kg</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Height:</span>
+                            <span class="stat-value">178 cm</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Body Fat:</span>
+                            <span class="stat-value">18%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Goal:</span>
+                            <span class="stat-value">Strength & Muscle Gain</span>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Weight:</span>
-                        <span class="stat-value">75 kg</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Height:</span>
-                        <span class="stat-value">178 cm</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Body Fat:</span>
-                        <span class="stat-value">18%</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Goal:</span>
-                        <span class="stat-value">Strength & Muscle Gain</span>
-                    </div>
+                    <button class="meet-button" onclick="window.open('https://meet.google.com/xyz-abcd-123', '_blank')">Join Google Meet</button>
                 </div>
-                <button class="meet-button" onclick="window.open('https://meet.google.com/xyz-abcd-123', '_blank')">Join Google Meet</button>
+
+                <!-- Workout Plan -->
+                <div class="workout-plan">
+                    <h2>Today's Workout: HIIT</h2>
+                    <div class="exercises-list">
+                        <div class="exercise-item">
+                            <span class="exercise-name">1. Burpees</span>
+                            <span class="exercise-details">4 sets x 15 reps</span>
+                        </div>
+                        <div class="exercise-item">
+                            <span class="exercise-name">2. Squat/Lunges</span>
+                            <span class="exercise-details">3 sets x 20 reps</span>
+                        </div>
+                        <div class="exercise-item">
+                            <span class="exercise-name">3. Mountain Climbers</span>
+                            <span class="exercise-details">4 sets x 30 seconds</span>
+                        </div>
+                        <div class="exercise-item">
+                            <span class="exercise-name">4. Jumping Jacks</span>
+                            <span class="exercise-details">3 sets x 45 seconds</span>
+                        </div>
+                    </div>
+                    <button>Edit Workout Plan</button>
+                </div>
             </div>
 
-            <!-- Workout Plan -->
-            <div class="workout-plan">
-                <h2>Today's Workout: HIIT</h2>
-                <div class="exercises-list">
-                    <div class="exercise-item">
-                        <span class="exercise-name">1. Burpees</span>
-                        <span class="exercise-details">4 sets x 15 reps</span>
-                    </div>
-                    <div class="exercise-item">
-                        <span class="exercise-name">2. Squat/Lunges</span>
-                        <span class="exercise-details">3 sets x 20 reps</span>
-                    </div>
-                    <div class="exercise-item">
-                        <span class="exercise-name">3. Mountain Climbers</span>
-                        <span class="exercise-details">4 sets x 30 seconds</span>
-                    </div>
-                    <div class="exercise-item">
-                        <span class="exercise-name">4. Jumping Jacks</span>
-                        <span class="exercise-details">3 sets x 45 seconds</span>
-                    </div>
-                </div>
-                <button>Edit Workout Plan</button>
-            </div>
-
-            <!-- Current Stats -->
+            <!-- Current Stats - Stacked below -->
             <div class="current-stats">
                 <h2>Current Stats</h2>
                 <div class="stats-grid">
@@ -190,7 +193,7 @@
                 </div>
             </div>
 
-            <!-- Nutrition Plan -->
+            <!-- Nutrition Plan - Stacked below current stats -->
             <div class="nutrition-plan">
                 <h2>Food Intake</h2>
                 <div class="nutrition-goal">
@@ -212,7 +215,7 @@
                     <p>Food goals reached ✓</p>
                 </div>
                 <h3>Nutritional Breakdown</h3>
-                <div class="nutrition-chart-placeholder">
+                <div class="pie-chart-container">
                     <canvas id="nutritionChart"></canvas>
                 </div>
                 <button>Edit Nutrition Plan</button>
@@ -296,7 +299,7 @@
             });
         });
 
-        // Exercise Progress Chart
+        // Exercise Progress Chart (from user dashboard)
         const exerciseCtx = document.getElementById('exerciseChart').getContext('2d');
         const exerciseChart = new Chart(exerciseCtx, {
             type: 'line',
@@ -342,19 +345,19 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
                         ticks: {
                             color: '#f1f1f1'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
                         }
                     },
                     x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
                         ticks: {
                             color: '#f1f1f1'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
                         }
                     }
                 }
