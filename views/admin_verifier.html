@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymRats - Content Verifiers Management</title>
+    <link rel="stylesheet" href="../public/admin/admin.css">
+    <link rel="stylesheet" href="../public/admin/admin_verifier.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
+    
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="home.html" class="brand-name">GymRats</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="./admin_dashboard.html" class="nav-link ">
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_user.html" class="nav-link">
+                        <span>Users</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_trainers.html" class="nav-link">
+                        <span>Trainers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_membership.html" class="nav-link">
+                        <span>Memberships</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_nutrition.html" class="nav-link">
+                        <span>Nutrition Plans</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_exercises.html" class="nav-link">
+                        <span>Exercises</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_workouts.html" class="nav-link">
+                        <span>Workout Plans</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_verifier.html" class="nav-link active">
+                        <span>Verifiers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_settings.html" class="nav-link">
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h2>Content Verifiers Management</h2>
+                <div class="right-container">
+                    <div class="search-container">
+                        <img src="https://img.icons8.com/ios/250/8A2BE2/search--v1.png" height="18px" alt="Search Icon" />
+                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                    </div>
+                    <div class="user-info">
+                        <div class="avatar">A</div>
+                        <span>Admin</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stats-card">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <div class="stats-header">
+                                <h3>Total Verifiers</h3>
+                            </div>
+                            <div class="stats-number">68</div>
+                            <div class="stats-label">+15% from last month</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <div class="stats-header">
+                                <h3>Active Verifiers</h3>
+                            </div>
+                            <div class="stats-number">52</div>
+                            <div class="stats-label">+8% from last month</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <div class="stats-header">
+                                <h3>Verified Content</h3>
+                            </div>
+                            <div class="stats-number">8,275</div>
+                            <div class="stats-label">+18% from last month</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <div class="stats-header">
+                                <h3>Pending Applications</h3>
+                            </div>
+                            <div class="stats-number">12</div>
+                            <div class="stats-label">+3 from last week</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-bar">
+                    <input type="text" id="verifierSearchInput" placeholder="Search verifiers by name, expertise or status...">
+                </div>
+                <button class="filter-btn" id="filterBtn">Filter Options</button>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <button class="tab active" data-tab="all">All Verifiers</button>
+                <button class="tab" data-tab="active">Active</button>
+                <button class="tab" data-tab="expert">Expert Level</button>
+                <button class="tab" data-tab="new">New Verifiers</button>
+                <button class="tab" data-tab="pending">Pending Approval</button>
+            </div>
+
+            <!-- Verifiers Table -->
+            <div class="section">
+                <div class="table-header">
+                    <h3 class="section-title">Content Verifiers</h3>
+                    <button class="add-btn">+ Add New Verifier</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Expertise</th>
+                                <th>Content Reviewed</th>
+                                <th>Accuracy</th>
+                                <th>Join Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="verifierTableBody">
+                            <tr>
+                                <td>
+                                    <div class="verifier-info">
+                                        <div class="verifier-image">
+                                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=1374&auto=format&fit=crop" alt="Mark Johnson">
+                                        </div>
+                                        <div>Mark Johnson <span class="expert-badge">Expert</span></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="expertise-tags">
+                                        <span class="expertise-tag">Exercise Form</span>
+                                        <span class="expertise-tag">Biomechanics</span>
+                                    </div>
+                                </td>
+                                <td>215 exercises</td>
+                                <td>
+                                    <div class="performance-bar">
+                                        <div class="performance-fill high-performance" style="width: 95%"></div>
+                                    </div>
+                                    <span>95%</span>
+                                </td>
+                                <td>Jan 12, 2023</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                    <button class="action-btn">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="verifier-info">
+                                        <div class="verifier-image">
+                                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1374&auto=format&fit=crop" alt="Emily Williams">
+                                        </div>
+                                        <div>Emily Williams <span class="expert-badge">Expert</span></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="expertise-tags">
+                                        <span class="expertise-tag">Nutrition Science</span>
+                                        <span class="expertise-tag">Diet Planning</span>
+                                    </div>
+                                </td>
+                                <td>128 nutrition plans</td>
+                                <td>
+                                    <div class="performance-bar">
+                                        <div class="performance-fill high-performance" style="width: 98%"></div>
+                                    </div>
+                                    <span>98%</span>
+                                </td>
+                                <td>Mar 5, 2023</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                    <button class="action-btn">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="verifier-info">
+                                        <div class="verifier-image">
+                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1374&auto=format&fit=crop" alt="Chris Taylor">
+                                        </div>
+                                        <div>Chris Taylor</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="expertise-tags">
+                                        <span class="expertise-tag">Sports Science</span>
+                                        <span class="expertise-tag">Injury Prevention</span>
+                                    </div>
+                                </td>
+                                <td>89 workouts</td>
+                                <td>
+                                    <div class="performance-bar">
+                                        <div class="performance-fill medium-performance" style="width: 82%"></div>
+                                    </div>
+                                    <span>82%</span>
+                                </td>
+                                <td>Feb 18, 2023</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                    <button class="action-btn">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="verifier-info">
+                                        <div class="verifier-image">
+                                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1374&auto=format&fit=crop" alt="Lisa Rodriguez">
+                                        </div>
+                                        <div>Lisa Rodriguez</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="expertise-tags">
+                                        <span class="expertise-tag">Fitness Safety</span>
+                                        <span class="expertise-tag">Form Analysis</span>
+                                    </div>
+                                </td>
+                                <td>176 exercises</td>
+                                <td>
+                                    <div class="performance-bar">
+                                        <div class="performance-fill high-performance" style="width: 90%"></div>
+                                    </div>
+                                    <span>90%</span>
+                                </td>
+                                <td>May 10, 2023</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                    <button class="action-btn">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="verifier-info">
+                                        <div class="verifier-image">
+                                            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1374&auto=format&fit=crop" alt="James Wilson">
+                                        </div>
+                                        <div>James Wilson <span class="new-badge">New</span></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="expertise-tags">
+                                        <span class="expertise-tag">Nutritional Biochemistry</span>
+                                    </div>
+                                </td>
+                                <td>24 nutrition plans</td>
+                                <td>
+                                    <div class="performance-bar">
+                                        <div class="performance-fill medium-performance" style="width: 78%"></div>
+                                    </div>
+                                    <span>78%</span>
+                                </td>
+                                <td>Mar 1, 2024</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                    <button class="action-btn">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="verifier-info">
+                                        <div class="verifier-image">
+                                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1376&auto=format&fit=crop" alt="Alexandra Chen">
+                                        </div>
+                                        <div>Alexandra Chen <span class="new-badge">New</span></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="expertise-tags">
+                                        <span class="expertise-tag">Exercise Science</span>
+                                        <span class="expertise-tag">Mobility</span>
+                                    </div>
+                                </td>
+                                <td>18 workouts</td>
+                                <td>
+                                    <div class="performance-bar">
+                                        <div class="performance-fill high-performance" style="width: 92%"></div>
+                                    </div>
+                                    <span>92%</span>
+                                </td>
+                                <td>Feb 15, 2024</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                    <button class="action-btn">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="verifier-info">
+                                        <div class="verifier-image">
+                                            <img src="https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?q=80&w=1364&auto=format&fit=crop" alt="Michael Davis">
+                                        </div>
+                                        <div>Michael Davis</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="expertise-tags">
+                                        <span class="expertise-tag">Sports Physiology</span>
+                                        <span class="expertise-tag">HIIT Training</span>
+                                    </div>
+                                </td>
+                                <td>0 content reviewed</td>
+                                <td>
+                                    <div class="performance-bar">
+                                        <div class="performance-fill" style="width: 0%"></div>
+                                    </div>
+                                    <span>N/A</span>
+                                </td>
+                                <td>Mar 14, 2024</td>
+                                <td><span class="status pending">Pending</span></td>
+                                <td>
+                                    <button class="action-btn approve">Approve</button>
+                                    <button class="action-btn reject">Reject</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="verifier-info">
+                                        <div class="verifier-image">
+                                            <img src="https://images.unsplash.com/photo-1546422904-90eab23c3d7e?q=80&w=1372&auto=format&fit=crop" alt="Sarah Thompson">
+                                        </div>
+                                        <div>Sarah Thompson</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="expertise-tags">
+                                        <span class="expertise-tag">Yoga</span>
+                                        <span class="expertise-tag">Flexibility</span>
+                                    </div>
+                                </td>
+                                <td>0 content reviewed</td>
+                                <td>
+                                    <div class="performance-bar">
+                                        <div class="performance-fill" style="width: 0%"></div>
+                                    </div>
+                                    <span>N/A</span>
+                                </td>
+                                <td>Mar 10, 2024</td>
+                                <td><span class="status pending">Pending</span></td>
+                                <td>
+                                    <button class="action-btn approve">Approve</button>
+                                    <button class="action-btn reject">Reject</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn">Next</button>
+                </div>
+            </div>
+
+            <!-- Content Distribution Chart -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">Content Verification Distribution</h3>
+                </div>
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <div class="chart-container">
+                            <canvas id="contentTypeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-container">
+                            <canvas id="verifierPerformanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup interactive elements
+            setupResponsiveFeatures();
+            setupTabNavigation();
+            setupSearchFunctionality();
+            initializeCharts();
+        });
+
+        function setupResponsiveFeatures() {
+            // Navigation buttons
+            const navItems = document.querySelectorAll('.nav-link');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (!this.getAttribute('href').includes('.html')) {
+                        e.preventDefault();
+                        navItems.forEach(link => link.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                });
+            });
+
+            // Action buttons
+            const actionButtons = document.querySelectorAll('.action-btn');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.classList.add('clicked');
+                    setTimeout(() => {
+                        this.classList.remove('clicked');
+                    }, 200);
+
+                    // Handle approve/reject actions
+                    if (this.classList.contains('approve')) {
+                        const row = this.closest('tr');
+                        const statusCell = row.querySelector('.status');
+                        if (statusCell) {
+                            statusCell.classList.remove('pending');
+                            statusCell.classList.add('active');
+                            statusCell.textContent = 'Active';
+                        }
+                        
+                        // Replace action buttons
+                        const actionCell = this.closest('td');
+                        actionCell.innerHTML = `
+                            <button class="action-btn">View</button>
+                            <button class="action-btn">Edit</button>
+                        `;
+                        
+                        // Reattach event listeners
+                        const newButtons = actionCell.querySelectorAll('.action-btn');
+                        newButtons.forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                this.classList.add('clicked');
+                                setTimeout(() => {
+                                    this.classList.remove('clicked');
+                                }, 200);
+                            });
+                        });
+                    } else if (this.classList.contains('reject')) {
+                        const row = this.closest('tr');
+                        if (confirm('Are you sure you want to reject this verifier?')) {
+                            row.remove();
+                        }
+                    }
+                });
+            });
+
+            // Filter button
+            const filterBtn = document.getElementById('filterBtn');
+            if (filterBtn) {
+                filterBtn.addEventListener('click', function() {
+                    alert('Filter options would appear here');
+                });
+            }
+
+            // Pagination buttons
+            const pageButtons = document.querySelectorAll('.page-btn');
+            pageButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    pageButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Add New Verifier button
+            const addVerifierBtn = document.querySelector('.add-btn');
+            if (addVerifierBtn) {
+                addVerifierBtn.addEventListener('click', function() {
+                    alert('Add new verifier form would appear here');
+                });
+            }
+        }
+
+        function setupTabNavigation() {
+            const tabs = document.querySelectorAll('.tab');
+            const verifierRows = document.querySelectorAll('#verifierTableBody tr');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const tabType = this.getAttribute('data-tab');
+                    
+                    // Filter verifiers based on tab
+                    verifierRows.forEach(row => {
+                        const statusCell = row.querySelector('.status');
+                        const expertBadge = row.querySelector('.expert-badge');
+                        const newBadge = row.querySelector('.new-badge');
+                        
+                        switch(tabType) {
+                            case 'all':
+                                row.style.display = '';
+                                break;
+                            case 'active':
+                                if (statusCell && statusCell.classList.contains('active')) {
+                                    row.style.display = '';
+                                } else {
+                                    row.style.display = 'none';
+                                }
+                                break;
+                            case 'expert':
+                                if (expertBadge) {
+                                    row.style.display = '';
+                                } else {
+                                    row.style.display = 'none';
+                                }
+                                break;
+                            case 'new':
+                                if (newBadge) {
+                                    row.style.display = '';
+                                } else {
+                                    row.style.display = 'none';
+                                }
+                                break;
+                            case 'pending':
+                                if (statusCell && statusCell.classList.contains('pending')) {
+                                    row.style.display = '';
+                                } else {
+                                    row.style.display = 'none';
+                                }
+                                break;
+                        }
+                    });
+                });
+            });
+        }
+
+        function setupSearchFunctionality() {
+            const searchInput = document.getElementById('verifierSearchInput');
+            const verifierRows = document.querySelectorAll('#verifierTableBody tr');
+            
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    
+                    verifierRows.forEach(row => {
+                        const verifierName = row.querySelector('.verifier-info div:nth-child(2)').textContent.toLowerCase();
+                        const expertise = row.querySelectorAll('td')[1].textContent.toLowerCase();
+                        const status = row.querySelector('.status').textContent.toLowerCase();
+                        
+                        if (verifierName.includes(searchTerm) || expertise.includes(searchTerm) || status.includes(searchTerm)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        }
+
+        function initializeCharts() {
+            // Content Type Distribution Chart
+            const contentTypeCtx = document.getElementById('contentTypeChart');
+            if (contentTypeCtx) {
+                new Chart(contentTypeCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Exercise Form', 'Nutrition Plans', 'Workout Programs', 'Equipment Use', 'Safety Guides'],
+                        datasets: [{
+                            data: [35, 25, 20, 12, 8],
+                            backgroundColor: [
+                                '#8A2BE2',
+                                '#9370DB',
+                                '#BA55D3',
+                                '#DA70D6',
+                                '#EE82EE'
+                            ],
+                            borderWidth: 1,
+                            borderColor: '#1e1e1e'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#f1f1f1',
+                                    padding: 20,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Content Types Verified',
+                                color: '#f1f1f1',
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Verifier Performance Chart
+            const performanceCtx = document.getElementById('verifierPerformanceChart');
+            if (performanceCtx) {
+                new Chart(performanceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['High Performers (90%+)', 'Med Performers (70-89%)', 'New Verifiers (<10 reviews)'],
+                        datasets: [{
+                            label: 'Verifier Count',
+                            data: [32, 15, 5],
+                            backgroundColor: [
+                                '#4CAF50',
+                                '#FFC107',
+                                '#8A2BE2'
+                            ],
+                            borderWidth: 1,
+                            borderColor: '#1e1e1e'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#f1f1f1'
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#f1f1f1'
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Verifier Performance Distribution',
+                                color: '#f1f1f1',
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

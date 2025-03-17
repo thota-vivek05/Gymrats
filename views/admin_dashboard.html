@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymRats - Admin Dashboard</title>
+    <link rel="stylesheet" href="../public/admin/admin.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="home.html" class="brand-name">GymRats</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="./admin_dashboard.html" class="nav-link active">
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_user.html" class="nav-link">
+                        <span>Users</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_trainers.html" class="nav-link">
+                        <span>Trainers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_membership.html" class="nav-link">
+                        <span>Memberships</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_nutrition.html" class="nav-link">
+                        <span>Nutrition Plans</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_exercises.html" class="nav-link">
+                        <span>Exercises</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_workouts.html" class="nav-link">
+                        <span>Workout Plans</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_verifier.html" class="nav-link">
+                        <span>Verifiers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="./admin_settings.html" class="nav-link">
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h2>Admin Dashboard</h2>
+                <div class="right-container">
+                    <div class="search-container">
+                        <img src="https://img.icons8.com/ios/250/8A2BE2/search--v1.png" height="18px" alt="Search Icon" />
+                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                    </div>
+                    <div class="user-info">
+                        <div class="avatar">A</div>
+                        <span>Admin</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- First Row: User Stats -->
+            <div class="dashboard-grid">
+                <div class="stats-card">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <div class="stats-header">
+                                <h3>Total Users</h3>
+                            </div>
+                            <div class="stats-number">12,452</div>
+                            <div class="stats-label">+12% from last month</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <div class="stats-header">
+                                <h3>Active Members</h3>
+                            </div>
+                            <div class="stats-number">8,574</div>
+                            <div class="stats-label">+5% from last month</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <div class="stats-header">
+                                <h3>Personal Trainers</h3>
+                            </div>
+                            <div class="stats-number">157</div>
+                            <div class="stats-label">+9% from last month</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <div class="stats-header">
+                                <h3>Content Verifiers</h3>
+                            </div>
+                            <div class="stats-number">68</div>
+                            <div class="stats-label">+15% from last month</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Row: Revenue Stats -->
+            <div class="dashboard-grid">
+                <div class="stats-card">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <div class="stats-header">
+                                <h3>Total Revenue</h3>
+                            </div>
+                            <div class="stats-number">$892,845</div>
+                            <div class="stats-label">All-time platform revenue</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <div class="stats-header">
+                                <h3>Monthly Revenue</h3>
+                            </div>
+                            <div class="stats-number">$108,976</div>
+                            <div class="stats-label">+8% from last month</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <div class="stats-header">
+                                <h3>Platinum Members</h3>
+                            </div>
+                            <div class="stats-number">3,254</div>
+                            <div class="stats-label">+12% from last month</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-content">
+                        <div class="stats-info">
+                            <div class="stats-header">
+                                <h3>New Signups</h3>
+                            </div>
+                            <div class="stats-number">462</div>
+                            <div class="stats-label">+5% from last week</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Revenue Overview</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="section-header">
+                        <h3 class="section-title">Member Growth</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="memberChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">Recent User Activity</h3>
+                    <button class="btn">View All</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Activity</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John Mitchell</td>
+                                <td>john.mitchell@email.com</td>
+                                <td>Purchased Platinum Plan</td>
+                                <td>Today, 10:30 AM</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sarah Davis</td>
+                                <td>sarah.davis@email.com</td>
+                                <td>Updated Profile</td>
+                                <td>Today, 9:15 AM</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Michael Johnson</td>
+                                <td>michael.j@email.com</td>
+                                <td>Logged Workout</td>
+                                <td>Yesterday, 5:30 PM</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Emma Wilson</td>
+                                <td>emma.w@email.com</td>
+                                <td>Cancelled Membership</td>
+                                <td>Yesterday, 3:45 PM</td>
+                                <td><span class="status inactive">Inactive</span></td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Robert Brown</td>
+                                <td>robert.b@email.com</td>
+                                <td>Purchased Gold Plan</td>
+                                <td>Aug 12, 2023</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- New Trainers Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">New Trainers</h3>
+                    <button class="btn">View All</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Specialty</th>
+                                <th>Experience</th>
+                                <th>Status</th>
+                                <th>Join Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Alex Turner</td>
+                                <td>Strength Training</td>
+                                <td>8 years</td>
+                                <td><span class="status pending">Pending</span></td>
+                                <td>Aug 15, 2023</td>
+                                <td>
+                                    <button class="action-btn approve">Approve</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Jessica Moore</td>
+                                <td>Yoga Instructor</td>
+                                <td>5 years</td>
+                                <td><span class="status active">Approved</span></td>
+                                <td>Aug 13, 2023</td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>David Lee</td>
+                                <td>Bodybuilding</td>
+                                <td>12 years</td>
+                                <td><span class="status pending">Pending</span></td>
+                                <td>Aug 10, 2023</td>
+                                <td>
+                                    <button class="action-btn approve">Approve</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sophia Garcia</td>
+                                <td>Nutrition Expert</td>
+                                <td>7 years</td>
+                                <td><span class="status active">Approved</span></td>
+                                <td>Aug 8, 2023</td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Verifiers Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">Content Verifiers</h3>
+                    <button class="btn">View All</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Expertise</th>
+                                <th>Content Reviewed</th>
+                                <th>Status</th>
+                                <th>Join Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mark Johnson</td>
+                                <td>Exercise Form</td>
+                                <td>215 exercises</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>Jul 15, 2023</td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Linda Williams</td>
+                                <td>Nutrition Facts</td>
+                                <td>142 nutrition plans</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>Jul 10, 2023</td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Thomas Martin</td>
+                                <td>Workout Plans</td>
+                                <td>98 workout plans</td>
+                                <td><span class="status pending">Pending</span></td>
+                                <td>Aug 2, 2023</td>
+                                <td>
+                                    <button class="action-btn approve">Approve</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Rebecca Kim</td>
+                                <td>Exercise Safety</td>
+                                <td>187 exercises</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>Jun 28, 2023</td>
+                                <td>
+                                    <button class="action-btn">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../public/admin/admin.js"></script>
+</body>
+</html>
