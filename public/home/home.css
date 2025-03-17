@@ -9,32 +9,35 @@
 
 body {
     background-color: #000;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px; /* Adjust this value as needed */
+    font-size: 14px;
 }
 
 /* Navbar */
 .main-navbar {
-    margin: 5px 5px;
+    margin: 0;
+    background-color: #000;
+    border-bottom: 1px solid #333;
 }
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 3rem;
+    padding: 0.8rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 header a {
     text-decoration: none;
     color: #f1f1f1;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 500;
 }
 
 div .nav-menu {
     display: flex;
-    gap: 3rem;
+    gap: 2rem;
 }
 
 div .nav-menu a {
@@ -43,16 +46,16 @@ div .nav-menu a {
 
 .brand-logo {
     color: #f1f1f1;
-    font-size: 2rem;
-    transition: 1s all ease;
+    font-weight: bold;
+    transition: 0.3s all ease;
 }
 
 .brand-logo:hover {
-    transform: scale(1.5);
+    transform: scale(1.1);
 }
 
-.brand-name{
-    font-size: 2rem;
+.brand-name {
+    font-size: 1.5rem;
 }
 
 .main-navbar .nav-menu a {
@@ -60,53 +63,71 @@ div .nav-menu a {
     transition: 0.1s all ease;
 }
 
-.mobile-sidebar {
-    width: 0;
+.main-navbar .nav-menu a:hover {
+    color: #8A2BE2;
 }
 
-.main-navbar .nav-menu a:hover::after {
-    position: absolute;
-    content: '';
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 2px;
-    background-color: #8A2BE2;
+.right-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .search-container {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 5px 15px;
 }
 
 .search-container img {
-    margin-left: 50px;
-    margin-top: 5px;
-    margin-right: 5px;
+    margin-right: 8px;
 }
 
 input {
     border: none;
     outline: none;
-    border-bottom: 2px solid #8A2BE2;
     background-color: transparent;
     padding: 5px;
     width: 100%;
+    color: #f1f1f1;
 }
 
 input:focus {
-    border-bottom: 2px solid #8A2BE2;
+    outline: none;
+}
+
+.login-button a {
+    background-color: #8A2BE2;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: 0.3s all ease;
+}
+
+.login-button a:hover {
+    background-color: #7020a0;
 }
 
 .mobile-menu-icon {
     display: none;
 }
 
-/* Image Card */
+/* Hero Section */
 .hero-section {
-    height: 100vh;
+    position: relative;
+    height: 800px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1740&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 60px;
 }
-
 .hero-text {
     position: absolute;
     width: 100%;
@@ -149,7 +170,6 @@ input:focus {
     color: #8A2BE2;
 }
 
-/* Random Images */
 .random-image {
     position: absolute;
     width: 150px;
@@ -257,7 +277,8 @@ input:focus {
     }
 }
 
-.services-section button {
+/* Shared button styling */
+.services-section button, .membership-plans button {
     margin-top: 40px;
     padding: 10px 20px;
     font-size: 1.2rem;
@@ -270,112 +291,235 @@ input:focus {
     transition: 0.3s all ease;
 }
 
-.services-section button:hover {
+.services-section button:hover, .membership-plans button:hover {
     background-color: transparent;
     color: #8A2BE2;
 }
 
-/* Shop Section (Gym Plans) */
-.membership-plans {
+/* Membership Section */
+.membership-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    margin: 50px 75px;
+    padding: 80px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.membership-plans h1 {
-    font-size: 3rem;
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
     font-weight: bold;
-    margin-bottom: 30px;
     color: #f1f1f1;
-}
-
-.membership-plans .plans-container {
-    display: flex;
-    justify-content: space-around;
-    gap: 30px;
-    width: 100%;
-}
-
-.membership-plans .plans-container .plan-card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    background-color: transparent;
-    border: 1px solid #8A2BE2;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(138, 43, 226, 0.3);
-    width: 450px;
-    padding: 0;
-    margin: 0;
-}
-
-.plan-image {
-    position: relative;
-    height: 450px;
-    width: 450px;
     margin-bottom: 15px;
-    overflow: hidden;
 }
 
-.plan-image img {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-    border-radius: 8px;
-    transition: 0.5s all ease;
+.section-header p {
+    font-size: 1.1rem;
+    color: #cccccc;
+    max-width: 700px;
+    margin: 0 auto;
 }
 
-.plan-details {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    font-family: "Outfit", sans-serif;
-    width: 100%;
-    background-color: rgba(138, 43, 226, 0.8);
-    opacity: 0;
-    transition: 0.5s all ease;
-    height: 75px;
+.plan-cards {
     display: flex;
     justify-content: center;
-    align-items: center;
+    gap: 30px;
+    width: 100%;
+    flex-wrap: wrap;
 }
 
-.plan-image:hover img {
-    transform: scale(1.1);
+.plan-card {
+    background-color: rgba(30, 30, 30, 0.6);
+    border-radius: 10px;
+    overflow: hidden;
+    width: 300px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid rgba(138, 43, 226, 0.3);
 }
 
-.plan-image:hover .plan-details {
-    opacity: 1;
-    cursor: pointer;
+.plan-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(138, 43, 226, 0.4);
 }
 
-.membership-plans .plans-container .plan-card p {
+.plan-popular {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #8A2BE2;
+    color: white;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-bottom-left-radius: 10px;
+}
+
+.plan-header {
+    padding: 30px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.plan-header h3 {
+    font-size: 1.8rem;
+    color: #f1f1f1;
     margin-bottom: 10px;
 }
 
-.membership-plans button {
-    margin-top: 40px;
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    font-weight: lighter;
-    color: #ffffff;
-    background-color: #8A2BE2;
-    border: 1px solid #8A2BE2;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: 0.3s all ease;
+.plan-price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #8A2BE2;
+    margin-bottom: 10px;
 }
 
-.membership-plans button:hover {
+.plan-price span {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #aaa;
+}
+
+.plan-header p {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.plan-features {
+    padding: 30px 20px;
+}
+
+.plan-features ul {
+    list-style: none;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.plan-features ul li {
+    padding: 12px 0;
+    color: #f1f1f1;
+    position: relative;
+    padding-left: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.plan-features ul li.included:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #8A2BE2;
+    font-weight: bold;
+}
+
+.plan-features ul li.excluded {
+    color: #777;
+}
+
+.plan-features ul li.excluded:before {
+    content: "✕";
+    position: absolute;
+    left: 0;
+    color: #777;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #8A2BE2;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: 2px solid #8A2BE2;
+}
+
+.btn:hover {
     background-color: transparent;
     color: #8A2BE2;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+    background-color: #0A0A0A;
+    padding: 80px 20px;
+    margin-top: 40px;
+}
+
+.testimonials-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.testimonial-card {
+    background-color: rgba(30, 30, 30, 0.6);
+    border-radius: 10px;
+    padding: 30px;
+    width: 500px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(138, 43, 226, 0.3);
+}
+
+.testimonial-content {
+    margin-bottom: 25px;
+}
+
+.testimonial-content p {
+    color: #f1f1f1;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    font-style: italic;
+    position: relative;
+}
+
+.testimonial-content p:before {
+    content: "“";
+    font-size: 3rem;
+    position: absolute;
+    left: -15px;
+    top: -20px;
+    color: rgba(138, 43, 226, 0.3);
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+}
+
+.testimonial-author-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 15px;
+    border: 2px solid #8A2BE2;
+}
+
+.testimonial-author-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.testimonial-author-info h4 {
+    color: #f1f1f1;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.testimonial-author-info p {
+    color: #aaa;
+    font-size: 0.9rem;
 }
 
 /* About Us Section */
@@ -383,7 +527,6 @@ input:focus {
     display: flex;
     gap: 50px;
     margin: 200px 75px 50px 75px;
-    font-family: 'Outfit', sans-serif;
 }
 
 .about-section .about-content {
@@ -418,25 +561,28 @@ input:focus {
 .site-footer {
     background-color: #0e0e0e;
     color: #ffffff;
-    padding: 40px 20px;
-    font-family: 'Outfit', sans-serif;
+    padding: 60px 20px 40px;
 }
 
 .footer-content {
-    margin: 50px 75px;
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     flex-wrap: wrap;
 }
 
 .footer-column {
     flex: 1;
     min-width: 200px;
-    margin: 10px;
+    margin: 0 20px 20px 0;
 }
 
 .footer-column h3 {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
 }
 
 .footer-column ul {
@@ -445,26 +591,46 @@ input:focus {
 }
 
 .footer-column ul li {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .footer-column ul li a {
-    color: #ffffff;
+    color: #cccccc;
     text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
 }
 
 .footer-column ul li a:hover {
-    text-decoration: underline;
+    color: #8A2BE2;
 }
 
-.footer-social {
+.social-icons {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.social-icons a {
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    margin-right: 10px;
 }
 
-.footer-social img {
-    width: 24px;
-    height: 24px;
+.social-icons img {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s;
+}
+
+.social-icons a:hover img {
+    transform: scale(1.2);
+}
+
+.copyright {
+    font-size: 0.9rem;
+    color: #999;
+    margin-top: 10px;
 }
 
 /* Trainer Image adjustment */
@@ -503,101 +669,105 @@ input:focus {
     position: absolute;
     top: 0;
     right: 25px;
-    font-size: 2rem;
+    font-size: 36px;
+    margin-left: 50px;
 }
 
-/* Responsive Styles */
-@media (max-width: 940px) {
+.mobile-sidebar.open {
+    width: 250px;
+}
 
-    body, html {
-        overflow-x: hidden;
-        width: 100%;
-    }
+/* Mobile menu icon - hidden by default, shown in responsive mode */
+.mobile-menu-icon {
+    display: none;
+    cursor: pointer;
+}
 
-    .main-navbar {
-        margin: 5px 20px;
-    }
-
-    header {
-        padding: 1rem;
-    }
-
-    .mobile-menu-icon {
-        padding: 5px;
-        display: block;
-    }
-
-    .brand-logo {
-        width: 100%;
-        text-align: center;
-    }
-
-    .nav-menu a, .search-container {
-        display: none;
-    }
-
-    .mobile-sidebar.open {
-        width: 250px;
-    }
-
-    .hero-section {
-        height: 100vh;
-    }
-
-    .hero-background {
-        height: 105px;
-        width: 105px;
-        top: 25%;
-        left: 65%;
-        z-index: -1;
-    }
-
-    .hero-text h1 {
-        font-size: 2.5rem;
-    }
-
-    .hero-text p {
-        font-size: 1rem;
-    }
-
-    .services-section .services-container {
+/* Responsive Design */
+@media screen and (max-width: 1200px) {
+    .services-container, .plans-container {
         flex-direction: column;
         align-items: center;
     }
-
+    
     .service-card {
-        width: 100%;
-        margin-bottom: 20px;
+        width: 80%;
+        max-width: 450px;
+        margin-bottom: 30px;
     }
-
-    .membership-plans .plans-container {
-        flex-direction: column;
-        align-items: center;
+    
+    .testimonial-card {
+        width: 90%;
+        max-width: 500px;
+        margin-bottom: 30px;
     }
-
-    .membership-plans .plan-card {
-        width: 350px;
-        margin-bottom: 20px;
-    }
-
+    
     .plan-image {
-        height: 300px;
-        width: 300px;
+        width: 100%;
+        height: auto !important;
+        aspect-ratio: 1/1;
     }
-
+    
     .about-section {
         flex-direction: column;
         align-items: center;
-        margin: 50px 20px;
     }
-
+    
     .about-section img {
-        width: 100%;
+        width: 90%;
         height: auto;
+        aspect-ratio: 1/1;
     }
+}
 
+@media screen and (max-width: 1016px) {
+    header {
+        padding: 0.8rem 1.5rem;
+    }
+    
+    .nav-menu {
+        display: none !important;
+    }
+    
+    .right-container {
+        margin-left: auto;
+    }
+    
+    .mobile-menu-icon {
+        display: block;
+        margin-left: 1rem;
+    }
+    
+    .hero-text h1 {
+        font-size: 3rem;
+    }
+    
+    .hero-text p {
+        font-size: 1.2rem;
+    }
+    
+    .services-section, .membership-section, .testimonials-section, .about-section {
+        margin: 50px 20px;
+        padding: 40px 10px;
+    }
+    
     .footer-content {
+        padding: 0 20px;
         flex-direction: column;
-        margin-left: 0;
+    }
+    
+    .footer-column {
+        margin-bottom: 30px;
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .right-container {
+        display: none;
+    }
+    
+    .brand-logo {
+        margin-right: auto;
     }
 }
