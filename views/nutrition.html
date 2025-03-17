@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymRats - Nutrition Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../public/nutrition/nutrition.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <header>
+            <!-- Header Branding -->
+            <a href="isolation.html" class="badge">GymRats</a>
+            
+            <div class="menu">
+                <a href="home.html">Home</a>
+                <a href="isolation.html">Exercises</a>
+                <a href="nutrition.html">Nutrition</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </div>
+
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search...">
+            </div>
+
+            <div class="menu-icon" onclick="openNav()">
+                <i class="fas fa-bars"></i>
+            </div>
+        </header>
+    </div>
+
+    <!-- Side Navigation for Mobile -->
+    <div id="mySidenav" class="side-navbar">
+        <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
+        <a href="home.html">Home</a>
+        <a href="isolation.html">Exercises</a>
+        <a href="nutrition.html">Nutrition</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+    </div>
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <h1>Nutrition Guide</h1>
+        <p>Optimize your fitness journey with proper nutrition tailored to your goals</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Diet Types Section -->
+        <div class="section">
+            <h2>Diet Types for Different Goals</h2>
+            <div class="nutrition-grid">
+                <div class="nutrition-card">
+                    <h3>Muscle Building</h3>
+                    <p>A high-protein, calorie-surplus diet designed to maximize muscle growth while minimizing fat gain.</p>
+                    <div class="macros-container">
+                        <div class="macro-item">
+                            <span class="macro-value">40%</span>
+                            <span class="macro-label">Protein</span>
+                        </div>
+                        <div class="macro-item">
+                            <span class="macro-value">40%</span>
+                            <span class="macro-label">Carbs</span>
+                        </div>
+                        <div class="macro-item">
+                            <span class="macro-value">20%</span>
+                            <span class="macro-label">Fats</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nutrition-card">
+                    <h3>Fat Loss</h3>
+                    <p>A moderate-protein, calorie-deficit diet focused on preserving muscle while promoting fat loss.</p>
+                    <div class="macros-container">
+                        <div class="macro-item">
+                            <span class="macro-value">35%</span>
+                            <span class="macro-label">Protein</span>
+                        </div>
+                        <div class="macro-item">
+                            <span class="macro-value">30%</span>
+                            <span class="macro-label">Carbs</span>
+                        </div>
+                        <div class="macro-item">
+                            <span class="macro-value">35%</span>
+                            <span class="macro-label">Fats</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nutrition-card">
+                    <h3>Performance</h3>
+                    <p>A high-carbohydrate diet designed to fuel intense training sessions and optimize athletic performance.</p>
+                    <div class="macros-container">
+                        <div class="macro-item">
+                            <span class="macro-value">25%</span>
+                            <span class="macro-label">Protein</span>
+                        </div>
+                        <div class="macro-item">
+                            <span class="macro-value">55%</span>
+                            <span class="macro-label">Carbs</span>
+                        </div>
+                        <div class="macro-item">
+                            <span class="macro-value">20%</span>
+                            <span class="macro-label">Fats</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Meal Plan Section -->
+        <div class="section">
+            <h2>Sample Muscle Building Meal Plan</h2>
+            <p>This sample meal plan provides approximately 3,000 calories with a focus on high-quality protein sources, complex carbohydrates, and healthy fats.</p>
+            
+            <table class="meal-plan-table">
+                <thead>
+                    <tr>
+                        <th>Meal</th>
+                        <th>Foods</th>
+                        <th>Calories</th>
+                        <th>Protein</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Breakfast</td>
+                        <td>4 eggs, 1 cup oatmeal with berries, 1 tbsp honey</td>
+                        <td>650</td>
+                        <td>40g</td>
+                    </tr>
+                    <tr>
+                        <td>Snack</td>
+                        <td>Protein shake with 1 banana and 1 tbsp peanut butter</td>
+                        <td>350</td>
+                        <td>30g</td>
+                    </tr>
+                    <tr>
+                        <td>Lunch</td>
+                        <td>8oz chicken breast, 1 cup brown rice, 1 cup vegetables</td>
+                        <td>700</td>
+                        <td>60g</td>
+                    </tr>
+                    <tr>
+                        <td>Pre-Workout</td>
+                        <td>1 apple, 2 rice cakes with 1 tbsp honey</td>
+                        <td>250</td>
+                        <td>2g</td>
+                    </tr>
+                    <tr>
+                        <td>Post-Workout</td>
+                        <td>Protein shake with 2 cups milk</td>
+                        <td>400</td>
+                        <td>40g</td>
+                    </tr>
+                    <tr>
+                        <td>Dinner</td>
+                        <td>8oz salmon, 1 sweet potato, 2 cups mixed vegetables</td>
+                        <td>650</td>
+                        <td>45g</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Supplements Section -->
+        <div class="section">
+            <h2>Recommended Supplements</h2>
+            <div class="nutrition-grid">
+                <div class="nutrition-card">
+                    <h3>Protein Powder</h3>
+                    <p>A convenient way to increase protein intake, especially post-workout when nutrient timing is important for muscle recovery.</p>
+                    <p><strong>Recommended Intake:</strong> 1-2 scoops (25-50g) post-workout or as needed to meet daily protein goals.</p>
+                </div>
+
+                <div class="nutrition-card">
+                    <h3>Creatine Monohydrate</h3>
+                    <p>One of the most researched supplements, creatine helps increase strength, power, and muscle mass when combined with resistance training.</p>
+                    <p><strong>Recommended Intake:</strong> 5g daily, with or without a loading phase.</p>
+                </div>
+
+                <div class="nutrition-card">
+                    <h3>Essential Fatty Acids</h3>
+                    <p>Omega-3 fatty acids support recovery, reduce inflammation, and promote overall health and well-being.</p>
+                    <p><strong>Recommended Intake:</strong> 1-3g of combined EPA/DHA daily from fish oil or algae sources.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Replace the existing footer with this -->
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-column">
+            <h3>GymRats</h3>
+            <ul>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="trainers.html">Our Trainers</a></li>
+                <li><a href="testimonials.html">Testimonials</a></li>
+                <li><a href="blog.html">Blog</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Resources</h3>
+            <ul>
+                <li><a href="isolation.html">Exercise Guide</a></li>
+                <li><a href="nutrition.html">Nutrition Tips</a></li>
+                <li><a href="workout-plans.html">Workout Plans</a></li>
+                <li><a href="calculators.html">Calculators</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Support</h3>
+            <ul>
+                <li><a href="contact.html">Contact Us</a></li>
+                <li><a href="about.html">About us</a></li>
+                <li><a href="terms.html">Terms of Service</a></li>
+                <li><a href="privacy_policy.html">Privacy Policy</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Connect With Us</h3>
+            <ul>
+                <li><a href="login_signup.html#">Become a Trainer</a></li>
+                <li><a href="verifier_login.html">Become a Verifier</a></li>
+            </ul>
+            <div class="social-icons">
+                <a href="#"><img src="../public/home/icons8-facebook.svg" alt="Facebook"></a>
+                <a href="#"><img src="../public/home/icons8-instagram.svg" alt="Instagram"></a>
+                <a href="#"><img src="../public/home/icons8-youtube.svg" alt="YouTube"></a>
+            </div>
+            <p class="copyright">GymRats © 2025. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+    <script>
+        // Navigation - Mobile Menu
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+    </script>
+</body>
+</html>
