@@ -1,62 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GymRats - Trainer Registration</title>
+  <link rel="stylesheet" href="../public/trainer_signup/trainer_signup.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="auth-page">
+    <!-- Navbar -->
+    <div class="navbar">
+        <header>
+            <a href="../views/home.html" class="badge">GymRats</a>
+            <div class="menu">
+                <a href="../views/home.html">Home</a>
+                <a href="../views/isolation.html">Exercises</a>
+                <a href="../views/nutrition.html">Nutrition</a>
+                <a href="../views/about.html">About</a>
+                <a href="../views/contact.html">Contact</a>
+            </div>
+        </header>
+    </div>
 
-<link rel="stylesheet" href="trainer_form.css">
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="auth-container">
+        <div class="auth-header">
+          <h2>Trainer Registration</h2>
+          <p>Join our professional trainer network</p>
+        </div>
 
-<div class="trainer-container">
-    <h2>Trainer Registration</h2>
-    <form class="trainer-form" enctype="multipart/form-data">
-        <table>
-            <tr>
-                <td><label for="name">Full Name:</label></td>
-                <td><input type="text" id="name" name="name" required></td>
-            </tr>
-            <tr>
-                <td><label for="email">Email:</label></td>
-                <td><input type="email" id="email" name="email" required></td>
-            </tr>
-            <tr>
-                <td><label for="phone">Phone Number:</label></td>
-                <td><input type="tel" id="phone" name="phone" required></td>
-            </tr>
-            <tr>
-                <td><label for="experience">Experience (Years):</label></td>
-                <td><input type="number" id="experience" name="experience" min="0"></td>
-            </tr>
-            <tr>
-                <td><label for="specialization">Specialization:</label></td>
-                <td>
-                    <select id="specialization" name="specialization">
-                        <option value="yoga">Yoga</option>
-                        <option value="strength">Strength Training</option>
-                        <option value="cardio">Cardio</option>
-                        <option value="crossfit">CrossFit</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td><label for="diet_experience">Diet Planning Experience (Years):</label></td>
-                <td><input type="number" id="diet_experience" name="diet_experience" min="0"></td>
-            </tr>
-            <tr>
-                <td><label for="bio">Short Bio:</label></td>
-                <td><textarea id="bio" name="bio"></textarea></td>
-            </tr>
-            <tr>
-                <td><label for="profile_pic">Profile Picture:</label></td>
-                <td><input type="file" id="profile_pic" name="profile_pic" accept="image/*"></td>
-            </tr>
-            <tr>
-                <td><label for="client_worksheet">Previous Client Worksheet:</label></td>
-                <td><input type="file" id="client_worksheet" name="client_worksheet" accept=".pdf,.doc,.docx"></td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <input type="checkbox" id="terms" name="terms" required>
-                    <label for="terms">I agree to the terms and conditions</label>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2"><button type="submit">Register Trainer</button></td>
-            </tr>
-        </table>
-    </form>
-</div>
+        <form id="trainerSignupForm">
+          <!-- Personal Information -->
+          <div class="form-section">
+            <h3>Personal Information</h3>
+            <div class="row">
+              <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input 
+                  type="text" 
+                  id="firstName" 
+                  class="form-control" 
+                  required 
+                />
+              </div>
+              <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input 
+                  type="text" 
+                  id="lastName" 
+                  class="form-control" 
+                  required 
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input 
+                type="email" 
+                id="email" 
+                class="form-control" 
+                required 
+              />
+            </div>
+            <div class="row">
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                  type="password" 
+                  id="password" 
+                  class="form-control" 
+                  required 
+                />
+              </div>
+              <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input 
+                  type="password" 
+                  id="confirmPassword" 
+                  class="form-control" 
+                  required 
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input 
+                type="tel" 
+                id="phone" 
+                class="form-control" 
+                required 
+              />
+            </div>
+          </div>
+
+          <!-- Professional Information -->
+          <div class="form-section">
+            <h3>Professional Information</h3>
+            <div class="form-group">
+              <label for="experience">Years of Experience</label>
+              <select id="experience" class="form-control" required>
+                <option value="">Select experience</option>
+                <option value="1-2">1-2 years</option>
+                <option value="3-5">3-5 years</option>
+                <option value="5-10">5-10 years</option>
+                <option value="10+">10+ years</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="specialization">Specialization</label>
+              <div class="checkbox-group">
+                <div class="checkbox-container">
+                  <input type="checkbox" id="weightLoss" value="Weight Loss" />
+                  <label for="weightLoss">Weight Loss</label>
+                </div>
+                <div class="checkbox-container">
+                  <input type="checkbox" id="muscleGain" value="Muscle Gain" />
+                  <label for="muscleGain">Muscle Gain</label>
+                </div>
+                <div class="checkbox-container">
+                  <input type="checkbox" id="flexibility" value="Flexibility" />
+                  <label for="flexibility">Flexibility</label>
+                </div>
+                <div class="checkbox-container">
+                  <input type="checkbox" id="cardio" value="Cardiovascular" />
+                  <label for="cardio">Cardiovascular</label>
+                </div>
+                <div class="checkbox-container">
+                  <input type="checkbox" id="strength" value="Strength Training" />
+                  <label for="strength">Strength Training</label>
+                </div>
+                <div class="checkbox-container">
+                  <input type="checkbox" id="postRehab" value="Post-Rehab" />
+                  <label for="postRehab">Post-Rehab</label>
+                </div>
+                <div class="checkbox-container">
+                  <input type="checkbox" id="sports" value="Sports Performance" />
+                  <label for="sports">Sports Performance</label>
+                </div>
+                <div class="checkbox-container">
+                  <input type="checkbox" id="nutrition" value="Nutrition" />
+                  <label for="nutrition">Nutrition</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="certifications">Certifications</label>
+              <select id="certifications" class="form-control" required>
+                <option value="">Select certification</option>
+                <option value="NASM">NASM (National Academy of Sports Medicine)</option>
+                <option value="ACE">ACE (American Council on Exercise)</option>
+                <option value="ACSM">ACSM (American College of Sports Medicine)</option>
+                <option value="NSCA">NSCA (National Strength and Conditioning Association)</option>
+                <option value="ISSA">ISSA (International Sports Sciences Association)</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="certificationDoc">Certification Document</label>
+              <input type="file" id="certificationDoc" class="file-input" />
+              <label for="certificationDoc" class="file-label">Upload Certification Documents</label>
+            </div>
+          </div>
+
+          <!-- Profile Information -->
+          <div class="form-section">
+            <h3>Profile Information</h3>
+            <div class="form-group">
+              <label for="profilePhoto">Profile Photo</label>
+              <input type="file" id="profilePhoto" class="file-input" />
+              <label for="profilePhoto" class="file-label">Choose Profile Photo</label>
+            </div>
+            <div class="form-group">
+              <label for="bio">Bio</label>
+              <textarea id="bio" class="form-control" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="location">Location/Service Area</label>
+              <input type="text" id="location" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label for="hourlyRate">Hourly Rate ($)</label>
+              <input type="number" id="hourlyRate" class="form-control" min="0" step="5" />
+            </div>
+          </div>
+
+          <div class="form-group terms">
+            <input type="checkbox" id="termsAgree" required />
+            <label for="termsAgree">
+              I agree to the <a href="terms.html">Terms of Service</a>, <a href="privacy_policy.html">Privacy Policy</a>, and 
+              <a href="/trainer-agreement"> Trainer Agreement</a>
+            </label>
+          </div>
+
+          <button type="submit" class="btn">Register as Trainer</button>
+        </form>
+
+        <div class="alternate-action">
+          Already have an account? <a href="login_signup.html">Sign In</a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>GymRats</h3>
+                <ul>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="trainers.html">Our Trainers</a></li>
+                    <li><a href="testimonial.html">Testimonials</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                </ul>
+            </div>
+    
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="isolation.html">Exercise Guide</a></li>
+                    <li><a href="nutrition.html">Nutrition Tips</a></li>
+                    <li><a href="workout_plans.html">Workout Plans</a></li>
+                    <li><a href="calculators.html">Calculators</a></li>
+                </ul>
+            </div>
+    
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="about.html">About us</a></li>
+                    <li><a href="terms.html">Terms of Service</a></li>
+                    <li><a href="privacy_policy.html">Privacy Policy</a></li>
+                </ul>
+            </div>
+    
+            <div class="footer-column">
+                <h3>Connect With Us</h3>
+                <ul>
+                    <li><a href="trainer_form.html">Become a Trainer</a></li>
+                    <li><a href="verifier_login.html">Become a Verifier</a></li>
+                </ul>
+                <div class="social-icons">
+                    <a href="#"><img src="../public/home/icons8-facebook.svg" alt="Facebook"></a>
+                    <a href="#"><img src="../public/home/icons8-instagram.svg" alt="Instagram"></a>
+                    <a href="#"><img src="../public/home/icons8-youtube.svg" alt="YouTube"></a>
+                </div>
+                <p class="copyright">GymRats © 2025. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+  </div>
+
+  <script src="../public/login/auth.js"></script>
+</body>
+</html>
