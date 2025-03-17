@@ -1,0 +1,399 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: #000;
+    font-size: 14px;
+}
+
+/* Navbar */
+.main-navbar {
+    margin: 0;
+    background-color: #000;
+    border-bottom: 1px solid #333;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header a {
+    text-decoration: none;
+    color: #f1f1f1;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+div .nav-menu {
+    display: flex;
+    gap: 2rem;
+}
+
+div .nav-menu a {
+    cursor: pointer;
+}
+
+.brand-logo {
+    color: #f1f1f1;
+    font-weight: bold;
+    transition: 0.3s all ease;
+}
+
+.brand-logo:hover {
+    transform: scale(1.1);
+}
+
+.brand-name {
+    font-size: 1.5rem;
+}
+
+.main-navbar .nav-menu a {
+    position: relative;
+    transition: 0.1s all ease;
+}
+
+.main-navbar .nav-menu a:hover {
+    color: #8A2BE2;
+}
+
+.right-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 5px 15px;
+}
+
+.search-container img {
+    margin-right: 8px;
+}
+
+input {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    padding: 5px;
+    width: 100%;
+    color: #f1f1f1;
+}
+
+input:focus {
+    outline: none;
+}
+
+.login-button a {
+    background-color: #8A2BE2;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: 0.3s all ease;
+}
+
+.login-button a:hover {
+    background-color: #7020a0;
+}
+
+.mobile-menu-icon {
+    display: none;
+}
+
+/* Privacy Policy Section */
+.privacy-policy-section {
+    max-width: 1000px;
+    margin: 100px auto;
+    padding: 40px;
+    background-color: rgba(30, 30, 30, 0.6);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(138, 43, 226, 0.3);
+    color: #f1f1f1;
+}
+
+.privacy-policy-section h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #f1f1f1;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.privacy-policy-section h2 {
+    font-size: 1.5rem;
+    color: #8A2BE2;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+    padding-bottom: 10px;
+}
+
+.privacy-policy-section p {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    color: #cccccc;
+}
+
+.privacy-policy-section ul, 
+.privacy-policy-section ol {
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+.privacy-policy-section ul li, 
+.privacy-policy-section ol li {
+    color: #cccccc;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.privacy-policy-section strong {
+    color: #f1f1f1;
+    font-weight: 600;
+}
+
+.updated-date {
+    text-align: right;
+    font-style: italic;
+    color: #aaa;
+    margin-top: 40px;
+    font-size: 0.9rem;
+}
+
+.privacy-policy-section a {
+    color: #8A2BE2;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.privacy-policy-section a:hover {
+    color: #9d50ff;
+    text-decoration: underline;
+}
+
+/* Animation for the privacy policy section */
+.privacy-policy-section {
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Footer Section */
+.site-footer {
+    background-color: #0e0e0e;
+    color: #ffffff;
+    padding: 60px 20px 40px;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.footer-column {
+    flex: 1;
+    min-width: 200px;
+    margin: 0 20px 20px 0;
+}
+
+.footer-column h3 {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-column ul li {
+    margin-bottom: 12px;
+}
+
+.footer-column ul li a {
+    color: #cccccc;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+.footer-column ul li a:hover {
+    color: #8A2BE2;
+}
+
+.social-icons {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.social-icons a {
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-icons img {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s;
+}
+
+.social-icons a:hover img {
+    transform: scale(1.2);
+}
+
+.copyright {
+    font-size: 0.9rem;
+    color: #999;
+    margin-top: 10px;
+}
+
+/* Side Navbar */
+.mobile-sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    background-color: #8A2BE2;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.mobile-sidebar a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 1.2rem;
+    color: #ffffff;
+    display: block;
+    transition: 0.3s;
+}
+
+.mobile-sidebar a:hover {
+    color: #f1f1f1;
+}
+
+.mobile-sidebar .close-button {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+.mobile-sidebar.open {
+    width: 250px;
+}
+
+/* Mobile menu icon - hidden by default, shown in responsive mode */
+.mobile-menu-icon {
+    display: none;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1200px) {
+    .privacy-policy-section {
+        width: 90%;
+        margin: 80px auto;
+        padding: 30px;
+    }
+}
+
+@media screen and (max-width: 1016px) {
+    header {
+        padding: 0.8rem 1.5rem;
+    }
+    
+    .nav-menu {
+        display: none !important;
+    }
+    
+    .right-container {
+        margin-left: auto;
+    }
+    
+    .mobile-menu-icon {
+        display: block;
+        margin-left: 1rem;
+    }
+    
+    .privacy-policy-section h1 {
+        font-size: 2rem;
+    }
+    
+    .privacy-policy-section h2 {
+        font-size: 1.3rem;
+    }
+    
+    .footer-content {
+        padding: 0 20px;
+        flex-direction: column;
+    }
+    
+    .footer-column {
+        margin-bottom: 30px;
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .privacy-policy-section {
+        padding: 25px 20px;
+        margin: 60px auto;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .right-container {
+        display: none;
+    }
+    
+    .brand-logo {
+        margin-right: auto;
+    }
+    
+    .privacy-policy-section {
+        padding: 20px 15px;
+    }
+    
+    .privacy-policy-section h1 {
+        font-size: 1.8rem;
+    }
+    
+    .privacy-policy-section h2 {
+        font-size: 1.2rem;
+    }
+}
