@@ -11,32 +11,40 @@
             <header>
                 <!-- Header Branding -->
                 <div class="brand-logo">
-                    <a href="home.html" class="brand-name">GymRats</a>
-                </div>
-                <div class="search-container">
-                    <img src="../public/home/icons8-search.svg" height="25px" alt="Search Icon" />
-                    <input type="text" placeholder="Search.." size="25" style="font-size: 20px;" />
+                    <a href="index.html" class="brand-name">GymRats</a>
                 </div>
                 
                 <div class="nav-menu">
-                    <a href="./membership.html">Membership</a>
-                    <a href="./equipment.html">Equipment</a>
-                    <a href="./services.html">Services</a>
-                    <a href="./classes.html">Classes</a>
-                    <a href="login_signup.html">Login/SignUp</a>
+                    <a href="index.html">Home</a>
+                    <a href="exercises.html">Exercises</a>
+                    <a href="nutrition.html">Nutrition</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+                
+                <div class="right-container">
+                    <div class="search-container">
+                        <img src="../assets/icons/icons8-search.svg" height="18px" alt="Search Icon" />
+                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                    </div>
+                    
+                    <div class="login-button">
+                        <a href="login_signup.html">Login / Signup</a>
+                    </div>
                 </div>
 
                 <div class="mobile-menu-icon" id="menuIcon">
-                    <img src="../public/home/menu.jpg" alt="Menu" height="25px" />
+                    <img src="../assets/icons/menu.jpg" alt="Menu" height="25px" />
                 </div>
 
                 <div class="mobile-sidebar" id="sideNavbar">
                     <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
-                    <a href="./membership.html">Membership</a>
-                    <a href="./equipment.html">Equipment</a>
-                    <a href="./services.html">Services</a>
-                    <a href="./classes.html">Classes</a>
-                    <a href="login_signup.html">Login/SignUp</a>
+                    <a href="index.html">Home</a>
+                    <a href="exercises.html">Exercises</a>
+                    <a href="nutrition.html">Nutrition</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                    <a href="login_signup.html">Login / Signup</a>
                 </div>
                 
             </header>
@@ -45,13 +53,14 @@
         <section class="hero-section">
             <div class="hero-content startAnimation">
                 <div class="hero-text">
-                    <h1>Transform Your Body</h1>
-                    <p>With a workout plan tailored just for you</p>
+                    <h1>Transform Your Body,<br> Transform Your Life
+                        </h1>
+                    <p>Join GymRats today and get access to expert-designed workout plans, nutritional guidance, and a supportive community.
+                    </p>
                     <button onclick="window.open('signup.html', '_self')">Get Started</button>
                 </div>
             </div>
             
-            <img src="./images/gym_banner.jpg" class="hero-background" alt="Gym Banner" />
         </section>
 
         <section class="services-section autoshow">
@@ -59,23 +68,23 @@
             <div class="services-container">
                 <div class="service-card">
                     <a href="services/personal_training.html">
-                        <img src="images/personal_training.png" class="service-image" alt="Personal Training" />
+                        <img src="https://img.icons8.com/ios/250/8A2BE2/dumbbell.png" class="service-image" alt="Personal Training" />
                         <h2>Personal Training</h2>
                         <p>Our personal training services offer expert guidance tailored to your fitness level. From initial assessments to customized workout plans, we ensure your progress is our top priority.</p>
                     </a>
                 </div>
 
                 <div class="service-card">
-                    <a href="services/group_classes.html">
-                        <img src="images/group_classes.png" class="service-image" alt="Group Classes" />
-                        <h2>Group Classes</h2>
-                        <p>Join our motivating group classes—from high-intensity interval training to yoga sessions. Our classes are designed to keep you engaged and help you achieve your fitness goals.</p>
+                    <a href="services/muscle_isolation.html">
+                        <img src="https://img.icons8.com/ios/250/8A2BE2/yoga.png" class="service-image" alt="Muscle Isolation" />
+                        <h2>Muscle Isolation</h2>
+                        <p>Learn proper form and technique for effective isolation exercises that target specific muscle groups for maximum definition and growth.</p>
                     </a>
                 </div>
 
                 <div class="service-card">
                     <a href="services/nutrition_consultation.html">
-                        <img src="images/nutrition_consultation.png" class="service-image" alt="Nutrition Consultation" />
+                        <img src="https://img.icons8.com/ios/250/8A2BE2/salad.png" class="service-image" alt="Nutrition Consultation" />
                         <h2>Nutrition Consultation</h2>
                         <p>Our nutrition experts offer personalized dietary advice to complement your workout routine and help you achieve optimal health and performance.</p>
                     </a>
@@ -84,43 +93,117 @@
             <button onclick="window.open('services.html', '_self')">Explore Services</button>
         </section>
 
-        <!-- Updated section: Gym Plans -->
-        <section class="membership-plans autoshow">
-            <h1>Gym Plans</h1>
-            <div class="plans-container">
+        <!-- Membership Plans Section -->
+        <section class="membership-section" id="membership">
+            <div class="section-header">
+                <h2>Membership Plans</h2>
+                <p>Choose the plan that fits your lifestyle and fitness goals. All plans include access to our comprehensive exercise guide.</p>
+            </div>
+
+            <div class="plan-cards">
                 <div class="plan-card">
-                    <div class="plan-image">
-                        <img src="./images/plan_standard.jpg" alt="Standard Plan" />
-                        <div class="plan-details">View Details</div>
+                    <div class="plan-header">
+                        <h3>Basic Plan</h3>
+                        <div class="plan-price">$29<span>/month</span></div>
+                        <p>Perfect for beginners</p>
                     </div>
-                    <h2>Standard Plan</h2>
-                    <p>Enjoy basic gym access with unlimited facility usage and group classes at an affordable price.</p>
+                    <div class="plan-features">
+                        <ul>
+                            <li class="included">Access to Exercise Guide</li>
+                            <li class="included">Basic Workout Plans</li>
+                            <li class="included">Nutritional Tips</li>
+                            <li class="excluded">Current Stats Tracking</li>
+                            <li class="excluded">Online Classes</li>
+                            <li class="excluded">Personal Training Sessions</li>
+                        </ul>
+                        <a href="login.html" class="btn">Get Started</a>
+                    </div>
                 </div>
 
                 <div class="plan-card">
-                    <div class="plan-image">
-                        <img src="./images/plan_gold.jpg" alt="Gold Plan">
-                        <div class="plan-details">View Details</div>
+                    <div class="plan-popular">Popular</div>
+                    <div class="plan-header">
+                        <h3>Gold Plan</h3>
+                        <div class="plan-price">$59<span>/month</span></div>
+                        <p>For dedicated fitness enthusiasts</p>
                     </div>
-                    <h2>Gold Plan</h2>
-                    <p>Upgrade to our Gold Plan to receive additional benefits including personal training sessions and nutrition consultation.</p>
+                    <div class="plan-features">
+                        <ul>
+                            <li class="included">Access to Exercise Guide</li>
+                            <li class="included">Advanced Workout Plans</li>
+                            <li class="included">Detailed Nutritional Guidance</li>
+                            <li class="included">Current Stats Tracking</li>
+                            <li class="included">Online Classes</li>
+                            <li class="excluded">Personal Training Sessions</li>
+                        </ul>
+                        <a href="login.html" class="btn">Get Started</a>
+                    </div>
                 </div>
 
                 <div class="plan-card">
-                    <div class="plan-image">
-                        <img src="./images/plan_platinum.jpg" alt="Platinum Plan">
-                        <div class="plan-details">View Details</div>
+                    <div class="plan-header">
+                        <h3>Platinum Plan</h3>
+                        <div class="plan-price">$99<span>/month</span></div>
+                        <p>The ultimate fitness experience</p>
                     </div>
-                    <h2>Platinum Plan</h2>
-                    <p>Experience premium services with exclusive access to advanced equipment, personalized coaching, and more.</p>
+                    <div class="plan-features">
+                        <ul>
+                            <li class="included">Access to Exercise Guide</li>
+                            <li class="included">Premium Workout Plans</li>
+                            <li class="included">Comprehensive Nutrition Guidance</li>
+                            <li class="included">Current Stats Tracking with Goals</li>
+                            <li class="included">Online Classes</li>
+                            <li class="included">Personal Training Sessions</li>
+                        </ul>
+                        <a href="login.html" class="btn">Get Started</a>
+                    </div>
                 </div>
             </div>
-            <button onclick="window.open('./gym_plans.html', '_self')">View All Plans</button>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials-section">
+            <div class="section-header">
+                <h2>Success Stories</h2>
+                <p>Hear from our members who have transformed their lives with GymRats.</p>
+            </div>
+
+            <div class="testimonials-container">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>The exercise guide at GymRats has been a game-changer for my fitness journey. The detailed instructions and videos helped me perfect my form, and I've seen incredible results in just 3 months!</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-author-image">
+                            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1974&auto=format&fit=crop" alt="John Mitchell">
+                        </div>
+                        <div class="testimonial-author-info">
+                            <h4>John Mitchell</h4>
+                            <p>Member since 2024</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>As someone who struggled with nutrition, the guidance I received from GymRats has been invaluable. The meal plans are easy to follow, and I finally understand how to eat to support my fitness goals.</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="testimonial-author-image">
+                            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop" alt="Sarah Davis">
+                        </div>
+                        <div class="testimonial-author-info">
+                            <h4>Sarah Davis</h4>
+                            <p>Member since 2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section class="about-section autoshow">
             <div class="about-image">
-                <img src="./images/gym_about.jpg" alt="About GymRats" />
+                <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e" alt="About GymRats" />
             </div>
 
             <div class="about-content">
@@ -135,56 +218,55 @@
                 <div class="footer-column">
                     <h3>GymRats</h3>
                     <ul>
-                        <li><a href="./blog.html">Blog</a></li>
-                        <li><a href="./membership.html">Membership</a></li>
-                        <li><a href="./gym_plans.html">Gym Plans</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="trainers.html">Our Trainers</a></li>
+                        <li><a href="testimonials.html">Testimonials</a></li>
+                        <li><a href="blog.html">Blog</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
-                    <h3>Services</h3>
+                    <h3>Resources</h3>
                     <ul>
-                        <li><a href="services/personal_training.html">Personal Training</a></li>
-                        <li><a href="services/group_classes.html">Group Classes</a></li>
-                        <li><a href="services/nutrition_consultation.html">Nutrition Consultation</a></li>
+                        <li><a href="exercise-guide.html">Exercise Guide</a></li>
+                        <li><a href="nutrition-tips.html">Nutrition Tips</a></li>
+                        <li><a href="workout-plans.html">Workout Plans</a></li>
+                        <li><a href="calculators.html">Calculators</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
-                    <h3>Partner</h3>
+                    <h3>Support</h3>
                     <ul>
-                        <li><a href="./service_login.html">Become a Trainer</a></li>
-                        <li><a href="./service_login.html">Corporate Membership</a></li>
-                        <li><a href="./service_login.html">Affiliate Program</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
-                    <h3>Policy</h3>
-                    <ul>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Refund Policy</a></li>
-                        <li><a href="#">Cancellation Policy</a></li>
-                        <li><a href="#">Terms & Conditions</a></li>
-                    </ul>
+                    <h3>Connect With Us</h3>
                     <div class="social-icons">
-                        <a href="#"><img src="../public/home/icons8-facebook.svg" alt="Facebook"></a>
-                        <a href="#"><img src="../public/home/icons8-instagram.svg" alt="Instagram"></a>
-                        <a href="#"><img src="../public/home/icons8-youtube.svg" alt="YouTube"></a>
+                        <a href="#"><img src="../assets/icons/icons8-facebook.svg" alt="Facebook"></a>
+                        <a href="#"><img src="../assets/icons/icons8-instagram.svg" alt="Instagram"></a>
+                        <a href="#"><img src="../assets/icons/icons8-youtube.svg" alt="YouTube"></a>
                     </div>
+                    <p class="copyright">GymRats © 2025. All rights reserved.</p>
                 </div>
             </div>
         </footer>
 
         <script>
-            document.getElementById('menuIcon').addEventListener('click', function() {
-                document.getElementById('sideNavbar').classList.toggle('open');
-            });
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('menuIcon').addEventListener('click', function() {
+                    document.getElementById('sideNavbar').classList.add('open');
+                });
 
-            document.getElementById('closeBtn').addEventListener('click', function() {
-                document.getElementById('sideNavbar').classList.remove('open');
+                document.getElementById('closeBtn').addEventListener('click', function() {
+                    document.getElementById('sideNavbar').classList.remove('open');
+                });
             });
         </script>
-
     </body>
 </html>
