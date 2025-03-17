@@ -633,6 +633,18 @@ input:focus {
     margin-top: 10px;
 }
 
+/* Responsive Footer */
+@media screen and (max-width: 1016px) {
+    .footer-content {
+        padding: 0 20px;
+        flex-direction: column;
+    }
+    
+    .footer-column {
+        margin-bottom: 30px;
+        width: 100%;
+    }
+}
 /* Trainer Image adjustment */
 .service-image {
     zoom: 1.8;
