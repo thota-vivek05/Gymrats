@@ -1,1 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymRats - About Us</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../public/about/about.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <header>
+            <!-- Header Branding -->
+            <a href="isolation.html" class="badge">GymRats</a>
+            
+            <div class="menu">
+                <a href="home.html">Home</a>
+                <a href="isolation.html">Exercises</a>
+                <a href="nutrition.html">Nutrition</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </div>
 
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search...">
+            </div>
+
+            <div class="menu-icon" onclick="openNav()">
+                <i class="fas fa-bars"></i>
+            </div>
+        </header>
+    </div>
+
+    <!-- Side Navigation for Mobile -->
+    <div id="mySidenav" class="side-navbar">
+        <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
+        <a href="home.html">Home</a>
+        <a href="isolation.html">Exercises</a>
+        <a href="nutrition.html">Nutrition</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+    </div>
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <h1>About GymRats</h1>
+        <p>Dedicated to empowering individuals on their fitness journey with expert guidance and comprehensive resources.</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Our Story Section -->
+        <div class="section">
+            <h2>Our Story</h2>
+            <div class="story-content">
+                <div class="story-image">
+                    <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=1975&auto=format&fit=crop" alt="GymRats Founding">
+                </div>
+                <div class="story-text">
+                    <p>Founded in 2020, GymRats began with a simple mission: to make quality fitness information accessible to everyone, regardless of experience level or background.</p>
+                    <p>What started as a small blog sharing workout tips has evolved into a comprehensive platform offering detailed exercise guides, nutrition advice, and personalized training resources.</p>
+                    <p>Our team of certified fitness professionals and nutritionists work tirelessly to create content that is both scientifically accurate and practically applicable in real-world settings.</p>
+                    <p>Today, GymRats serves millions of fitness enthusiasts worldwide, helping them achieve their health and fitness goals through education and empowerment.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Our Values Section -->
+        <div class="section">
+            <h2>Our Values</h2>
+            <p class="text-center">At GymRats, our core values guide everything we do. They reflect our commitment to providing exceptional fitness resources and fostering a supportive community.</p>
+            <div class="values-grid">
+                <div class="value-card">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Science-Based Approach</h3>
+                    <p>We believe in fitness information backed by scientific research and proven methodologies. No fads, no gimmicks—just evidence-based practices.</p>
+                </div>
+                <div class="value-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Inclusivity</h3>
+                    <p>Fitness is for everyone. We create content that addresses the needs of individuals at all levels, from beginners to advanced athletes.</p>
+                </div>
+                <div class="value-card">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>Education First</h3>
+                    <p>We prioritize teaching proper form, technique, and principles to empower you with knowledge that lasts a lifetime.</p>
+                </div>
+                <div class="value-card">
+                    <i class="fas fa-heart"></i>
+                    <h3>Holistic Wellness</h3>
+                    <p>We recognize that fitness extends beyond the gym. Nutrition, recovery, and mental well-being are integral parts of the journey.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Our Services</h2>
+            <p class="text-center">At GymRats, we offer a comprehensive range of fitness services designed to help you achieve your health and wellness goals.</p>
+            
+            <div class="values-grid">
+                <div class="value-card">
+                    <i class="fas fa-dumbbell"></i>
+                    <h3>Personalized Workout Plans</h3>
+                    <p>Access detailed exercise guides with proper form instructions, targeted muscle groups, and progression paths tailored to your fitness level.</p>
+                </div>
+                
+                <div class="value-card">
+                    <i class="fas fa-apple-alt"></i>
+                    <h3>Nutrition Guidance</h3>
+                    <p>Discover meal plans, nutritional information, and dietary advice to complement your workout routine and maximize your results.</p>
+                </div>
+                
+                <div class="value-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Community Support</h3>
+                    <p>Join our community of fitness enthusiasts to share experiences, get motivation, and celebrate achievements on your fitness journey.</p>
+                </div>
+                
+                <div class="value-card">
+                    <i class="fas fa-book"></i>
+                    <h3>Educational Resources</h3>
+                    <p>Access our extensive library of articles, videos, and guides covering everything from exercise techniques to recovery strategies.</p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Replace the existing footer with this -->
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-column">
+            <h3>GymRats</h3>
+            <ul>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="trainers.html">Our Trainers</a></li>
+                <li><a href="testimonials.html">Testimonials</a></li>
+                <li><a href="blog.html">Blog</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Resources</h3>
+            <ul>
+                <li><a href="isolation.html">Exercise Guide</a></li>
+                <li><a href="nutrition.html">Nutrition Tips</a></li>
+                <li><a href="workout-plans.html">Workout Plans</a></li>
+                <li><a href="calculators.html">Calculators</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Support</h3>
+            <ul>
+                <li><a href="contact.html">Contact Us</a></li>
+                <li><a href="about.html">About us</a></li>
+                <li><a href="terms.html">Terms of Service</a></li>
+                <li><a href="privacy_policy.html">Privacy Policy</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Connect With Us</h3>
+            <ul>
+                <li><a href="login_signup.html#">Become a Trainer</a></li>
+                <li><a href="verifier_login.html">Become a Verifier</a></li>
+            </ul>
+            <div class="social-icons">
+                <a href="#"><img src="../public/home/icons8-facebook.svg" alt="Facebook"></a>
+                <a href="#"><img src="../public/home/icons8-instagram.svg" alt="Instagram"></a>
+                <a href="#"><img src="../public/home/icons8-youtube.svg" alt="YouTube"></a>
+            </div>
+            <p class="copyright">GymRats © 2025. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+    <script>
+        // Navigation - Mobile Menu
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+    </script>
+</body>
+</html>
