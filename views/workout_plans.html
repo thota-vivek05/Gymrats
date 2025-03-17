@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>GymRats - Workout Plans</title>
+        <link rel="stylesheet" type="text/css" href="../public/home/home.css" />
+        <link rel="stylesheet" type="text/css" href="../public/workout_plans/workout_plans.css" />
+    </head>
+    <body>
+        <div class="main-navbar">
+            <header>
+                <!-- Header Branding -->
+                <div class="brand-logo">
+                    <a href="index.html" class="brand-name">GymRats</a>
+                </div>
+                
+                <div class="nav-menu">
+                    <a href="index.html">Home</a>
+                    <a href="isolation.html">Exercises</a>
+                    <a href="nutrition.html">Nutrition</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+                
+                <div class="right-container">
+                    <div class="search-container">
+                        <img src="../public/workout_plans/icons8-search.svg" height="18px" alt="Search Icon" />
+                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                    </div>
+                    
+                    <div class="login-button">
+                        <a href="login_signup.html">Login / Signup</a>
+                    </div>
+                </div>
+
+                <div class="mobile-menu-icon" id="menuIcon">
+                    <img src="../public/workout_plans/menu.jpg" alt="Menu" height="25px" />
+                </div>
+
+                <div class="mobile-sidebar" id="sideNavbar">
+                    <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+                    <a href="index.html">Home</a>
+                    <a href="isolation.html">Exercises</a>
+                    <a href="nutrition.html">Nutrition</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                    <a href="login_signup.html">Login / Signup</a>
+                </div>
+                
+            </header>
+        </div>
+
+        <section class="hero-section">
+            <div class="hero-content startAnimation">
+                <div class="hero-text">
+                    <h1>Workout Plans<br> For Every Goal</h1>
+                    <p>Customized training programs designed to help you achieve your fitness goals efficiently and effectively.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="plans-overview">
+            <div class="section-header">
+                <h2>Our Workout Plans</h2>
+                <p>Choose from our carefully crafted workout plans designed by expert trainers to help you reach your fitness goals.</p>
+            </div>
+        </section>
+
+        <!-- Basic Plan Section -->
+        <section class="workout-plan-section" id="basic-plan">
+            <div class="plan-header">
+                <h2>Basic Plan</h2>
+                <div>
+                    <span class="plan-badge">Beginner</span>
+                    <span class="plan-badge">3-4 days/week</span>
+                </div>
+            </div>
+            <div class="plan-description">
+                <p>Perfect for those new to fitness or returning after a long break. This plan focuses on building foundational strength and establishing proper exercise techniques. The workouts are designed to be accessible while still challenging enough to promote progress.</p>
+            </div>
+            
+            <div class="weekly-schedule">
+                <h3>Weekly Schedule</h3>
+                <div class="schedule-grid">
+                    <div class="day-card">
+                        <h4>Monday</h4>
+                        <span class="workout-type">Full Body</span>
+                        <ul>
+                            <li>Bodyweight Squats - 3 sets × 12 reps</li>
+                            <li>Push-ups - 3 sets × 8-10 reps</li>
+                            <li>Dumbbell Rows - 3 sets × 10 reps</li>
+                            <li>Walking Lunges - 2 sets × 10 reps each leg</li>
+                            <li>Plank - 3 sets × 30 seconds</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 45 minutes</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Tuesday</h4>
+                        <span class="workout-type">Rest & Recovery</span>
+                        <ul>
+                            <li>Light stretching</li>
+                            <li>Foam rolling - 10 min</li>
+                            <li>Walking - 20-30 min</li>
+                        </ul>
+                        <div class="workout-duration">Focus on hydration and nutrition</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Wednesday</h4>
+                        <span class="workout-type">Upper Body</span>
+                        <ul>
+                            <li>Dumbbell Bench Press - 3 sets × 10 reps</li>
+                            <li>Dumbbell Shoulder Press - 3 sets × 10 reps</li>
+                            <li>Tricep Dips - 3 sets × 8 reps</li>
+                            <li>Bicep Curls - 3 sets × 10 reps</li>
+                            <li>Face Pulls - 3 sets × 12 reps</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 40 minutes</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Thursday</h4>
+                        <span class="workout-type">Active Recovery</span>
+                        <ul>
+                            <li>Light cardio - 15-20 min</li>
+                            <li>Dynamic stretching - 10 min</li>
+                            <li>Core exercises - 10 min</li>
+                        </ul>
+                        <div class="workout-duration">Focus on mobility and recovery</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Friday</h4>
+                        <span class="workout-type">Lower Body</span>
+                        <ul>
+                            <li>Goblet Squats - 3 sets × 12 reps</li>
+                            <li>Romanian Deadlifts - 3 sets × 10 reps</li>
+                            <li>Leg Press - 3 sets × 12 reps</li>
+                            <li>Calf Raises - 3 sets × 15 reps</li>
+                            <li>Glute Bridges - 3 sets × 15 reps</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 45 minutes</div>
+                    </div>
+                    
+                    <div class="day-card weekend">
+                        <h4>Weekend</h4>
+                        <span class="workout-type">Active Rest</span>
+                        <ul>
+                            <li>Choose one fun physical activity:</li>
+                            <li>Hiking, Swimming, Cycling, or Yoga</li>
+                            <li>Aim for 30-60 minutes of enjoyable movement</li>
+                            <li>Focus on rest and recovery</li>
+                        </ul>
+                        <div class="workout-duration">Prepare for next week's training</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="plan-features">
+                <h3>Plan Benefits</h3>
+                <ul>
+                    <li><span class="feature-icon">✓</span> Builds foundational strength and stability</li>
+                    <li><span class="feature-icon">✓</span> Develops proper form and technique</li>
+                    <li><span class="feature-icon">✓</span> Gradually increases fitness level</li>
+                    <li><span class="feature-icon">✓</span> Minimizes risk of injury</li>
+                    <li><span class="feature-icon">✓</span> Balances workout intensity with recovery</li>
+                    <li><span class="feature-icon">✓</span> Suitable for all age groups</li>
+                </ul>
+            </div>
+            
+            <div class="plan-cta">
+                <a href="login_signup.html" class="btn-large">Start Basic Plan</a>
+            </div>
+        </section>
+
+        <!-- Intermediate Plan Section -->
+        <section class="workout-plan-section" id="intermediate-plan">
+            <div class="plan-header">
+                <h2>Intermediate Plan</h2>
+                <div>
+                    <span class="plan-badge popular">Popular</span>
+                    <span class="plan-badge">Intermediate</span>
+                    <span class="plan-badge">4-5 days/week</span>
+                </div>
+            </div>
+            <div class="plan-description">
+                <p>Designed for those with 6+ months of consistent training experience. This plan incorporates more challenging exercises, increased volume, and targeted muscle group splits. The workouts will push your limits while building significant strength and muscle definition.</p>
+            </div>
+            
+            <div class="weekly-schedule">
+                <h3>Weekly Schedule</h3>
+                <div class="schedule-grid">
+                    <div class="day-card">
+                        <h4>Monday</h4>
+                        <span class="workout-type">Chest & Triceps</span>
+                        <ul>
+                            <li>Barbell Bench Press - 4 sets × 8-10 reps</li>
+                            <li>Incline Dumbbell Press - 3 sets × 10 reps</li>
+                            <li>Chest Flyes - 3 sets × 12 reps</li>
+                            <li>Tricep Pushdowns - 3 sets × 12 reps</li>
+                            <li>Overhead Tricep Extension - 3 sets × 10 reps</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 55 minutes</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Tuesday</h4>
+                        <span class="workout-type">Back & Biceps</span>
+                        <ul>
+                            <li>Pull-ups/Assisted Pull-ups - 4 sets × 6-8 reps</li>
+                            <li>Barbell Rows - 3 sets × 10 reps</li>
+                            <li>Lat Pulldowns - 3 sets × 12 reps</li>
+                            <li>Barbell Curls - 3 sets × 10 reps</li>
+                            <li>Hammer Curls - 3 sets × 12 reps</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 55 minutes</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Wednesday</h4>
+                        <span class="workout-type">Legs & Core</span>
+                        <ul>
+                            <li>Barbell Squats - 4 sets × 8-10 reps</li>
+                            <li>Romanian Deadlifts - 3 sets × 10 reps</li>
+                            <li>Leg Extensions - 3 sets × 12 reps</li>
+                            <li>Leg Curls - 3 sets × 12 reps</li>
+                            <li>Hanging Leg Raises - 3 sets × 12 reps</li>
+                            <li>Plank Variations - 3 sets × 45 seconds</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 60 minutes</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Thursday</h4>
+                        <span class="workout-type">Shoulders & Abs</span>
+                        <ul>
+                            <li>Overhead Press - 4 sets × 8-10 reps</li>
+                            <li>Lateral Raises - 3 sets × 12 reps</li>
+                            <li>Front Raises - 3 sets × 12 reps</li>
+                            <li>Rear Delt Flyes - 3 sets × 12 reps</li>
+                            <li>Cable Crunches - 3 sets × 15 reps</li>
+                            <li>Russian Twists - 3 sets × 20 reps</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 55 minutes</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Friday</h4>
+                        <span class="workout-type">Full Body & HIIT</span>
+                        <ul>
+                            <li>Deadlifts - 4 sets × 6-8 reps</li>
+                            <li>Push Press - 3 sets × 10 reps</li>
+                            <li>Dumbbell Lunges - 3 sets × 10 reps each leg</li>
+                            <li>HIIT Circuit: 4 rounds of 20 sec work/10 sec rest:</li>
+                            <li>- Burpees, Mountain Climbers, Jump Squats, Push-ups</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 60 minutes</div>
+                    </div>
+                    
+                    <div class="day-card weekend">
+                        <h4>Weekend</h4>
+                        <span class="workout-type">Active Recovery</span>
+                        <ul>
+                            <li>Optional light cardio - 20-30 minutes</li>
+                            <li>Full body mobility work</li>
+                            <li>Foam rolling and stretching</li>
+                            <li>Rest and recovery focus</li>
+                        </ul>
+                        <div class="workout-duration">Focus on nutrition and recovery</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="plan-features">
+                <h3>Plan Benefits</h3>
+                <ul>
+                    <li><span class="feature-icon">✓</span> Significant strength gains</li>
+                    <li><span class="feature-icon">✓</span> Improved muscle definition</li>
+                    <li><span class="feature-icon">✓</span> Enhanced workout efficiency</li>
+                    <li><span class="feature-icon">✓</span> Targeted muscle group development</li>
+                    <li><span class="feature-icon">✓</span> Balanced strength and hypertrophy</li>
+                    <li><span class="feature-icon">✓</span> Improved athletic performance</li>
+                </ul>
+            </div>
+            
+            <div class="plan-cta">
+                <a href="login_signup.html" class="btn-large">Start Intermediate Plan</a>
+            </div>
+        </section>
+
+        <!-- Advanced Plan Section -->
+        <section class="workout-plan-section" id="advanced-plan">
+            <div class="plan-header">
+                <h2>Advanced Plan</h2>
+                <div>
+                    <span class="plan-badge premium">Premium</span>
+                    <span class="plan-badge">Advanced</span>
+                    <span class="plan-badge">5-6 days/week</span>
+                </div>
+            </div>
+            <div class="plan-description">
+                <p>For experienced fitness enthusiasts with 1+ years of serious training. This high-intensity plan incorporates advanced techniques like supersets, drop sets, and periodization to maximize muscle growth and strength gains. Requires dedication to both training and recovery strategies.</p>
+            </div>
+            
+            <div class="weekly-schedule">
+                <h3>Weekly Schedule</h3>
+                <div class="schedule-grid">
+                    <div class="day-card">
+                        <h4>Monday: Push Day</h4>
+                        <span class="workout-type">Chest, Shoulders, Triceps</span>
+                        <ul>
+                            <li>Bench Press: 5 sets × 5 reps (strength focus)</li>
+                            <li>Incline DB Press + Flyes: 4 sets × 10-12 reps (superset)</li>
+                            <li>Military Press: 4 sets × 8 reps</li>
+                            <li>Lateral Raises: 3 sets × 15-20 reps</li>
+                            <li>Tricep Dips: 4 sets × 8-10 reps</li>
+                            <li>Tricep Pushdowns: 3 sets × 12-15 reps (drop set on final set)</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 75-90 minutes</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Tuesday: Pull Day</h4>
+                        <span class="workout-type">Back, Biceps, Rear Delts</span>
+                        <ul>
+                            <li>Weighted Pull-ups: 4 sets × 6-8 reps</li>
+                            <li>Barbell Rows: 4 sets × 8-10 reps</li>
+                            <li>Single-Arm Rows + Pullovers: 3 sets × 10-12 reps (superset)</li>
+                            <li>Face Pulls: 4 sets × 15 reps</li>
+                            <li>Barbell Curls: 4 sets × 8-10 reps</li>
+                            <li>Incline DB Curls: 3 sets × 10-12 reps (drop set on final set)</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 75-90 minutes</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Wednesday: Legs Day</h4>
+                        <span class="workout-type">Quads, Hamstrings, Calves</span>
+                        <ul>
+                            <li>Back Squats: 5 sets × 5 reps (strength focus)</li>
+                            <li>Romanian Deadlifts: 4 sets × 8-10 reps</li>
+                            <li>Walking Lunges + Leg Extensions: 3 sets × 10 reps each leg (superset)</li>
+                            <li>Leg Curls: 4 sets × 12 reps</li>
+                            <li>Calf Raises: 5 sets × 15-20 reps (varied foot positions)</li>
+                            <li>Hip Thrusts: 3 sets × 12-15 reps</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 80-90 minutes</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Thursday: Upper Body Focus</h4>
+                        <span class="workout-type">Chest, Back, Shoulders</span>
+                        <ul>
+                            <li>Incline Bench Press: 4 sets × 8 reps</li>
+                            <li>Weighted Chin-ups: 4 sets × 6-8 reps</li>
+                            <li>DB Bench Press + DB Rows: 3 sets × 10 reps (alternating)</li>
+                            <li>Cable Flyes + Face Pulls: 3 sets × 12-15 reps (superset)</li>
+                            <li>Arnold Press: 3 sets × 10-12 reps</li>
+                            <li>Shrugs: 3 sets × 12-15 reps (triple drop set on final set)</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 75 minutes</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Friday: Lower Body & Core</h4>
+                        <span class="workout-type">Legs, Abs, Lower Back</span>
+                        <ul>
+                            <li>Deadlifts: 5 sets × 5 reps (strength focus)</li>
+                            <li>Front Squats: 4 sets × 8 reps</li>
+                            <li>Bulgarian Split Squats: 3 sets × 10 reps each leg</li>
+                            <li>Leg Press + Calf Press: 3 sets × 12 reps (superset)</li>
+                            <li>Hanging Leg Raises: 4 sets × 12-15 reps</li>
+                            <li>Cable Woodchoppers: 3 sets × 15 reps each side</li>
+                            <li>Ab Rollouts: 3 sets × 10-12 reps</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 80-90 minutes</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Saturday: Arms & Shoulders</h4>
+                        <span class="workout-type">Biceps, Triceps, Delts</span>
+                        <ul>
+                            <li>Close-Grip Bench: 4 sets × 8 reps</li>
+                            <li>Spider Curls: 4 sets × 10 reps</li>
+                            <li>Tricep Dips + Cable Curls: 3 sets × 10-12 reps (superset)</li>
+                            <li>Skull Crushers + Hammer Curls: 3 sets × 12 reps (superset)</li>
+                            <li>Lateral + Front + Rear Delt Raises: 3 sets × 10 reps (giant set)</li>
+                            <li>Upright Rows: 3 sets × 10-12 reps</li>
+                        </ul>
+                        <div class="workout-duration">Duration: 70-80 minutes</div>
+                    </div>
+                    
+                    <div class="day-card">
+                        <h4>Sunday</h4>
+                        <span class="workout-type">Complete Rest Day</span>
+                        <ul>
+                            <li>Active recovery: light walking or swimming</li>
+                            <li>Stretching and mobility work</li>
+                            <li>Foam rolling for muscle recovery</li>
+                            <li>Focus on nutrition and hydration</li>
+                            <li>Sleep and stress management priority</li>
+                        </ul>
+                        <div class="workout-duration">Prepare for next training cycle</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="plan-features">
+                <h3>Plan Benefits</h3>
+                <ul>
+                    <li><span class="feature-icon">✓</span> Maximum muscle hypertrophy</li>
+                    <li><span class="feature-icon">✓</span> Advanced strength progression</li>
+                    <li><span class="feature-icon">✓</span> Specialized technique implementation</li>
+                    <li><span class="feature-icon">✓</span> Strategic periodization</li>
+                    <li><span class="feature-icon">✓</span> Break through plateaus</li>
+                    <li><span class="feature-icon">✓</span> Optimized recovery protocols</li>
+                </ul>
+            </div>
+            
+            <div class="plan-cta">
+                <a href="login_signup.html" class="btn-large">Start Advanced Plan</a>
+            </div>
+        </section>
+
+
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>GymRats</h3>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="trainers.html">Our Trainers</a></li>
+                        <li><a href="testimonials.html">Testimonials</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="isolation.html">Exercise Guide</a></li>
+                        <li><a href="nutrition.html">Nutrition Tips</a></li>
+                        <li><a href="workout-plans.html">Workout Plans</a></li>
+                        <li><a href="calculators.html">Calculators</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="about.html">About us</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                        <li><a href="privacy_policy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Connect With Us</h3>
+                    <ul>
+                        <li><a href="login_signup.html#">Become a Trainer</a></li>
+                        <li><a href="verifier_login.html">Become a Verifier</a></li>
+                        <li><a href="#">Partner With Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                    </ul>
+                    <div class="social-icons">
+                        <a href="#"><img src="../public/workout_plans/icons8-facebook.svg" alt="Facebook"></a>
+                        <a href="#"><img src="../public/workout_plans/icons8-instagram.svg" alt="Instagram"></a>
+                        <a href="#"><img src="../public/workout_plans/icons8-youtube.svg" alt="YouTube"></a>
+                    </div>
+                    <p class="copyright">GymRats © 2025. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Mobile menu toggle
+                document.getElementById('menuIcon').addEventListener('click', function() {
+                    document.getElementById('sideNavbar').classList.add('open');
+                });
+                
+                document.getElementById('closeBtn').addEventListener('click', function() {
+                    document.getElementById('sideNavbar').classList.remove('open');
+                });
+                
+                // FAQ toggles
+                const faqItems = document.querySelectorAll('.faq-item');
+                
+                faqItems.forEach(item => {
+                    const question = item.querySelector('.faq-question');
+                    question.addEventListener('click', () => {
+                        // Close all other items
+                        faqItems.forEach(otherItem => {
+                            if(otherItem !== item) {
+                                otherItem.classList.remove('active');
+                            }
+                        });
+                        
+                        // Toggle current item
+                        item.classList.toggle('active');
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
