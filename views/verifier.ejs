@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymRats - Verifier Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./Verifier_dashboard.css" />
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="navbar">
+        <header>
+            <div class="badge">
+                <a href="home.html">GymRats</a>
+            </div>
+            
+            <div class="search-bar">
+                <img src="/api/placeholder/20/20" alt="Search Icon" />
+                <input type="text" placeholder="Search.." size="25" style="font-size: 20px;" />
+            </div>
+            
+            <div class="menu">
+                <a href="./membership.html">Membership</a>
+                <a href="./equipment.html">Equipment</a>
+                <a href="./services.html">Services</a>
+                <a href="./classes.html">Classes</a>
+                <a href="login_signup.html">Login/SignUp</a>
+            </div>
+
+            <div class="menu-icon" id="menuIcon">
+                <img src="/api/placeholder/25/25" alt="Menu" />
+            </div>
+        </header>
+    </div>
+
+<!-- Side Navigation for Mobile -->
+<div class="side-navbar" id="sideNavbar">
+    <a href="javascript:void(0)" class="close-btn" id="closeBtn">&times;</a>
+    <a href="./membership.html">Membership</a>
+    <a href="./equipment.html">Equipment</a>
+    <a href="./services.html">Services</a>
+    <a href="./classes.html">Classes</a>
+    <a href="login_signup.html">Login/SignUp</a>
+</div>
+
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <h1>Welcome, Verifier</h1>
+    <p>Review and verify trainer applications to maintain quality standards</p>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-content">
+    <!-- Trainer List - Extended to full height -->
+    <div class="trainer-list-container">
+        <h2>Trainer Applications</h2>
+        <div class="trainer-list">
+            <div class="trainer-item active" data-trainer="trainer1">
+                <div class="trainer-name">John Doe <span class="status-tag status-pending">Pending</span></div>
+                <div class="trainer-stats">
+                    <span>Experience: 5 years</span>
+                    <span>Applied: Mar 14, 2025</span>
+                </div>
+            </div>
+            <div class="trainer-item" data-trainer="trainer2">
+                <div class="trainer-name">Emily Cooper <span class="status-tag status-pending">Pending</span></div>
+                <div class="trainer-stats">
+                    <span>Experience: 3 years</span>
+                    <span>Applied: Mar 15, 2025</span>
+                </div>
+            </div>
+            <div class="trainer-item" data-trainer="trainer3">
+                <div class="trainer-name">Mark Wilson <span class="status-tag status-approved">Approved</span></div>
+                <div class="trainer-stats">
+                    <span>Experience: 7 years</span>
+                    <span>Applied: Mar 12, 2025</span>
+                </div>
+            </div>
+            <div class="trainer-item" data-trainer="trainer4">
+                <div class="trainer-name">Sarah Johnson <span class="status-tag status-rejected">Rejected</span></div>
+                <div class="trainer-stats">
+                    <span>Experience: 2 years</span>
+                    <span>Applied: Mar 10, 2025</span>
+                </div>
+            </div>
+            <div class="trainer-item" data-trainer="trainer5">
+                <div class="trainer-name">Michael Brown <span class="status-tag status-pending">Pending</span></div>
+                <div class="trainer-stats">
+                    <span>Experience: 4 years</span>
+                    <span>Applied: Mar 13, 2025</span>
+                </div>
+            </div>
+            <div class="trainer-item" data-trainer="trainer6">
+                <div class="trainer-name">Jennifer Lee <span class="status-tag status-pending">Pending</span></div>
+                <div class="trainer-stats">
+                    <span>Experience: 6 years</span>
+                    <span>Applied: Mar 16, 2025</span>
+                </div>
+            </div>
+            <div class="trainer-item" data-trainer="trainer7">
+                <div class="trainer-name">Robert Davis <span class="status-tag status-pending">Pending</span></div>
+                <div class="trainer-stats">
+                    <span>Experience: 8 years</span>
+                    <span>Applied: Mar 16, 2025</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trainer Details Container -->
+    <div class="trainer-details-container">
+        <!-- Top row with trainer profile and specializations -->
+        <div class="top-row">
+            <!-- Trainer Profile -->
+            <div class="trainer-profile">
+                <h2>Trainer Profile: <span id="trainerNameDisplay">John Doe</span></h2>
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Email:</span>
+                        <span class="stat-value">john.doe@example.com</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Phone:</span>
+                        <span class="stat-value">+1 (555) 123-4567</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Experience:</span>
+                        <span class="stat-value">5 years</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Diet Planning:</span>
+                        <span class="stat-value">3 years</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Hours Available:</span>
+                        <span class="stat-value">8 hours/day</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specializations -->
+            <div class="specializations">
+                <h2>Specializations</h2>
+                <div class="specializations-list">
+                    <div class="specialization-item">
+                        <span class="specialization-name">Primary:</span>
+                        <span class="specialization-details">Strength Training</span>
+                    </div>
+                    <div class="specialization-item">
+                        <span class="specialization-name">Secondary:</span>
+                        <span class="specialization-details">CrossFit</span>
+                    </div>
+                    <div class="specialization-item">
+                        <span class="specialization-name">Dietary Knowledge:</span>
+                        <span class="specialization-details">Advanced</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Details -->
+        <div class="application-details">
+            <h2>Application Details</h2>
+            <div class="details-grid">
+                <div class="detail-box">
+                    <h3>Application Date</h3>
+                    <div class="detail-value">March 14, 2025</div>
+                </div>
+                <div class="detail-box">
+                    <h3>Application Status</h3>
+                    <div class="detail-value">Pending Review</div>
+                </div>
+            </div>
+            
+            <div class="bio-section">
+                <h3>Trainer Bio</h3>
+                <p>I am a certified personal trainer with 5 years of experience specializing in strength training and CrossFit. My approach focuses on functional movements and progressive overload to help clients achieve their fitness goals safely and effectively. I have worked with clients of all fitness levels, from beginners to advanced athletes. I also have 3 years of experience in diet planning and nutritional counseling.</p>
+            </div>
+            
+            <div class="documents-section">
+                <h3>Submitted Documents</h3>
+                <a href="#" class="document-link">View Profile Picture</a>
+                <a href="#" class="document-link">Download Client Worksheet</a>
+            </div>
+        </div>
+
+        <!-- Verification Panel -->
+        <div class="verification-panel">
+            <h2>Verification Decision</h2>
+            <div class="verification-form">
+                <label for="verification-notes">Notes (Required for rejection):</label>
+                <textarea id="verification-notes" rows="4" placeholder="Enter your verification notes or reasons for rejection..."></textarea>
+                
+                <div class="buttons-container">
+                    <button class="approve-btn">Approve Application</button>
+                    <button class="reject-btn">Reject Application</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-column">
+            <h3>GymRats</h3>
+            <ul>
+                <li><a href="./blog.html">Blog</a></li>
+                <li><a href="./membership.html">Membership</a></li>
+                <li><a href="./gym_plans.html">Gym Plans</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Services</h3>
+            <ul>
+                <li><a href="services/personal_training.html">Personal Training</a></li>
+                <li><a href="services/group_classes.html">Group Classes</a></li>
+                <li><a href="services/nutrition_consultation.html">Nutrition Consultation</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Partner</h3>
+            <ul>
+                <li><a href="./service_login.html">Become a Trainer</a></li>
+                <li><a href="./service_login.html">Corporate Membership</a></li>
+                <li><a href="./service_login.html">Affiliate Program</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Policy</h3>
+            <ul>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Refund Policy</a></li>
+                <li><a href="#">Cancellation Policy</a></li>
+                <li><a href="#">Terms & Conditions</a></li>
+            </ul>
+            <div class="footer-social">
+                <a href="#"><img src="/api/placeholder/24/24" alt="Facebook"></a>
+                <a href="#"><img src="/api/placeholder/24/24" alt="Instagram"></a>
+                <a href="#"><img src="/api/placeholder/24/24" alt="YouTube"></a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Mobile menu functionality
+    document.getElementById('menuIcon').addEventListener('click', function() {
+        document.getElementById('sideNavbar').style.width = "250px";
+    });
+
+    document.getElementById('closeBtn').addEventListener('click', function() {
+        document.getElementById('sideNavbar').style.width = "0";
+    });
+
+    // Trainer selection functionality
+    document.querySelectorAll('.trainer-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove active class from all items
+            document.querySelectorAll('.trainer-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Add active class to clicked item
+            this.classList.add('active');
+            
+            // Update trainer name display
+            const trainerName = this.querySelector('.trainer-name').textContent.split(' ').slice(0, -1).join(' ');
+            document.getElementById('trainerNameDisplay').textContent = trainerName;
+            
+            // In a real application, you would load the trainer's data here
+            // This would update all the details in the right panel
+        });
+    });
+
+    // Approval and rejection functionality
+    document.querySelector('.approve-btn').addEventListener('click', function() {
+        const trainerName = document.getElementById('trainerNameDisplay').textContent;
+        const notes = document.getElementById('verification-notes').value;
+        
+        if (confirm(`Are you sure you want to APPROVE ${trainerName}'s application?`)) {
+            // Here you would send the approval to your backend
+            alert(`${trainerName}'s application has been approved!`);
+            
+            // Update the status tag of the active trainer in the list
+            const activeTrainer = document.querySelector('.trainer-item.active .trainer-name');
+            const statusTag = activeTrainer.querySelector('.status-tag');
+            statusTag.className = 'status-tag status-approved';
+            statusTag.textContent = 'Approved';
+        }
+    });
+
+    document.querySelector('.reject-btn').addEventListener('click', function() {
+        const trainerName = document.getElementById('trainerNameDisplay').textContent;
+        const notes = document.getElementById('verification-notes').value;
+        
+        if (!notes.trim()) {
+            alert("Please provide a reason for rejection in the notes field.");
+            return;
+        }
+        
+        if (confirm(`Are you sure you want to REJECT ${trainerName}'s application?`)) {
+            // Here you would send the rejection to your backend
+            alert(`${trainerName}'s application has been rejected!`);
+            
+            // Update the status tag of the active trainer in the list
+            const activeTrainer = document.querySelector('.trainer-item.active .trainer-name');
+            const statusTag = activeTrainer.querySelector('.status-tag');
+            statusTag.className = 'status-tag status-rejected';
+            statusTag.textContent = 'Rejected';
+        }
+    });
+</script>
+</body>
+</html>
