@@ -5,43 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymRats - Trainer Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="./Trainer_dashboard.css" />
+    <link rel="stylesheet" type="text/css" href="/trainer/trainer.css" />
 </head>
 <body>
-    <!-- Navigation -->
-    <div class="navbar">
+    <!-- Navigation - Updated to match home.html -->
+    <div class="main-navbar">
         <header>
-            <div class="badge">
-                <a href="home.html">GymRats</a>
+            <!-- Header Branding -->
+            <div class="brand-logo">
+                <a href="/home" class="brand-name">GymRats</a>
             </div>
             
-            <div class="search-bar">
-                <img src="/api/placeholder/20/20" alt="Search Icon" />
-                <input type="text" placeholder="Search.." size="25" style="font-size: 20px;" />
+            <div class="nav-menu">
+                <a href="/home">Home</a>
+                <a href="/isolation">Exercises</a>
+                <a href="/nutrition">Nutrition</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
             </div>
             
-            <div class="menu">
-                <a href="./membership.html">Membership</a>
-                <a href="./equipment.html">Equipment</a>
-                <a href="./services.html">Services</a>
-                <a href="./classes.html">Classes</a>
-                <a href="login_signup.html">Login/SignUp</a>
+            <div class="right-container">
+                <div class="search-container">
+                    <img src="/trainer/icons8-search.svg" height="18px" alt="Search Icon" />
+                    <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                </div>
+                
+                <div class="login-button">
+                    <a href="/login_signup">Login / Signup</a>
+                </div>
             </div>
 
-            <div class="menu-icon" id="menuIcon">
-                <img src="/api/placeholder/25/25" alt="Menu" />
+            <div class="mobile-menu-icon" id="menuIcon">
+                <img src="/trainer/menu.jpg" alt="Menu" height="25px" />
             </div>
         </header>
     </div>
 
-    <!-- Side Navigation for Mobile -->
-    <div class="side-navbar" id="sideNavbar">
-        <a href="javascript:void(0)" class="close-btn" id="closeBtn">&times;</a>
-        <a href="./membership.html">Membership</a>
-        <a href="./equipment.html">Equipment</a>
-        <a href="./services.html">Services</a>
-        <a href="./classes.html">Classes</a>
-        <a href="login_signup.html">Login/SignUp</a>
+    <!-- Mobile Side Navigation -->
+    <div class="mobile-sidebar" id="sideNavbar">
+        <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+        <a href="/home">Home</a>
+        <a href="/isolation">Exercises</a>
+        <a href="/nutrition">Nutrition</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/login_signup">Login / Signup</a>
     </div>
 
     <!-- Welcome Banner -->
@@ -145,7 +153,7 @@
                             <span class="stat-value">Strength & Muscle Gain</span>
                         </div>
                     </div>
-                    <button class="meet-button" onclick="window.open('https://meet.google.com/xyz-abcd-123', '_blank')">Join Google Meet</button>
+                    <button class="btn meet-button" onclick="window.open('https://meet.google.com/xyz-abcd-123', '_blank')">Join Google Meet</button>
                 </div>
 
                 <!-- Workout Plan -->
@@ -169,7 +177,7 @@
                             <span class="exercise-details">3 sets x 45 seconds</span>
                         </div>
                     </div>
-                    <button>Edit Workout Plan</button>
+                    <button class="btn">Edit Workout Plan</button>
                 </div>
             </div>
 
@@ -218,53 +226,55 @@
                 <div class="pie-chart-container">
                     <canvas id="nutritionChart"></canvas>
                 </div>
-                <button>Edit Nutrition Plan</button>
+                <button class="btn">Edit Nutrition Plan</button>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-container">
+    <!-- Footer - Updated to match home -->
+    <footer class="site-footer">
+        <div class="footer-content">
             <div class="footer-column">
                 <h3>GymRats</h3>
                 <ul>
-                    <li><a href="./blog.html">Blog</a></li>
-                    <li><a href="./membership.html">Membership</a></li>
-                    <li><a href="./gym_plans.html">Gym Plans</a></li>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/trainers">Our Trainers</a></li>
+                    <li><a href="/testimonial">Testimonials</a></li>
+                    <li><a href="/blog">Blog</a></li>
                 </ul>
             </div>
 
             <div class="footer-column">
-                <h3>Services</h3>
+                <h3>Resources</h3>
                 <ul>
-                    <li><a href="services/personal_training.html">Personal Training</a></li>
-                    <li><a href="services/group_classes.html">Group Classes</a></li>
-                    <li><a href="services/nutrition_consultation.html">Nutrition Consultation</a></li>
+                    <li><a href="/isolation">Exercise Guide</a></li>
+                    <li><a href="/nutrition">Nutrition Tips</a></li>
+                    <li><a href="/workout_plans">Workout Plans</a></li>
+                    <li><a href="/calculators">Calculators</a></li>
                 </ul>
             </div>
 
             <div class="footer-column">
-                <h3>Partner</h3>
+                <h3>Support</h3>
                 <ul>
-                    <li><a href="./service_login.html">Become a Trainer</a></li>
-                    <li><a href="./service_login.html">Corporate Membership</a></li>
-                    <li><a href="./service_login.html">Affiliate Program</a></li>
+                    <li><a href="/contact">Contact Us</a></li>
+                    <li><a href="/about">About us</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/privacy_policy">Privacy Policy</a></li>
                 </ul>
             </div>
 
             <div class="footer-column">
-                <h3>Policy</h3>
+                <h3>Connect With Us</h3>
                 <ul>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Refund Policy</a></li>
-                    <li><a href="#">Cancellation Policy</a></li>
-                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="/trainer_form">Become a Trainer</a></li>
+                    <li><a href="/verifier_login">Become a Verifier</a></li>
                 </ul>
-                <div class="footer-social">
-                    <a href="#"><img src="/api/placeholder/24/24" alt="Facebook"></a>
-                    <a href="#"><img src="/api/placeholder/24/24" alt="Instagram"></a>
-                    <a href="#"><img src="/api/placeholder/24/24" alt="YouTube"></a>
+                <div class="social-icons">
+                    <a href="#"><img src="/trainer/icons8-facebook.svg" alt="Facebook" height="24"></a>
+                    <a href="#"><img src="/trainer/icons8-instagram.svg" alt="Instagram" height="24"></a>
+                    
+                    <a href="#"><img src="/trainer/icons8-youtube.svg" alt="YouTube" height="24"></a>
                 </div>
             </div>
         </div>
@@ -284,59 +294,48 @@
         document.querySelectorAll('.client-item').forEach(item => {
             item.addEventListener('click', function() {
                 // Remove active class from all items
-                document.querySelectorAll('.client-item').forEach(el => {
-                    el.classList.remove('active');
+                document.querySelectorAll('.client-item').forEach(client => {
+                    client.classList.remove('active');
                 });
                 
                 // Add active class to clicked item
                 this.classList.add('active');
                 
                 // Update client name display
-                const clientName = this.querySelector('.client-name').textContent;
-                document.getElementById('clientNameDisplay').textContent = clientName;
+                document.getElementById('clientNameDisplay').textContent = this.querySelector('.client-name').textContent;
                 
-                // In a real application, you would load the client's data here
+                // You could load client data here based on client ID
+                // For now we'll just show an alert
+                console.log("Selected client: " + this.dataset.client);
             });
         });
 
-        // Exercise Progress Chart (from user dashboard)
+        // Chart.js implementation for exercise progress
         const exerciseCtx = document.getElementById('exerciseChart').getContext('2d');
         const exerciseChart = new Chart(exerciseCtx, {
             type: 'line',
             data: {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
-                datasets: [
-                    {
-                        label: 'Bicep Curls (kg)',
-                        data: [5, 6, 7, 8, 9, 10],
-                        borderColor: '#4e73df',
-                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    },
-                    {
-                        label: 'Deadlift (kg)',
-                        data: [60, 70, 75, 85, 95, 100],
-                        borderColor: '#1cc88a',
-                        backgroundColor: 'rgba(28, 200, 138, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }
-                ]
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                datasets: [{
+                    label: 'Bicep Curls (kg)',
+                    data: [5, 6, 8, 9, 10],
+                    borderColor: '#8A2BE2',
+                    backgroundColor: 'rgba(138, 43, 226, 0.1)',
+                    tension: 0.3
+                }, {
+                    label: 'Deadlift (kg)',
+                    data: [60, 70, 80, 90, 100],
+                    borderColor: '#20B2AA',
+                    backgroundColor: 'rgba(32, 178, 170, 0.1)',
+                    tension: 0.3
+                }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    title: {
-                        display: true,
-                        text: 'Exercise Progress Over Time',
-                        font: {
-                            size: 16
-                        },
-                        color: '#f1f1f1'
-                    },
                     legend: {
+                        position: 'top',
                         labels: {
                             color: '#f1f1f1'
                         }
@@ -345,26 +344,26 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            color: '#f1f1f1'
-                        },
                         grid: {
                             color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#f1f1f1'
                         }
                     },
                     x: {
-                        ticks: {
-                            color: '#f1f1f1'
-                        },
                         grid: {
                             color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#f1f1f1'
                         }
                     }
                 }
             }
         });
 
-        // Nutrition Chart
+        // Chart.js implementation for nutrition
         const nutritionCtx = document.getElementById('nutritionChart').getContext('2d');
         const nutritionChart = new Chart(nutritionCtx, {
             type: 'doughnut',
@@ -373,28 +372,22 @@
                 datasets: [{
                     data: [35, 45, 20],
                     backgroundColor: [
-                        '#4e73df', 
-                        '#1cc88a',
-                        '#f6c23e'
+                        '#8A2BE2',
+                        '#20B2AA',
+                        '#FF6347'
                     ],
-                    hoverOffset: 4
+                    borderWidth: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    title: {
-                        display: true,
-                        text: 'Nutritional Breakdown',
-                        font: {
-                            size: 16
-                        },
-                        color: '#f1f1f1'
-                    },
                     legend: {
+                        position: 'bottom',
                         labels: {
-                            color: '#f1f1f1'
+                            color: '#f1f1f1',
+                            padding: 10
                         }
                     }
                 }
