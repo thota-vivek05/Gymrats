@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymRats - Nutrition Plans Management</title>
-    <link rel="stylesheet" href="../public/admin/admin.css">
-    <link rel="stylesheet" href="../public/admin/admin_nutrition.css">
+    <link rel="stylesheet" href="/admin/admin.css">
+    <link rel="stylesheet" href="/admin/admin_nutrition.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
     
@@ -15,51 +15,51 @@
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <a href="home.html" class="brand-name">GymRats</a>
+                <a href="/home" class="brand-name">GymRats</a>
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="./admin_dashboard.html" class="nav-link ">
+                    <a href="admin_dashboard" class="nav-link ">
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="./admin_user.html" class="nav-link">
+                    <a href="admin_user" class="nav-link">
                         <span>Users</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="./admin_trainers.html" class="nav-link">
+                    <a href="admin_trainers" class="nav-link">
                         <span>Trainers</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="./admin_membership.html" class="nav-link">
+                    <a href="admin_membership" class="nav-link">
                         <span>Memberships</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="./admin_nutrition.html" class="nav-link active">
+                    <a href="admin_nutrition" class="nav-link active">
                         <span>Nutrition Plans</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="./admin_exercises.html" class="nav-link">
+                    <a href="admin_exercises" class="nav-link">
                         <span>Exercises</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="./admin_workouts.html" class="nav-link">
+                    <a href="admin_workouts" class="nav-link">
                         <span>Workout Plans</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="./admin_verifier.html" class="nav-link">
+                    <a href="admin_verifier" class="nav-link">
                         <span>Verifiers</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="./admin_settings.html" class="nav-link">
+                    <a href="admin_settings" class="nav-link">
                         <span>Settings</span>
                     </a>
                 </li>
@@ -821,7 +821,7 @@
             
             navItems.forEach(item => {
                 item.addEventListener('click', function(e) {
-                    if (!this.getAttribute('href').includes('.html')) {
+                    if (!this.getAttribute('href').includes('http')) {                                              // Prevent default action for external links
                         e.preventDefault();
                         navItems.forEach(link => link.classList.remove('active'));
                         this.classList.add('active');
