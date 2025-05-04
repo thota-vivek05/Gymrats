@@ -805,452 +805,455 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Setup interactive elements
-            setupResponsiveFeatures();
-            setupTabNavigation();
-            setupSearchFunctionality();
-            setupModalFunctionality();
-            setupPlanDetailsView();
-            initializeCharts();
+       document.addEventListener('DOMContentLoaded', function() {
+    // Setup interactive elements
+    setupResponsiveFeatures();
+    setupTabNavigation();
+    setupSearchFunctionality();
+    setupModalFunctionality();
+    setupPlanDetailsView();
+    initializeCharts();
+});
+
+function setupResponsiveFeatures() {
+    // Navigation buttons
+    const navItems = document.querySelectorAll('.nav-link');
+    
+    navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            // Prevent default only for the current page to avoid redundant navigation
+            if (href === '/admin_nutrition') {
+                e.preventDefault();
+                navItems.forEach(link => link.classList.remove('active'));
+                this.classList.add('active');
+            }
+            // Allow navigation for all other hrefs
         });
+    });
 
-        function setupResponsiveFeatures() {
-            // Navigation buttons
-            const navItems = document.querySelectorAll('.nav-link');
-            
-            navItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    if (!this.getAttribute('href').includes('http')) {                                              // Prevent default action for external links
-                        e.preventDefault();
-                        navItems.forEach(link => link.classList.remove('active'));
-                        this.classList.add('active');
-                    }
-                });
-            });
+    // Action buttons
+    const actionButtons = document.querySelectorAll('.action-btn, .plan-card-btn');
+    actionButtons.forEach(button => {
+        if (!button.classList.contains('view-details-btn')) {
+            button.addEventListener('click', function() {
+                this.classList.add('clicked');
+                setTimeout(() => {
+                    this.classList.remove('clicked');
+                }, 200);
 
-            // Action buttons
-            const actionButtons = document.querySelectorAll('.action-btn, .plan-card-btn');
-            actionButtons.forEach(button => {
-                if (!button.classList.contains('view-details-btn')) {
-                    button.addEventListener('click', function() {
-                        this.classList.add('clicked');
-                        setTimeout(() => {
-                            this.classList.remove('clicked');
-                        }, 200);
-
-                        if (this.textContent.trim() === 'Edit') {
-                            alert('Edit plan form would appear here');
-                        }
-                    });
+                if (this.textContent.trim() === 'Edit') {
+                    alert('Edit plan form would appear here');
                 }
             });
-
-            // Filter button
-            const filterBtn = document.getElementById('filterBtn');
-            if (filterBtn) {
-                filterBtn.addEventListener('click', function() {
-                    alert('Filter options would appear here');
-                });
-            }
-
-            // Pagination buttons
-            const pageButtons = document.querySelectorAll('.page-btn');
-            pageButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    pageButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            // Add New Plan button
-            const addPlanBtn = document.getElementById('addPlanBtn');
-            if (addPlanBtn) {
-                addPlanBtn.addEventListener('click', function() {
-                    document.getElementById('addPlanModal').style.display = 'flex';
-                });
-            }
         }
+    });
 
-        function setupTabNavigation() {
-            // Main page tabs
-            const tabs = document.querySelectorAll('.tab');
-            const planCards = document.querySelectorAll('.plan-card');
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Update active tab
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const tabType = this.getAttribute('data-tab');
-                    
-                    // Filter plans based on tab
-                    planCards.forEach(card => {
-                        const planType = card.getAttribute('data-plan-type');
-                        const popularBadge = card.querySelector('.popular-badge');
-                        const verifiedBadge = card.querySelector('.verified-badge');
-                        
-                        switch(tabType) {
-                            case 'all':
-                                card.style.display = '';
-                                break;
-                            case 'bulk':
-                            case 'cut':
-                            case 'maintain':
-                            case 'specialty':
-                                if (planType === tabType) {
-                                    card.style.display = '';
-                                } else {
-                                    card.style.display = 'none';
-                                }
-                                break;
-                            case 'popular':
-                                if (popularBadge) {
-                                    card.style.display = '';
-                                } else {
-                                    card.style.display = 'none';
-                                }
-                                break;
-                            case 'unverified':
-                                if (!verifiedBadge) {
-                                    card.style.display = '';
-                                } else {
-                                    card.style.display = 'none';
-                                }
-                                break;
-                        }
-                    });
-                });
-            });
+    // Filter button
+    const filterBtn = document.getElementById('filterBtn');
+    if (filterBtn) {
+        filterBtn.addEventListener('click', function() {
+            alert('Filter options would appear here');
+        });
+    }
 
-            // Meal plan day tabs in plan details
-            const mealPlanTabs = document.querySelectorAll('.meal-plan-tab');
-            const mealPlanContents = document.querySelectorAll('.meal-plan-content');
-            
-            mealPlanTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Update active tab
-                    mealPlanTabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const dayNum = this.getAttribute('data-day');
-                    
-                    // Show corresponding content
-                    mealPlanContents.forEach(content => {
-                        if (content.getAttribute('data-day') === dayNum) {
-                            content.classList.add('active');
-                        } else {
-                            content.classList.remove('active');
-                        }
-                    });
-                });
-            });
+    // Pagination buttons
+    const pageButtons = document.querySelectorAll('.page-btn');
+    pageButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            pageButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
 
-            // Form tabs in add/edit plan modal
-            const formTabs = document.querySelectorAll('.form-tab');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            formTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Update active tab
-                    formTabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const tabName = this.getAttribute('data-tab');
-                    
-                    // Show corresponding content
-                    tabContents.forEach(content => {
-                        if (content.getAttribute('data-tab') === tabName) {
-                            content.classList.add('active');
-                        } else {
-                            content.classList.remove('active');
-                        }
-                    });
-                });
-            });
-        }
+    // Add New Plan button
+    const addPlanBtn = document.getElementById('addPlanBtn');
+    if (addPlanBtn) {
+        addPlanBtn.addEventListener('click', function() {
+            document.getElementById('addPlanModal').style.display = 'flex';
+        });
+    }
+}
 
-        function setupSearchFunctionality() {
-            const searchInput = document.getElementById('planSearchInput');
-            const planCards = document.querySelectorAll('.plan-card');
+function setupTabNavigation() {
+    // Main page tabs
+    const tabs = document.querySelectorAll('.tab');
+    const planCards = document.querySelectorAll('.plan-card');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
             
-            if (searchInput) {
-                searchInput.addEventListener('keyup', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    
-                    planCards.forEach(card => {
-                        const planTitle = card.querySelector('.plan-card-title span').textContent.toLowerCase();
-                        const planDescription = card.querySelector('.plan-card-description').textContent.toLowerCase();
-                        const planType = card.querySelector('.plan-type-container').textContent.toLowerCase();
-                        
-                        if (planTitle.includes(searchTerm) || planDescription.includes(searchTerm) || planType.includes(searchTerm)) {
+            const tabType = this.getAttribute('data-tab');
+            
+            // Filter plans based on tab
+            planCards.forEach(card => {
+                const planType = card.getAttribute('data-plan-type');
+                const popularBadge = card.querySelector('.popular-badge');
+                const verifiedBadge = card.querySelector('.verified-badge');
+                
+                switch(tabType) {
+                    case 'all':
+                        card.style.display = '';
+                        break;
+                    case 'bulk':
+                    case 'cut':
+                    case 'maintain':
+                    case 'specialty':
+                        if (planType === tabType) {
                             card.style.display = '';
                         } else {
                             card.style.display = 'none';
                         }
-                    });
-                });
-            }
-        }
-
-        function setupModalFunctionality() {
-            // Setup add/edit plan modal
-            const addPlanModal = document.getElementById('addPlanModal');
-            const planDetailsModal = document.getElementById('planDetailsModal');
-            const closeButtons = document.querySelectorAll('.close-modal, .cancel-btn');
-            const addPlanForm = document.getElementById('addPlanForm');
-            
-            // Close modals
-            function closeModals() {
-                addPlanModal.style.display = 'none';
-                planDetailsModal.style.display = 'none';
-                if (addPlanForm) addPlanForm.reset();
-            }
-            
-            // Close on X button or Cancel button click
-            closeButtons.forEach(button => {
-                button.addEventListener('click', closeModals);
-            });
-            
-            // Close on click outside
-            window.addEventListener('click', function(event) {
-                if (event.target === addPlanModal || event.target === planDetailsModal) {
-                    closeModals();
+                        break;
+                    case 'popular':
+                        if (popularBadge) {
+                            card.style.display = '';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                        break;
+                    case 'unverified':
+                        if (!verifiedBadge) {
+                            card.style.display = '';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                        break;
                 }
             });
+        });
+    });
+
+    // Meal plan day tabs in plan details
+    const mealPlanTabs = document.querySelectorAll('.meal-plan-tab');
+    const mealPlanContents = document.querySelectorAll('.meal-plan-content');
+    
+    mealPlanTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Update active tab
+            mealPlanTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
             
-            // Form submission
-            if (addPlanForm) {
-                addPlanForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    alert('Nutrition plan added successfully!');
-                    closeModals();
-                    // In a real implementation, this would call an API to add the plan to the database
-                });
-            }
-
-            // Add meal button functionality
-            const addMealButtons = document.querySelectorAll('.add-meal-btn');
-            addMealButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const meal = this.getAttribute('data-meal');
-                    const day = this.getAttribute('data-day');
-                    const mealRow = document.createElement('div');
-                    mealRow.className = 'meal-row';
-                    mealRow.innerHTML = `
-                        <div class="meal-inputs">
-                            <input type="text" placeholder="Food items" name="day${day}-${meal}-foods">
-                            <input type="number" placeholder="Protein (g)" name="day${day}-${meal}-protein">
-                            <input type="number" placeholder="Carbs (g)" name="day${day}-${meal}-carbs">
-                            <input type="number" placeholder="Fat (g)" name="day${day}-${meal}-fat">
-                            <button type="button" class="delete-meal-btn">Remove</button>
-                        </div>
-                    `;
-                    
-                    // Insert before the add button
-                    this.parentNode.insertBefore(mealRow, this);
-                    
-                    // Add event listener to the new delete button
-                    const deleteButton = mealRow.querySelector('.delete-meal-btn');
-                    deleteButton.addEventListener('click', function() {
-                        this.closest('.meal-row').remove();
-                    });
-                });
-            });
-
-            // Delete meal button functionality
-            document.addEventListener('click', function(e) {
-                if (e.target && e.target.classList.contains('delete-meal-btn')) {
-                    e.target.closest('.meal-row').remove();
+            const dayNum = this.getAttribute('data-day');
+            
+            // Show corresponding content
+            mealPlanContents.forEach(content => {
+                if (content.getAttribute('data-day') === dayNum) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
                 }
             });
+        });
+    });
 
-            // Add another day button
-            const addDayBtn = document.getElementById('addDayBtn');
-            if (addDayBtn) {
-                addDayBtn.addEventListener('click', function() {
-                    // This would add another day's meal plan template
-                    alert('Adding another day would duplicate the day template with incremented day number');
-                });
-            }
-        }
-
-        function setupPlanDetailsView() {
-            const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
-            const planDetailsModal = document.getElementById('planDetailsModal');
+    // Form tabs in add/edit plan modal
+    const formTabs = document.querySelectorAll('.form-tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    formTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Update active tab
+            formTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
             
-            viewDetailsButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const planId = this.getAttribute('data-plan-id');
-                    
-                    // In a real implementation, this would fetch plan details from an API
-                    // For now, we'll just show the modal with sample data
-                    planDetailsModal.style.display = 'flex';
-                    
-                    // Sample data for different plans
-                    let planTitle, planType, planDescription, protein, carbs, fat, calories;
-                    
-                    switch(planId) {
-                        case '1':
-                            planTitle = 'High Protein Bulking Plan';
-                            planType = '<span class="type-tag bulk-tag">Bulking</span><span class="type-tag">High Protein</span>';
-                            planDescription = 'A 7-day nutrition plan designed for serious muscle gains. High protein and balanced carbohydrates for optimal muscle growth.';
-                            protein = '210g';
-                            carbs = '320g';
-                            fat = '80g';
-                            calories = '2,850';
-                            break;
-                        case '2':
-                            planTitle = 'Fat Loss Cutting Plan';
-                            planType = '<span class="type-tag cut-tag">Cutting</span><span class="type-tag">Low Carb</span>';
-                            planDescription = 'A 7-day calorie-restricted plan designed for maximum fat loss while preserving lean muscle. Focuses on high protein, moderate fats, and strategic carb timing.';
-                            protein = '180g';
-                            carbs = '150g';
-                            fat = '65g';
-                            calories = '1,900';
-                            break;
-                        case '3':
-                            planTitle = 'Balanced Maintenance Plan';
-                            planType = '<span class="type-tag maintenance-tag">Maintenance</span><span class="type-tag">Balanced</span>';
-                            planDescription = 'A 7-day well-balanced nutrition plan for maintaining current physique. Perfect for after cutting or bulking phases when you want to stabilize your body composition.';
-                            protein = '160g';
-                            carbs = '220g';
-                            fat = '70g';
-                            calories = '2,150';
-                            break;
-                        case '4':
-                            planTitle = 'Vegetarian Muscle Building';
-                            planType = '<span class="type-tag bulk-tag">Bulking</span><span class="type-tag">Vegetarian</span>';
-                            planDescription = 'A 7-day vegetarian plan designed for muscle growth. Focuses on plant-based proteins, complex carbohydrates, and healthy fats to support lean mass gains without meat.';
-                            protein = '180g';
-                            carbs = '280g';
-                            fat = '75g';
-                            calories = '2,520';
-                            break;
-                        case '5':
-                            planTitle = 'Keto-Inspired Cutting Plan';
-                            planType = '<span class="type-tag cut-tag">Cutting</span><span class="type-tag">Low Carb</span>';
-                            planDescription = 'A 7-day low-carb plan inspired by ketogenic principles. Designed for rapid fat loss while maintaining muscle mass through higher fat intake and strategic protein timing.';
-                            protein = '160g';
-                            carbs = '50g';
-                            fat = '130g';
-                            calories = '2,010';
-                            break;
-                        case '6':
-                            planTitle = 'Lean Bulk Plan';
-                            planType = '<span class="type-tag bulk-tag">Bulking</span><span class="type-tag">Clean Eating</span>';
-                            planDescription = 'A 7-day plan for adding muscle with minimal fat gain. Features a moderate calorie surplus with emphasis on clean, nutrient-dense foods and optimal protein distribution.';
-                            protein = '200g';
-                            carbs = '300g';
-                            fat = '70g';
-                            calories = '2,630';
-                            break;
-                    }
-                    
-                    // Update modal content
-                    document.getElementById('planDetailsTitle').textContent = planTitle;
-                    document.getElementById('planDetailsTags').innerHTML = planType;
-                    document.getElementById('planDetailsDescription').textContent = planDescription;
-                    document.getElementById('planDetailsProtein').textContent = protein;
-                    document.getElementById('planDetailsCarbs').textContent = carbs;
-                    document.getElementById('planDetailsFat').textContent = fat;
-                    document.getElementById('planDetailsCalories').textContent = calories;
-                });
+            const tabName = this.getAttribute('data-tab');
+            
+            // Show corresponding content
+            tabContents.forEach(content => {
+                if (content.getAttribute('data-tab') === tabName) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
             });
-        }
+        });
+    });
+}
 
-        function initializeCharts() {
-            // Plan Type Distribution Chart
-            const planTypeCtx = document.getElementById('planTypeChart');
-            if (planTypeCtx) {
-                new Chart(planTypeCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Bulking', 'Cutting', 'Maintenance', 'Specialty'],
-                        datasets: [{
-                            data: [45, 35, 15, 5],
-                            backgroundColor: [
-                                '#FFA500', // Orange for bulking
-                                '#00BFFF', // Blue for cutting
-                                '#32CD32', // Green for maintenance
-                                '#8A2BE2'  // Purple for specialty
-                            ],
-                            borderWidth: 1,
-                            borderColor: '#1e1e1e'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: {
-                                    color: '#f1f1f1',
-                                    padding: 20,
-                                    font: {
-                                        size: 12
-                                    }
-                                }
+function setupSearchFunctionality() {
+    const searchInput = document.getElementById('planSearchInput');
+    const planCards = document.querySelectorAll('.plan-card');
+    
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            planCards.forEach(card => {
+                const planTitle = card.querySelector('.plan-card-title span').textContent.toLowerCase();
+                const planDescription = card.querySelector('.plan-card-description').textContent.toLowerCase();
+                const planType = card.querySelector('.plan-type-container').textContent.toLowerCase();
+                
+                if (planTitle.includes(searchTerm) || planDescription.includes(searchTerm) || planType.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+}
+
+function setupModalFunctionality() {
+    // Setup add/edit plan modal
+    const addPlanModal = document.getElementById('addPlanModal');
+    const planDetailsModal = document.getElementById('planDetailsModal');
+    const closeButtons = document.querySelectorAll('.close-modal, .cancel-btn');
+    const addPlanForm = document.getElementById('addPlanForm');
+    
+    // Close modals
+    function closeModals() {
+        addPlanModal.style.display = 'none';
+        planDetailsModal.style.display = 'none';
+        if (addPlanForm) addPlanForm.reset();
+    }
+    
+    // Close on X button or Cancel button click
+    closeButtons.forEach(button => {
+        button.addEventListener('click', closeModals);
+    });
+    
+    // Close on click outside
+    window.addEventListener('click', function(event) {
+        if (event.target === addPlanModal || event.target === planDetailsModal) {
+            closeModals();
+        }
+    });
+    
+    // Form submission
+    if (addPlanForm) {
+        addPlanForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Nutrition plan added successfully!');
+            closeModals();
+            // In a real implementation, this would call an API to add the plan to the database
+        });
+    }
+
+    // Add meal button functionality
+    const addMealButtons = document.querySelectorAll('.add-meal-btn');
+    addMealButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const meal = this.getAttribute('data-meal');
+            const day = this.getAttribute('data-day');
+            const mealRow = document.createElement('div');
+            mealRow.className = 'meal-row';
+            mealRow.innerHTML = `
+                <div class="meal-inputs">
+                    <input type="text" placeholder="Food items" name="day${day}-${meal}-foods">
+                    <input type="number" placeholder="Protein (g)" name="day${day}-${meal}-protein">
+                    <input type="number" placeholder="Carbs (g)" name="day${day}-${meal}-carbs">
+                    <input type="number" placeholder="Fat (g)" name="day${day}-${meal}-fat">
+                    <button type="button" class="delete-meal-btn">Remove</button>
+                </div>
+            `;
+            
+            // Insert before the add button
+            this.parentNode.insertBefore(mealRow, this);
+            
+            // Add event listener to the new delete button
+            const deleteButton = mealRow.querySelector('.delete-meal-btn');
+            deleteButton.addEventListener('click', function() {
+                this.closest('.meal-row').remove();
+            });
+        });
+    });
+
+    // Delete meal button functionality
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('delete-meal-btn')) {
+            e.target.closest('.meal-row').remove();
+        }
+    });
+
+    // Add another day button
+    const addDayBtn = document.getElementById('addDayBtn');
+    if (addDayBtn) {
+        addDayBtn.addEventListener('click', function() {
+            // This would add another day's meal plan template
+            alert('Adding another day would duplicate the day template with incremented day number');
+        });
+    }
+}
+
+function setupPlanDetailsView() {
+    const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
+    const planDetailsModal = document.getElementById('planDetailsModal');
+    
+    viewDetailsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const planId = this.getAttribute('data-plan-id');
+            
+            // In a real implementation, this would fetch plan details from an API
+            // For now, we'll just show the modal with sample data
+            planDetailsModal.style.display = 'flex';
+            
+            // Sample data for different plans
+            let planTitle, planType, planDescription, protein, carbs, fat, calories;
+            
+            switch(planId) {
+                case '1':
+                    planTitle = 'High Protein Bulking Plan';
+                    planType = '<span class="type-tag bulk-tag">Bulking</span><span class="type-tag">High Protein</span>';
+                    planDescription = 'A 7-day nutrition plan designed for serious muscle gains. High protein and balanced carbohydrates for optimal muscle growth.';
+                    protein = '210g';
+                    carbs = '320g';
+                    fat = '80g';
+                    calories = '2,850';
+                    break;
+                case '2':
+                    planTitle = 'Fat Loss Cutting Plan';
+                    planType = '<span class="type-tag cut-tag">Cutting</span><span class="type-tag">Low Carb</span>';
+                    planDescription = 'A 7-day calorie-restricted plan designed for maximum fat loss while preserving lean muscle. Focuses on high protein, moderate fats, and strategic carb timing.';
+                    protein = '180g';
+                    carbs = '150g';
+                    fat = '65g';
+                    calories = '1,900';
+                    break;
+                case '3':
+                    planTitle = 'Balanced Maintenance Plan';
+                    planType = '<span class="type-tag maintenance-tag">Maintenance</span><span class="type-tag">Balanced</span>';
+                    planDescription = 'A 7-day well-balanced nutrition plan for maintaining current physique. Perfect for after cutting or bulking phases when you want to stabilize your body composition.';
+                    protein = '160g';
+                    carbs = '220g';
+                    fat = '70g';
+                    calories = '2,150';
+                    break;
+                case '4':
+                    planTitle = 'Vegetarian Muscle Building';
+                    planType = '<span class="type-tag bulk-tag">Bulking</span><span class="type-tag">Vegetarian</span>';
+                    planDescription = 'A 7-day vegetarian plan designed for muscle growth. Focuses on plant-based proteins, complex carbohydrates, and healthy fats to support lean mass gains without meat.';
+                    protein = '180g';
+                    carbs = '280g';
+                    fat = '75g';
+                    calories = '2,520';
+                    break;
+                case '5':
+                    planTitle = 'Keto-Inspired Cutting Plan';
+                    planType = '<span class="type-tag cut-tag">Cutting</span><span class="type-tag">Low Carb</span>';
+                    planDescription = 'A 7-day low-carb plan inspired by ketogenic principles. Designed for rapid fat loss while maintaining muscle mass through higher fat intake and strategic protein timing.';
+                    protein = '160g';
+                    carbs = '50g';
+                    fat = '130g';
+                    calories = '2,010';
+                    break;
+                case '6':
+                    planTitle = 'Lean Bulk Plan';
+                    planType = '<span class="type-tag bulk-tag">Bulking</span><span class="type-tag">Clean Eating</span>';
+                    planDescription = 'A 7-day plan for adding muscle with minimal fat gain. Features a moderate calorie surplus with emphasis on clean, nutrient-dense foods and optimal protein distribution.';
+                    protein = '200g';
+                    carbs = '300g';
+                    fat = '70g';
+                    calories = '2,630';
+                    break;
+            }
+            
+            // Update modal content
+            document.getElementById('planDetailsTitle').textContent = planTitle;
+            document.getElementById('planDetailsTags').innerHTML = planType;
+            document.getElementById('planDetailsDescription').textContent = planDescription;
+            document.getElementById('planDetailsProtein').textContent = protein;
+            document.getElementById('planDetailsCarbs').textContent = carbs;
+            document.getElementById('planDetailsFat').textContent = fat;
+            document.getElementById('planDetailsCalories').textContent = calories;
+        });
+    });
+}
+
+function initializeCharts() {
+    // Plan Type Distribution Chart
+    const planTypeCtx = document.getElementById('planTypeChart');
+    if (planTypeCtx) {
+        new Chart(planTypeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Bulking', 'Cutting', 'Maintenance', 'Specialty'],
+                datasets: [{
+                    data: [45, 35, 15, 5],
+                    backgroundColor: [
+                        '#FFA500', // Orange for bulking
+                        '#00BFFF', // Blue for cutting
+                        '#32CD32', // Green for maintenance
+                        '#8A2BE2'  // Purple for specialty
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#1e1e1e'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#f1f1f1',
+                            padding: 20,
+                            font: {
+                                size: 12
                             }
                         }
                     }
-                });
+                }
             }
+        });
+    }
 
-            // Most Popular Plans Chart
-            const popularPlansCtx = document.getElementById('popularPlansChart');
-            if (popularPlansCtx) {
-                new Chart(popularPlansCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Lean Bulk Plan', 'High Protein Bulking', 'Fat Loss Cutting', 'Balanced Maintenance', 'Keto-Inspired'],
-                        datasets: [{
-                            label: 'Active Users',
-                            data: [3245, 2890, 2450, 1920, 1745],
-                            backgroundColor: [
-                                '#FFA500',
-                                '#FFA500',
-                                '#00BFFF',
-                                '#32CD32',
-                                '#00BFFF'
-                            ],
-                            borderWidth: 1,
-                            borderColor: '#1e1e1e'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: '#f1f1f1'
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#f1f1f1'
-                                },
-                                grid: {
-                                    display: false
-                                }
-                            }
+    // Most Popular Plans Chart
+    const popularPlansCtx = document.getElementById('popularPlansChart');
+    if (popularPlansCtx) {
+        new Chart(popularPlansCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Lean Bulk Plan', 'High Protein Bulking', 'Fat Loss Cutting', 'Balanced Maintenance', 'Keto-Inspired'],
+                datasets: [{
+                    label: 'Active Users',
+                    data: [3245, 2890, 2450, 1920, 1745],
+                    backgroundColor: [
+                        '#FFA500',
+                        '#FFA500',
+                        '#00BFFF',
+                        '#32CD32',
+                        '#00BFFF'
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#1e1e1e'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#f1f1f1'
                         },
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#f1f1f1'
+                        },
+                        grid: {
+                            display: false
                         }
                     }
-                });
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
             }
-        }
+        });
+    }
+}
     </script>
 </body>
 </html>

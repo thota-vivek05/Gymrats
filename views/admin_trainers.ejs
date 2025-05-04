@@ -324,100 +324,133 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Setup interactive elements
-            setupResponsiveFeatures();
+       document.addEventListener('DOMContentLoaded', function() {
+    // Setup interactive elements
+    setupResponsiveFeatures();
+});
+
+function setupResponsiveFeatures() {
+    // Navigation buttons
+    try {
+        const navItems = document.querySelectorAll('.nav-link');
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                // Prevent default only for the current page to avoid redundant navigation
+                if (href === '/admin_trainers') {
+                    e.preventDefault();
+                    navItems.forEach(link => link.classList.remove('active'));
+                    this.classList.add('active');
+                    localStorage.setItem('activeNav', href);
+                }
+                // Allow navigation for all other hrefs
+            });
         });
 
-        function setupResponsiveFeatures() {
-            // Navigation buttons
-            const navItems = document.querySelectorAll('.nav-link');
-            
-            navItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    if (!this.getAttribute('href').includes('.html')) {
-                        e.preventDefault();
-                        navItems.forEach(link => link.classList.remove('active'));
-                        this.classList.add('active');
-                    }
-                });
-            });
-
-            // Action buttons
-            const actionButtons = document.querySelectorAll('.action-btn');
-            actionButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    this.classList.add('clicked');
-                    
-                    // Approve button specific logic
-                    if (this.classList.contains('approve')) {
-                        const row = this.closest('tr');
-                        const statusCell = row.querySelector('.status');
-                        statusCell.classList.remove('pending');
-                        statusCell.classList.add('active');
-                        statusCell.textContent = 'Active';
-                        
-                        // Replace approve button with view and edit buttons
-                        this.textContent = 'View';
-                        this.classList.remove('approve');
-                        
-                        const editButton = document.createElement('button');
-                        editButton.className = 'action-btn';
-                        editButton.textContent = 'Edit';
-                        this.parentNode.appendChild(editButton);
-                        
-                        // Add event listener to new button
-                        editButton.addEventListener('click', function() {
-                            this.classList.add('clicked');
-                            setTimeout(() => {
-                                this.classList.remove('clicked');
-                            }, 200);
-                        });
-                    }
-                    
-                    setTimeout(() => {
-                        this.classList.remove('clicked');
-                    }, 200);
-                });
-            });
-
-            // Filter button
-            const filterBtn = document.getElementById('filterBtn');
-            if (filterBtn) {
-                filterBtn.addEventListener('click', function() {
-                    alert('Filter options would appear here');
-                });
-            }
-
-            // Pagination buttons
-            const pageButtons = document.querySelectorAll('.page-btn');
-            pageButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    pageButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            // Search functionality
-            const searchInput = document.getElementById('trainerSearchInput');
-            if (searchInput) {
-                searchInput.addEventListener('keyup', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    const rows = document.querySelectorAll('#trainerTableBody tr');
-                    
-                    rows.forEach(row => {
-                        const trainerName = row.querySelector('.trainer-info div:nth-child(2)').textContent.toLowerCase();
-                        const specialty = row.querySelectorAll('td')[1].textContent.toLowerCase();
-                        
-                        if (trainerName.includes(searchTerm) || specialty.includes(searchTerm)) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
-                        }
-                    });
-                });
+        // Set active nav item from localStorage
+        const activeNav = localStorage.getItem('activeNav');
+        if (activeNav) {
+            const activeItem = document.querySelector(`.nav-link[href="${activeNav}"]`);
+            if (activeItem) {
+                navItems.forEach(link => link.classList.remove('active'));
+                activeItem.classList.add('active');
             }
         }
+    } catch (error) {
+        console.error('Error setting up navigation:', error);
+    }
+
+    // Action buttons
+    try {
+        const actionButtons = document.querySelectorAll('.action-btn');
+        actionButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.add('clicked');
+                
+                // Approve button specific logic
+                if (this.classList.contains('approve')) {
+                    const row = this.closest('tr');
+                    const statusCell = row.querySelector('.status');
+                    statusCell.classList.remove('pending');
+                    statusCell.classList.add('active');
+                    statusCell.textContent = 'Active';
+                    
+                    // Replace approve button with view and edit buttons
+                    this.textContent = 'View';
+                    this.classList.remove('approve');
+                    
+                    const editButton = document.createElement('button');
+                    editButton.className = 'action-btn';
+                    editButton.textContent = 'Edit';
+                    this.parentNode.appendChild(editButton);
+                    
+                    // Add event listener to new button
+                    editButton.addEventListener('click', function() {
+                        this.classList.add('clicked');
+                        setTimeout(() => {
+                            this.classList.remove('clicked');
+                        }, 200);
+                    });
+                }
+                
+                setTimeout(() => {
+                    this.classList.remove('clicked');
+                }, 200);
+            });
+        });
+    } catch (error) {
+        console.error('Error setting up action buttons:', error);
+    }
+
+    // Filter button
+    try {
+        const filterBtn = document.getElementById('filterBtn');
+        if (filterBtn) {
+            filterBtn.addEventListener('click', function() {
+                alert('Filter options would appear here');
+            });
+        }
+    } catch (error) {
+        console.error('Error setting up filter button:', error);
+    }
+
+    // Pagination buttons
+    try {
+        const pageButtons = document.querySelectorAll('.page-btn');
+        pageButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                pageButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    } catch (error) {
+        console.error('Error setting up pagination:', error);
+    }
+
+    // Search functionality
+    try {
+        const searchInput = document.getElementById('trainerSearchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#trainerTableBody tr');
+                
+                rows.forEach(row => {
+                    const trainerName = row.querySelector('.trainer-info div:nth-child(2)').textContent.toLowerCase();
+                    const specialty = row.querySelectorAll('td')[1].textContent.toLowerCase();
+                    
+                    if (trainerName.includes(searchTerm) || specialty.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+    } catch (error) {
+        console.error('Error setting up search:', error);
+    }
+}
     </script>
 </body>
 </html>

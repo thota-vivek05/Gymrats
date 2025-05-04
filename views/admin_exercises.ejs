@@ -598,393 +598,396 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Setup interactive elements
-            setupResponsiveFeatures();
-            setupTabNavigation();
-            setupSearchFunctionality();
-            setupDetailsToggle();
-            setupModalFunctionality();
-            initializeCharts();
+    // Setup interactive elements
+    setupResponsiveFeatures();
+    setupTabNavigation();
+    setupSearchFunctionality();
+    setupDetailsToggle();
+    setupModalFunctionality();
+    initializeCharts();
+});
+
+function setupResponsiveFeatures() {
+    // Navigation buttons
+    const navItems = document.querySelectorAll('.nav-link');
+    
+    navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            // Prevent default only for the current page to avoid redundant navigation
+            if (href === '/admin_exercises') {
+                e.preventDefault();
+                navItems.forEach(link => link.classList.remove('active'));
+                this.classList.add('active');
+            }
+            // Allow navigation for all other hrefs
         });
+    });
 
-        function setupResponsiveFeatures() {
-            // Navigation buttons
-            const navItems = document.querySelectorAll('.nav-link');
-            
-            navItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    if (!this.getAttribute('href').includes('http')) {                             // Check if the link is an external page
-                        e.preventDefault();
-                        navItems.forEach(link => link.classList.remove('active'));
-                        this.classList.add('active');
-                    }
-                });
-            });
+    // Action buttons
+    const actionButtons = document.querySelectorAll('.action-btn');
+    actionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            this.classList.add('clicked');
+            setTimeout(() => {
+                this.classList.remove('clicked');
+            }, 200);
 
-            // Action buttons
-            const actionButtons = document.querySelectorAll('.action-btn');
-            actionButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    this.classList.add('clicked');
-                    setTimeout(() => {
-                        this.classList.remove('clicked');
-                    }, 200);
-
-                    // Handle actions for specific buttons
-                    if (!this.classList.contains('view-details')) {
-                        if (this.textContent.trim() === 'Edit') {
-                            alert('Edit exercise form would appear here');
-                        }
-                    }
-                });
-            });
-
-            // Filter button
-            const filterBtn = document.getElementById('filterBtn');
-            if (filterBtn) {
-                filterBtn.addEventListener('click', function() {
-                    alert('Filter options would appear here');
-                });
+            // Handle actions for specific buttons
+            if (!this.classList.contains('view-details')) {
+                if (this.textContent.trim() === 'Edit') {
+                    alert('Edit exercise form would appear here');
+                }
             }
+        });
+    });
 
-            // Pagination buttons
-            const pageButtons = document.querySelectorAll('.page-btn');
-            pageButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    pageButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
+    // Filter button
+    const filterBtn = document.getElementById('filterBtn');
+    if (filterBtn) {
+        filterBtn.addEventListener('click', function() {
+            alert('Filter options would appear here');
+        });
+    }
 
-            // Add New Exercise button
-            const addExerciseBtn = document.getElementById('addExerciseBtn');
-            if (addExerciseBtn) {
-                addExerciseBtn.addEventListener('click', function() {
-                    document.getElementById('exerciseFormModal').style.display = 'flex';
-                });
-            }
-        }
+    // Pagination buttons
+    const pageButtons = document.querySelectorAll('.page-btn');
+    pageButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            pageButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
 
-        function setupTabNavigation() {
-            const tabs = document.querySelectorAll('.tab');
-            const exerciseRows = document.querySelectorAll('#exerciseTableBody tr:not(.detail-row)');
+    // Add New Exercise button
+    const addExerciseBtn = document.getElementById('addExerciseBtn');
+    if (addExerciseBtn) {
+        addExerciseBtn.addEventListener('click', function() {
+            document.getElementById('exerciseFormModal').style.display = 'flex';
+        });
+    }
+}
+
+function setupTabNavigation() {
+    const tabs = document.querySelectorAll('.tab');
+    const exerciseRows = document.querySelectorAll('#exerciseTableBody tr:not(.detail-row)');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
             
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Update active tab
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const tabType = this.getAttribute('data-tab');
-                    
-                    // Filter exercises based on tab
-                    exerciseRows.forEach(row => {
-                        // Close any open details
-                        const rowId = row.getAttribute('data-exercise-id');
-                        if (rowId) {
-                            const detailRow = document.getElementById('details-' + rowId);
-                            if (detailRow) {
-                                detailRow.style.display = 'none';
-                            }
-                        }
-
-                        const categoryCell = row.querySelector('.category-tags');
-                        const trendingBadge = row.querySelector('.trending-badge');
-                        const statusCell = row.querySelector('.status');
-                        
-                        switch(tabType) {
-                            case 'all':
-                                row.style.display = '';
-                                break;
-                            case 'strength':
-                            case 'cardio':
-                            case 'flexibility':
-                            case 'balance':
-                                if (categoryCell && categoryCell.textContent.toLowerCase().includes(tabType)) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
-                                break;
-                            case 'trending':
-                                if (trendingBadge) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
-                                break;
-                            case 'unverified':
-                                if (statusCell && statusCell.classList.contains('pending')) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
-                                break;
-                        }
-                    });
-                });
-            });
-        }
-
-        function setupSearchFunctionality() {
-            const searchInput = document.getElementById('exerciseSearchInput');
-            const exerciseRows = document.querySelectorAll('#exerciseTableBody tr:not(.detail-row)');
+            const tabType = this.getAttribute('data-tab');
             
-            if (searchInput) {
-                searchInput.addEventListener('keyup', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    
-                    exerciseRows.forEach(row => {
-                        // Close any open details
-                        const rowId = row.getAttribute('data-exercise-id');
-                        if (rowId) {
-                            const detailRow = document.getElementById('details-' + rowId);
-                            if (detailRow) {
-                                detailRow.style.display = 'none';
-                            }
-                        }
+            // Filter exercises based on tab
+            exerciseRows.forEach(row => {
+                // Close any open details
+                const rowId = row.getAttribute('data-exercise-id');
+                if (rowId) {
+                    const detailRow = document.getElementById('details-' + rowId);
+                    if (detailRow) {
+                        detailRow.style.display = 'none';
+                    }
+                }
 
-                        const exerciseName = row.querySelector('.exercise-info div:nth-child(2)').textContent.toLowerCase();
-                        const category = row.querySelectorAll('td')[1].textContent.toLowerCase();
-                        const muscles = row.querySelectorAll('td')[2].textContent.toLowerCase();
-                        
-                        if (exerciseName.includes(searchTerm) || category.includes(searchTerm) || muscles.includes(searchTerm)) {
+                const categoryCell = row.querySelector('.category-tags');
+                const trendingBadge = row.querySelector('.trending-badge');
+                const statusCell = row.querySelector('.status');
+                
+                switch(tabType) {
+                    case 'all':
+                        row.style.display = '';
+                        break;
+                    case 'strength':
+                    case 'cardio':
+                    case 'flexibility':
+                    case 'balance':
+                        if (categoryCell && categoryCell.textContent.toLowerCase().includes(tabType)) {
                             row.style.display = '';
                         } else {
                             row.style.display = 'none';
                         }
-                    });
-                });
-            }
-        }
-
-        function setupDetailsToggle() {
-            const viewDetailsButtons = document.querySelectorAll('.view-details');
-            
-            viewDetailsButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const row = this.closest('tr');
-                    const exerciseId = row.getAttribute('data-exercise-id');
-                    const detailRow = document.getElementById('details-' + exerciseId);
-                    
-                    // Close all other detail rows
-                    document.querySelectorAll('.detail-row').forEach(row => {
-                        if (row !== detailRow) {
+                        break;
+                    case 'trending':
+                        if (trendingBadge) {
+                            row.style.display = '';
+                        } else {
                             row.style.display = 'none';
                         }
-                    });
-                    
-                    // Toggle the clicked detail row
-                    if (detailRow) {
-                        detailRow.style.display = detailRow.style.display === 'none' ? 'table-row' : 'none';
-                    }
-                });
+                        break;
+                    case 'unverified':
+                        if (statusCell && statusCell.classList.contains('pending')) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                        break;
+                }
             });
-        }
+        });
+    });
+}
 
-        function setupModalFunctionality() {
-            const modal = document.getElementById('exerciseFormModal');
-            const closeBtn = document.querySelector('.close-modal');
-            const cancelBtn = document.querySelector('.cancel-btn');
-            const form = document.getElementById('exerciseForm');
+function setupSearchFunctionality() {
+    const searchInput = document.getElementById('exerciseSearchInput');
+    const exerciseRows = document.querySelectorAll('#exerciseTableBody tr:not(.detail-row)');
+    
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
             
-            // Close the modal
-            function closeModal() {
-                modal.style.display = 'none';
-                form.reset();
-            }
+            exerciseRows.forEach(row => {
+                // Close any open details
+                const rowId = row.getAttribute('data-exercise-id');
+                if (rowId) {
+                    const detailRow = document.getElementById('details-' + rowId);
+                    if (detailRow) {
+                        detailRow.style.display = 'none';
+                    }
+                }
+
+                const exerciseName = row.querySelector('.exercise-info div:nth-child(2)').textContent.toLowerCase();
+                const category = row.querySelectorAll('td')[1].textContent.toLowerCase();
+                const muscles = row.querySelectorAll('td')[2].textContent.toLowerCase();
+                
+                if (exerciseName.includes(searchTerm) || category.includes(searchTerm) || muscles.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+}
+
+function setupDetailsToggle() {
+    const viewDetailsButtons = document.querySelectorAll('.view-details');
+    
+    viewDetailsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const row = this.closest('tr');
+            const exerciseId = row.getAttribute('data-exercise-id');
+            const detailRow = document.getElementById('details-' + exerciseId);
             
-            // Close on X button click
-            if (closeBtn) {
-                closeBtn.addEventListener('click', closeModal);
-            }
-            
-            // Close on Cancel button click
-            if (cancelBtn) {
-                cancelBtn.addEventListener('click', closeModal);
-            }
-            
-            // Close on click outside
-            window.addEventListener('click', function(event) {
-                if (event.target === modal) {
-                    closeModal();
+            // Close all other detail rows
+            document.querySelectorAll('.detail-row').forEach(row => {
+                if (row !== detailRow) {
+                    row.style.display = 'none';
                 }
             });
             
-            // Form submission
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    alert('Exercise added successfully!');
-                    closeModal();
-                    // In a real implementation, this would call an API to add the exercise to the database
-                });
+            // Toggle the clicked detail row
+            if (detailRow) {
+                detailRow.style.display = detailRow.style.display === 'none' ? 'table-row' : 'none';
             }
+        });
+    });
+}
+
+function setupModalFunctionality() {
+    const modal = document.getElementById('exerciseFormModal');
+    const closeBtn = document.querySelector('.close-modal');
+    const cancelBtn = document.querySelector('.cancel-btn');
+    const form = document.getElementById('exerciseForm');
+    
+    // Close the modal
+    function closeModal() {
+        modal.style.display = 'none';
+        form.reset();
+    }
+    
+    // Close on X button click
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+    }
+    
+    // Close on Cancel button click
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', closeModal);
+    }
+    
+    // Close on click outside
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            closeModal();
         }
+    });
+    
+    // Form submission
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Exercise added successfully!');
+            closeModal();
+            // In a real implementation, this would call an API to add the exercise to the database
+        });
+    }
+}
 
-        function initializeCharts() {
-            // Popular Exercises Chart
-            const popularCtx = document.getElementById('popularExercisesChart');
-            if (popularCtx) {
-                new Chart(popularCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Squats', 'Push-ups', 'Treadmill Running', 'Kettlebell Swings', 'Downward Dog'],
-                        datasets: [{
-                            label: 'Usage Count',
-                            data: [8245, 7890, 7125, 6580, 6125],
-                            backgroundColor: [
-                                '#FF6B6B',
-                                '#FF6B6B',
-                                '#FF6B6B',
-                                '#FFC107',
-                                '#FFC107'
-                            ],
-                            borderWidth: 1,
-                            borderColor: '#1e1e1e'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: '#f1f1f1'
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#f1f1f1'
-                                },
-                                grid: {
-                                    display: false
-                                }
-                            }
+function initializeCharts() {
+    // Popular Exercises Chart
+    const popularCtx = document.getElementById('popularExercisesChart');
+    if (popularCtx) {
+        new Chart(popularCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Squats', 'Push-ups', 'Treadmill Running', 'Kettlebell Swings', 'Downward Dog'],
+                datasets: [{
+                    label: 'Usage Count',
+                    data: [8245, 7890, 7125, 6580, 6125],
+                    backgroundColor: [
+                        '#FF6B6B',
+                        '#FF6B6B',
+                        '#FF6B6B',
+                        '#FFC107',
+                        '#FFC107'
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#1e1e1e'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#f1f1f1'
                         },
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
                         }
-                    }
-                });
-            }
-
-            // Category Distribution Chart
-            const categoryCtx = document.getElementById('categoryDistributionChart');
-            if (categoryCtx) {
-                new Chart(categoryCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Strength', 'Cardio', 'Flexibility', 'Balance', 'Yoga'],
-                        datasets: [{
-                            data: [45, 25, 15, 10, 5],
-                            backgroundColor: [
-                                '#8A2BE2',
-                                '#9370DB',
-                                '#BA55D3',
-                                '#DA70D6',
-                                '#EE82EE'
-                            ],
-                            borderWidth: 1,
-                            borderColor: '#1e1e1e'
-                        }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: {
-                                    color: '#f1f1f1',
-                                    padding: 20,
-                                    font: {
-                                        size: 12
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Exercise Trend Chart
-            const trendCtx = document.getElementById('exerciseTrendChart');
-            if (trendCtx) {
-                new Chart(trendCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                        datasets: [
-                            {
-                                label: 'Kettlebell Swings',
-                                data: [3200, 3400, 4100, 4800, 5700, 6580],
-                                borderColor: '#FF6B6B',
-                                backgroundColor: 'rgba(255, 107, 107, 0.1)',
-                                tension: 0.3,
-                                fill: true
-                            },
-                            {
-                                label: 'Push-ups',
-                                data: [6500, 6700, 7000, 7200, 7500, 7890],
-                                borderColor: '#4CAF50',
-                                backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                                tension: 0.3,
-                                fill: true
-                            },
-                            {
-                                label: 'Squats',
-                                data: [7200, 7400, 7600, 7800, 8000, 8245],
-                                borderColor: '#8A2BE2',
-                                backgroundColor: 'rgba(138, 43, 226, 0.1)',
-                                tension: 0.3,
-                                fill: true
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: '#f1f1f1'
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#f1f1f1'
-                                },
-                                grid: {
-                                    display: false
-                                }
-                            }
+                    x: {
+                        ticks: {
+                            color: '#f1f1f1'
                         },
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                                labels: {
-                                    color: '#f1f1f1',
-                                    font: {
-                                        size: 12
-                                    }
-                                }
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    // Category Distribution Chart
+    const categoryCtx = document.getElementById('categoryDistributionChart');
+    if (categoryCtx) {
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Strength', 'Cardio', 'Flexibility', 'Balance', 'Yoga'],
+                datasets: [{
+                    data: [45, 25, 15, 10, 5],
+                    backgroundColor: [
+                        '#8A2BE2',
+                        '#9370DB',
+                        '#BA55D3',
+                        '#DA70D6',
+                        '#EE82EE'
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#1e1e1e'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#f1f1f1',
+                            padding: 20,
+                            font: {
+                                size: 12
                             }
                         }
                     }
-                });
+                }
             }
-        }
+        });
+    }
+
+    // Exercise Trend Chart
+    const trendCtx = document.getElementById('exerciseTrendChart');
+    if (trendCtx) {
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [
+                    {
+                        label: 'Kettlebell Swings',
+                        data: [3200, 3400, 4100, 4800, 5700, 6580],
+                        borderColor: '#FF6B6B',
+                        backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Push-ups',
+                        data: [6500, 6700, 7000, 7200, 7500, 7890],
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Squats',
+                        data: [7200, 7400, 7600, 7800, 8000, 8245],
+                        borderColor: '#8A2BE2',
+                        backgroundColor: 'rgba(138, 43, 226, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#f1f1f1'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#f1f1f1'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: '#f1f1f1',
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
     </script>
 </body>
 </html>

@@ -433,284 +433,287 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Setup interactive elements
-            setupResponsiveFeatures();
-            setupTabNavigation();
-            setupSearchFunctionality();
-            initializeCharts();
+       document.addEventListener('DOMContentLoaded', function() {
+    // Setup interactive elements
+    setupResponsiveFeatures();
+    setupTabNavigation();
+    setupSearchFunctionality();
+    initializeCharts();
+});
+
+function setupResponsiveFeatures() {
+    // Navigation buttons
+    const navItems = document.querySelectorAll('.nav-link');
+    
+    navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            // Prevent default only for the current page to avoid redundant navigation
+            if (href === '/admin_verifier') {
+                e.preventDefault();
+                navItems.forEach(link => link.classList.remove('active'));
+                this.classList.add('active');
+            }
+            // Allow navigation for all other hrefs
         });
+    });
 
-        function setupResponsiveFeatures() {
-            // Navigation buttons
-            const navItems = document.querySelectorAll('.nav-link');
-            
-            navItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    if (!this.getAttribute('href').includes('.html')) {
-                        e.preventDefault();
-                        navItems.forEach(link => link.classList.remove('active'));
-                        this.classList.add('active');
-                    }
-                });
-            });
+    // Action buttons
+    const actionButtons = document.querySelectorAll('.action-btn');
+    actionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            this.classList.add('clicked');
+            setTimeout(() => {
+                this.classList.remove('clicked');
+            }, 200);
 
-            // Action buttons
-            const actionButtons = document.querySelectorAll('.action-btn');
-            actionButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    this.classList.add('clicked');
-                    setTimeout(() => {
-                        this.classList.remove('clicked');
-                    }, 200);
-
-                    // Handle approve/reject actions
-                    if (this.classList.contains('approve')) {
-                        const row = this.closest('tr');
-                        const statusCell = row.querySelector('.status');
-                        if (statusCell) {
-                            statusCell.classList.remove('pending');
-                            statusCell.classList.add('active');
-                            statusCell.textContent = 'Active';
-                        }
-                        
-                        // Replace action buttons
-                        const actionCell = this.closest('td');
-                        actionCell.innerHTML = `
-                            <button class="action-btn">View</button>
-                            <button class="action-btn">Edit</button>
-                        `;
-                        
-                        // Reattach event listeners
-                        const newButtons = actionCell.querySelectorAll('.action-btn');
-                        newButtons.forEach(btn => {
-                            btn.addEventListener('click', function() {
-                                this.classList.add('clicked');
-                                setTimeout(() => {
-                                    this.classList.remove('clicked');
-                                }, 200);
-                            });
-                        });
-                    } else if (this.classList.contains('reject')) {
-                        const row = this.closest('tr');
-                        if (confirm('Are you sure you want to reject this verifier?')) {
-                            row.remove();
-                        }
-                    }
-                });
-            });
-
-            // Filter button
-            const filterBtn = document.getElementById('filterBtn');
-            if (filterBtn) {
-                filterBtn.addEventListener('click', function() {
-                    alert('Filter options would appear here');
-                });
-            }
-
-            // Pagination buttons
-            const pageButtons = document.querySelectorAll('.page-btn');
-            pageButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    pageButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            // Add New Verifier button
-            const addVerifierBtn = document.querySelector('.add-btn');
-            if (addVerifierBtn) {
-                addVerifierBtn.addEventListener('click', function() {
-                    alert('Add new verifier form would appear here');
-                });
-            }
-        }
-
-        function setupTabNavigation() {
-            const tabs = document.querySelectorAll('.tab');
-            const verifierRows = document.querySelectorAll('#verifierTableBody tr');
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Update active tab
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const tabType = this.getAttribute('data-tab');
-                    
-                    // Filter verifiers based on tab
-                    verifierRows.forEach(row => {
-                        const statusCell = row.querySelector('.status');
-                        const expertBadge = row.querySelector('.expert-badge');
-                        const newBadge = row.querySelector('.new-badge');
-                        
-                        switch(tabType) {
-                            case 'all':
-                                row.style.display = '';
-                                break;
-                            case 'active':
-                                if (statusCell && statusCell.classList.contains('active')) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
-                                break;
-                            case 'expert':
-                                if (expertBadge) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
-                                break;
-                            case 'new':
-                                if (newBadge) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
-                                break;
-                            case 'pending':
-                                if (statusCell && statusCell.classList.contains('pending')) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
-                                break;
-                        }
+            // Handle approve/reject actions
+            if (this.classList.contains('approve')) {
+                const row = this.closest('tr');
+                const statusCell = row.querySelector('.status');
+                if (statusCell) {
+                    statusCell.classList.remove('pending');
+                    statusCell.classList.add('active');
+                    statusCell.textContent = 'Active';
+                }
+                
+                // Replace action buttons
+                const actionCell = this.closest('td');
+                actionCell.innerHTML = `
+                    <button class="action-btn">View</button>
+                    <button class="action-btn">Edit</button>
+                `;
+                
+                // Reattach event listeners
+                const newButtons = actionCell.querySelectorAll('.action-btn');
+                newButtons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        this.classList.add('clicked');
+                        setTimeout(() => {
+                            this.classList.remove('clicked');
+                        }, 200);
                     });
                 });
-            });
-        }
+            } else if (this.classList.contains('reject')) {
+                const row = this.closest('tr');
+                if (confirm('Are you sure you want to reject this verifier?')) {
+                    row.remove();
+                }
+            }
+        });
+    });
 
-        function setupSearchFunctionality() {
-            const searchInput = document.getElementById('verifierSearchInput');
-            const verifierRows = document.querySelectorAll('#verifierTableBody tr');
+    // Filter button
+    const filterBtn = document.getElementById('filterBtn');
+    if (filterBtn) {
+        filterBtn.addEventListener('click', function() {
+            alert('Filter options would appear here');
+        });
+    }
+
+    // Pagination buttons
+    const pageButtons = document.querySelectorAll('.page-btn');
+    pageButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            pageButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Add New Verifier button
+    const addVerifierBtn = document.querySelector('.add-btn');
+    if (addVerifierBtn) {
+        addVerifierBtn.addEventListener('click', function() {
+            alert('Add new verifier form would appear here');
+        });
+    }
+}
+
+function setupTabNavigation() {
+    const tabs = document.querySelectorAll('.tab');
+    const verifierRows = document.querySelectorAll('#verifierTableBody tr');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
             
-            if (searchInput) {
-                searchInput.addEventListener('keyup', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    
-                    verifierRows.forEach(row => {
-                        const verifierName = row.querySelector('.verifier-info div:nth-child(2)').textContent.toLowerCase();
-                        const expertise = row.querySelectorAll('td')[1].textContent.toLowerCase();
-                        const status = row.querySelector('.status').textContent.toLowerCase();
-                        
-                        if (verifierName.includes(searchTerm) || expertise.includes(searchTerm) || status.includes(searchTerm)) {
+            const tabType = this.getAttribute('data-tab');
+            
+            // Filter verifiers based on tab
+            verifierRows.forEach(row => {
+                const statusCell = row.querySelector('.status');
+                const expertBadge = row.querySelector('.expert-badge');
+                const newBadge = row.querySelector('.new-badge');
+                
+                switch(tabType) {
+                    case 'all':
+                        row.style.display = '';
+                        break;
+                    case 'active':
+                        if (statusCell && statusCell.classList.contains('active')) {
                             row.style.display = '';
                         } else {
                             row.style.display = 'none';
                         }
-                    });
-                });
-            }
-        }
+                        break;
+                    case 'expert':
+                        if (expertBadge) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                        break;
+                    case 'new':
+                        if (newBadge) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                        break;
+                    case 'pending':
+                        if (statusCell && statusCell.classList.contains('pending')) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                        break;
+                }
+            });
+        });
+    });
+}
 
-        function initializeCharts() {
-            // Content Type Distribution Chart
-            const contentTypeCtx = document.getElementById('contentTypeChart');
-            if (contentTypeCtx) {
-                new Chart(contentTypeCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Exercise Form', 'Nutrition Plans', 'Workout Programs', 'Equipment Use', 'Safety Guides'],
-                        datasets: [{
-                            data: [35, 25, 20, 12, 8],
-                            backgroundColor: [
-                                '#8A2BE2',
-                                '#9370DB',
-                                '#BA55D3',
-                                '#DA70D6',
-                                '#EE82EE'
-                            ],
-                            borderWidth: 1,
-                            borderColor: '#1e1e1e'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    color: '#f1f1f1',
-                                    padding: 20,
-                                    font: {
-                                        size: 12
-                                    }
-                                }
-                            },
-                            title: {
-                                display: true,
-                                text: 'Content Types Verified',
-                                color: '#f1f1f1',
-                                font: {
-                                    size: 16
-                                }
+function setupSearchFunctionality() {
+    const searchInput = document.getElementById('verifierSearchInput');
+    const verifierRows = document.querySelectorAll('#verifierTableBody tr');
+    
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            verifierRows.forEach(row => {
+                const verifierName = row.querySelector('.verifier-info div:nth-child(2)').textContent.toLowerCase();
+                const expertise = row.querySelectorAll('td')[1].textContent.toLowerCase();
+                const status = row.querySelector('.status').textContent.toLowerCase();
+                
+                if (verifierName.includes(searchTerm) || expertise.includes(searchTerm) || status.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+}
+
+function initializeCharts() {
+    // Content Type Distribution Chart
+    const contentTypeCtx = document.getElementById('contentTypeChart');
+    if (contentTypeCtx) {
+        new Chart(contentTypeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Exercise Form', 'Nutrition Plans', 'Workout Programs', 'Equipment Use', 'Safety Guides'],
+                datasets: [{
+                    data: [35, 25, 20, 12, 8],
+                    backgroundColor: [
+                        '#8A2BE2',
+                        '#9370DB',
+                        '#BA55D3',
+                        '#DA70D6',
+                        '#EE82EE'
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#1e1e1e'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#f1f1f1',
+                            padding: 20,
+                            font: {
+                                size: 12
                             }
                         }
-                    }
-                });
-            }
-
-            // Verifier Performance Chart
-            const performanceCtx = document.getElementById('verifierPerformanceChart');
-            if (performanceCtx) {
-                new Chart(performanceCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['High Performers (90%+)', 'Med Performers (70-89%)', 'New Verifiers (<10 reviews)'],
-                        datasets: [{
-                            label: 'Verifier Count',
-                            data: [32, 15, 5],
-                            backgroundColor: [
-                                '#4CAF50',
-                                '#FFC107',
-                                '#8A2BE2'
-                            ],
-                            borderWidth: 1,
-                            borderColor: '#1e1e1e'
-                        }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: '#f1f1f1'
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#f1f1f1'
-                                },
-                                grid: {
-                                    display: false
-                                }
-                            }
+                    title: {
+                        display: true,
+                        text: 'Content Types Verified',
+                        color: '#f1f1f1',
+                        font: {
+                            size: 16
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Verifier Performance Chart
+    const performanceCtx = document.getElementById('verifierPerformanceChart');
+    if (performanceCtx) {
+        new Chart(performanceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['High Performers (90%+)', 'Med Performers (70-89%)', 'New Verifiers (<10 reviews)'],
+                datasets: [{
+                    label: 'Verifier Count',
+                    data: [32, 15, 5],
+                    backgroundColor: [
+                        '#4CAF50',
+                        '#FFC107',
+                        '#8A2BE2'
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#1e1e1e'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#f1f1f1'
                         },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            title: {
-                                display: true,
-                                text: 'Verifier Performance Distribution',
-                                color: '#f1f1f1',
-                                font: {
-                                    size: 16
-                                }
-                            }
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#f1f1f1'
+                        },
+                        grid: {
+                            display: false
                         }
                     }
-                });
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Verifier Performance Distribution',
+                        color: '#f1f1f1',
+                        font: {
+                            size: 16
+                        }
+                    }
+                }
             }
-        }
+        });
+    }
+}
     </script>
 </body>
 </html>
