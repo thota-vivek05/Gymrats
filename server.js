@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const path = require('path');
-const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 
 const app = express();
@@ -17,8 +16,6 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 app.use(methodOverride('_method')); // For PUT/DELETE requests
 
 // Session setup
@@ -32,128 +29,14 @@ app.use(
 );
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/gymrats', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => {
-    console.log('Connected to MongoDB database');
-    // Initialize database with sample data after connection
-    initializeDatabase();
-})
-.catch(err => {
-    console.error('MongoDB connection error:', err);
-});
-
-// Insert sample data function
-async function initializeDatabase() {
-    try {
-        // Check if there's already data in the database
-        const User = require('./model/User');
-        const Membership = require('./model/Membership');
-        
-        const userCount = await User.countDocuments();
-        if (userCount > 0) {
-            console.log('Database already has data, skipping sample data insertion');
-            return;
-        }
-
-        console.log("Inserting sample data...");
-        
-        // Sample users data
-        const users = [
-            {
-                name: 'Anvesh cheela',
-                email: 'anvesh@example.com',
-                password: 'password123',
-                dob: '2005-03-15',
-                gender: 'male',
-                phone: '1234567890'
-            },
-            {
-                name: 'vivek',
-                email: 'vivek@example.com',
-                password: 'password456',
-                dob: '2005-07-22',
-                gender: 'male',
-                phone: '9876543210'
-            },
-            {
-                name: 'jay Johnson',
-                email: 'jay@example.com',
-                password: 'password789',
-                dob: '2005-11-30',
-                gender: 'male',
-                phone: '5551234567'
-            }
-        ];
-
-        // Insert each user and their membership
-        for (const userData of users) {
-            // Hash the password
-            const hashedPassword = await bcrypt.hash(userData.password, 10);
-            
-            // Create and save user
-            const user = new User({
-                full_name: userData.name,
-                email: userData.email,
-                password_hash: hashedPassword,
-                dob: userData.dob,
-                gender: userData.gender,
-                phone: userData.phone
-            });
-            
-            const savedUser = await user.save();
-            
-            // Determine plan details based on user
-            let plan, duration, price, cardType, cardLastFour;
-            
-            if (userData.name === 'John Smith') {
-                plan = 'basic';
-                duration = 3;
-                price = 29 * 3;
-                cardType = 'visa';
-                cardLastFour = '4321';
-            } else if (userData.name === 'Jane Doe') {
-                plan = 'gold';
-                duration = 6;
-                price = 59 * 6;
-                cardType = 'mastercard';
-                cardLastFour = '8765';
-            } else {
-                plan = 'platinum';
-                duration = 12;
-                price = 99 * 12;
-                cardType = 'amex';
-                cardLastFour = '2468';
-            }
-            
-            // Calculate end date
-            const startDate = new Date();
-            const endDate = new Date(startDate);
-            endDate.setMonth(endDate.getMonth() + duration);
-            
-            // Create and save membership
-            const membership = new Membership({
-                user_id: savedUser._id,
-                plan: plan,
-                duration: duration,
-                start_date: startDate,
-                end_date: endDate,
-                price: price,
-                payment_method: 'credit_card',
-                card_type: cardType,
-                card_last_four: cardLastFour
-            });
-            
-            await membership.save();
-        }
-        
-        console.log('Sample data inserted successfully!');
-    } catch (err) {
-        console.error('Error initializing database:', err);
-    }
-}
+mongoose.connect('mongodb://localhost:27017/gymrats')
+    .then(() => {
+        console.log('Connected to MongoDB database');
+    })
+    .catch(err => {
+        console.error('MongoDB connection error:', err);
+        process.exit(1);
+    });
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
@@ -196,7 +79,8 @@ const pages = [
     'about', 'blog', 'calculators', 'contact', 'home', 'isolation',
     'login_signup', 'nutrition', 'privacy_policy', 'schedule', 'signup',
     'terms', 'testimonial', 'trainer_form', 'trainer', 'trainers',
-    'verifier_form', 'verifier', 'workout_plans'
+    'verifier_form', 'verifier', 'workout_plans', 'userdashboard_b',
+    'userdashboard_g', 'userdashboard_p'
 ];
 
 pages.forEach(page => {
