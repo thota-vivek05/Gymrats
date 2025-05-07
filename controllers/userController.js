@@ -372,6 +372,7 @@ exports.getProfile = async (req, res) => {
 };
 
 // Get exercises page
+// In userController.js
 exports.getExercises = async (req, res) => {
     try {
         if (!req.session.user || !req.session.user.id) {
@@ -391,12 +392,14 @@ exports.getExercises = async (req, res) => {
             return res.status(400).send('Membership not found. Please contact support.');
         }
 
+        // Fetch exercises from database
         const exercises = await Exercise.find({ verified: true });
 
+        // Render the user_exercises template with user data
         return res.render('user_exercises', {
             user,
-            exercises,
-            membership
+            membership,
+            exercises
         });
     } catch (error) {
         console.error('Error fetching exercises:', error);
