@@ -33,17 +33,11 @@ const userSchema = new mongoose.Schema({
         type: Date, 
         default: Date.now 
     },
-    weight_history: [{
-        weight: { 
-            type: Number, 
-            required: true,
-            min: 0 
-        },
-        date: { 
-            type: Date, 
-            default: Date.now 
-        }
-    }],
+    weight: { 
+        type: Number, 
+        required: true,
+        min: 0 
+    },
     height: { 
         type: Number, 
         min: 0,

@@ -6,37 +6,66 @@ const loginUser = async (req, res) => {
     try {
         const { email, password, loginMembershipPlan } = req.body;
 
+        console.log('Login request received:', { email, loginMembershipPlan });
+
         // Validate input
         if (!email || !password || !loginMembershipPlan) {
+            console.log('Validation failed: Missing fields');
             return res.status(400).json({ error: 'All fields are required' });
         }
 
         // Find user by email
         const user = await User.findOne({ email });
         if (!user) {
+            console.log('User not found:', email);
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
         // Check password
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
+            console.log('Password mismatch for:', email);
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
         // Validate membership plan
         if (user.membershipType.toLowerCase() !== loginMembershipPlan.toLowerCase()) {
+            console.log('Membership plan mismatch:', { user: user.membershipType, input: loginMembershipPlan });
             return res.status(400).json({ error: 'Selected membership plan does not match user membership' });
         }
 
-        // Set user session (assuming you're using express-session)
+        // Set user session
+        if (!req.session) {
+            console.error('Session middleware not initialized');
+            return res.status(500).json({ error: 'Session not available. Please try again later.' });
+        }
         req.session.user = {
             id: user._id,
             email: user.email,
             full_name: user.full_name,
             membershipType: user.membershipType
         };
+        console.log('Session set for user:', user.email);
 
-        res.status(200).json({ message: 'Login successful', redirect: '/userdashboard_p' });
+        // Determine redirect based on membershipType
+        let redirectUrl;
+        switch (user.membershipType.toLowerCase()) {
+            case 'basic':
+                redirectUrl = '/userdashboard_b';
+                break;
+            case 'gold':
+                redirectUrl = '/userdashboard_g';
+                break;
+            case 'platinum':
+                redirectUrl = '/userdashboard_p';
+                break;
+            default:
+                console.log('Unknown membership type:', user.membershipType);
+                redirectUrl = '/dashboard'; // Fallback
+        }
+        console.log('Redirecting to:', redirectUrl);
+
+        res.status(200).json({ message: 'Login successful', redirect: redirectUrl });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: 'Server error' });

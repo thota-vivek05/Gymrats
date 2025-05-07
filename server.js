@@ -276,6 +276,7 @@ app.get('/logout', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`http://localhost:${PORT}/home`);
+    console.log(`http://localhost:${PORT}/login_signup`);
     console.log(`http://localhost:${PORT}/trainer_login`);
     console.log(`http://localhost:${PORT}/verifier_login`);
     console.log(`http://localhost:${PORT}/admin_login`);
