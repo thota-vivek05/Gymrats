@@ -13,37 +13,38 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get form data
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const membershipPlan = document.getElementById('loginMembershipPlan').value;
+        const loginMembershipPlan = document.getElementById('loginMembershipPlan').value;
         
         // Validate form data
-        if (!email || !password) {
-            showError('Please enter both email and password');
+        if (!email || !password || !loginMembershipPlan) {
+            showError('Please fill in all fields');
             return;
         }
         
-        // Make AJAX request to login API
-        fetch('/api/login', {
+        // Make AJAX request to login endpoint
+        fetch('/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                email: email,
-                password: password,
-                membershipPlan: membershipPlan
+                email,
+                password,
+                loginMembershipPlan
             }),
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
+            if (data.message === 'Login successful') {
                 // Show success message and redirect
-                showMessage('Login successful! Redirecting...');
+                showMessage(data.message);
                 setTimeout(() => {
-                    window.location.href = data.redirectUrl;
+                    window.location.href = data.redirect;
                 }, 1000);
+                this.reset(); // Reset form
             } else {
                 // Show error message
-                showError(data.message || 'Login failed. Please try again.');
+                showError(data.error || 'Login failed. Please try again.');
             }
         })
         .catch(error => {
@@ -52,9 +53,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Validate phone number
+    // Validate phone number (aligned with backend regex)
     function validatePhone(phone) {
-        return /^\d{10}$/.test(phone);
+        return /^\+?[\d\s-]{10,}$/.test(phone);
     }
 
     // Validate matching passwords
@@ -67,69 +68,79 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         // Get form data
-        const fullName = document.getElementById('userFullName').value;
-        const dob = document.getElementById('dateOfBirth').value;
+        const userFullName = document.getElementById('userFullName').value;
+        const dateOfBirth = document.getElementById('dateOfBirth').value;
         const gender = document.getElementById('gender').value;
-        const email = document.getElementById('userEmail').value;
-        const phone = document.getElementById('phoneNumber').value;
-        const password = document.getElementById('userPassword').value;
-        const confirmPassword = document.getElementById('userConfirmPassword').value;
+        const userEmail = document.getElementById('userEmail').value;
+        const phoneNumber = document.getElementById('phoneNumber').value;
+        const userPassword = document.getElementById('userPassword').value;
+        const userConfirmPassword = document.getElementById('userConfirmPassword').value;
         const membershipPlan = document.getElementById('membershipPlan').value;
         const membershipDuration = document.getElementById('membershipDuration').value;
         const cardType = document.getElementById('cardType').value;
         const cardNumber = document.getElementById('cardNumber').value;
         const expirationDate = document.getElementById('expirationDate').value;
         const cvv = document.getElementById('cvv').value;
-        const termsAgreed = document.getElementById('terms').checked;
+        const terms = document.getElementById('terms').checked;
         
         // Validate form data
-        if (!validatePhone(phone)) {
-            showError('Phone number must be exactly 10 digits');
+        if (!userFullName || !dateOfBirth || !gender || !userEmail || !phoneNumber || !userPassword || 
+            !userConfirmPassword || !membershipPlan || !membershipDuration || !cardType || 
+            !cardNumber || !expirationDate || !cvv) {
+            showError('Please fill in all fields');
             return;
         }
 
-        if (!validatePasswords(password, confirmPassword)) {
+        if (!validatePhone(phoneNumber)) {
+            showError('Please enter a valid phone number (at least 10 digits, may include +, spaces, or hyphens)');
+            return;
+        }
+
+        if (!validatePasswords(userPassword, userConfirmPassword)) {
             showError('Passwords do not match');
             return;
         }
         
-        if (!termsAgreed) {
+        if (!terms) {
             showError('You must agree to the terms and conditions');
             return;
         }
         
-        // Make AJAX request to signup API
-        fetch('/api/signup', {
+        // Make AJAX request to signup endpoint
+        fetch('/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                userFullName: fullName,
-                dateOfBirth: dob,
-                gender: gender,
-                userEmail: email,
-                phoneNumber: phone,
-                userPassword: password,
-                membershipPlan: membershipPlan,
-                membershipDuration: membershipDuration,
-                cardType: cardType,
-                cardNumber: cardNumber,
-                expirationDate: expirationDate,
-                cvv: cvv
+                userFullName,
+                dateOfBirth,
+                gender,
+                userEmail,
+                phoneNumber,
+                userPassword,
+                userConfirmPassword,
+                membershipPlan,
+                membershipDuration,
+                cardType,
+                cardNumber,
+                expirationDate,
+                cvv,
+                terms
             }),
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
+            if (data.message === 'Signup successful') {
                 // Show success message and redirect
-                showMessage('Account created successfully! Redirecting...');
+                showMessage(data.message);
                 setTimeout(() => {
-                    window.location.href = data.redirectUrl;
+                    window.location.href = data.redirect;
                 }, 1000);
+                this.reset(); // Reset form
             } else {
                 // Show error message
-                showError(data.message || 'Registration failed. Please try again.');
+                showError(data.error || 'Registration failed. Please try again.');
             }
         })
         .catch(error => {

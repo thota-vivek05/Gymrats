@@ -11,12 +11,14 @@ const PORT = process.env.PORT || 3000;
 
 // Import routes
 const adminRoutes = require('./Routes/adminRoutes');
+const userRoutes = require('./Routes/userRoutes');
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method')); // For PUT/DELETE requests
+
 
 // Session setup
 app.use(
@@ -37,6 +39,9 @@ mongoose.connect('mongodb://localhost:27017/gymrats')
         console.error('MongoDB connection error:', err);
         process.exit(1);
     });
+
+//Routes app.use
+app.use('/', userRoutes);
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
@@ -270,4 +275,8 @@ app.get('/logout', (req, res) => {
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log(`http://localhost:${PORT}/home`);
+    console.log(`http://localhost:${PORT}/trainer_login`);
+    console.log(`http://localhost:${PORT}/verifier_login`);
+    console.log(`http://localhost:${PORT}/admin_login`);
 });
