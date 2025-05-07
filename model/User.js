@@ -7,9 +7,11 @@ const userSchema = new mongoose.Schema({
     dob: { type: String, required: true },
     gender: { type: String, required: true },
     phone: { type: String, required: true },
-    profile_pic: { type: String, default: null },
     created_at: { type: Date, default: Date.now },
-    weight: { type: Number, default: null },
+    weight_history: [{
+        weight: { type: Number, required: true },
+        date: { type: Date, default: Date.now }
+    }],
     height: { type: Number, default: null },
     BMI: { type: Number, default: null },
     status: { 
@@ -21,6 +23,11 @@ const userSchema = new mongoose.Schema({
         type: String, 
         enum: ['Basic', 'Gold', 'Platinum'],
         default: 'Basic'
+    },
+    fitness_goals: {
+        calorie_goal: { type: Number, default: 2200 },
+        protein_goal: { type: Number, default: 90 },
+        weight_goal: { type: Number, default: null }
     }
 });
 
