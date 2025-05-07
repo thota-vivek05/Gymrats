@@ -395,3 +395,57 @@ width: 100%;
         font-size: 1rem;
     }
 }
+
+/* Add to public/nutrition/nutrition.css */
+
+/* Research-specific styles */
+.research-card {
+    background-color: #f9f9f9;
+    border-left: 4px solid #3498db;
+}
+
+.research-link {
+    margin: 15px 0;
+    font-size: 0.9em;
+    background-color: #f0f8ff;
+    padding: 8px 12px;
+    border-radius: 5px;
+}
+
+.research-link i {
+    margin-right: 5px;
+    color: #3498db;
+}
+
+.research-link a {
+    color: #3498db;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.research-link a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+.key-finding {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f0f9ff;
+    border-radius: 5px;
+}
+
+.highlight {
+    font-weight: bold;
+    color: #2980b9;
+}
+
+/* Supplement card styling */
+.supplement-card {
+    background-color: #f8f9fa;
+    border-left: 4px solid #27ae60;
+}
+
+.rating {
+    color: #f39c12;
+    letter-spacing: 2

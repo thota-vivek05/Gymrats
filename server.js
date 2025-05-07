@@ -118,7 +118,7 @@ const pages = [
     'terms', 'testimonial', 'trainer_form', 'trainer', 'trainers',
     'verifier_form', 'verifier', 'workout_plans', 'userdashboard_b',
     'userdashboard_g', 'userdashboard_p','trainer_login','edit_nutritional_plan',
-    'workoutplanedit','trainerprofile','userprofile'
+    'workoutplanedit','trainerprofile','userprofile','user_exercises','user_nutrition'
 ];
 
 // In server.js - Update the root redirect

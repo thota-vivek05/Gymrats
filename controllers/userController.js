@@ -339,70 +339,180 @@ exports.getBasicDashboard = async (req, res) => {
 };
 
 // Get user profile
+// Add to controllers/userController.js
 exports.getProfile = async (req, res) => {
     try {
-        if (!req.session.user || !req.session.user.id) {
+        // Check if user is logged in
+        if (!req.session || !req.session.user || !req.session.user.id) {
+            console.log("No valid session found - redirecting to login");
             return res.redirect('/auth/login_signup');
         }
 
         const userId = req.session.user.id;
-        const user = await User.findById(userId);
+        console.log("User ID from session:", userId);
+        
+        // Get complete user data from database
+        let user = await User.findById(userId);
         
         if (!user) {
+            console.log("User not found in database - destroying session");
             req.session.destroy();
             return res.redirect('/auth/login_signup');
         }
-
-        // Get user's membership
-        const membership = await Membership.findOne({ user_id: userId });
-        if (!membership) {
-            return res.status(400).send('Membership not found. Please contact support.');
-        }
-
+        
+        console.log("User data from database:", user);
+        
+        // Format user data for display
+        const formattedUser = {
+            _id: user._id,
+            full_name: user.full_name || user.name,
+            name: user.name || '',
+            email: user.email || '',
+            phone: user.phone || '',
+            gender: user.gender || '',
+            height: user.height || '',
+            weight: user.weight || '',
+            age: calculateAge(user.dob), // Calculate age from DOB
+            BMI: user.BMI || '',
+            bodyFat: '', // Not present in current data
+            status: user.status || 'Active',
+            membershipType: user.membershipType || 'Basic',
+            created_at: user.created_at || new Date(),
+            fitness_goals: user.fitness_goals || {},
+            workout_history: user.workout_history || [],
+            membershipFeatures: getMembershipFeatures(user.membershipType)
+        };
+        
+        // Log formatted user data
+        console.log("Formatted user data:", {
+            _id: formattedUser._id,
+            name: formattedUser.name,
+            email: formattedUser.email,
+            membershipType: formattedUser.membershipType
+        });
+        
+        // Render the profile template with user data
         return res.render('userprofile', {
-            user,
-            membership
+            user: formattedUser
         });
     } catch (error) {
-        console.error('Error fetching user profile:', error);
+        console.error("Error in getProfile:", error);
         return res.status(500).render('error', { 
             message: 'Error loading profile. Please try again.'
         });
     }
 };
 
-// Get exercises page
-// In userController.js
+// Helper function to calculate age from date of birth
+function calculateAge(dob) {
+    if (!dob) return '';
+    
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    
+    return age;
+}
+
+// Helper function to get features based on membership type
+function getMembershipFeatures(membershipType) {
+    const features = {
+        'Basic': [
+            'Access to basic workout plans',
+            'Exercise library access',
+            'Progress tracking',
+            'Community forum access'
+        ],
+        'Gold': [
+            'All Basic features',
+            'Personalized workout recommendations',
+            'Nutrition advice',
+            'Weekly progress reports'
+        ],
+        'Platinum': [
+            'All Gold features',
+            'One-on-one trainer consultations',
+            'Custom meal plans',
+            'Advanced analytics and insights',
+            'Priority support'
+        ]
+    };
+    
+    return features[membershipType] || features['Basic'];
+}
+
+// controllers/userController.js - getExercises method
+// controllers/userController.js - getExercises method
+// controllers/userController.js - getExercises method (complete implementation)
 exports.getExercises = async (req, res) => {
     try {
-        if (!req.session.user || !req.session.user.id) {
+        // Check if user is logged in
+        if (!req.session || !req.session.user || !req.session.user.id) {
+            console.log("No valid session found - redirecting to login");
             return res.redirect('/auth/login_signup');
         }
 
         const userId = req.session.user.id;
-        const user = await User.findById(userId);
+        console.log("User ID from session:", userId);
+        
+        // Get user data from database
+        let user = await User.findById(userId);
         
         if (!user) {
+            console.log("User not found in database - destroying session");
             req.session.destroy();
             return res.redirect('/auth/login_signup');
         }
-
-        const membership = await Membership.findOne({ user_id: userId });
+        
+        console.log("User data:", {
+            id: user._id,
+            name: user.full_name || 'Name not available'
+        });
+        
+        // Get membership data
+        let membership = await Membership.findOne({ user_id: userId });
+        
         if (!membership) {
+            console.log("No membership found for user");
             return res.status(400).send('Membership not found. Please contact support.');
         }
-
-        // Fetch exercises from database
-        const exercises = await Exercise.find({ verified: true });
-
-        // Render the user_exercises template with user data
+        
+        console.log("Membership data:", {
+            plan: membership.plan
+        });
+        
+        // Get list of exercises for the page
+        const categories = [
+            { id: 'chest', name: 'Chest' },
+            { id: 'back', name: 'Back' },
+            { id: 'legs', name: 'Legs' },
+            { id: 'shoulders', name: 'Shoulders' },
+            { id: 'arms', name: 'Arms' },
+            { id: 'abs', name: 'Abs' }
+        ];
+        
+        // Add name to user object for debugging
+        console.log(`User full_name before render: ${user.full_name}`);
+        
+        // Manually ensure user has full_name property for testing
+        if (!user.full_name) {
+            console.log("Adding test name to user");
+            user.full_name = "Test User";
+        }
+        
+        // Render template with data
         return res.render('user_exercises', {
-            user,
-            membership,
-            exercises
+            user: user,
+            membership: membership,
+            categories: categories
         });
     } catch (error) {
-        console.error('Error fetching exercises:', error);
+        console.error("Error in getExercises:", error);
         return res.status(500).render('error', { 
             message: 'Error loading exercises. Please try again.'
         });
@@ -410,39 +520,65 @@ exports.getExercises = async (req, res) => {
 };
 
 // Get user's nutrition
+// Add to controllers/userController.js
+// controllers/userController.js - getNutrition method
 exports.getNutrition = async (req, res) => {
     try {
-        if (!req.session.user || !req.session.user.id) {
+        // Check if user is logged in
+        if (!req.session || !req.session.user || !req.session.user.id) {
+            console.log("No valid session found - redirecting to login");
             return res.redirect('/auth/login_signup');
         }
 
         const userId = req.session.user.id;
-        const user = await User.findById(userId);
+        console.log("User ID from session:", userId);
+        
+        // Get user data from database
+        let user = await User.findById(userId);
         
         if (!user) {
+            console.log("User not found in database - destroying session");
             req.session.destroy();
             return res.redirect('/auth/login_signup');
         }
-
-        const membership = await Membership.findOne({ user_id: userId });
-        if (!membership) {
-            return res.status(400).send('Membership not found. Please contact support.');
+        
+        console.log("User data from database:", user);
+        
+        // Get membership data and attach to user object
+        try {
+            let membership = await Membership.findOne({ user_id: userId });
+            
+            if (membership) {
+                user.membership = membership.plan;
+                console.log("Added membership to user:", user.membership);
+            } else {
+                // Default to basic if no membership found
+                user.membership = "Basic";
+                console.log("No membership found, using default:", user.membership);
+            }
+        } catch (membershipErr) {
+            console.error("Error finding membership:", membershipErr);
+            // Set a default membership if there's an error
+            user.membership = "Basic";
         }
-
-        const nutritionPlans = await NutritionPlan.find({ 
-            verified: true, 
-            membershipLevel: membership.plan.charAt(0).toUpperCase() + membership.plan.slice(1)
+        
+        // Log what we're sending to the template
+        console.log("Data being sent to template:", {
+            user: {
+                id: user._id,
+                name: user.name,
+                membership: user.membership
+            }
         });
-
+        
+        // Render template with user data that includes membership
         return res.render('user_nutrition', {
-            user,
-            nutritionPlans,
-            membership
+            user: user
         });
     } catch (error) {
-        console.error('Error fetching nutrition data:', error);
+        console.error("Error in getNutrition:", error);
         return res.status(500).render('error', { 
-            message: 'Error loading nutrition data. Please try again.'
+            message: 'Error loading nutrition page. Please try again.'
         });
     }
 };

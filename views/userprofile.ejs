@@ -5,56 +5,63 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>GymRats - User Profile</title>
         <link rel="stylesheet" type="text/css" href="/userdashboard/userdashboard.css" />
-        <link rel="stylesheet" type="text/css" href="/public/userprofile/userprofile.css" />
+        <link rel="stylesheet" type="text/css" href="/userprofile/userprofile.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
     </head>
     <body>
-        <div class="main-navbar">
-            <header>
-                <!-- Header Branding -->
-                <div class="brand-logo">
-                    <a href="/home" class="brand-name">GymRats</a>
-                </div>
-                
-                <div class="nav-menu">
-                    <a href="/home">Home</a>
-                    <a href="/isolation">Exercises</a>
-                    <a href="/nutrition">Nutrition</a>
-                    <a href="/blog">Blog</a>
-                    <a href="/about">About</a>
-                </div>
-                
-                <div class="right-container">
-                    <div class="search-container">
-                        <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
-                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-                    </div>
-                    
-                    <div class="user-profile">
-                        <a href="/userprofile" class="active">
-                            <span>Anvesh</span>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="mobile-menu-icon" id="menuIcon">
-                    <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
-                </div>
-
-                <div class="mobile-sidebar" id="sideNavbar">
-                    <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
-                    <a href="/home">Home</a>
-                    <a href="/isolation">Exercises</a>
-                    <a href="/nutrition">Nutrition</a>
-                    <a href="/blog">Blog</a>
-                    <a href="/about">About</a>
-                    <div class="sidebar-profile">
-                        <span>Anvesh</span>
-                    </div>
-                </div>
-            </header>
+        <!-- Replace the current header section in userprofile.ejs -->
+<div class="main-navbar">
+    <header>
+        <!-- Header Branding -->
+        <div class="brand-logo">
+            <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>" class="brand-name">GymRats</a>
         </div>
+        
+        <div class="nav-menu">
+            <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>">Home</a>
+            <a href="/exercises">Exercises</a>
+            <a href="/nutrition">Nutrition</a>
+        </div>
+        
+        <div class="right-container">
+            <div class="search-container">
+                <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
+                <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+            </div>
+            
+            <div class="user-profile">
+                <a href="/userprofile" class="active">
+                    <% if (user && user.name) { %>
+                        <span><%= user.name %></span>
+                    <% } else { %>
+                        <span>User</span>
+                    <% } %>
+                </a>
+            </div>
+        </div>
+
+        <div class="mobile-menu-icon" id="menuIcon">
+            <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
+        </div>
+
+        <div class="mobile-sidebar" id="sideNavbar">
+            <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+            <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>">Home</a>
+            <a href="/exercises">Exercises</a>
+            <a href="/nutrition">Nutrition</a>
+            <div class="sidebar-profile">
+                <a href="/userprofile">
+                    <% if (user && user.name) { %>
+                        <span><%= user.name %></span>
+                    <% } else { %>
+                        <span>User</span>
+                    <% } %>
+                </a>
+            </div>
+        </div>
+    </header>
+</div>
     <!-- Profile Hero Section -->
     <section class="profile-hero">
         <div class="profile-hero-content">
@@ -104,54 +111,56 @@
                     <div class="profile-status-container">
                         <div class="profile-status">Active Member</div>
                     </div>
-                    <div class="profile-details">
-                        <div class="profile-item">
-                            <span class="profile-label">Name:</span>
-                            <span class="profile-value"><%= user ? user.name : 'Anvesh Kumar' %></span>
-                            <input type="text" class="profile-edit-input" value="<%= user ? user.name : 'Anvesh Kumar' %>" style="display: none;">
-                        </div>
-                        <div class="profile-item">
-                            <span class="profile-label">Email:</span>
-                            <span class="profile-value"><%= user ? user.email : 'anvesh@example.com' %></span>
-                            <input type="email" class="profile-edit-input" value="<%= user ? user.email : 'anvesh@example.com' %>" style="display: none;">
-                        </div>
-                        <div class="profile-item">
-                            <span class="profile-label">Phone:</span>
-                            <span class="profile-value"><%= user ? user.phone : '+1 (555) 123-4567' %></span>
-                            <input type="tel" class="profile-edit-input" value="<%= user ? user.phone : '+1 (555) 123-4567' %>" style="display: none;">
-                        </div>
-                        <div class="profile-item">
-                            <span class="profile-label">Age:</span>
-                            <span class="profile-value"><%= user ? user.age : '28' %> years</span>
-                            <input type="number" class="profile-edit-input" value="<%= user ? user.age : '28' %>" style="display: none;">
-                        </div>
-                        <div class="profile-item">
-                            <span class="profile-label">Height:</span>
-                            <span class="profile-value"><%= user ? user.height : '178' %> cm</span>
-                            <input type="number" class="profile-edit-input" value="<%= user ? user.height : '178' %>" style="display: none;">
-                        </div>
-                        <div class="profile-item">
-                            <span class="profile-label">Weight:</span>
-                            <span class="profile-value"><%= user ? user.weight : '75' %> kg</span>
-                            <input type="number" class="profile-edit-input" value="<%= user ? user.weight : '75' %>" style="display: none;">
-                        </div>
-                        <div class="profile-item">
-                            <span class="profile-label">Body Fat:</span>
-                            <span class="profile-value"><%= user ? user.bodyFat : '18' %>%</span>
-                            <input type="number" class="profile-edit-input" value="<%= user ? user.bodyFat : '18' %>" style="display: none;">
-                        </div>
-                        <div class="profile-item">
-                            <span class="profile-label">Fitness Goal:</span>
-                            <span class="profile-value"><%= user ? user.fitnessGoal : 'Strength & Muscle Gain' %></span>
-                            <select class="profile-edit-input" style="display: none;">
-                                <option <%= user && user.fitnessGoal === 'Strength & Muscle Gain' ? 'selected' : '' %>>Strength & Muscle Gain</option>
-                                <option <%= user && user.fitnessGoal === 'Weight Loss' ? 'selected' : '' %>>Weight Loss</option>
-                                <option <%= user && user.fitnessGoal === 'Endurance' ? 'selected' : '' %>>Endurance</option>
-                                <option <%= user && user.fitnessGoal === 'General Fitness' ? 'selected' : '' %>>General Fitness</option>
-                                <option <%= user && user.fitnessGoal === 'Athletic Performance' ? 'selected' : '' %>>Athletic Performance</option>
-                            </select>
-                        </div>
-                    </div>
+                    <!-- Personal Information section -->
+<!-- Replace the profile-details section in userprofile.ejs -->
+<div class="profile-details">
+    <div class="profile-item">
+        <span class="profile-label">Name:</span>
+        <span class="profile-value"><%= user.full_name || user.name %></span>
+        <input type="text" class="profile-edit-input" value="<%= user.full_name || user.name %>" style="display: none;">
+    </div>
+    <div class="profile-item">
+        <span class="profile-label">Email:</span>
+        <span class="profile-value"><%= user.email %></span>
+        <input type="email" class="profile-edit-input" value="<%= user.email %>" style="display: none;">
+    </div>
+    <div class="profile-item">
+        <span class="profile-label">Phone:</span>
+        <span class="profile-value"><%= user.phone || 'Not provided' %></span>
+        <input type="tel" class="profile-edit-input" value="<%= user.phone || '' %>" style="display: none;">
+    </div>
+    <div class="profile-item">
+        <span class="profile-label">Age:</span>
+        <span class="profile-value">Not provided</span>
+        <input type="number" class="profile-edit-input" value="" style="display: none;">
+    </div>
+    <div class="profile-item">
+        <span class="profile-label">Height:</span>
+        <span class="profile-value"><%= user.height ? (user.height + ' cm') : 'Not provided' %></span>
+        <input type="number" class="profile-edit-input" value="<%= user.height || '' %>" style="display: none;">
+    </div>
+    <div class="profile-item">
+        <span class="profile-label">Weight:</span>
+        <span class="profile-value">Not provided</span>
+        <input type="number" class="profile-edit-input" value="" style="display: none;">
+    </div>
+    <div class="profile-item">
+        <span class="profile-label">Body Fat:</span>
+        <span class="profile-value">Not provided</span>
+        <input type="number" class="profile-edit-input" value="" style="display: none;">
+    </div>
+    <div class="profile-item">
+        <span class="profile-label">Fitness Goal:</span>
+        <span class="profile-value">Not provided</span>
+        <select class="profile-edit-input" style="display: none;">
+            <option>Strength & Muscle Gain</option>
+            <option>Weight Loss</option>
+            <option>Endurance</option>
+            <option>General Fitness</option>
+            <option>Athletic Performance</option>
+        </select>
+    </div>
+</div>
                     <div class="profile-edit-actions" style="display: none;">
                         <button class="save-btn" id="saveProfileBtn">Save Changes</button>
                         <button class="cancel-btn" id="cancelEditBtn">Cancel</button>
@@ -160,42 +169,55 @@
             </div>
 
             <!-- Membership Card -->
-            <div class="profile-card membership-card">
-                <div class="card-header">
-                    <h2>Membership Details</h2>
-                </div>
-                <div class="profile-content">
-                    <div class="membership-status">
-                        <div class="membership-badge premium">Premium Member</div>
-                        <p class="membership-since">Member since: <%= membership ? membership.since : 'March 15, 2023' %></p>
-                    </div>
-                    <div class="membership-details">
-                        <div class="membership-item">
-                            <span class="membership-label">Plan:</span>
-                            <span class="membership-value"><%= membership ? membership.plan : 'Annual Premium' %></span>
-                        </div>
-                        <div class="membership-item">
-                            <span class="membership-label">Renewal Date:</span>
-                            <span class="membership-value"><%= membership ? membership.renewalDate : 'March 15, 2026' %></span>
-                        </div>
-                        <div class="membership-item">
-                            <span class="membership-label">Status:</span>
-                            <span class="membership-value active"><%= membership ? membership.status : 'Active' %></span>
-                        </div>
-                    </div>
-                    <div class="membership-features">
-                        <h3>Features Included:</h3>
-                        <ul class="features-list">
-                            <% const defaultFeatures = ['Unlimited workout plans', 'Personal trainer consultations', 'Nutrition planning', 'Advanced progress tracking']; %>
-                            <% const featuresArr = membership && membership.features ? membership.features : defaultFeatures; %>
-                            <% featuresArr.forEach(feature => { %>
-                                <li><i class="fas fa-check"></i> <%= feature %></li>
-                            <% }); %>
-                        </ul>
-                    </div>
-                    <!-- Removed the "Manage Subscription" button as requested -->
-                </div>
+            <!-- Simple fix for userprofile.ejs - replace the membership section -->
+
+<!-- Membership Card -->
+<div class="profile-card membership-card">
+    <div class="card-header">
+        <h2>Membership Details</h2>
+    </div>
+    <div class="profile-content">
+        <div class="membership-status">
+            <div class="membership-badge premium">
+                <%= user && user.membershipType ? user.membershipType : 'Basic' %> Member
             </div>
+            <p class="membership-since">Member since: 
+                <% if (user && user.created_at) { %>
+                    <%= new Date(user.created_at).toLocaleDateString() %>
+                <% } else { %>
+                    March 15, 2023
+                <% } %>
+            </p>
+        </div>
+        <div class="membership-details">
+            <div class="membership-item">
+                <span class="membership-label">Plan:</span>
+                <span class="membership-value">
+                    <%= user && user.membershipType ? user.membershipType : 'Basic' %>
+                </span>
+            </div>
+            <div class="membership-item">
+                <span class="membership-label">Renewal Date:</span>
+                <span class="membership-value">March 15, 2024</span>
+            </div>
+            <div class="membership-item">
+                <span class="membership-label">Status:</span>
+                <span class="membership-value active">
+                    <%= user && user.status ? user.status : 'Active' %>
+                </span>
+            </div>
+        </div>
+        <div class="membership-features">
+            <h3>Features Included:</h3>
+            <ul class="features-list">
+                <li><i class="fas fa-check"></i> Unlimited workout plans</li>
+                <li><i class="fas fa-check"></i> Personal trainer consultations</li>
+                <li><i class="fas fa-check"></i> Nutrition planning</li>
+                <li><i class="fas fa-check"></i> Advanced progress tracking</li>
+            </ul>
+        </div>
+    </div>
+</div>
         </div>
 
         <!-- Statistics Card -->
@@ -256,44 +278,55 @@
                 <button class="view-all-btn">View All</button>
             </div>
             <div class="profile-content">
-                <div class="workout-history">
-                    <!-- Loop through recent workouts -->
-                    <% const recentWorkouts = workouts ? workouts.slice(0, 3) : [ 
-                        { day: '16', month: 'MAR', name: 'HIIT Training', duration: '45 min', calories: '450', exercises: '4', rating: 4 },
-                        { day: '14', month: 'MAR', name: 'Strength Training', duration: '60 min', calories: '380', exercises: '6', rating: 5 },
-                        { day: '12', month: 'MAR', name: 'Cardio Run', duration: '30 min', calories: '320', exercises: '1', rating: 4 }
-                    ]; %>
-                    <% recentWorkouts.forEach(workout => { %>
-                        <div class="workout-item">
-                            <div class="workout-date">
-                                <div class="date-circle">
-                                    <span class="day"><%= workout.day %></span>
-                                    <span class="month"><%= workout.month %></span>
-                                </div>
-                            </div>
-                            <div class="workout-details">
-                                <div class="workout-name"><%= workout.name %></div>
-                                <div class="workout-stats">
-                                    <span><i class="fas fa-clock"></i> <%= workout.duration %></span>
-                                    <span><i class="fas fa-fire"></i> <%= workout.calories %> calories</span>
-                                    <span><i class="fas fa-dumbbell"></i> <%= workout.exercises %> exercises</span>
-                                </div>
-                            </div>
-                            <div class="workout-rating">
-                                <div class="stars">
-                                    <% for (let i = 1; i <= 5; i++) { %>
-                                        <% if (i <= workout.rating) { %>
-                                            <i class="fas fa-star"></i>
-                                        <% } else { %>
-                                            <i class="far fa-star"></i>
-                                        <% } %>
-                                    <% } %>
-                                </div>
-                                <button class="details-btn">Details</button>
-                            </div>
-                        </div>
-                    <% }); %>
+                <!-- Replace the workout history section in userprofile.ejs -->
+<div class="workout-history">
+    <!-- Loop through recent workouts -->
+    <% 
+    // Default workouts if none exist in the database
+    const mockWorkouts = [
+        { day: '16', month: 'MAR', name: 'HIIT Training', duration: '45 min', calories: '450', exercises: '4', rating: 4 },
+        { day: '14', month: 'MAR', name: 'Strength Training', duration: '60 min', calories: '380', exercises: '6', rating: 5 },
+        { day: '12', month: 'MAR', name: 'Cardio Run', duration: '30 min', calories: '320', exercises: '1', rating: 4 }
+    ];
+    
+    // Check if user has workout history
+    let recentWorkouts = [];
+    if (user && user.workout_history && Array.isArray(user.workout_history)) {
+        recentWorkouts = user.workout_history.slice(0, 3);
+    } else {
+        // Use empty array instead of mocks since we don't want to display fake data
+        recentWorkouts = [];
+    }
+    %>
+    
+    <% if (recentWorkouts.length > 0) { %>
+        <% recentWorkouts.forEach(workout => { %>
+            <div class="workout-item" data-workout-id="<%= workout.id || '' %>">
+                <div class="workout-date">
+                    <span class="workout-day"><%= workout.day %></span>
+                    <span class="workout-month"><%= workout.month %></span>
                 </div>
+                <div class="workout-info">
+                    <h3 class="workout-name"><%= workout.name %></h3>
+                    <div class="workout-stats">
+                        <span><i class="fas fa-clock"></i> <%= workout.duration %></span>
+                        <span><i class="fas fa-fire-alt"></i> <%= workout.calories %> cal</span>
+                        <span><i class="fas fa-dumbbell"></i> <%= workout.exercises %> exercises</span>
+                    </div>
+                </div>
+                <div class="workout-rating">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                        <i class="fas fa-star <%= i <= workout.rating ? 'active' : '' %>"></i>
+                    <% } %>
+                </div>
+            </div>
+        <% }); %>
+    <% } else { %>
+        <div class="no-workouts-message">
+            <p>No workout history available yet. Start tracking your workouts to see them here!</p>
+        </div>
+    <% } %>
+</div>
             </div>
         </div>
 
