@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>GymRats - Trainer Profile</title>
+        <link rel="stylesheet" type="text/css" href="/public/trainerprofile/trainerprofile.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    </head>
+    <body>
+        <div class="main-navbar">
+            <header>
+                <!-- Header Branding -->
+                <div class="brand-logo">
+                    <a href="/home" class="brand-name">GymRats</a>
+                </div>
+                
+                <div class="nav-menu">
+                    <a href="/home">Home</a>
+                    <a href="/isolation">Exercises</a>
+                    <a href="/nutrition">Nutrition</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/about">About</a>
+                </div>
+                
+                <div class="right-container">
+                    <div class="search-container">
+                        <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
+                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                    </div>
+                    
+                    <div class="user-profile">
+                        <a href="/userprofile" class="active">
+                            <span>Anvesh</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="mobile-menu-icon" id="menuIcon">
+                    <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
+                </div>
+
+                <div class="mobile-sidebar" id="sideNavbar">
+                    <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+                    <a href="/home">Home</a>
+                    <a href="/isolation">Exercises</a>
+                    <a href="/nutrition">Nutrition</a>
+                    <a href="/blog">Blog</a>
+                    <a href="/about">About</a>
+                    <div class="sidebar-profile">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" class="sidebar-profile-img" />
+                        <span>Anvesh</span>
+                    </div>
+                </div>
+            </header>
+        </div>
+
+        <!-- Profile Hero Section -->
+        <section class="profile-hero">
+            <div class="profile-hero-content">
+                <h1>My Trainer Profile</h1>
+                <p>View and manage your professional information and training statistics</p>
+            </div>
+        </section>
+
+        <!-- Main Content Area -->
+        <div class="profile-container">
+            <!-- Profile Overview -->
+            <div class="profile-grid">
+                <!-- Trainer Information Card -->
+                <div class="profile-card trainer-info-card">
+                    <div class="card-header">
+                        <h2>Personal Information</h2>
+                        <button class="edit-btn" id="editProfileBtn"><i class="fas fa-edit"></i> Edit</button>
+                    </div>
+                    <div class="profile-content">
+                        <div class="trainer-status-container">
+                            <div class="trainer-status">Certified Trainer</div>
+                        </div>
+                        <div class="profile-details">
+                            <div class="profile-item">
+                                <span class="profile-label">Name:</span>
+                                <span class="profile-value"><%= trainer ? trainer.name : 'John Doe' %></span>
+                                <input type="text" class="profile-edit-input" value="<%= trainer ? trainer.name : 'John Doe' %>" style="display: none;">
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Email:</span>
+                                <span class="profile-value"><%= trainer ? trainer.email : 'john.doe@gymrats.com' %></span>
+                                <input type="email" class="profile-edit-input" value="<%= trainer ? trainer.email : 'john.doe@gymrats.com' %>" style="display: none;">
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Phone:</span>
+                                <span class="profile-value"><%= trainer ? trainer.phone : '+1 (555) 987-6543' %></span>
+                                <input type="tel" class="profile-edit-input" value="<%= trainer ? trainer.phone : '+1 (555) 987-6543' %>" style="display: none;">
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Experience:</span>
+                                <span class="profile-value"><%= trainer ? trainer.experience : '8 years' %></span>
+                                <input type="text" class="profile-edit-input" value="<%= trainer ? trainer.experience : '8 years' %>" style="display: none;">
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Specialization:</span>
+                                <span class="profile-value"><%= trainer ? trainer.specialization : 'Strength & Conditioning' %></span>
+                                <select class="profile-edit-input" style="display: none;">
+                                    <option <%= trainer && trainer.specialization === 'Strength & Conditioning' ? 'selected' : '' %>>Strength & Conditioning</option>
+                                    <option <%= trainer && trainer.specialization === 'Weight Loss' ? 'selected' : '' %>>Weight Loss</option>
+                                    <option <%= trainer && trainer.specialization === 'Bodybuilding' ? 'selected' : '' %>>Bodybuilding</option>
+                                    <option <%= trainer && trainer.specialization === 'HIIT Training' ? 'selected' : '' %>>HIIT Training</option>
+                                    <option <%= trainer && trainer.specialization === 'Sports Performance' ? 'selected' : '' %>>Sports Performance</option>
+                                </select>
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Availability:</span>
+                                <span class="profile-value"><%= trainer ? trainer.availability : 'Mon-Fri, 6am-7pm' %></span>
+                                <input type="text" class="profile-edit-input" value="<%= trainer ? trainer.availability : 'Mon-Fri, 6am-7pm' %>" style="display: none;">
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Hourly Rate:</span>
+                                <span class="profile-value">$<%= trainer ? trainer.hourlyRate : '65' %></span>
+                                <input type="number" class="profile-edit-input" value="<%= trainer ? trainer.hourlyRate : '65' %>" style="display: none;">
+                            </div>
+                        </div>
+                        <div class="profile-edit-actions" style="display: none;">
+                            <button class="save-btn" id="saveProfileBtn">Save Changes</button>
+                            <button class="cancel-btn" id="cancelEditBtn">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certifications Card -->
+                <div class="profile-card certifications-card">
+                    <div class="card-header">
+                        <h2>Certifications</h2>
+                        <button class="edit-btn" id="addCertBtn"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                    <div class="profile-content">
+                        <% const defaultCertifications = [
+                            { name: 'NASM Certified Personal Trainer', date: 'Jan 2018', verified: true },
+                            { name: 'ACE Fitness Nutrition Specialist', date: 'Mar 2019', verified: true },
+                            { name: 'ISSA Strength & Conditioning', date: 'Nov 2020', verified: true },
+                            { name: 'TRX Suspension Training Course', date: 'Feb 2021', verified: true }
+                        ]; %>
+                        
+                        <% const certificationsList = certifications ? certifications : defaultCertifications; %>
+                        <% certificationsList.forEach(cert => { %>
+                            <div class="certification-item">
+                                <div class="certification-details">
+                                    <div class="certification-name"><%= cert.name %></div>
+                                    <div class="certification-date">Obtained: <%= cert.date %></div>
+                                </div>
+                                <% if(cert.verified) { %>
+                                    <div class="certification-verified">
+                                        <i class="fas fa-check-circle"></i> Verified
+                                    </div>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trainer Bio Card -->
+            <div class="profile-wide-card">
+                <div class="card-header">
+                    <h2>Professional Bio</h2>
+                    <button class="edit-btn" id="editBioBtn"><i class="fas fa-edit"></i> Edit</button>
+                </div>
+                <div class="profile-content">
+                    <div class="trainer-bio">
+                        <% const defaultBio = "I'm a dedicated fitness professional with over 8 years of experience helping clients achieve their fitness goals. My approach combines evidence-based training methods with personalized attention to ensure each client reaches their full potential. I specialize in strength and conditioning, with additional expertise in nutritional guidance and weight management. My training philosophy emphasizes functional movement, progressive overload, and sustainable habit formation. I believe that fitness is a journey, not a destination, and I'm committed to supporting my clients every step of the way. Whether you're looking to build muscle, lose weight, or improve athletic performance, I provide the knowledge, motivation, and accountability you need to succeed."; %>
+                        
+                        <p><%= trainer && trainer.bio ? trainer.bio : defaultBio %></p>
+                    </div>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Card -->
+            <div class="profile-wide-card">
+                <div class="card-header">
+                    <h2>My Training Statistics</h2>
+                    <div class="card-actions">
+                        <select id="statsTimeframeSelect" class="select-dropdown">
+                            <option value="month">Last Month</option>
+                            <option value="3months">Last 3 Months</option>
+                            <option value="6months">Last 6 Months</option>
+                            <option value="year">Last Year</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="stats-content">
+                    <div class="stats-summary">
+                        <div class="stat-summary-card">
+                            <div class="stat-icon"><i class="fas fa-users"></i></div>
+                            <div class="stat-number" id="clientCount">14</div>
+                            <div class="stat-label">Active Clients</div>
+                        </div>
+                        <div class="stat-summary-card">
+                            <div class="stat-icon"><i class="fas fa-dumbbell"></i></div>
+                            <div class="stat-number" id="sessionCount">86</div>
+                            <div class="stat-label">Sessions Completed</div>
+                        </div>
+                        <div class="stat-summary-card">
+                            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                            <div class="stat-number" id="hoursCount">128</div>
+                            <div class="stat-label">Training Hours</div>
+                        </div>
+                        <div class="stat-summary-card">
+                            <div class="stat-icon"><i class="fas fa-star"></i></div>
+                            <div class="stat-number" id="ratingAvg">4.8</div>
+                            <div class="stat-label">Average Rating</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts section removed as requested -->
+                </div>
+            </div>
+
+            <!-- Weekly Schedule Card removed as requested -->
+
+            <!-- Client Testimonials -->
+            <div class="profile-wide-card">
+                <div class="card-header">
+                    <h2>Client Testimonials</h2>
+                </div>
+                <div class="profile-content">
+                    <% const defaultTestimonials = [
+                        { text: "Working with John has completely transformed my approach to fitness. His knowledge and personalized training plans helped me lose 15kg in 6 months while building muscle. Highly recommend!", author: "Anvesh Kumar", title: "Client for 1 year", rating: 5 },
+                        { text: "John's attention to detail with form and technique has helped me overcome my back issues while getting stronger. His nutritional guidance was also invaluable for my weight loss journey.", author: "Rahul Sharma", title: "Client for 8 months", rating: 5 },
+                        { text: "I've worked with several trainers before, but John's holistic approach sets him apart. He understands how to balance pushing your limits with sustainable progress.", author: "Vivek Singh", title: "Client for 6 months", rating: 4 }
+                    ]; %>
+                    
+                    <% const testimonialsList = testimonials ? testimonials : defaultTestimonials; %>
+                    <% testimonialsList.forEach(testimonial => { %>
+                        <div class="testimonial-item">
+                            <div class="testimonial-text">
+                                "<%= testimonial.text %>"
+                            </div>
+                            <div class="testimonial-author">
+                                <div>
+                                    <div class="testimonial-author-name"><%= testimonial.author %></div>
+                                    <div class="testimonial-author-title"><%= testimonial.title %></div>
+                                </div>
+                                <div class="testimonial-rating">
+                                    <% for(let i = 0; i < testimonial.rating; i++) { %>
+                                        <i class="fas fa-star"></i>
+                                    <% } %>
+                                    <% for(let i = testimonial.rating; i < 5; i++) { %>
+                                        <i class="far fa-star"></i>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>GymRats</h3>
+                    <ul>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/trainers">Our Trainers</a></li>
+                        <li><a href="/testimonial">Testimonials</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="/isolation">Exercise Guide</a></li>
+                        <li><a href="/nutrition">Nutrition Tips</a></li>
+                        <li><a href="/workout_plans">Workout Plans</a></li>
+                        <li><a href="/calculators">Calculators</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="/contact">Contact Us</a></li>
+                        <li><a href="/about">About us</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                        <li><a href="/privacy_policy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Connect With Us</h3>
+                    <ul>
+                        <li><a href="/login_signup">Become a Trainer</a></li>
+                        <li><a href="/verifier_login">Become a Verifier</a></li>
+                    </ul>
+                    <div class="social-icons">
+                        <a href="#"><img src="/userdashboard/icons8-facebook.svg" alt="Facebook"></a>
+                        <a href="#"><img src="/userdashboard/icons8-instagram.svg" alt="Instagram"></a>
+                        <a href="#"><img src="/userdashboard/icons8-youtube.svg" alt="YouTube"></a>
+                    </div>
+                    <p class="copyright">GymRats © 2025. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- JavaScript for Trainer Profile -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Mobile menu functionality
+                const menuIcon = document.getElementById('menuIcon');
+                const closeBtn = document.getElementById('closeBtn');
+                const sideNavbar = document.getElementById('sideNavbar');
+
+                if (menuIcon && closeBtn && sideNavbar) {
+                    menuIcon.addEventListener('click', function() {
+                        sideNavbar.style.width = '250px';
+                    });
+
+                    closeBtn.addEventListener('click', function() {
+                        sideNavbar.style.width = '0';
+                    });
+                }
+
+                // Profile editing functionality
+                const editProfileBtn = document.getElementById('editProfileBtn');
+                const saveProfileBtn = document.getElementById('saveProfileBtn');
+                const cancelEditBtn = document.getElementById('cancelEditBtn');
+                
+                editProfileBtn.addEventListener('click', function() {
+                    enableProfileEditing();
+                });
+                
+                saveProfileBtn.addEventListener('click', function() {
+                    saveProfileChanges();
+                });
+                
+                cancelEditBtn.addEventListener('click', function() {
+                    cancelProfileEditing();
+                });
+
+                // Stats timeframe selection
+                const statsTimeframeSelect = document.getElementById('statsTimeframeSelect');
+                if (statsTimeframeSelect) {
+                    statsTimeframeSelect.addEventListener('change', function() {
+                        updateStatistics(this.value);
+                    });
+                }
+
+                // Schedule tabs
+                const scheduleTabs = document.querySelectorAll('.schedule-tab');
+                scheduleTabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        scheduleTabs.forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                        // In a real application, you would load the appropriate schedule here
+                    });
+                });
+
+                // Initialize charts
+                setupCharts();
+            });
+
+            function enableProfileEditing() {
+                // Hide profile values, show edit inputs
+                document.querySelectorAll('.profile-value').forEach(value => {
+                    value.style.display = 'none';
+                });
+                
+                document.querySelectorAll('.profile-edit-input').forEach(input => {
+                    input.style.display = 'block';
+                });
+                
+                // Show edit actions
+                document.querySelector('.profile-edit-actions').style.display = 'flex';
+                
+                // Hide edit button
+                document.getElementById('editProfileBtn').style.display = 'none';
+            }
+
+            function saveProfileChanges() {
+                // In a real application, you would save the changes to a database here
+                
+                // For this example, we'll update the display values
+                const inputs = document.querySelectorAll('.profile-edit-input');
+                const values = document.querySelectorAll('.profile-value');
+                
+                inputs.forEach((input, index) => {
+                    if (values[index]) {
+                        values[index].textContent = input.value;
+                        
+                        // For the hourly rate, add the $ sign back
+                        if (index === 6) { // Assuming hourly rate is the 7th item (index 6)
+                            values[index].textContent = '$' + input.value;
+                        }
+                    }
+                });
+                
+                cancelProfileEditing();
+            }
+
+            function cancelProfileEditing() {
+                // Show profile values, hide edit inputs
+                document.querySelectorAll('.profile-value').forEach(value => {
+                    value.style.display = 'block';
+                });
+                
+                document.querySelectorAll('.profile-edit-input').forEach(input => {
+                    input.style.display = 'none';
+                });
+                
+                // Hide edit actions
+                document.querySelector('.profile-edit-actions').style.display = 'none';
+                
+                // Show edit button
+                document.getElementById('editProfileBtn').style.display = 'flex';
+            }
+
+            function updateStatistics(timeframe) {
+                // Update summary cards based on timeframe
+                updateSummaryCards(timeframe);
+                
+                // In a real application, you would update the charts with new data
+                // For this example, we'll just console log the timeframe change
+                console.log('Updating statistics for timeframe:', timeframe);
+            }
+
+            function updateSummaryCards(timeframe) {
+                // Sample data for different timeframes
+                const data = {
+                    'month': { clients: 14, sessions: 86, hours: 128, rating: 4.8 },
+                    '3months': { clients: 18, sessions: 215, hours: 322, rating: 4.7 },
+                    '6months': { clients: 22, sessions: 382, hours: 573, rating: 4.7 },
+                    'year': { clients: 28, sessions: 624, hours: 936, rating: 4.6 }
+                };
+                
+                // Update the summary cards with the data for the selected timeframe
+                const stats = data[timeframe];
+                document.getElementById('clientCount').textContent = stats.clients;
+                document.getElementById('sessionCount').textContent = stats.sessions;
+                document.getElementById('hoursCount').textContent = stats.hours;
+                document.getElementById('ratingAvg').textContent = stats.rating;
+            }
+
+            // Chart setup
+            function setupCharts() {
+                // Client Distribution Chart (Pie chart)
+                const clientDistributionCtx = document.getElementById('clientDistributionChart');
+                if (clientDistributionCtx) {
+                    new Chart(clientDistributionCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Strength & Muscle Gain', 'Weight Loss', 'General Fitness', 'Athletic Performance', 'Rehabilitation'],
+                            datasets: [{
+                                data: [40, 25, 15, 10, 10],
+                                backgroundColor: [
+                                    '#8A2BE2',
+                                    '#4CAF50',
+                                    '#FFC107',
+                                    '#FF5722',
+                                    '#2196F3'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        color: '#aaa',
+                                        font: {
+                                            size: 11
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Training Type Chart (Bar chart)
+                const trainingTypeCtx = document.getElementById('trainingTypeChart');
+                if (trainingTypeCtx) {
+                    new Chart(trainingTypeCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Strength', 'HIIT', 'Cardio', 'Flexibility', 'Group'],
+                            datasets: [{
+                                label: 'Hours',
+                                data: [42, 28, 18, 16, 24],
+                                backgroundColor: '#8A2BE2',
+                                borderRadius: 5
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        color: '#aaa'
+                                    },
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)'
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: '#aaa'
+                                    },
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Bio editing functionality
+            document.getElementById('editBioBtn').addEventListener('click', function() {
+                const bioText = document.querySelector('.trainer-bio p').textContent;
+                document.querySelector('.trainer-bio').innerHTML = `<textarea style="width: 100%; height: 200px; background-color: #222; color: #f1f1f1; border: 1px solid #444; padding: 10px; border-radius: 5px; resize: vertical;">${bioText}</textarea>`;
+                
+                // Change the edit button to save/cancel
+                const editBtn = document.getElementById('editBioBtn');
+                editBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+                editBtn.removeEventListener('click', arguments.callee);
+                
+                editBtn.addEventListener('click', function saveBio() {
+                    const newBio = document.querySelector('.trainer-bio textarea').value;
+                    document.querySelector('.trainer-bio').innerHTML = `<p>${newBio}</p>`;
+                    
+                    // Reset the button
+                    editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                    editBtn.removeEventListener('click', saveBio);
+                    
+                    // Add back the original event listener
+                    editBtn.addEventListener('click', function() {
+                        const bioText = document.querySelector('.trainer-bio p').textContent;
+                        document.querySelector('.trainer-bio').innerHTML = `<textarea style="width: 100%; height: 200px; background-color: #222; color: #f1f1f1; border: 1px solid #444; padding: 10px; border-radius: 5px; resize: vertical;">${bioText}</textarea>`;
+                        
+                        // Change the edit button to save/cancel
+                        const editBtn = document.getElementById('editBioBtn');
+                        editBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+                        editBtn.removeEventListener('click', arguments.callee);
+                        editBtn.addEventListener('click', saveBio);
+                    });
+                });
+            });
+
+            // Add certification functionality
+            document.getElementById('addCertBtn').addEventListener('click', function() {
+                alert('Add certification form would appear here');
+                // In a real application, you would show a modal or form to add a new certification
+            });
+        </script>
+    </body>
+</html>
