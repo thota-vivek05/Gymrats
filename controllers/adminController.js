@@ -13,7 +13,7 @@ const adminController = {
     try {
       // Authentication check
       if (!req.session.userId) {
-        return res.redirect('/login_signup');
+        return res.redirect('/admin_login');
       }
 
       // Get counts from database

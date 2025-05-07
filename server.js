@@ -73,14 +73,13 @@ app.get('/admin_exercises', (req, res) => res.redirect('/admin/exercises'));
 app.get('/admin_workouts', (req, res) => res.redirect('/admin/workout-plans'));
 app.get('/admin_verifier', (req, res) => res.redirect('/admin/verifiers'));
 app.get('/admin_settings', (req, res) => res.redirect('/admin/settings'));
-
 // Routes for static pages
 const pages = [
     'about', 'blog', 'calculators', 'contact', 'home', 'isolation',
     'login_signup', 'nutrition', 'privacy_policy', 'schedule', 'signup',
     'terms', 'testimonial', 'trainer_form', 'trainer', 'trainers',
     'verifier_form', 'verifier', 'workout_plans', 'userdashboard_b',
-    'userdashboard_g', 'userdashboard_p','verifier_login'
+    'userdashboard_g', 'userdashboard_p','verifier_login','admin_login'
 ];
 
 pages.forEach(page => {
