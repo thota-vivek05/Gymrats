@@ -1,40 +1,34 @@
 const bcrypt = require('bcryptjs');
-const User = require('../model/User'); // Adjust path based on your project structure
+const User = require('../model/User');
 
-// Login Controller
 const loginUser = async (req, res) => {
     try {
         const { email, password, loginMembershipPlan } = req.body;
 
         console.log('Login request received:', { email, loginMembershipPlan });
 
-        // Validate input
         if (!email || !password || !loginMembershipPlan) {
             console.log('Validation failed: Missing fields');
             return res.status(400).json({ error: 'All fields are required' });
         }
 
-        // Find user by email
         const user = await User.findOne({ email });
         if (!user) {
             console.log('User not found:', email);
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        // Check password
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
             console.log('Password mismatch for:', email);
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        // Validate membership plan
         if (user.membershipType.toLowerCase() !== loginMembershipPlan.toLowerCase()) {
             console.log('Membership plan mismatch:', { user: user.membershipType, input: loginMembershipPlan });
             return res.status(400).json({ error: 'Selected membership plan does not match user membership' });
         }
 
-        // Set user session
         if (!req.session) {
             console.error('Session middleware not initialized');
             return res.status(500).json({ error: 'Session not available. Please try again later.' });
@@ -47,7 +41,6 @@ const loginUser = async (req, res) => {
         };
         console.log('Session set for user:', user.email);
 
-        // Determine redirect based on membershipType
         let redirectUrl;
         switch (user.membershipType.toLowerCase()) {
             case 'basic':
@@ -61,7 +54,7 @@ const loginUser = async (req, res) => {
                 break;
             default:
                 console.log('Unknown membership type:', user.membershipType);
-                redirectUrl = '/dashboard'; // Fallback
+                redirectUrl = '/dashboard';
         }
         console.log('Redirecting to:', redirectUrl);
 
@@ -72,7 +65,6 @@ const loginUser = async (req, res) => {
     }
 };
 
-// Signup Controller
 const signupUser = async (req, res) => {
     try {
         const {
@@ -89,10 +81,17 @@ const signupUser = async (req, res) => {
             cardNumber,
             expirationDate,
             cvv,
-            terms
+            terms,
+            weight,
+            height
         } = req.body;
 
-        // Validate input
+        console.log('Signup request received:', {
+            userFullName, dateOfBirth, gender, userEmail, phoneNumber,
+            membershipPlan, membershipDuration, cardType, cardNumber,
+            expirationDate, cvv, terms, weight, height
+        });
+
         if (
             !userFullName ||
             !dateOfBirth ||
@@ -107,39 +106,59 @@ const signupUser = async (req, res) => {
             !cardNumber ||
             !expirationDate ||
             !cvv ||
-            !terms
+            !terms ||
+            weight === undefined
         ) {
-            return res.status(400).json({ error: 'All fields are required' });
+            console.log('Validation failed: Missing fields');
+            return res.status(400).json({ error: 'All fields are required, including weight' });
         }
 
-        // Validate password match
         if (userPassword !== userConfirmPassword) {
+            console.log('Validation failed: Passwords do not match');
             return res.status(400).json({ error: 'Passwords do not match' });
         }
 
-        // Validate email format
         const emailRegex = /^\S+@\S+\.\S+$/;
         if (!emailRegex.test(userEmail)) {
+            console.log('Validation failed: Invalid email:', userEmail);
             return res.status(400).json({ error: 'Invalid email address' });
         }
 
-        // Validate phone number
         const phoneRegex = /^\+?[\d\s-]{10,}$/;
         if (!phoneRegex.test(phoneNumber)) {
+            console.log('Validation failed: Invalid phone number:', phoneNumber);
             return res.status(400).json({ error: 'Invalid phone number' });
         }
 
-        // Check if email already exists
+        if (isNaN(weight) || weight < 0) {
+            console.log('Validation failed: Invalid weight:', weight);
+            return res.status(400).json({ error: 'Weight must be a non-negative number' });
+        }
+
+        let calculatedBMI = null;
+        if (height !== undefined) {
+            if (isNaN(height) || height < 0) {
+                console.log('Validation failed: Invalid height:', height);
+                return res.status(400).json({ error: 'Height must be a non-negative number' });
+            }
+            const heightInMeters = Number(height) / 100;
+            if (heightInMeters > 0) {
+                calculatedBMI = Number(weight) / (heightInMeters * heightInMeters);
+                calculatedBMI = Math.round(calculatedBMI * 10) / 10;
+                console.log('Calculated BMI:', calculatedBMI);
+            }
+        }
+
         const existingUser = await User.findOne({ email: userEmail });
         if (existingUser) {
+            console.log('Validation failed: Email already registered:', userEmail);
             return res.status(400).json({ error: 'Email already registered' });
         }
 
-        // Hash password
         const saltRounds = 10;
         const password_hash = await bcrypt.hash(userPassword, saltRounds);
+        console.log('Password hashed for:', userEmail);
 
-        // Create new user
         const newUser = new User({
             full_name: userFullName,
             email: userEmail,
@@ -148,28 +167,234 @@ const signupUser = async (req, res) => {
             gender: gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase(),
             phone: phoneNumber,
             membershipType: membershipPlan.charAt(0).toUpperCase() + membershipPlan.slice(1).toLowerCase(),
-            // You might want to store payment info separately or process it via a payment gateway
+            weight: Number(weight),
+            height: height !== undefined ? Number(height) : null,
+            BMI: calculatedBMI
         });
+        console.log('New user object created:', newUser);
 
-        // Save user to database
         await newUser.save();
+        console.log('User saved to MongoDB:', userEmail);
 
-        // Set user session
-        req.session.user = {
-            id: newUser._id,
-            email: newUser.email,
-            full_name: newUser.full_name,
-            membershipType: newUser.membershipType
-        };
+        if (!req.session) {
+            console.error('Session middleware not initialized');
+            console.log('Proceeding without session for user:', userEmail);
+        } else {
+            req.session.user = {
+                id: newUser._id,
+                email: newUser.email,
+                full_name: newUser.full_name,
+                membershipType: newUser.membershipType
+            };
+            console.log('Session set for user:', userEmail);
+        }
 
         res.status(201).json({ message: 'Signup successful', redirect: '/login_signup' });
     } catch (error) {
         console.error('Signup error:', error);
+        if (error.code === 11000) {
+            console.log('MongoDB error: Duplicate email:', userEmail);
+            return res.status(400).json({ error: 'Email already registered' });
+        }
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message);
+            console.log('MongoDB validation errors:', messages);
+            return res.status(400).json({ error: messages.join(', ') });
+        }
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+const getUserDashboard = async (req, res) => {
+    try {
+        if (!req.session || !req.session.user) {
+            console.log('No user session found');
+            return res.redirect('/login_signup?form=login');
+        }
+
+        const userId = req.session.user.id;
+        console.log('Fetching dashboard data for user:', userId);
+
+        const user = await User.findById(userId)
+            .populate('trainer')
+            .populate('workout_history.workoutPlanId')
+            .select('full_name weight fitness_goals workout_history nutrition_history class_schedules');
+        if (!user) {
+            console.log('User not found:', userId);
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+
+        const todayWorkout = user.workout_history.find(w => {
+            const workoutDate = new Date(w.date);
+            return workoutDate >= today && workoutDate < tomorrow;
+        }) || {};
+        const workoutData = {
+            name: todayWorkout.workoutPlanId?.name || 'No Workout Scheduled',
+            duration: todayWorkout.workoutPlanId?.duration || 60,
+            exercises: todayWorkout.exercises || [],
+            progress: todayWorkout.progress || 0,
+            completed: todayWorkout.completed || false,
+            workoutPlanId: todayWorkout.workoutPlanId?._id || null,
+            completedExercises: todayWorkout.exercises?.filter(e => e.completed).length || 0,
+            totalExercises: todayWorkout.exercises?.length || 0
+        };
+
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay());
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
+        const weeklyWorkouts = {
+            completed: user.workout_history.filter(w => {
+                const workoutDate = new Date(w.date);
+                return workoutDate >= weekStart && workoutDate < weekEnd && w.completed;
+            }).length,
+            total: user.workout_history.filter(w => {
+                const workoutDate = new Date(w.date);
+                return workoutDate >= weekStart && workoutDate < weekEnd;
+            }).length
+        };
+
+        const todayNutrition = user.nutrition_history.find(n => {
+            const nutritionDate = new Date(n.date);
+            return nutritionDate >= today && nutritionDate < tomorrow;
+        }) || {};
+
+        const upcomingClass = user.class_schedules.find(c => {
+            const classDate = new Date(c.date);
+            return classDate >= today;
+        }) || null;
+        if (upcomingClass) {
+            upcomingClass.trainerName = user.trainer?.full_name || 'Coach';
+        }
+
+        const exerciseProgress = [
+            {
+                name: 'Bicep Curls',
+                currentWeight: 10,
+                goalWeight: 12,
+                progress: Math.round((10 / 12) * 100),
+                history: [
+                    { week: 'Week 1', weight: 5, date: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 2', weight: 6, date: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 3', weight: 7, date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 4', weight: 8, date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 5', weight: 9, date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 6', weight: 10, date: new Date(today.getTime()) }
+                ],
+                color: '#8A2BE2'
+            },
+            {
+                name: 'Deadlift',
+                currentWeight: 100,
+                goalWeight: 140,
+                progress: Math.round((100 / 140) * 100),
+                history: [
+                    { week: 'Week 1', weight: 60, date: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 2', weight: 70, date: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 3', weight: 75, date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 4', weight: 85, date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 5', weight: 95, date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 6', weight: 100, date: new Date(today.getTime()) }
+                ],
+                color: '#32CD32'
+            },
+            {
+                name: 'Bench Press',
+                currentWeight: 60,
+                goalWeight: 100,
+                progress: Math.round((60 / 100) * 100),
+                history: [
+                    { week: 'Week 1', weight: 40, date: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 2', weight: 45, date: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 3', weight: 48, date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 4', weight: 52, date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 5', weight: 55, date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000) },
+                    { week: 'Week 6', weight: 60, date: new Date(today.getTime()) }
+                ],
+                color: '#FF6347'
+            }
+        ];
+
+        const recommendedFoods = [
+            { name: 'Grilled Chicken Breast', protein: 31, perUnit: '100g', icon: 'fa-drumstick-bite' },
+            { name: 'Whole Eggs', protein: 13, perUnit: '2 eggs', icon: 'fa-egg' },
+            { name: 'Tofu (Firm)', protein: 20, perUnit: '100g', icon: 'fa-seedling' },
+            { name: 'Salmon', protein: 25, perUnit: '100g', icon: 'fa-fish' }
+        ];
+
+        res.render('userdashboard_p', {
+            user,
+            todayWorkout: workoutData,
+            weeklyWorkouts,
+            todayNutrition,
+            upcomingClass,
+            exerciseProgress,
+            recommendedFoods
+        });
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+const completeWorkout = async (req, res) => {
+    try {
+        if (!req.session || !req.session.user) {
+            console.log('No user session found');
+            return res.status(401).json({ error: 'Please log in to complete the workout' });
+        }
+
+        const userId = req.session.user.id;
+        const { workoutPlanId } = req.body;
+
+        if (!workoutPlanId) {
+            console.log('Missing workoutPlanId');
+            return res.status(400).json({ error: 'Workout ID is required' });
+        }
+
+        console.log('Completing workout for user:', userId, 'Workout ID:', workoutPlanId);
+
+        const user = await User.findById(userId);
+        if (!user) {
+            console.log('User not found:', userId);
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const workout = user.workout_history.find(w => w.workoutPlanId && w.workoutPlanId.toString() === workoutPlanId);
+        if (!workout) {
+            console.log('Workout not found:', workoutPlanId);
+            return res.status(404).json({ error: 'Workout not found' });
+        }
+
+        if (workout.completed) {
+            console.log('Workout already completed:', workoutPlanId);
+            return res.status(400).json({ error: 'Workout already completed' });
+        }
+
+        workout.completed = true;
+        workout.progress = 100;
+        workout.exercises.forEach(exercise => {
+            exercise.completed = true;
+        });
+
+        await user.save();
+        console.log('Workout completed successfully:', workoutPlanId);
+
+        res.status(200).json({ message: 'Workout completed successfully' });
+    } catch (error) {
+        console.error('Error completing workout:', error);
         res.status(500).json({ error: 'Server error' });
     }
 };
 
 module.exports = {
     loginUser,
-    signupUser
+    signupUser,
+    getUserDashboard,
+    completeWorkout
 };

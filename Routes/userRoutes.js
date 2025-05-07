@@ -1,16 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/userController'); // Adjust path based on your project structure
+const userController = require('../controllers/userController');
 
-// Render login/signup page
+const isAuthenticated = (req, res, next) => {
+    if (req.session && req.session.user) {
+        return next();
+    }
+    res.redirect('/login_signup?form=login');
+};
+
 router.get('/login_signup', (req, res) => {
     res.render('login_signup', { form: req.query.form || 'login' });
 });
 
-// Login route
 router.post('/login', userController.loginUser);
-
-// Signup route
 router.post('/signup', userController.signupUser);
+router.get('/userdashboard_p', isAuthenticated, userController.getUserDashboard);
+router.post('/complete-workout', isAuthenticated, userController.completeWorkout);
 
 module.exports = router;

@@ -82,6 +82,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const expirationDate = document.getElementById('expirationDate').value;
         const cvv = document.getElementById('cvv').value;
         const terms = document.getElementById('terms').checked;
+        const weight = document.getElementById('weight').value;
+        const height = document.getElementById('height').value;
         
         // Validate form data
         if (!userFullName || !dateOfBirth || !gender || !userEmail || !phoneNumber || !userPassword || 
@@ -105,6 +107,18 @@ document.addEventListener('DOMContentLoaded', function() {
             showError('You must agree to the terms and conditions');
             return;
         }
+
+        // Validate weight
+        if (isNaN(weight) || weight < 20 || weight > 300) {
+            showError('Please enter a valid weight between 20 and 300 kg');
+            return;
+        }
+
+        // Validate height (optional, but if provided, must be valid)
+        if (height && (isNaN(height) || height < 50 || height > 250)) {
+            showError('Please enter a valid height between 50 and 250 cm');
+            return;
+        }
         
         // Make AJAX request to signup endpoint
         fetch('/signup', {
@@ -126,8 +140,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 cardNumber,
                 expirationDate,
                 cvv,
-                terms
-            }),
+                terms,
+                weight,
+                height
+            })
         })
         .then(response => response.json())
         .then(data => {
@@ -189,6 +205,25 @@ function showError(message) {
     setTimeout(() => {
         errorElement.style.display = 'none';
     }, 5000);
+}
+
+function calculateBMI() {
+    const height = parseFloat(document.getElementById('height').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    const bmiField = document.getElementById('bmi');
+
+    // Clear previous value if inputs are invalid
+    if (!height || !weight || height <= 0 || weight <= 0) {
+        bmiField.value = '';
+        return;
+    }
+
+    // Calculate BMI: weight (kg) / (height (m))²
+    const heightInMeters = height / 100;
+    const bmi = weight / (heightInMeters * heightInMeters);
+
+    // Set BMI with 1 decimal place
+    bmiField.value = bmi.toFixed(1);
 }
 
 // Show success message

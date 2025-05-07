@@ -74,6 +74,20 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="height">Height (cm)</label>
+                        <input type="number" class="form-control" id="height" name="height" placeholder="Enter your height in cm" min="50" max="250" required value="<%= locals.height || '' %>" onchange="calculateBMI()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="weight">Weight (kg)</label>
+                        <input type="number" class="form-control" id="weight" name="weight" placeholder="Enter your weight in kg" min="20" max="300" required value="<%= locals.weight || '' %>" onchange="calculateBMI()">
+                    </div>
+                    <div class="form-group">
+                        <label for="bmi">BMI</label>
+                        <input type="number" class="form-control" id="bmi" name="bmi" readonly>
+                    </div>
+                    
+                    <div class="form-group">
                         <label for="gender">Gender</label>
                         <select class="form-control" id="gender" name="gender" required>
                             <option value="">Select</option>

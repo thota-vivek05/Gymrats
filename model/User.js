@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
     height: { 
         type: Number, 
         min: 0,
-        default: null 
+        required: true
     },
     BMI: { 
         type: Number, 
