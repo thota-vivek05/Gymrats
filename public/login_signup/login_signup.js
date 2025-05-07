@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Make AJAX request to login API
-        fetch('/api/login', {
+        fetch('/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Make AJAX request to signup API
-        fetch('/api/signup', {
+        fetch('/auth/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -122,11 +122,25 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Show success message and redirect
-                showMessage('Account created successfully! Redirecting...');
+                // Show success message
+                showMessage(data.message || 'Account created successfully! Please log in.');
+                
+                // Clear form fields
+                document.getElementById('signupForm').reset();
+                
+                // Switch to login form after successful signup
                 setTimeout(() => {
-                    window.location.href = data.redirectUrl;
-                }, 1000);
+                    toggleForm('login');
+                    
+                    // Pre-fill email in login form
+                    document.getElementById('email').value = email;
+                    
+                    // Set membership plan in login form
+                    const loginMembershipPlan = document.getElementById('loginMembershipPlan');
+                    if (loginMembershipPlan) {
+                        loginMembershipPlan.value = membershipPlan;
+                    }
+                }, 1500);
             } else {
                 // Show error message
                 showError(data.message || 'Registration failed. Please try again.');

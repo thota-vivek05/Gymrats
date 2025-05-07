@@ -11,7 +11,6 @@ const PORT = process.env.PORT || 3000;
 
 // Import routes
 const adminRoutes = require('./Routes/adminRoutes');
-const workoutPlanRoutes = require('./Routes/workoutPlanRoutes');
 const publicRoutes = require('./Routes/publicRoutes');
 const userRoutes = require('./Routes/userRoutes');
 const trainerRoutes = require('./Routes/trainerRoutes');
@@ -26,16 +25,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method')); // For PUT/DELETE requests
 
-
-// Session setup
-app.use(
-    session({
-        secret: 'gymrats-secret-key',
-        resave: false,
-        saveUninitialized: false,
-        cookie: { secure: false, maxAge: 3600000 } // 1 hour
-    })
-);
+// Configure session middleware
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 24 * 60 * 60 * 1000 }
+}));
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/gymrats')
@@ -97,7 +93,7 @@ app.use('/verifier', verifierRoutes);
 app.use('/auth', authRoutes);
 
 app.use('/api/admin', adminRoutes);
-app.use('/api/users', userRoutes);
+app.use('user', userRoutes);
 
 module.exports = { isAuth, isTrainer };
 
@@ -124,6 +120,17 @@ const pages = [
     'userdashboard_g', 'userdashboard_p','trainer_login','edit_nutritional_plan',
     'workoutplanedit','trainerprofile','userprofile'
 ];
+
+// In server.js - Update the root redirect
+app.get('/', (req, res) => {
+    // Don't redirect to dashboard here, just to home
+    return res.redirect('/home');
+});
+
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
+});
 
 pages.forEach(page => {
     app.get(`/${page}`, (req, res) => {

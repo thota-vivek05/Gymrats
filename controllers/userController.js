@@ -1,4 +1,4 @@
-// controllers/userController.js
+// controllers/userController.js - Fully updated version
 
 const User = require('../model/User');
 const Exercise = require('../model/Exercise');
@@ -7,63 +7,341 @@ const NutritionPlan = require('../model/NutritionPlan');
 const Trainer = require('../model/Trainer');
 const Membership = require('../model/Membership');
 
-// Get user dashboard based on membership level
-exports.getDashboard = async (req, res) => {
+// Middleware to check if user is authenticated
+exports.isAuthenticated = (req, res, next) => {
+    if (req.session && req.session.user) {
+        return next();
+    }
+    return res.redirect('/auth/login_signup');
+};
+
+// Redirect to appropriate dashboard based on membership
+exports.redirectToDashboard = async (req, res) => {
     try {
-        if (!req.session.user) {
+        if (!req.session.user || !req.session.user.id) {
+            return res.redirect('/auth/login_signup');
+        }
+        
+        const userId = req.session.user.id;
+        let membership;
+        
+        try {
+            membership = await Membership.findOne({ user_id: userId });
+        } catch (err) {
+            console.error('Error finding membership:', err);
+            return res.redirect('/auth/login_signup');
+        }
+        
+        if (!membership) {
+            return res.status(400).send('Membership not found. Please contact support.');
+        }
+        
+        // Redirect to appropriate dashboard based on membership
+       // Redirect to appropriate dashboard based on membership
+switch(membership.plan.toLowerCase()) {
+    case 'platinum':
+        return res.redirect('/userdashboard_p');
+    case 'gold':
+        return res.redirect('/userdashboard_g');
+    case 'basic':
+        return res.redirect('/userdashboard_b');
+    default:
+        return res.redirect('/userdashboard_b');
+}
+    } catch (error) {
+        console.error('Dashboard redirect error:', error);
+        return res.status(500).render('error', { 
+            message: 'Error redirecting to dashboard. Please try again.'
+        });
+    }
+};
+
+// Platinum dashboard
+exports.getPlatinumDashboard = async (req, res) => {
+    try {
+        if (!req.session.user || !req.session.user.id) {
             return res.redirect('/auth/login_signup');
         }
 
         const userId = req.session.user.id;
-        const user = await User.findById(userId);
+        let user;
+        
+        try {
+            user = await User.findById(userId);
+        } catch (err) {
+            console.error('Error finding user:', err);
+            req.session.destroy();
+            return res.redirect('/auth/login_signup');
+        }
         
         if (!user) {
+            req.session.destroy();
             return res.redirect('/auth/login_signup');
         }
 
-        // Find user's membership details
-        const membership = await Membership.findOne({ user_id: userId });
+        // Get user's membership
+        let membership;
+        try {
+            membership = await Membership.findOne({ user_id: userId });
+        } catch (err) {
+            console.error('Error finding membership:', err);
+        }
         
         if (!membership) {
-            return res.redirect('/auth/login_signup');
+            return res.status(400).send('Membership not found. Please contact support.');
+        }
+        
+        // Security check to ensure platinum users access platinum dashboard
+        if (membership.plan.toLowerCase() !== 'platinum') {
+            return res.redirect('/user/dashboard');
         }
 
-        // Load appropriate dashboard based on membership level
-        const dashboardTemplate = `userdashboard_${membership.plan.charAt(0)}`;
+        // Stats for the dashboard
+        const stats = {
+            calories: { current: 1850, goal: 2200 },
+            workouts: { completed: 4, goal: 5 },
+            protein: { current: 85, goal: 90 },
+            weight: 75
+        };
 
-        // Get exercise progress data for the user
-        const exercises = await Exercise.find({ verified: true }).limit(5);
-        
-        // Get workout plans for the user based on membership level
-        const workoutPlans = await WorkoutPlan.find({ 
-            verified: true, 
-            difficulty: membership.plan === 'basic' ? 'Beginner' : 
-                       membership.plan === 'gold' ? 'Intermediate' : 'Advanced'
-        }).limit(3);
+        // Get exercise data
+        let exercises = [];
+        try {
+            exercises = await Exercise.find({ verified: true }).limit(5);
+        } catch (err) {
+            console.error('Error finding exercises:', err);
+        }
 
-        // Get nutrition plans for the user
-        const nutritionPlans = await NutritionPlan.find({ 
-            verified: true, 
-            membershipLevel: membership.plan.charAt(0).toUpperCase() + membership.plan.slice(1)
-        }).limit(2);
+        // Get workout plans
+        let workoutPlans = [];
+        try {
+            workoutPlans = await WorkoutPlan.find({ 
+                verified: true, 
+                difficulty: 'Advanced'
+            }).limit(3);
+        } catch (err) {
+            console.error('Error finding workout plans:', err);
+        }
 
-        res.render(dashboardTemplate, {
+        // Get nutrition plans
+        let nutritionPlans = [];
+        try {
+            nutritionPlans = await NutritionPlan.find({ 
+                verified: true, 
+                membershipLevel: 'Platinum'
+            }).limit(2);
+        } catch (err) {
+            console.error('Error finding nutrition plans:', err);
+        }
+
+        return res.render('userdashboard_p', {
             user,
             exercises,
             workoutPlans,
             nutritionPlans,
-            membership
+            membership,
+            stats
         });
     } catch (error) {
-        console.error('Error fetching user dashboard:', error);
-        res.redirect('/auth/login_signup');
+        console.error('Error in platinum dashboard:', error);
+        return res.status(500).render('error', { 
+            message: 'Error loading dashboard. Please try again.'
+        });
+    }
+};
+
+// Gold dashboard
+exports.getGoldDashboard = async (req, res) => {
+    try {
+        if (!req.session.user || !req.session.user.id) {
+            return res.redirect('/auth/login_signup');
+        }
+
+        const userId = req.session.user.id;
+        let user;
+        
+        try {
+            user = await User.findById(userId);
+        } catch (err) {
+            console.error('Error finding user:', err);
+            req.session.destroy();
+            return res.redirect('/auth/login_signup');
+        }
+        
+        if (!user) {
+            req.session.destroy();
+            return res.redirect('/auth/login_signup');
+        }
+
+        // Get user's membership
+        let membership;
+        try {
+            membership = await Membership.findOne({ user_id: userId });
+        } catch (err) {
+            console.error('Error finding membership:', err);
+        }
+        
+        if (!membership) {
+            return res.status(400).send('Membership not found. Please contact support.');
+        }
+        
+        // Security check to ensure gold users access gold dashboard
+        if (membership.plan.toLowerCase() !== 'gold') {
+            return res.redirect('/user/dashboard');
+        }
+
+        // Stats for the dashboard
+        const stats = {
+            calories: { current: 1850, goal: 2200 },
+            workouts: { completed: 4, goal: 5 },
+            protein: { current: 85, goal: 90 },
+            weight: 75
+        };
+
+        // Get exercise data
+        let exercises = [];
+        try {
+            exercises = await Exercise.find({ verified: true }).limit(5);
+        } catch (err) {
+            console.error('Error finding exercises:', err);
+        }
+
+        // Get workout plans
+        let workoutPlans = [];
+        try {
+            workoutPlans = await WorkoutPlan.find({ 
+                verified: true, 
+                difficulty: 'Intermediate'
+            }).limit(3);
+        } catch (err) {
+            console.error('Error finding workout plans:', err);
+        }
+
+        // Get nutrition plans
+        let nutritionPlans = [];
+        try {
+            nutritionPlans = await NutritionPlan.find({ 
+                verified: true, 
+                membershipLevel: 'Gold'
+            }).limit(2);
+        } catch (err) {
+            console.error('Error finding nutrition plans:', err);
+        }
+
+        return res.render('userdashboard_g', {
+            user,
+            exercises,
+            workoutPlans,
+            nutritionPlans,
+            membership,
+            stats
+        });
+    } catch (error) {
+        console.error('Error in gold dashboard:', error);
+        return res.status(500).render('error', { 
+            message: 'Error loading dashboard. Please try again.'
+        });
+    }
+};
+
+// Basic dashboard
+exports.getBasicDashboard = async (req, res) => {
+    try {
+        if (!req.session.user || !req.session.user.id) {
+            return res.redirect('/auth/login_signup');
+        }
+
+        const userId = req.session.user.id;
+        let user;
+        
+        try {
+            user = await User.findById(userId);
+        } catch (err) {
+            console.error('Error finding user:', err);
+            req.session.destroy();
+            return res.redirect('/auth/login_signup');
+        }
+        
+        if (!user) {
+            req.session.destroy();
+            return res.redirect('/auth/login_signup');
+        }
+
+        // Get user's membership
+        let membership;
+        try {
+            membership = await Membership.findOne({ user_id: userId });
+        } catch (err) {
+            console.error('Error finding membership:', err);
+        }
+        
+        if (!membership) {
+            return res.status(400).send('Membership not found. Please contact support.');
+        }
+        
+        // Security check to ensure basic users access basic dashboard
+        if (membership.plan.toLowerCase() !== 'basic') {
+            return res.redirect('/user/dashboard');
+        }
+
+        // Stats for the dashboard
+        const stats = {
+            calories: { current: 1850, goal: 2200 },
+            workouts: { completed: 4, goal: 5 },
+            protein: { current: 85, goal: 90 },
+            weight: 75
+        };
+
+        // Get exercise data
+        let exercises = [];
+        try {
+            exercises = await Exercise.find({ verified: true }).limit(5);
+        } catch (err) {
+            console.error('Error finding exercises:', err);
+        }
+
+        // Get workout plans
+        let workoutPlans = [];
+        try {
+            workoutPlans = await WorkoutPlan.find({ 
+                verified: true, 
+                difficulty: 'Beginner'
+            }).limit(3);
+        } catch (err) {
+            console.error('Error finding workout plans:', err);
+        }
+
+        // Get nutrition plans
+        let nutritionPlans = [];
+        try {
+            nutritionPlans = await NutritionPlan.find({ 
+                verified: true, 
+                membershipLevel: 'Basic'
+            }).limit(2);
+        } catch (err) {
+            console.error('Error finding nutrition plans:', err);
+        }
+
+        return res.render('userdashboard_b', {
+            user,
+            exercises,
+            workoutPlans,
+            nutritionPlans,
+            membership,
+            stats
+        });
+    } catch (error) {
+        console.error('Error in basic dashboard:', error);
+        return res.status(500).render('error', { 
+            message: 'Error loading dashboard. Please try again.'
+        });
     }
 };
 
 // Get user profile
 exports.getProfile = async (req, res) => {
     try {
-        if (!req.session.user) {
+        if (!req.session.user || !req.session.user.id) {
             return res.redirect('/auth/login_signup');
         }
 
@@ -71,40 +349,81 @@ exports.getProfile = async (req, res) => {
         const user = await User.findById(userId);
         
         if (!user) {
+            req.session.destroy();
             return res.redirect('/auth/login_signup');
         }
 
         // Get user's membership
         const membership = await Membership.findOne({ user_id: userId });
+        if (!membership) {
+            return res.status(400).send('Membership not found. Please contact support.');
+        }
 
-        res.render('userprofile', {
+        return res.render('userprofile', {
             user,
             membership
         });
     } catch (error) {
         console.error('Error fetching user profile:', error);
-        res.redirect('/auth/login_signup');
+        return res.status(500).render('error', { 
+            message: 'Error loading profile. Please try again.'
+        });
     }
 };
 
-// Get user's workout history
-exports.getWorkoutHistory = async (req, res) => {
-    // Implementation for workout history
-    res.send('Workout history route - To be implemented');
-};
-
-// Get user's nutrition plans
-exports.getNutritionPlans = async (req, res) => {
+// Get exercises page
+exports.getExercises = async (req, res) => {
     try {
-        if (!req.session.user) {
+        if (!req.session.user || !req.session.user.id) {
             return res.redirect('/auth/login_signup');
         }
 
         const userId = req.session.user.id;
-        const membership = await Membership.findOne({ user_id: userId });
+        const user = await User.findById(userId);
         
-        if (!membership) {
+        if (!user) {
+            req.session.destroy();
             return res.redirect('/auth/login_signup');
+        }
+
+        const membership = await Membership.findOne({ user_id: userId });
+        if (!membership) {
+            return res.status(400).send('Membership not found. Please contact support.');
+        }
+
+        const exercises = await Exercise.find({ verified: true });
+
+        return res.render('user_exercises', {
+            user,
+            exercises,
+            membership
+        });
+    } catch (error) {
+        console.error('Error fetching exercises:', error);
+        return res.status(500).render('error', { 
+            message: 'Error loading exercises. Please try again.'
+        });
+    }
+};
+
+// Get user's nutrition
+exports.getNutrition = async (req, res) => {
+    try {
+        if (!req.session.user || !req.session.user.id) {
+            return res.redirect('/auth/login_signup');
+        }
+
+        const userId = req.session.user.id;
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            req.session.destroy();
+            return res.redirect('/auth/login_signup');
+        }
+
+        const membership = await Membership.findOne({ user_id: userId });
+        if (!membership) {
+            return res.status(400).send('Membership not found. Please contact support.');
         }
 
         const nutritionPlans = await NutritionPlan.find({ 
@@ -112,54 +431,26 @@ exports.getNutritionPlans = async (req, res) => {
             membershipLevel: membership.plan.charAt(0).toUpperCase() + membership.plan.slice(1)
         });
 
-        res.render('nutrition_plans', {
-            user: req.session.user,
-            nutritionPlans
+        return res.render('user_nutrition', {
+            user,
+            nutritionPlans,
+            membership
         });
     } catch (error) {
-        console.error('Error fetching user nutrition plans:', error);
-        res.redirect('/user/dashboard');
+        console.error('Error fetching nutrition data:', error);
+        return res.status(500).render('error', { 
+            message: 'Error loading nutrition data. Please try again.'
+        });
     }
 };
 
-// Get user's workout plans
-exports.getWorkoutPlans = async (req, res) => {
-    try {
-        if (!req.session.user) {
-            return res.redirect('/auth/login_signup');
+// Logout functionality
+exports.logout = (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            return res.status(500).send('Error logging out');
         }
-
-        const userId = req.session.user.id;
-        const membership = await Membership.findOne({ user_id: userId });
-        
-        if (!membership) {
-            return res.redirect('/auth/login_signup');
-        }
-
-        const workoutPlans = await WorkoutPlan.find({ 
-            verified: true, 
-            difficulty: membership.plan === 'basic' ? 'Beginner' : 
-                       membership.plan === 'gold' ? 'Intermediate' : 'Advanced'
-        });
-
-        res.render('workout_plans', {
-            user: req.session.user,
-            workoutPlans
-        });
-    } catch (error) {
-        console.error('Error fetching user workout plans:', error);
-        res.redirect('/user/dashboard');
-    }
-};
-
-// Get user's appointments
-exports.getAppointments = async (req, res) => {
-    // Implementation for appointments
-    res.send('Appointments route - To be implemented');
-};
-
-// Get user settings
-exports.getSettings = async (req, res) => {
-    // Implementation for settings
-    res.send('Settings route - To be implemented');
+        return res.redirect('/auth/login_signup');
+    });
 };
