@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 
-const trainerSchema = new mongoose.Schema({
-    name: { 
+const trainerApplicationSchema = new mongoose.Schema({
+    firstName: { 
+        type: String, 
+        required: true 
+    },
+    lastName: { 
         type: String, 
         required: true 
     },
@@ -34,6 +38,10 @@ const trainerSchema = new mongoose.Schema({
         required: true,
         enum: ['NASM', 'ACE', 'ACSM', 'NSCA', 'ISSA', 'Other']
     },
+    certificationDoc: { 
+        type: String, 
+        required: true 
+    }, // Path to uploaded file
     bio: { 
         type: String 
     },
@@ -44,64 +52,23 @@ const trainerSchema = new mongoose.Schema({
         type: Number, 
         min: 0 
     },
-    verificationStatus: { 
+    status: { 
         type: String, 
         enum: ['Pending', 'In Progress', 'Approved', 'Rejected'],
-        default: 'Pending' 
-    },
-    verificationDocuments: [{
-        name: { type: String, required: true },
-        url: { type: String, required: true }
-    }],
-    verificationSubmittedDate: { 
-        type: Date, 
-        default: Date.now 
+        default: 'Pending'
     },
     verifierId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Verifier',
         default: null 
     },
-    clients: [{ 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User' 
-    }],
-    sessions: [{
-        clientId: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'User' 
-        },
-        date: { 
-            type: Date, 
-            required: true 
-        },
-        time: { 
-            type: String, 
-            required: true 
-        },
-        meetLink: { 
-            type: String 
-        }
-    }],
-    workoutPlans: [{ 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'WorkoutPlan' 
-    }],
-    nutritionPlans: [{ 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'NutritionPlan' 
-    }],
-    rating: { 
-        type: Number,
-        min: 0,
-        max: 5,
-        default: 0 
+    submittedDate: { 
+        type: Date, 
+        default: Date.now 
     },
-    status: { 
-        type: String, 
-        enum: ['Active', 'Inactive', 'Suspended'],
-        default: 'Active' 
-    }
+    verificationNotes: { 
+        type: String 
+    } // Notes from verifier
 }, { timestamps: true });
 
-module.exports = mongoose.model('Trainer', trainerSchema);
+module.exports = mongoose.model('TrainerApplication', trainerApplicationSchema);
