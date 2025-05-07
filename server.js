@@ -213,7 +213,7 @@ const pages = [
     'admin_settings', 'admin_trainers', 'admin_user', 'admin_verifier', 'admin_workouts',
     'blog', 'calculators', 'contact', 'home', 'isolation', 'login_signup',
     'nutrition', 'privacy_policy', 'schedule', 'signup', 'terms', 'testimonial',
-    'trainer_form', 'trainer', 'trainers', 'verifier_form', 'verifier', 'workout_plans'
+    'trainer_form', 'trainer', 'trainers', 'verifier_form', 'verifier', 'workout_plans', 'userprofile'
 ];
 
 pages.forEach(page => {
