@@ -80,7 +80,7 @@ const pages = [
     'login_signup', 'nutrition', 'privacy_policy', 'schedule', 'signup',
     'terms', 'testimonial', 'trainer_form', 'trainer', 'trainers',
     'verifier_form', 'verifier', 'workout_plans', 'userdashboard_b',
-    'userdashboard_g', 'userdashboard_p'
+    'userdashboard_g', 'userdashboard_p','verifier_login'
 ];
 
 pages.forEach(page => {
