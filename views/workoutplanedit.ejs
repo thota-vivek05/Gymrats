@@ -512,6 +512,126 @@
                 selectedExercise = null;
             }
         });
+        // Form submission
+const workoutPlanForm = document.getElementById('workoutPlanForm');
+
+workoutPlanForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Save the current view state
+    if (document.querySelector('[data-week="current"]').classList.contains('active')) {
+        currentWeekHTML = daysContainer.innerHTML;
+    } else {
+        nextWeekHTML = daysContainer.innerHTML;
+    }
+    
+    // Prepare data structure for both weeks
+    const workoutData = {
+        clientId: document.getElementById('clientId').value,
+        notes: document.getElementById('plan-notes').value,
+        currentWeek: {},
+        nextWeek: {}
+    };
+    
+    // Store the current HTML state
+    const currentState = daysContainer.innerHTML;
+    
+    // Process current week data
+    daysContainer.innerHTML = currentWeekHTML;
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    
+    days.forEach((day, index) => {
+        const dayContainer = document.getElementById(`exercises-day-${index}`);
+        const exerciseItems = dayContainer.querySelectorAll('.exercise-item');
+        
+        workoutData.currentWeek[day] = [];
+        
+        if (exerciseItems.length > 0) {
+            exerciseItems.forEach(item => {
+                const nameInput = item.querySelector('.exercise-name-input');
+                const setsInput = item.querySelector('.sets-input');
+                const repsInput = item.querySelector('.reps-input');
+                const weightInput = item.querySelector('.weight-input');
+                
+                workoutData.currentWeek[day].push({
+                    name: nameInput.value,
+                    sets: setsInput.value,
+                    reps: repsInput.value,
+                    weight: weightInput.value
+                });
+            });
+        }
+    });
+    
+    // Process next week data
+    daysContainer.innerHTML = nextWeekHTML;
+    
+    days.forEach((day, index) => {
+        let dayContainer;
+        
+        // Check if we're using the next-day-X or day-X format
+        if (document.getElementById(`exercises-next-day-${index}`)) {
+            dayContainer = document.getElementById(`exercises-next-day-${index}`);
+        } else {
+            // Try with next-day format
+            dayContainer = document.getElementById(`next-day-${index}`);
+            if (!dayContainer) return; // Skip if element doesn't exist
+        }
+        
+        const exerciseItems = dayContainer.querySelectorAll('.exercise-item');
+        
+        workoutData.nextWeek[day] = [];
+        
+        if (exerciseItems.length > 0) {
+            exerciseItems.forEach(item => {
+                const nameInput = item.querySelector('.exercise-name-input');
+                const setsInput = item.querySelector('.sets-input');
+                const repsInput = item.querySelector('.reps-input');
+                const weightInput = item.querySelector('.weight-input');
+                
+                workoutData.nextWeek[day].push({
+                    name: nameInput.value,
+                    sets: setsInput.value,
+                    reps: repsInput.value,
+                    weight: weightInput.value
+                });
+            });
+        }
+    });
+    
+    // Restore the current view state
+    daysContainer.innerHTML = currentState;
+    attachEventListeners();
+    
+    // Send data to server using fetch API
+    fetch('/api/save-workout-plan', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(workoutData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            const successToast = document.getElementById('successToast');
+            successToast.classList.add('show');
+            
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                successToast.classList.remove('show');
+            }, 3000);
+        } else {
+            // Show error message
+            alert('Error saving workout plan: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error saving workout plan:', error);
+        alert('An error occurred while saving the workout plan. Please try again.');
+    });
+});
         
         // Category filtering
         const categoryBtns = document.querySelectorAll('.category-btn');

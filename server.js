@@ -11,12 +11,21 @@ const PORT = process.env.PORT || 3000;
 
 // Import routes
 const adminRoutes = require('./Routes/adminRoutes');
+const workoutPlanRoutes = require('./Routes/workoutPlanRoutes');
+const publicRoutes = require('./Routes/publicRoutes');
+const userRoutes = require('./Routes/userRoutes');
+const trainerRoutes = require('./Routes/trainerRoutes');
+const verifierRoutes = require('./Routes/verifierRoutes');
+const authRoutes = require('./Routes/authRoutes');
+
 
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method')); // For PUT/DELETE requests
+
 
 // Session setup
 app.use(
@@ -59,6 +68,38 @@ const isAuthenticated = (req, res, next) => {
         res.redirect('/login_signup');
     }
 };
+
+// Example auth middleware
+const isAuth = (req, res, next) => {
+    // Check if user is authenticated
+    if (!req.session.userId) {
+        return res.redirect('/login');
+    }
+    next();
+};
+
+const isTrainer = (req, res, next) => {
+    // Check if authenticated user is a trainer
+    if (req.session.userRole !== 'trainer') {
+        return res.status(403).send('Access denied: Trainers only');
+    }
+    next();
+};
+
+
+// Use routes
+
+app.use('/admin', adminRoutes);
+app.use('/', publicRoutes);
+app.use('/', userRoutes);
+app.use('/trainer', trainerRoutes);
+app.use('/verifier', verifierRoutes);
+app.use('/auth', authRoutes);
+
+app.use('/api/admin', adminRoutes);
+app.use('/api/users', userRoutes);
+
+module.exports = { isAuth, isTrainer };
 
 // Use MVC routes for admin pages
 app.use('/admin', adminRoutes);
