@@ -181,7 +181,7 @@ const loginTrainer = async (req, res) => {
         req.session.trainer = {
             id: trainer._id,
             email: trainer.email,
-            name: trainer.name
+            name: trainer.full_name || 'Trainer'
         };
         console.log('Session set for trainer:', email);
 
@@ -218,15 +218,13 @@ const renderTrainerDashboard = async (req, res) => {
             status: 'Active',
             membershipType: 'Platinum'
         })
-            .select('full_name dob weight height BMI fitness_goals class_schedules') // Removed workout_history
+            .select('full_name dob weight height BMI fitness_goals class_schedules')
             .lean();
 
         console.log('Found Platinum users:', users.length);
 
         const clients = users.map(user => {
-            // Since workout_history is in a separate collection, set progress to 0 for now
-            // Alternatively, you can fetch it from WorkoutHistory if needed
-            const progress = 0;
+            const progress = 0; // We'll fetch this dynamically on client selection
 
             const nextSession = user.class_schedules.length > 0
                 ? user.class_schedules.find(schedule => new Date(schedule.date) >= new Date())
@@ -254,7 +252,7 @@ const renderTrainerDashboard = async (req, res) => {
                 name: user.full_name || 'Unknown',
                 progress,
                 nextSession: nextSessionDate,
-                age: isNaN(age) ? 'N/A' : age, // Fallback for age
+                age: isNaN(age) ? 'N/A' : age,
                 weight: user.weight ? `${user.weight} kg` : 'N/A',
                 height: user.height ? `${user.height} cm` : 'N/A',
                 bodyFat: user.BMI ? `${user.BMI.toFixed(1)} (BMI)` : 'N/A',
@@ -265,7 +263,9 @@ const renderTrainerDashboard = async (req, res) => {
         res.render('trainer', {
             trainer: req.session.trainer,
             clients,
-            selectedClient: clients.length > 0 ? clients[0] : null
+            selectedClient: clients.length > 0 ? clients[0] : null,
+            workoutData: null,
+            nutritionData: null
         });
     } catch (error) {
         console.error('Error rendering trainer dashboard:', error);
@@ -291,7 +291,7 @@ const renderEditWorkoutPlan = async (req, res) => {
             trainer: trainerId,
             membershipType: 'Platinum'
         })
-            .select('full_name fitness_goals workout_history')
+            .select('full_name fitness_goals')
             .lean();
 
         if (!user) {
@@ -303,24 +303,22 @@ const renderEditWorkoutPlan = async (req, res) => {
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay());
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekStart.getDate() + 7);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
 
-        const currentWeekWorkout = user.workout_history.find(entry => {
-            const entryDate = new Date(entry.date);
-            return entryDate >= weekStart && entryDate < weekEnd;
-        }) || null;
+        const currentWorkout = await WorkoutHistory.findOne({
+            userId: userId,
+            date: { $gte: today, $lt: tomorrow }
+        }).lean() || null;
 
-        const workoutPlan = currentWeekWorkout ? {
-            Monday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Monday'),
-            Tuesday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Tuesday'),
-            Wednesday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Wednesday'),
-            Thursday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Thursday'),
-            Friday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Friday'),
-            Saturday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Saturday'),
-            Sunday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Sunday')
+        const workoutPlan = currentWorkout ? {
+            Monday: currentWorkout.exercises.filter(ex => ex.day === 'Monday'),
+            Tuesday: currentWorkout.exercises.filter(ex => ex.day === 'Tuesday'),
+            Wednesday: currentWorkout.exercises.filter(ex => ex.day === 'Wednesday'),
+            Thursday: currentWorkout.exercises.filter(ex => ex.day === 'Thursday'),
+            Friday: currentWorkout.exercises.filter(ex => ex.day === 'Friday'),
+            Saturday: currentWorkout.exercises.filter(ex => ex.day === 'Saturday'),
+            Sunday: currentWorkout.exercises.filter(ex => ex.day === 'Sunday')
         } : {};
 
         res.render('workoutplanedit', {
@@ -329,7 +327,7 @@ const renderEditWorkoutPlan = async (req, res) => {
             name: user.full_name,
             goal: user.fitness_goals.weight_goal ? `${user.fitness_goals.weight_goal} kg` : user.fitness_goals.calorie_goal ? `${user.fitness_goals.calorie_goal} kcal` : 'Strength Training',
             workoutPlan,
-            notes: currentWeekWorkout ? currentWeekWorkout.notes : ''
+            notes: currentWorkout ? currentWorkout.notes : ''
         });
     } catch (error) {
         console.error('Error rendering edit workout plan:', error);
@@ -373,11 +371,6 @@ const saveWorkoutPlan = async (req, res) => {
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
 
-        const currentWeekEntryIndex = user.workout_history.findIndex(entry => {
-            const entryDate = new Date(entry.date);
-            return entryDate >= weekStart && entryDate < weekEnd;
-        });
-
         const currentWeekExercises = [];
         for (const [day, exercises] of Object.entries(currentWeek)) {
             exercises.forEach(ex => {
@@ -395,30 +388,33 @@ const saveWorkoutPlan = async (req, res) => {
             });
         }
 
-        const currentWeekEntry = {
-            date: new Date(),
-            exercises: currentWeekExercises,
-            progress: 0,
-            completed: false,
-            notes
-        };
+        let currentWeekWorkout = await WorkoutHistory.findOne({
+            userId: clientId,
+            date: { $gte: weekStart, $lt: weekEnd }
+        });
 
-        if (currentWeekEntryIndex !== -1) {
-            user.workout_history[currentWeekEntryIndex] = currentWeekEntry;
+        if (currentWeekWorkout) {
+            currentWeekWorkout.exercises = currentWeekExercises;
+            currentWeekWorkout.progress = 0;
+            currentWeekWorkout.completed = false;
+            currentWeekWorkout.notes = notes;
             console.log('Updated existing workout history entry for current week:', clientId);
         } else {
-            user.workout_history.push(currentWeekEntry);
+            currentWeekWorkout = new WorkoutHistory({
+                userId: clientId,
+                date: weekStart,
+                exercises: currentWeekExercises,
+                progress: 0,
+                completed: false,
+                notes
+            });
             console.log('Added new workout history entry for current week:', clientId);
         }
+        await currentWeekWorkout.save();
 
         const nextWeekStart = new Date(weekEnd);
         const nextWeekEnd = new Date(nextWeekStart);
         nextWeekEnd.setDate(nextWeekStart.getDate() + 7);
-
-        const nextWeekEntryIndex = user.workout_history.findIndex(entry => {
-            const entryDate = new Date(entry.date);
-            return entryDate >= nextWeekStart && entryDate < nextWeekEnd;
-        });
 
         const nextWeekExercises = [];
         for (const [day, exercises] of Object.entries(nextWeek)) {
@@ -437,24 +433,29 @@ const saveWorkoutPlan = async (req, res) => {
             });
         }
 
-        const nextWeekEntry = {
-            date: nextWeekStart,
-            exercises: nextWeekExercises,
-            progress: 0,
-            completed: false,
-            notes
-        };
+        let nextWeekWorkout = await WorkoutHistory.findOne({
+            userId: clientId,
+            date: { $gte: nextWeekStart, $lt: nextWeekEnd }
+        });
 
-        if (nextWeekEntryIndex !== -1) {
-            user.workout_history[nextWeekEntryIndex] = nextWeekEntry;
+        if (nextWeekWorkout) {
+            nextWeekWorkout.exercises = nextWeekExercises;
+            nextWeekWorkout.progress = 0;
+            nextWeekWorkout.completed = false;
+            nextWeekWorkout.notes = notes;
             console.log('Updated existing workout history entry for next week:', clientId);
         } else {
-            user.workout_history.push(nextWeekEntry);
+            nextWeekWorkout = new WorkoutHistory({
+                userId: clientId,
+                date: nextWeekStart,
+                exercises: nextWeekExercises,
+                progress: 0,
+                completed: false,
+                notes
+            });
             console.log('Added new workout history entry for next week:', clientId);
         }
-
-        await user.save();
-        console.log('Workout plan saved for Platinum user:', clientId);
+        await nextWeekWorkout.save();
 
         res.json({ message: 'Workout plan saved successfully', redirect: '/trainer' });
     } catch (error) {
@@ -478,7 +479,7 @@ const renderEditNutritionPlan = async (req, res) => {
             trainer: trainerId,
             membershipType: 'Platinum'
         })
-            .select('full_name fitness_goals nutrition_history')
+            .select('full_name fitness_goals')
             .lean();
 
         if (!user) {
@@ -493,10 +494,10 @@ const renderEditNutritionPlan = async (req, res) => {
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
 
-        const latestNutrition = user.nutrition_history.find(entry => {
-            const entryDate = new Date(entry.date);
-            return entryDate >= today && entryDate < tomorrow;
-        }) || null;
+        const latestNutrition = await NutritionHistory.findOne({
+            userId: userId,
+            date: { $gte: today, $lt: tomorrow }
+        }).lean() || null;
 
         res.render('edit_nutritional_plan', {
             trainer: req.session.trainer,
@@ -548,13 +549,12 @@ const editNutritionPlan = async (req, res) => {
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
 
-        const nutritionEntryIndex = user.nutrition_history.findIndex(entry => {
-            const entryDate = new Date(entry.date);
-            return entryDate >= today && entryDate < tomorrow;
+        let nutritionEntry = await NutritionHistory.findOne({
+            userId: userId,
+            date: { $gte: today, $lt: tomorrow }
         });
 
-        const nutritionEntry = {
-            date: new Date(),
+        const nutritionData = {
             calories_consumed: foods.reduce((sum, food) => sum + (food.calories || 0), 0),
             protein_consumed: foods.reduce((sum, food) => sum + (food.protein || 0), 0),
             macros: {
@@ -569,17 +569,24 @@ const editNutritionPlan = async (req, res) => {
             }))
         };
 
-        if (nutritionEntryIndex !== -1) {
-            user.nutrition_history[nutritionEntryIndex] = nutritionEntry;
+        if (nutritionEntry) {
+            nutritionEntry.calories_consumed = nutritionData.calories_consumed;
+            nutritionEntry.protein_consumed = nutritionData.protein_consumed;
+            nutritionEntry.macros = nutritionData.macros;
+            nutritionEntry.foods = nutritionData.foods;
             console.log('Updated existing nutrition history entry for today:', userId);
         } else {
-            user.nutrition_history.push(nutritionEntry);
+            nutritionEntry = new NutritionHistory({
+                userId: userId,
+                date: today,
+                ...nutritionData
+            });
             console.log('Added new nutrition history entry for today:', userId);
         }
+        await nutritionEntry.save();
 
         user.fitness_goals.protein_goal = parseInt(proteinGoal);
         user.fitness_goals.calorie_goal = parseInt(calorieGoal);
-
         await user.save();
         console.log('Nutrition plan and goals saved for Platinum user:', userId);
 
@@ -614,7 +621,7 @@ const getClientData = async (req, res) => {
             : 'Not set';
         res.json({
             name: user.full_name,
-            age,
+            age: isNaN(age) ? 'N/A' : age,
             weight: user.weight ? `${user.weight} kg` : 'N/A',
             height: user.height ? `${user.height} cm` : 'N/A',
             bodyFat: user.BMI ? `${user.BMI.toFixed(1)} (BMI)` : 'N/A',
@@ -640,9 +647,7 @@ const getWorkoutData = async (req, res) => {
             _id: userId, 
             trainer: trainerId,
             membershipType: 'Platinum'
-        })
-            .select('workout_history')
-            .lean();
+        }).lean();
 
         if (!user) {
             console.log('Platinum user not found or not assigned to trainer:', userId);
@@ -652,17 +657,39 @@ const getWorkoutData = async (req, res) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay());
+        weekStart.setDate(today.getDate() - today.getDay()); // Start of the week (Sunday)
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
 
-        const currentWeekWorkout = user.workout_history.find(entry => {
-            const entryDate = new Date(entry.date);
-            return entryDate >= weekStart && entryDate < new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
-        }) || null;
+        const currentWorkout = await WorkoutHistory.findOne({
+            userId: userId,
+            date: { $gte: weekStart, $lt: weekEnd }
+        }).lean() || null;
 
-        const todayDay = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()];
-        const exercises = currentWeekWorkout ? currentWeekWorkout.exercises.filter(ex => ex.day === todayDay) : [];
+        const weeklySchedule = {
+            Monday: [],
+            Tuesday: [],
+            Wednesday: [],
+            Thursday: [],
+            Friday: [],
+            Saturday: [],
+            Sunday: []
+        };
 
-        res.json({ exercises });
+        if (currentWorkout && currentWorkout.exercises) {
+            currentWorkout.exercises.forEach(exercise => {
+                weeklySchedule[exercise.day].push({
+                    name: exercise.name,
+                    sets: exercise.sets,
+                    reps: exercise.reps,
+                    weight: exercise.weight,
+                    duration: exercise.duration,
+                    completed: exercise.completed
+                });
+            });
+        }
+
+        res.json({ weeklySchedule });
     } catch (error) {
         console.error('Error fetching workout data:', error);
         res.status(500).json({ error: 'Server error' });
@@ -684,7 +711,7 @@ const getNutritionData = async (req, res) => {
             trainer: trainerId,
             membershipType: 'Platinum'
         })
-            .select('fitness_goals nutrition_history')
+            .select('fitness_goals')
             .lean();
 
         if (!user) {
@@ -697,16 +724,17 @@ const getNutritionData = async (req, res) => {
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
 
-        const latestNutrition = user.nutrition_history.find(entry => {
-            const entryDate = new Date(entry.date);
-            return entryDate >= today && entryDate < tomorrow;
-        }) || null;
+        const latestNutrition = await NutritionHistory.findOne({
+            userId: userId,
+            date: { $gte: today, $lt: tomorrow }
+        }).lean() || null;
 
         res.json({
             nutrition: {
                 protein_goal: user.fitness_goals.protein_goal || 'N/A',
                 calorie_goal: user.fitness_goals.calorie_goal || 'N/A',
-                foods: latestNutrition ? latestNutrition.foods : []
+                foods: latestNutrition ? latestNutrition.foods : [],
+                macros: latestNutrition ? latestNutrition.macros : { protein: 0, carbs: 0, fats: 0 }
             }
         });
     } catch (error) {

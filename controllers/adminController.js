@@ -3,7 +3,6 @@ const User = require('../model/User');
 const Trainer = require('../model/Trainer');
 const Exercise = require('../model/Exercise');
 const Membership = require('../model/Membership');
-const NutritionPlan = require('../model/NutritionPlan');
 const WorkoutPlan = require('../model/WorkoutPlan');
 const Verifier = require('../model/Verifier');
 
