@@ -89,23 +89,23 @@
                     <div class="profile-stats">
                         <div class="stat-item">
                             <span class="stat-label">Age:</span>
-                            <span class="stat-value">N/A</span>
+                            <span class="stat-value"><%= selectedClient ? selectedClient.age : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Weight:</span>
-                            <span class="stat-value">N/A</span>
+                            <span class="stat-value"><%= selectedClient ? selectedClient.weight : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Height:</span>
-                            <span class="stat-value">N/A</span>
+                            <span class="stat-value"><%= selectedClient ? selectedClient.height : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Body Fat:</span>
-                            <span class="stat-value">N/A</span>
+                            <span class="stat-value"><%= selectedClient ? selectedClient.bodyFat : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Goal:</span>
-                            <span class="stat-value">N/A</span>
+                            <span class="stat-value"><%= selectedClient ? selectedClient.goal : 'N/A' %></span>
                         </div>
                     </div>
                     <% if (selectedClient) { %>
@@ -246,8 +246,28 @@
                     client.classList.remove('active');
                 });
                 this.classList.add('active');
-                document.getElementById('clientNameDisplay').textContent = this.querySelector('.client-name').textContent;
-                console.log("Selected client: " + this.dataset.client);
+                const clientId = this.dataset.client;
+                console.log("Selected client: " + clientId);
+
+                // Fetch updated client data via AJAX
+                fetch(`/trainer/client/${clientId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            console.error('Error fetching client data:', data.error);
+                            return;
+                        }
+                        // Update client profile display
+                        document.getElementById('clientNameDisplay').textContent = data.name;
+                        document.querySelector('.stat-value[data-field="age"]').textContent = data.age || 'N/A';
+                        document.querySelector('.stat-value[data-field="weight"]').textContent = data.weight || 'N/A';
+                        document.querySelector('.stat-value[data-field="height"]').textContent = data.height || 'N/A';
+                        document.querySelector('.stat-value[data-field="bodyFat"]').textContent = data.bodyFat || 'N/A';
+                        document.querySelector('.stat-value[data-field="goal"]').textContent = data.goal || 'N/A';
+                    })
+                    .catch(error => {
+                        console.error('Error fetching client data:', error);
+                    });
             });
         });
 

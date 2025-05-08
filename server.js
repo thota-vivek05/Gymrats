@@ -33,12 +33,12 @@ db.serialize(() => {
     const adminUsers = [
         {
             email: 'admin1@gymrats.com',
-            password: 'admin123',
+            password: 'Password123',
             full_name: 'Admin One'
         },
         {
             email: 'admin2@gymrats.com',
-            password: 'admin456',
+            password: 'Password123',
             full_name: 'Admin Two'
         }
     ];
