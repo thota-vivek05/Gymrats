@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Verifications - GymRats</title>
+    <link rel="stylesheet" type="text/css" href="/verifier/verifer.css" />
+    <link rel="stylesheet" type="text/css" href="/home/home.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Header/Navbar -->
+    <div class="main-navbar">
+        <header>
+            <!-- Header Branding -->
+            <div class="brand-logo">
+                <a href="/home" class="brand-name">GymRats</a>
+            </div>
+
+            <div class="nav-menu">
+                <a href="/home">Home</a>
+                <a href="/isolation">Exercises</a>
+                <a href="/nutrition">Nutrition</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+            </div>
+
+            <div class="right-container">
+                <div class="search-container">
+                    <img src="/home/icons8-search.svg" height="18px" alt="Search Icon" />
+                    <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                </div>
+
+                <div class="login-button">
+                    <a href="/verifier">My Dashboard</a>
+                </div>
+            </div>
+
+            <div class="mobile-menu-icon" id="menuIcon">
+                <img src="/home/menu.jpg" alt="Menu" height="25px" />
+            </div>
+
+            <div class="mobile-sidebar" id="sideNavbar">
+                <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+                <a href="/home">Home</a>
+                <a href="/isolation">Exercises</a>
+                <a href="/nutrition">Nutrition</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+                <a href="/verifier">My Dashboard</a>
+            </div>
+        </header>
+    </div>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="/home" class="brand-logo">GymRats</a>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li>
+                        <a href="/verifier">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="/verifier/pending_verifications">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Pending Verifications</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <a href="/home">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Navigation -->
+            <div class="top-navbar">
+                <div class="toggle-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search..." />
+                </div>
+                <div class="navbar-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count">0</span>
+                    </div>
+                    <div class="user-profile">
+                        <span>Verifier</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <div class="page-header">
+                    <h1>Pending Trainer Verifications</h1>
+                    <p>Review and process trainer applications awaiting verification.</p>
+                </div>
+
+                <!-- Pending Applications Table -->
+                <div class="section-container">
+                    <div class="section-header">
+                        <h2>Pending Applications</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Trainer</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Experience</th>
+                                    <th>Specializations</th>
+                                    <th>Submitted Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (typeof applications !== 'undefined' && applications && applications.length > 0) { %>
+                                <% applications.forEach(app => { %>
+                                <tr>
+                                    <td>
+                                        <div class="user-info">
+                                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=40&h=40&fit=crop&auto=format"
+                                                alt="<%= app.firstName %> <%= app.lastName %>" />
+                                            <div>
+                                                <p class="user-name"><%= app.firstName %> <%= app.lastName %></p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><%= app.email %></td>
+                                    <td><%= app.phone %></td>
+                                    <td><%= app.experience %></td>
+                                    <td><%= app.specializations ? app.specializations.join(', ') : '' %></td>
+                                    <td><%= app.createdAt ? new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown' %>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="/verifier/approve/<%= app._id %>" class="btn-approve"
+                                                onclick="return confirm('Are you sure you want to approve this trainer?')">Approve</a>
+                                            <a href="/verifier/reject/<%= app._id %>" class="btn-reject"
+                                                onclick="return confirm('Are you sure you want to reject this trainer?')">Reject</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                                <% } else { %>
+                                <tr>
+                                    <td colspan="7" style="text-align:center;">No pending verifications found.</td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('menuIcon').addEventListener('click', function () {
+            document.getElementById('sideNavbar').style.width = '250px';
+        });
+
+        document.getElementById('closeBtn').addEventListener('click', function () {
+            document.getElementById('sideNavbar').style.width = '0';
+        });
+
+        // Toggle sidebar
+        document.querySelector('.toggle-menu').addEventListener('click', function () {
+            document.querySelector('.dashboard-container').classList.toggle('sidebar-collapsed');
+        });
+    </script>
+</body>
+
+</html>

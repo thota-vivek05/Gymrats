@@ -33,25 +33,6 @@ const trainerApplicationSchema = new mongoose.Schema({
         type: String, 
         enum: ['Weight Loss', 'Muscle Gain', 'Flexibility', 'Cardiovascular', 'Strength Training', 'Post-Rehab', 'Sports Performance', 'Nutrition']
     }],
-    certifications: { 
-        type: String, 
-        required: true,
-        enum: ['NASM', 'ACE', 'ACSM', 'NSCA', 'ISSA', 'Other']
-    },
-    certificationDoc: { 
-        type: String, 
-        required: true 
-    }, // Path to uploaded file
-    bio: { 
-        type: String 
-    },
-    location: { 
-        type: String 
-    },
-    hourlyRate: { 
-        type: Number, 
-        min: 0 
-    },
     status: { 
         type: String, 
         enum: ['Pending', 'In Progress', 'Approved', 'Rejected'],
@@ -61,10 +42,6 @@ const trainerApplicationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Verifier',
         default: null 
-    },
-    submittedDate: { 
-        type: Date, 
-        default: Date.now 
     },
     verificationNotes: { 
         type: String 
