@@ -112,8 +112,8 @@
                 <!-- Today's Workout Section -->
                 <div class="dashboard-card">
                     <div class="card-header">
-                        <h2>Today's Workout: <%= todayWorkout.name || 'No Workout Scheduled' %></h2>
-                        <span class="badge"><%= todayWorkout.duration || 60 %> min</span>
+                        <h2>Today's Workout</h2>
+                        <span class="badge"><%= todayWorkout.duration %> min</span>
                     </div>
                     <div class="workout-content">
                         <% if (todayWorkout.exercises && todayWorkout.exercises.length > 0) { %>
@@ -138,8 +138,8 @@
                                     <li class="<%= exercise.completed ? 'completed' : '' %>">
                                         <span class="exercise-name"><%= exercise.name %></span>
                                         <span class="exercise-details">
-                                            <%= exercise.sets %> sets * 
-                                            <%= exercise.reps ? `${exercise.reps} reps` : `${exercise.duration} seconds` %>
+                                            <%= exercise.sets ? `${exercise.sets} sets *` : '' %> 
+                                            <%= exercise.reps ? `${exercise.reps} reps` : (exercise.duration ? `${exercise.duration} seconds` : '') %>
                                             <%= exercise.weight ? `(${exercise.weight} kg)` : '' %>
                                         </span>
                                     </li>

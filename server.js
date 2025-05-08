@@ -62,6 +62,8 @@ db.serialize(() => {
 const adminRoutes = require('./Routes/adminRoutes');
 const userRoutes = require('./Routes/userRoutes');
 const trainerRoutes = require('./Routes/trainerRoutes');
+const verifierRoutes = require('./Routes/verifierRoutes');
+
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -117,6 +119,7 @@ const isAuthenticated = (req, res, next) => {
 app.use('/admin', adminRoutes);
 app.use('/', userRoutes);
 app.use('/', trainerRoutes);
+app.use('/verifier', verifierRoutes);
 
 
 
@@ -138,7 +141,7 @@ const pages = [
     'terms', 'testimonial', 'trainer_form', 'trainer', 'trainers',
     'verifier_form', 'verifier', 'workout_plans', 'userdashboard_b',
     'userdashboard_g', 'userdashboard_p','trainer_login','edit_nutritional_plan',
-    'admin_login'
+    'admin_login','pending_verification'
 ];
 
 pages.forEach(page => {

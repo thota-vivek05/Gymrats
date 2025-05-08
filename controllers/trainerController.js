@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const TrainerApplication = require('../model/TrainerApplication');
 const Trainer = require('../model/Trainer');
 const User = require('../model/User');
+const WorkoutHistory = require('../model/WorkoutHistory');
+const NutritionHistory = require('../model/NutritionHistory');
 
 const signupTrainer = async (req, res) => {
     try {
@@ -216,16 +218,15 @@ const renderTrainerDashboard = async (req, res) => {
             status: 'Active',
             membershipType: 'Platinum'
         })
-            .select('full_name dob weight height BMI fitness_goals workout_history class_schedules')
+            .select('full_name dob weight height BMI fitness_goals class_schedules') // Removed workout_history
             .lean();
 
         console.log('Found Platinum users:', users.length);
 
         const clients = users.map(user => {
-            const latestWorkout = user.workout_history.length > 0
-                ? user.workout_history[user.workout_history.length - 1]
-                : null;
-            const progress = latestWorkout ? latestWorkout.progress || 0 : 0;
+            // Since workout_history is in a separate collection, set progress to 0 for now
+            // Alternatively, you can fetch it from WorkoutHistory if needed
+            const progress = 0;
 
             const nextSession = user.class_schedules.length > 0
                 ? user.class_schedules.find(schedule => new Date(schedule.date) >= new Date())
@@ -234,7 +235,6 @@ const renderTrainerDashboard = async (req, res) => {
                 ? new Date(nextSession.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                 : 'None';
 
-            // Calculate age from dob
             const dob = new Date(user.dob);
             const today = new Date();
             let age = today.getFullYear() - dob.getFullYear();
@@ -243,19 +243,18 @@ const renderTrainerDashboard = async (req, res) => {
                 age--;
             }
 
-            // Determine fitness goal
-            const fitnessGoal = user.fitness_goals.weight_goal
+            const fitnessGoal = user.fitness_goals?.weight_goal
                 ? `${user.fitness_goals.weight_goal} kg`
-                : user.fitness_goals.calorie_goal
+                : user.fitness_goals?.calorie_goal
                 ? `${user.fitness_goals.calorie_goal} kcal`
                 : 'Not set';
 
             return {
                 id: user._id,
-                name: user.full_name,
+                name: user.full_name || 'Unknown',
                 progress,
                 nextSession: nextSessionDate,
-                age,
+                age: isNaN(age) ? 'N/A' : age, // Fallback for age
                 weight: user.weight ? `${user.weight} kg` : 'N/A',
                 height: user.height ? `${user.height} cm` : 'N/A',
                 bodyFat: user.BMI ? `${user.BMI.toFixed(1)} (BMI)` : 'N/A',
@@ -274,6 +273,193 @@ const renderTrainerDashboard = async (req, res) => {
             errorMessage: 'Server error. Please try again later.',
             email: ''
         });
+    }
+};
+
+const renderEditWorkoutPlan = async (req, res) => {
+    try {
+        if (!req.session.trainer) {
+            console.log('Unauthorized access to edit workout plan');
+            return res.redirect('/trainer_login');
+        }
+
+        const userId = req.params.userId;
+        const trainerId = req.session.trainer.id;
+
+        const user = await User.findOne({ 
+            _id: userId, 
+            trainer: trainerId,
+            membershipType: 'Platinum'
+        })
+            .select('full_name fitness_goals workout_history')
+            .lean();
+
+        if (!user) {
+            console.log('Platinum user not found or not assigned to trainer:', userId);
+            return res.status(404).render('trainer', {
+                errorMessage: 'Client not found, not a Platinum member, or not assigned to you'
+            });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay());
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
+
+        const currentWeekWorkout = user.workout_history.find(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate >= weekStart && entryDate < weekEnd;
+        }) || null;
+
+        const workoutPlan = currentWeekWorkout ? {
+            Monday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Monday'),
+            Tuesday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Tuesday'),
+            Wednesday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Wednesday'),
+            Thursday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Thursday'),
+            Friday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Friday'),
+            Saturday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Saturday'),
+            Sunday: currentWeekWorkout.exercises.filter(ex => ex.day === 'Sunday')
+        } : {};
+
+        res.render('workoutplanedit', {
+            trainer: req.session.trainer,
+            id: user._id,
+            name: user.full_name,
+            goal: user.fitness_goals.weight_goal ? `${user.fitness_goals.weight_goal} kg` : user.fitness_goals.calorie_goal ? `${user.fitness_goals.calorie_goal} kcal` : 'Strength Training',
+            workoutPlan,
+            notes: currentWeekWorkout ? currentWeekWorkout.notes : ''
+        });
+    } catch (error) {
+        console.error('Error rendering edit workout plan:', error);
+        res.status(500).render('trainer', {
+            errorMessage: 'Server error. Please try again later.'
+        });
+    }
+};
+
+const saveWorkoutPlan = async (req, res) => {
+    try {
+        if (!req.session.trainer) {
+            console.log('Unauthorized access to save workout plan');
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        const { clientId, notes, currentWeek, nextWeek } = req.body;
+        const trainerId = req.session.trainer.id;
+
+        console.log('Saving workout plan for Platinum user:', clientId);
+
+        if (!clientId || !currentWeek || !nextWeek) {
+            console.log('Validation failed: Missing required fields');
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        const user = await User.findOne({ 
+            _id: clientId, 
+            trainer: trainerId,
+            membershipType: 'Platinum'
+        });
+        if (!user) {
+            console.log('Platinum user not found or not assigned to trainer:', clientId);
+            return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay());
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
+
+        const currentWeekEntryIndex = user.workout_history.findIndex(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate >= weekStart && entryDate < weekEnd;
+        });
+
+        const currentWeekExercises = [];
+        for (const [day, exercises] of Object.entries(currentWeek)) {
+            exercises.forEach(ex => {
+                if (ex.name) {
+                    currentWeekExercises.push({
+                        day,
+                        name: ex.name,
+                        sets: ex.sets ? parseInt(ex.sets) : null,
+                        reps: ex.reps ? parseInt(ex.reps) : null,
+                        weight: ex.weight ? parseFloat(ex.weight) : null,
+                        duration: ex.duration ? parseInt(ex.duration) : null,
+                        completed: false
+                    });
+                }
+            });
+        }
+
+        const currentWeekEntry = {
+            date: new Date(),
+            exercises: currentWeekExercises,
+            progress: 0,
+            completed: false,
+            notes
+        };
+
+        if (currentWeekEntryIndex !== -1) {
+            user.workout_history[currentWeekEntryIndex] = currentWeekEntry;
+            console.log('Updated existing workout history entry for current week:', clientId);
+        } else {
+            user.workout_history.push(currentWeekEntry);
+            console.log('Added new workout history entry for current week:', clientId);
+        }
+
+        const nextWeekStart = new Date(weekEnd);
+        const nextWeekEnd = new Date(nextWeekStart);
+        nextWeekEnd.setDate(nextWeekStart.getDate() + 7);
+
+        const nextWeekEntryIndex = user.workout_history.findIndex(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate >= nextWeekStart && entryDate < nextWeekEnd;
+        });
+
+        const nextWeekExercises = [];
+        for (const [day, exercises] of Object.entries(nextWeek)) {
+            exercises.forEach(ex => {
+                if (ex.name) {
+                    nextWeekExercises.push({
+                        day,
+                        name: ex.name,
+                        sets: ex.sets ? parseInt(ex.sets) : null,
+                        reps: ex.reps ? parseInt(ex.reps) : null,
+                        weight: ex.weight ? parseFloat(ex.weight) : null,
+                        duration: ex.duration ? parseInt(ex.duration) : null,
+                        completed: false
+                    });
+                }
+            });
+        }
+
+        const nextWeekEntry = {
+            date: nextWeekStart,
+            exercises: nextWeekExercises,
+            progress: 0,
+            completed: false,
+            notes
+        };
+
+        if (nextWeekEntryIndex !== -1) {
+            user.workout_history[nextWeekEntryIndex] = nextWeekEntry;
+            console.log('Updated existing workout history entry for next week:', clientId);
+        } else {
+            user.workout_history.push(nextWeekEntry);
+            console.log('Added new workout history entry for next week:', clientId);
+        }
+
+        await user.save();
+        console.log('Workout plan saved for Platinum user:', clientId);
+
+        res.json({ message: 'Workout plan saved successfully', redirect: '/trainer' });
+    } catch (error) {
+        console.error('Error saving workout plan:', error);
+        res.status(500).json({ error: 'Server error' });
     }
 };
 
@@ -404,11 +590,141 @@ const editNutritionPlan = async (req, res) => {
     }
 };
 
-module.exports = {
-    signupTrainer,
-    loginTrainer,
-    renderTrainerLogin,
-    renderTrainerDashboard,
-    renderEditNutritionPlan,
-    editNutritionPlan
+const getClientData = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const trainerId = req.session.trainer.id;
+        const user = await User.findOne({ _id: userId, trainer: trainerId, membershipType: 'Platinum' })
+            .select('full_name dob weight height BMI fitness_goals')
+            .lean();
+        if (!user) {
+            return res.status(404).json({ error: 'Client not found' });
+        }
+        const dob = new Date(user.dob);
+        const today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        const monthDiff = today.getMonth() - dob.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+            age--;
+        }
+        const fitnessGoal = user.fitness_goals.weight_goal
+            ? `${user.fitness_goals.weight_goal} kg`
+            : user.fitness_goals.calorie_goal
+            ? `${user.fitness_goals.calorie_goal} kcal`
+            : 'Not set';
+        res.json({
+            name: user.full_name,
+            age,
+            weight: user.weight ? `${user.weight} kg` : 'N/A',
+            height: user.height ? `${user.height} cm` : 'N/A',
+            bodyFat: user.BMI ? `${user.BMI.toFixed(1)} (BMI)` : 'N/A',
+            goal: fitnessGoal
+        });
+    } catch (error) {
+        console.error('Error fetching client data:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+const getWorkoutData = async (req, res) => {
+    try {
+        if (!req.session.trainer) {
+            console.log('Unauthorized access to workout data');
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        const userId = req.params.userId;
+        const trainerId = req.session.trainer.id;
+
+        const user = await User.findOne({ 
+            _id: userId, 
+            trainer: trainerId,
+            membershipType: 'Platinum'
+        })
+            .select('workout_history')
+            .lean();
+
+        if (!user) {
+            console.log('Platinum user not found or not assigned to trainer:', userId);
+            return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay());
+
+        const currentWeekWorkout = user.workout_history.find(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate >= weekStart && entryDate < new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+        }) || null;
+
+        const todayDay = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()];
+        const exercises = currentWeekWorkout ? currentWeekWorkout.exercises.filter(ex => ex.day === todayDay) : [];
+
+        res.json({ exercises });
+    } catch (error) {
+        console.error('Error fetching workout data:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+const getNutritionData = async (req, res) => {
+    try {
+        if (!req.session.trainer) {
+            console.log('Unauthorized access to nutrition data');
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        const userId = req.params.userId;
+        const trainerId = req.session.trainer.id;
+
+        const user = await User.findOne({ 
+            _id: userId, 
+            trainer: trainerId,
+            membershipType: 'Platinum'
+        })
+            .select('fitness_goals nutrition_history')
+            .lean();
+
+        if (!user) {
+            console.log('Platinum user not found or not assigned to trainer:', userId);
+            return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+
+        const latestNutrition = user.nutrition_history.find(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate >= today && entryDate < tomorrow;
+        }) || null;
+
+        res.json({
+            nutrition: {
+                protein_goal: user.fitness_goals.protein_goal || 'N/A',
+                calorie_goal: user.fitness_goals.calorie_goal || 'N/A',
+                foods: latestNutrition ? latestNutrition.foods : []
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching nutrition data:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+module.exports = { 
+    signupTrainer, 
+    loginTrainer, 
+    renderTrainerLogin, 
+    renderTrainerDashboard, 
+    renderEditWorkoutPlan, 
+    saveWorkoutPlan, 
+    renderEditNutritionPlan, 
+    editNutritionPlan, 
+    getClientData,
+    getWorkoutData,
+    getNutritionData
 };

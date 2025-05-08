@@ -80,93 +80,6 @@ const userSchema = new mongoose.Schema({
         ref: 'Trainer',
         default: null 
     },
-    workout_history: [{
-        workoutPlanId: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'WorkoutPlan' 
-        },
-        date: { 
-            type: Date, 
-            default: Date.now 
-        },
-        exercises: [{
-            name: { 
-                type: String, 
-                required: true 
-            },
-            sets: { 
-                type: Number, 
-                min: 1 
-            },
-            reps: { 
-                type: Number, 
-                min: 1 
-            },
-            weight: { 
-                type: Number, 
-                min: 0 
-            },
-            duration: { 
-                type: Number, 
-                min: 0 
-            }, // For timed exercises (e.g., 30 seconds)
-            completed: { 
-                type: Boolean, 
-                default: false 
-            }
-        }],
-        progress: { 
-            type: Number, 
-            min: 0, 
-            max: 100 
-        }, // Percentage completed
-        completed: { 
-            type: Boolean, 
-            default: false 
-        }
-    }],
-    nutrition_history: [{
-        date: { 
-            type: Date, 
-            default: Date.now 
-        },
-        calories_consumed: { 
-            type: Number, 
-            min: 0 
-        },
-        protein_consumed: { 
-            type: Number, 
-            min: 0 
-        },
-        macros: {
-            protein: { 
-                type: Number, 
-                min: 0 
-            }, // Percentage
-            carbs: { 
-                type: Number, 
-                min: 0 
-            },
-            fats: { 
-                type: Number, 
-                min: 0 
-            }
-        },
-        foods: [{
-            name: { 
-                type: String, 
-                required: true 
-            },
-            protein: { 
-                type: Number, 
-                min: 0 
-            },
-            calories: { 
-                type: Number, 
-                min: 0 
-            }
-        }]
-    }],
     class_schedules: [{
         trainerId: { 
             type: mongoose.Schema.Types.ObjectId, 
@@ -175,7 +88,7 @@ const userSchema = new mongoose.Schema({
         name: { 
             type: String, 
             required: true 
-        }, // e.g., "HIIT Intensity"
+        },
         date: { 
             type: Date, 
             required: true 
@@ -183,13 +96,13 @@ const userSchema = new mongoose.Schema({
         time: { 
             type: String, 
             required: true 
-        }, // e.g., "6:00 PM"
+        },
         meetLink: { 
             type: String 
-        }, // e.g., "https://meet.google.com/abc-defg-hij"
+        },
         description: { 
             type: String 
-        } // e.g., "High-intensity interval training..."
+        }
     }]
 });
 

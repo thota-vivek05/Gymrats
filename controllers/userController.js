@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const User = require('../model/User');
+const WorkoutHistory = require('../model/WorkoutHistory');
+const NutritionHistory = require('../model/NutritionHistory');
 
 const loginUser = async (req, res) => {
     try {
@@ -224,8 +226,7 @@ const getUserDashboard = async (req, res) => {
 
         const user = await User.findById(userId)
             .populate('trainer')
-            .populate('workout_history.workoutPlanId')
-            .select('full_name weight fitness_goals workout_history nutrition_history class_schedules');
+            .select('full_name weight fitness_goals class_schedules');
         if (!user) {
             console.log('User not found:', userId);
             return res.status(404).json({ error: 'User not found' });
@@ -236,40 +237,41 @@ const getUserDashboard = async (req, res) => {
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
 
-        const todayWorkout = user.workout_history.find(w => {
-            const workoutDate = new Date(w.date);
-            return workoutDate >= today && workoutDate < tomorrow;
-        }) || {};
+        // Fetch today's workout from WorkoutHistory
+        const todayWorkout = await WorkoutHistory.findOne({
+            userId: userId,
+            date: { $gte: today, $lt: tomorrow }
+        }).lean() || {};
         const workoutData = {
-            name: todayWorkout.workoutPlanId?.name || 'No Workout Scheduled',
-            duration: todayWorkout.workoutPlanId?.duration || 60,
+            name: todayWorkout.name || 'No Workout Scheduled',
+            duration: 60, // Default duration since workoutPlanId is not used
             exercises: todayWorkout.exercises || [],
             progress: todayWorkout.progress || 0,
             completed: todayWorkout.completed || false,
-            workoutPlanId: todayWorkout.workoutPlanId?._id || null,
+            workoutPlanId: todayWorkout._id || null, // Use WorkoutHistory _id instead
             completedExercises: todayWorkout.exercises?.filter(e => e.completed).length || 0,
             totalExercises: todayWorkout.exercises?.length || 0
         };
 
+        // Fetch weekly workouts from WorkoutHistory
         const weekStart = new Date(today);
         weekStart.setDate(today.getDate() - today.getDay());
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
+        const weeklyWorkoutsData = await WorkoutHistory.find({
+            userId: userId,
+            date: { $gte: weekStart, $lt: weekEnd }
+        }).lean();
         const weeklyWorkouts = {
-            completed: user.workout_history.filter(w => {
-                const workoutDate = new Date(w.date);
-                return workoutDate >= weekStart && workoutDate < weekEnd && w.completed;
-            }).length,
-            total: user.workout_history.filter(w => {
-                const workoutDate = new Date(w.date);
-                return workoutDate >= weekStart && workoutDate < weekEnd;
-            }).length
+            completed: weeklyWorkoutsData.filter(w => w.completed).length,
+            total: weeklyWorkoutsData.length
         };
 
-        const todayNutrition = user.nutrition_history.find(n => {
-            const nutritionDate = new Date(n.date);
-            return nutritionDate >= today && nutritionDate < tomorrow;
-        }) || {};
+        // Fetch today's nutrition from NutritionHistory
+        const todayNutrition = await NutritionHistory.findOne({
+            userId: userId,
+            date: { $gte: today, $lt: tomorrow }
+        }).lean() || {};
 
         const upcomingClass = user.class_schedules.find(c => {
             const classDate = new Date(c.date);
@@ -279,53 +281,58 @@ const getUserDashboard = async (req, res) => {
             upcomingClass.trainerName = user.trainer?.full_name || 'Coach';
         }
 
-        const exerciseProgress = [
-            {
-                name: 'Bicep Curls',
-                currentWeight: 10,
-                goalWeight: 12,
-                progress: Math.round((10 / 12) * 100),
-                history: [
-                    { week: 'Week 1', weight: 5, date: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 2', weight: 6, date: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 3', weight: 7, date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 4', weight: 8, date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 5', weight: 9, date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 6', weight: 10, date: new Date(today.getTime()) }
-                ],
-                color: '#8A2BE2'
-            },
-            {
-                name: 'Deadlift',
-                currentWeight: 100,
-                goalWeight: 140,
-                progress: Math.round((100 / 140) * 100),
-                history: [
-                    { week: 'Week 1', weight: 60, date: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 2', weight: 70, date: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 3', weight: 75, date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 4', weight: 85, date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 5', weight: 95, date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 6', weight: 100, date: new Date(today.getTime()) }
-                ],
-                color: '#32CD32'
-            },
-            {
-                name: 'Bench Press',
-                currentWeight: 60,
-                goalWeight: 100,
-                progress: Math.round((60 / 100) * 100),
-                history: [
-                    { week: 'Week 1', weight: 40, date: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 2', weight: 45, date: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 3', weight: 48, date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 4', weight: 52, date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 5', weight: 55, date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000) },
-                    { week: 'Week 6', weight: 60, date: new Date(today.getTime()) }
-                ],
-                color: '#FF6347'
+        // Fetch exercise progress dynamically from WorkoutHistory
+        const exercisesToTrack = ['Bicep Curls', 'Deadlift', 'Bench Press'];
+        const exerciseProgress = await Promise.all(exercisesToTrack.map(async (exerciseName) => {
+            const workoutHistories = await WorkoutHistory.find({
+                userId: userId,
+                'exercises.name': exerciseName
+            })
+                .sort({ date: 1 }) // Sort by date ascending
+                .lean();
+
+            const history = [];
+            let currentWeight = 0;
+            const goalWeight = {
+                'Bicep Curls': 12,
+                'Deadlift': 140,
+                'Bench Press': 100
+            }[exerciseName];
+
+            workoutHistories.forEach((wh, index) => {
+                const exercise = wh.exercises.find(ex => ex.name === exerciseName);
+                if (exercise && exercise.weight) {
+                    currentWeight = exercise.weight;
+                    history.push({
+                        week: `Week ${index + 1}`,
+                        weight: exercise.weight,
+                        date: wh.date
+                    });
+                }
+            });
+
+            // Fill in missing weeks if necessary
+            while (history.length < 6) {
+                history.unshift({
+                    week: `Week ${history.length + 1}`,
+                    weight: 0,
+                    date: new Date(today.getTime() - (6 - history.length) * 24 * 60 * 60 * 1000)
+                });
             }
-        ];
+
+            return {
+                name: exerciseName,
+                currentWeight: currentWeight || 0,
+                goalWeight: goalWeight || 0,
+                progress: goalWeight ? Math.round((currentWeight / goalWeight) * 100) : 0,
+                history: history.slice(-6), // Last 6 entries
+                color: {
+                    'Bicep Curls': '#8A2BE2',
+                    'Deadlift': '#32CD32',
+                    'Bench Press': '#FF6347'
+                }[exerciseName]
+            };
+        }));
 
         const recommendedFoods = [
             { name: 'Grilled Chicken Breast', protein: 31, perUnit: '100g', icon: 'fa-drumstick-bite' },
@@ -357,7 +364,7 @@ const completeWorkout = async (req, res) => {
         }
 
         const userId = req.session.user.id;
-        const { workoutPlanId } = req.body;
+        const { workoutPlanId } = req.body; // This is actually the WorkoutHistory _id
 
         if (!workoutPlanId) {
             console.log('Missing workoutPlanId');
@@ -366,13 +373,7 @@ const completeWorkout = async (req, res) => {
 
         console.log('Completing workout for user:', userId, 'Workout ID:', workoutPlanId);
 
-        const user = await User.findById(userId);
-        if (!user) {
-            console.log('User not found:', userId);
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        const workout = user.workout_history.find(w => w.workoutPlanId && w.workoutPlanId.toString() === workoutPlanId);
+        const workout = await WorkoutHistory.findOne({ _id: workoutPlanId, userId: userId });
         if (!workout) {
             console.log('Workout not found:', workoutPlanId);
             return res.status(404).json({ error: 'Workout not found' });
@@ -389,7 +390,7 @@ const completeWorkout = async (req, res) => {
             exercise.completed = true;
         });
 
-        await user.save();
+        await workout.save();
         console.log('Workout completed successfully:', workoutPlanId);
 
         res.status(200).json({ message: 'Workout completed successfully' });
@@ -398,6 +399,7 @@ const completeWorkout = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
 
 module.exports = {
     loginUser,

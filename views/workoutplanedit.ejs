@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymRats - Edit Workout Plan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="/public/workoutplanedit/workoutplanedit.css" />
+    <link rel="stylesheet" type="text/css" href="/workout_plans/workoutplan_edit.css" />
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -31,8 +31,8 @@
                 </div>
                 
                 <div class="user-profile">
-                    <a href="/userprofile" class="active">
-                        <span>Anvesh</span>
+                    <a href="/trainer" class="active">
+                        <span><%= trainer.name %></span>
                     </a>
                 </div>
             </div>
@@ -49,8 +49,7 @@
                 <a href="/blog">Blog</a>
                 <a href="/about">About</a>
                 <div class="sidebar-profile">
-        
-                    <span>Anvesh</span>
+                    <span><%= trainer.name %></span>
                 </div>
             </div>
         </header>
@@ -102,11 +101,11 @@
                                     <% workoutPlan[day].forEach((exercise, exIndex) => { %>
                                         <div class="exercise-item">
                                             <div class="exercise-details">
-                                                <input type="text" name="<%= day %>-exercise-<%= exIndex %>" class="exercise-name-input" value="<%= exercise.name %>" placeholder="Exercise name">
+                                                <input type="text" name="currentWeek[<%= day %>][<%= exIndex %>][name]" class="exercise-name-input" value="<%= exercise.name %>" placeholder="Exercise name">
                                                 <div class="exercise-params">
-                                                    <input type="text" name="<%= day %>-sets-<%= exIndex %>" class="sets-input" value="<%= exercise.sets %>" placeholder="Sets">
-                                                    <input type="text" name="<%= day %>-reps-<%= exIndex %>" class="reps-input" value="<%= exercise.reps %>" placeholder="Reps">
-                                                    <input type="text" name="<%= day %>-weight-<%= exIndex %>" class="weight-input" value="<%= exercise.weight %>" placeholder="Weight">
+                                                    <input type="text" name="currentWeek[<%= day %>][<%= exIndex %>][sets]" class="sets-input" value="<%= exercise.sets %>" placeholder="Sets">
+                                                    <input type="text" name="currentWeek[<%= day %>][<%= exIndex %>][reps]" class="reps-input" value="<%= exercise.reps %>" placeholder="Reps">
+                                                    <input type="text" name="currentWeek[<%= day %>][<%= exIndex %>][weight]" class="weight-input" value="<%= exercise.weight %>" placeholder="Weight">
                                                 </div>
                                             </div>
                                             <button type="button" class="remove-exercise-btn"><i class="fas fa-trash"></i></button>
@@ -444,12 +443,17 @@
         selectExerciseBtn.addEventListener('click', function() {
             if (selectedExercise) {
                 let dayContainer;
+                let dayName;
+                let weekPrefix = 'currentWeek';
                 
                 if (currentSelectedDay.toString().startsWith('next-')) {
                     const dayIndex = currentSelectedDay.split('-')[1];
                     dayContainer = document.getElementById(`exercises-next-day-${dayIndex}`);
+                    dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][dayIndex];
+                    weekPrefix = 'nextWeek';
                 } else {
                     dayContainer = document.getElementById(`exercises-day-${currentSelectedDay}`);
+                    dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][currentSelectedDay];
                 }
                 
                 // Remove rest day message if it exists
@@ -462,26 +466,16 @@
                 const existingExercises = dayContainer.querySelectorAll('.exercise-item');
                 const exerciseIndex = existingExercises.length;
                 
-                // Get the day name
-                let dayName;
-                if (currentSelectedDay.toString().startsWith('next-')) {
-                    const dayIndex = parseInt(currentSelectedDay.split('-')[1]);
-                    dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][dayIndex];
-                    dayName = 'Next-' + dayName;
-                } else {
-                    dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][currentSelectedDay];
-                }
-                
                 // Create new exercise item
                 const exerciseItem = document.createElement('div');
                 exerciseItem.className = 'exercise-item';
                 exerciseItem.innerHTML = `
                     <div class="exercise-details">
-                        <input type="text" name="${dayName}-exercise-${exerciseIndex}" class="exercise-name-input" value="${selectedExercise}" placeholder="Exercise name">
+                        <input type="text" name="${weekPrefix}[${dayName}][${exerciseIndex}][name]" class="exercise-name-input" value="${selectedExercise}" placeholder="Exercise name">
                         <div class="exercise-params">
-                            <input type="text" name="${dayName}-sets-${exerciseIndex}" class="sets-input" placeholder="Sets">
-                            <input type="text" name="${dayName}-reps-${exerciseIndex}" class="reps-input" placeholder="Reps">
-                            <input type="text" name="${dayName}-weight-${exerciseIndex}" class="weight-input" placeholder="Weight">
+                            <input type="text" name="${weekPrefix}[${dayName}][${exerciseIndex}][sets]" class="sets-input" placeholder="Sets">
+                            <input type="text" name="${weekPrefix}[${dayName}][${exerciseIndex}][reps]" class="reps-input" placeholder="Reps">
+                            <input type="text" name="${weekPrefix}[${dayName}][${exerciseIndex}][weight]" class="weight-input" placeholder="Weight">
                         </div>
                     </div>
                     <button type="button" class="remove-exercise-btn"><i class="fas fa-trash"></i></button>
@@ -599,12 +593,15 @@
                         const repsInput = item.querySelector('.reps-input');
                         const weightInput = item.querySelector('.weight-input');
                         
-                        workoutData.currentWeek[day].push({
-                            name: nameInput.value,
-                            sets: setsInput.value,
-                            reps: repsInput.value,
-                            weight: weightInput.value
-                        });
+                        if (nameInput.value) {
+                            workoutData.currentWeek[day].push({
+                                name: nameInput.value,
+                                sets: setsInput.value || '',
+                                reps: repsInput.value || '',
+                                weight: weightInput.value || '',
+                                day: day
+                            });
+                        }
                     });
                 }
             });
@@ -627,12 +624,15 @@
                         const repsInput = item.querySelector('.reps-input');
                         const weightInput = item.querySelector('.weight-input');
                         
-                        workoutData.nextWeek[day].push({
-                            name: nameInput.value,
-                            sets: setsInput.value,
-                            reps: repsInput.value,
-                            weight: weightInput.value
-                        });
+                        if (nameInput.value) {
+                            workoutData.nextWeek[day].push({
+                                name: nameInput.value,
+                                sets: setsInput.value || '',
+                                reps: repsInput.value || '',
+                                weight: weightInput.value || '',
+                                day: day
+                            });
+                        }
                     });
                 }
             });
@@ -642,7 +642,7 @@
             attachEventListeners();
             
             // Send data to server via fetch API
-            fetch('/api/save-workout-plan', {
+            fetch('/save-workout-plan', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -660,6 +660,8 @@
                 // Hide toast after 3 seconds
                 setTimeout(() => {
                     successToast.classList.remove('show');
+                    // Redirect to trainer dashboard
+                    window.location.href = '/trainer';
                 }, 3000);
             })
             .catch((error) => {

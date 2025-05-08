@@ -40,7 +40,7 @@
 
     <!-- Mobile Side Navigation -->
     <div class="mobile-sidebar" id="sideNavbar">
-        <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+        <a href="javascript:void(0)" class="close-button" id="closeBtn">×</a>
         <a href="/home">Home</a>
         <a href="/isolation">Exercises</a>
         <a href="/nutrition">Nutrition</a>
@@ -86,55 +86,44 @@
                     <h2>Client Profile: <span id="clientNameDisplay">
                         <%= selectedClient ? selectedClient.name : 'Select a client' %>
                     </span></h2>
-                    <div class="profile-stats">
+                    <div class="profile-stats" id="clientProfileStats">
                         <div class="stat-item">
                             <span class="stat-label">Age:</span>
-                            <span class="stat-value"><%= selectedClient ? selectedClient.age : 'N/A' %></span>
+                            <span class="stat-value" id="clientAge"><%= selectedClient ? (selectedClient.age || 'N/A') : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Weight:</span>
-                            <span class="stat-value"><%= selectedClient ? selectedClient.weight : 'N/A' %></span>
+                            <span class="stat-value" id="clientWeight"><%= selectedClient ? (selectedClient.weight || 'N/A') : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Height:</span>
-                            <span class="stat-value"><%= selectedClient ? selectedClient.height : 'N/A' %></span>
+                            <span class="stat-value" id="clientHeight"><%= selectedClient ? (selectedClient.height || 'N/A') : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Body Fat:</span>
-                            <span class="stat-value"><%= selectedClient ? selectedClient.bodyFat : 'N/A' %></span>
+                            <span class="stat-value" id="clientBodyFat"><%= selectedClient ? (selectedClient.bodyFat || 'N/A') : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Goal:</span>
-                            <span class="stat-value"><%= selectedClient ? selectedClient.goal : 'N/A' %></span>
+                            <span class="stat-value" id="clientGoal"><%= selectedClient ? (selectedClient.goal || 'N/A') : 'N/A' %></span>
                         </div>
                     </div>
                     <% if (selectedClient) { %>
                         <button class="btn meet-button" onclick="window.open('https://meet.google.com/xyz-abcd-123', '_blank')">Join Google Meet</button>
+                    <% } else { %>
+                        <button class="btn meet-button" disabled>Join Google Meet</button>
                     <% } %>
                 </div>
 
                 <!-- Workout Plan -->
                 <div class="workout-plan">
-                    <h2>Today's Workout: HIIT</h2>
-                    <div class="exercises-list">
-                        <div class="exercise-item">
-                            <span class="exercise-name">1. Burpees</span>
-                            <span class="exercise-details">4 sets x 15 reps</span>
-                        </div>
-                        <div class="exercise-item">
-                            <span class="exercise-name">2. Squat/Lunges</span>
-                            <span class="exercise-details">3 sets x 20 reps</span>
-                        </div>
-                        <div class="exercise-item">
-                            <span class="exercise-name">3. Mountain Climbers</span>
-                            <span class="exercise-details">4 sets x 30 seconds</span>
-                        </div>
-                        <div class="exercise-item">
-                            <span class="exercise-name">4. Jumping Jacks</span>
-                            <span class="exercise-details">3 sets x 45 seconds</span>
-                        </div>
+                    <h2>Today's Workout</h2>
+                    <div class="exercises-list" id="workoutExercises">
+                        <% if (!selectedClient) { %>
+                            <p>Select a client to view their workout plan.</p>
+                        <% } %>
                     </div>
-                    <button class="btn">Edit Workout Plan</button>
+                    <a id="editWorkoutPlanLink" href="<%= selectedClient ? `/edit_workout_plan/${selectedClient.id}` : '#' %>" class="btn <%= !selectedClient ? 'disabled' : '' %>">Edit Workout Plan</a>
                 </div>
             </div>
 
@@ -162,11 +151,11 @@
                 <h2>Food Intake</h2>
                 <% if (selectedClient) { %>
                     <div class="nutrition-goal">
-                        <p>Today's protein goal: N/A</p>
-                        <p>Calories: N/A</p>
+                        <p>Today's protein goal: <span id="proteinGoal">N/A</span></p>
+                        <p>Calories: <span id="calorieGoal">N/A</span></p>
                     </div>
                     <h3>Foods to Take:</h3>
-                    <div class="foods-to-take">
+                    <div class="foods-to-take" id="foodsList">
                         <p>No foods assigned yet.</p>
                     </div>
                     <div class="goals-reached">
@@ -176,9 +165,10 @@
                     <div class="pie-chart-container">
                         <canvas id="nutritionChart"></canvas>
                     </div>
-                    <a href="/edit_nutritional_plan/<%= selectedClient.id %>" class="btn">Edit Nutrition Plan</a>
+                    <a id="editNutritionPlanLink" href="/edit_nutritional_plan/<%= selectedClient.id %>" class="btn">Edit Nutrition Plan</a>
                 <% } else { %>
                     <p>Select a client to view or edit their nutrition plan.</p>
+                    <a id="editNutritionPlanLink" href="#" class="btn disabled">Edit Nutrition Plan</a>
                 <% } %>
             </div>
         </div>
@@ -239,37 +229,134 @@
             document.getElementById('sideNavbar').style.width = "0";
         });
 
-        // Client selection functionality
-        document.querySelectorAll('.client-item').forEach(item => {
-            item.addEventListener('click', function () {
-                document.querySelectorAll('.client-item').forEach(client => {
-                    client.classList.remove('active');
-                });
-                this.classList.add('active');
-                const clientId = this.dataset.client;
-                console.log("Selected client: " + clientId);
 
-                // Fetch updated client data via AJAX
-                fetch(`/trainer/client/${clientId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.error) {
-                            console.error('Error fetching client data:', data.error);
-                            return;
-                        }
-                        // Update client profile display
-                        document.getElementById('clientNameDisplay').textContent = data.name;
-                        document.querySelector('.stat-value[data-field="age"]').textContent = data.age || 'N/A';
-                        document.querySelector('.stat-value[data-field="weight"]').textContent = data.weight || 'N/A';
-                        document.querySelector('.stat-value[data-field="height"]').textContent = data.height || 'N/A';
-                        document.querySelector('.stat-value[data-field="bodyFat"]').textContent = data.bodyFat || 'N/A';
-                        document.querySelector('.stat-value[data-field="goal"]').textContent = data.goal || 'N/A';
-                    })
-                    .catch(error => {
-                        console.error('Error fetching client data:', error);
-                    });
-            });
+        document.querySelectorAll('.client-item').forEach(item => {
+    item.addEventListener('click', function () {
+        document.querySelectorAll('.client-item').forEach(client => {
+            client.classList.remove('active');
         });
+        this.classList.add('active');
+        const clientId = this.dataset.client;
+        console.log("Selected client: " + clientId);
+
+        // Update edit buttons
+        const editWorkoutPlanLink = document.getElementById('editWorkoutPlanLink');
+        const editNutritionPlanLink = document.getElementById('editNutritionPlanLink');
+        const meetButton = document.querySelector('.meet-button');
+        editWorkoutPlanLink.href = `/edit_workout_plan/${clientId}`;
+        editWorkoutPlanLink.classList.remove('disabled');
+        editNutritionPlanLink.href = `/edit_nutritional_plan/${clientId}`;
+        editNutritionPlanLink.classList.remove('disabled');
+        meetButton.disabled = false;
+
+        // Show loading state
+        document.getElementById('clientNameDisplay').textContent = 'Loading...';
+        document.getElementById('clientAge').textContent = 'Loading...';
+        document.getElementById('clientWeight').textContent = 'Loading...';
+        document.getElementById('clientHeight').textContent = 'Loading...';
+        document.getElementById('clientBodyFat').textContent = 'Loading...';
+        document.getElementById('clientGoal').textContent = 'Loading...';
+
+        // Fetch updated client data via AJAX
+        fetch(`/trainer/client/${clientId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error fetching client data:', data.error);
+                    document.getElementById('clientNameDisplay').textContent = 'Error loading client';
+                    document.getElementById('clientAge').textContent = 'N/A';
+                    document.getElementById('clientWeight').textContent = 'N/A';
+                    document.getElementById('clientHeight').textContent = 'N/A';
+                    document.getElementById('clientBodyFat').textContent = 'N/A';
+                    document.getElementById('clientGoal').textContent = 'N/A';
+                    return;
+                }
+                // Update client profile display
+                document.getElementById('clientNameDisplay').textContent = data.name || 'N/A';
+                document.getElementById('clientAge').textContent = data.age || 'N/A';
+                document.getElementById('clientWeight').textContent = data.weight || 'N/A';
+                document.getElementById('clientHeight').textContent = data.height || 'N/A';
+                document.getElementById('clientBodyFat').textContent = data.bodyFat || 'N/A';
+                document.getElementById('clientGoal').textContent = data.goal || 'N/A';
+            })
+            .catch(error => {
+                console.error('Error fetching client data:', error);
+                document.getElementById('clientNameDisplay').textContent = 'Error loading client';
+                document.getElementById('clientAge').textContent = 'N/A';
+                document.getElementById('clientWeight').textContent = 'N/A';
+                document.getElementById('clientHeight').textContent = 'N/A';
+                document.getElementById('clientBodyFat').textContent = 'N/A';
+                document.getElementById('clientGoal').textContent = 'N/A';
+            });
+
+        // Fetch workout data (unchanged)
+        fetch(`/trainer/workout/${clientId}`)
+            .then(response => response.json())
+            .then(data => {
+                const exercisesList = document.getElementById('workoutExercises');
+                exercisesList.innerHTML = '';
+                if (data.error || !data.exercises || data.exercises.length === 0) {
+                    exercisesList.innerHTML = '<p>No workout plan for today.</p>';
+                    return;
+                }
+                data.exercises.forEach((exercise, index) => {
+                    const exerciseItem = document.createElement('div');
+                    exerciseItem.className = 'exercise-item';
+                    let details = '';
+                    if (exercise.sets && exercise.reps) {
+                        details = `${exercise.sets} sets x ${exercise.reps} reps`;
+                    } else if (exercise.duration) {
+                        details = `${exercise.duration} seconds`;
+                    }
+                    if (exercise.weight) {
+                        details += `, ${exercise.weight} kg`;
+                    }
+                    exerciseItem.innerHTML = `
+                        <span class="exercise-name">${index + 1}. ${exercise.name}</span>
+                        <span class="exercise-details">${details}</span>
+                    `;
+                    exercisesList.appendChild(exerciseItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching workout data:', error);
+                document.getElementById('workoutExercises').innerHTML = '<p>Error loading workout plan.</p>';
+            });
+
+        // Fetch nutrition data (unchanged)
+        fetch(`/trainer/nutrition/${clientId}`)
+            .then(response => response.json())
+            .then(data => {
+                const proteinGoal = document.getElementById('proteinGoal');
+                const calorieGoal = document.getElementById('calorieGoal');
+                const foodsList = document.getElementById('foodsList');
+                if (data.error || !data.nutrition) {
+                    proteinGoal.textContent = 'N/A';
+                    calorieGoal.textContent = 'N/A';
+                    foodsList.innerHTML = '<p>No foods assigned yet.</p>';
+                    return;
+                }
+                proteinGoal.textContent = data.nutrition.protein_goal || 'N/A';
+                calorieGoal.textContent = data.nutrition.calorie_goal || 'N/A';
+                foodsList.innerHTML = '';
+                if (data.nutrition.foods && data.nutrition.foods.length > 0) {
+                    data.nutrition.foods.forEach(food => {
+                        const foodItem = document.createElement('p');
+                        foodItem.textContent = `${food.name} (${food.protein}g protein, ${food.calories} kcal)`;
+                        foodsList.appendChild(foodItem);
+                    });
+                } else {
+                    foodsList.innerHTML = '<p>No foods assigned yet.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching nutrition data:', error);
+                document.getElementById('proteinGoal').textContent = 'N/A';
+                document.getElementById('calorieGoal').textContent = 'N/A';
+                document.getElementById('foodsList').innerHTML = '<p>Error loading nutrition plan.</p>';
+            });
+    });
+});
 
         // Chart.js implementation for exercise progress
         const exerciseCtx = document.getElementById('exerciseChart').getContext('2d');
