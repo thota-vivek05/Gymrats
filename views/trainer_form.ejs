@@ -117,47 +117,13 @@
                 </div>
               </div>
             </div>
-            <div class="form-group">
-              <label for="certifications">Certifications</label>
-              <select id="certifications" class="form-control" required>
-                <option value="">Select certification</option>
-                <option value="NASM">NASM (National Academy of Sports Medicine)</option>
-                <option value="ACE">ACE (American Council on Exercise)</option>
-                <option value="ACSM">ACSM (American College of Sports Medicine)</option>
-                <option value="NSCA">NSCA (National Strength and Conditioning Association)</option>
-                <option value="ISSA">ISSA (International Sports Sciences Association)</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="certificationDoc">Certification Document</label>
-              <input type="file" id="certificationDoc" class="file-input" />
-              <label for="certificationDoc" class="file-label">Upload Certification Documents</label>
-            </div>
-          </div>
-
-          <!-- Profile Information -->
-          <div class="form-section">
-            <h3>Profile Information</h3>
-            <div class="form-group">
-              <label for="bio">Bio</label>
-              <textarea id="bio" class="form-control" rows="4"></textarea>
-            </div>
-            <div class="form-group">
-              <label for="location">Location/Service Area</label>
-              <input type="text" id="location" class="form-control" />
-            </div>
-            <div class="form-group">
-              <label for="hourlyRate">Hourly Rate ($)</label>
-              <input type="number" id="hourlyRate" class="form-control" min="0" step="5" />
-            </div>
           </div>
 
           <div class="form-group terms">
             <input type="checkbox" id="termsAgree" required />
             <label for="termsAgree">
               I agree to the <a href="/terms">Terms of Service</a>, <a href="/privacy_policy">Privacy Policy</a>, and
-              <a href="/trainer-agreement"> Trainer Agreement</a>
+              <a href="/trainer-agreement">Trainer Agreement</a>
             </label>
           </div>
 
@@ -220,7 +186,50 @@
     </footer>
   </div>
 
-  <script src="/login/auth.js"></script>
+  <script>
+    document.getElementById('trainerSignupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Collect form data
+      const specializations = Array.from(
+        document.querySelectorAll('.checkbox-group input[type="checkbox"]:checked')
+      ).map(input => input.value);
+
+      const formData = {
+        firstName: document.getElementById('firstName').value.trim(),
+        lastName: document.getElementById('lastName').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value,
+        confirmPassword: document.getElementById('confirmPassword').value,
+        phone: document.getElementById('phone').value.trim(),
+        experience: document.getElementById('experience').value,
+        specializations,
+        termsAgree: document.getElementById('termsAgree').checked
+      };
+
+      try {
+        const response = await fetch('/trainer-signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert(result.message);
+          window.location.href = result.redirect;
+        } else {
+          alert(result.error || 'An error occurred during registration');
+        }
+      } catch (error) {
+        console.error('Error submitting trainer signup:', error);
+        alert('An error occurred. Please try again later.');
+      }
+    });
+  </script>
 </body>
 
 </html>

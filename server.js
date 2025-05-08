@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 // Import routes
 const adminRoutes = require('./Routes/adminRoutes');
 const userRoutes = require('./Routes/userRoutes');
+const trainerRoutes = require('./Routes/trainerRoutes');
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -40,8 +41,6 @@ mongoose.connect('mongodb://localhost:27017/gymrats')
         process.exit(1);
     });
 
-//Routes app.use
-app.use('/', userRoutes);
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
@@ -67,6 +66,10 @@ const isAuthenticated = (req, res, next) => {
 
 // Use MVC routes for admin pages
 app.use('/admin', adminRoutes);
+app.use('/', userRoutes);
+app.use('/', trainerRoutes);
+
+
 
 // Redirect legacy admin URLs to the new MVC routes
 app.get('/admin_dashboard', (req, res) => res.redirect('/admin/dashboard'));
@@ -85,7 +88,8 @@ const pages = [
     'login_signup', 'nutrition', 'privacy_policy', 'schedule', 'signup',
     'terms', 'testimonial', 'trainer_form', 'trainer', 'trainers',
     'verifier_form', 'verifier', 'workout_plans', 'userdashboard_b',
-    'userdashboard_g', 'userdashboard_p','trainer_login','edit_nutritional_plan'
+    'userdashboard_g', 'userdashboard_p','trainer_login','edit_nutritional_plan',
+    'admin_login'
 ];
 
 pages.forEach(page => {
