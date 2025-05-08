@@ -64,11 +64,16 @@ const isAuthenticated = (req, res, next) => {
     }
 };
 
+// Add this middleware after initializing the session middleware
+app.use((req, res, next) => {
+    res.locals.currentPage = ''; // Default value
+    next();
+});
+
 // Use MVC routes for admin pages
 app.use('/admin', adminRoutes);
 app.use('/', userRoutes);
 app.use('/', trainerRoutes);
-
 
 
 // Redirect legacy admin URLs to the new MVC routes
@@ -89,7 +94,7 @@ const pages = [
     'terms', 'testimonial', 'trainer_form', 'trainer', 'trainers',
     'verifier_form', 'verifier', 'workout_plans', 'userdashboard_b',
     'userdashboard_g', 'userdashboard_p','trainer_login','edit_nutritional_plan',
-    'admin_login'
+    'admin_login', 'user_nutrition', 'user_exercises', 'user_profile'
 ];
 
 pages.forEach(page => {

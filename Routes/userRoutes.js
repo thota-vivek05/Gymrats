@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 
-
 const isAuthenticated = (req, res, next) => {
     if (req.session && req.session.user) {
         return next();
@@ -16,29 +15,38 @@ router.get('/login_signup', (req, res) => {
 
 router.post('/login', userController.loginUser);
 router.post('/signup', userController.signupUser);
-router.get('/userdashboard_p', isAuthenticated, userController.getUserDashboard);
 
-// Add these routes to your userRoutes.js file
+// Dashboard routes - make sure there are no duplicates
+router.get('/userdashboard_p', isAuthenticated, (req, res) => {
+    userController.getUserDashboard(req, res, 'p');
+});
+
+router.get('/userdashboard_b', isAuthenticated, (req, res) => {
+    userController.getUserDashboard(req, res, 'b');
+});
+
+router.get('/userdashboard_g', isAuthenticated, (req, res) => {
+    userController.getUserDashboard(req, res, 'g');
+});
+
+// Profile routes
+router.get('/userprofile', isAuthenticated, userController.getUserProfile);
+router.get('/userprofile/', isAuthenticated, userController.getUserProfile);
+
+// For nutrition page
+router.get('/user_nutrition', isAuthenticated, (req, res) => {
+    res.render('user_nutrition', { 
+        user: req.session.user,
+        currentPage: 'nutrition'
+    });
+});
+
+// For exercise page
 router.get('/user_exercises', isAuthenticated, (req, res) => {
     res.render('user_exercises', { 
-      user: req.user,
-      title: 'Exercise Guide'
+        user: req.session.user,
+        currentPage: 'exercises'
     });
-  });
-  
-  router.get('/user_nutrition', isAuthenticated, (req, res) => {
-    res.render('user_nutrition', { 
-      user: req.user,
-      title: 'Nutrition Guide'
-    });
-  });
-  
-  // If you don't already have this route
-  router.get('/userprofile', isAuthenticated, (req, res) => {
-    res.render('userprofile', { 
-      user: req.user,
-      title: 'User Profile'
-    });
-  });
+});
 
 module.exports = router;

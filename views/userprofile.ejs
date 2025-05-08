@@ -10,62 +10,56 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
     </head>
     <body>
-        <!-- Replace the current header section in userprofile.ejs -->
-<!-- User Dashboard Header -->
-<div class="main-navbar">
-    <header>
-        <!-- Header Branding -->
-        <div class="brand-logo">
-            <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>" class="brand-name">GymRats</a>
+        <div class="main-navbar">
+            <header>
+                <!-- Header Branding -->
+                <div class="brand-logo">
+                    <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>" class="brand-name">GymRats</a>
+                </div>
+                
+                <div class="nav-menu">
+                    <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>">Home</a>
+                    <a href="/user_exercises">Exercises</a>
+                    <a href="/user_nutrition">Nutrition</a>
+                </div>
+                
+                <div class="right-container">
+                    <div class="search-container">
+                        <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
+                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                    </div>
+                    
+                    <div class="user-profile">
+                        <a href="/userprofile" class="active">
+                            <% if (user && user.full_name) { %>
+                                <span><%= user.full_name %></span>
+                            <% } else { %>
+                                <span>User</span>
+                            <% } %>
+                        </a>
+                    </div>
+                </div>
+                <div class="mobile-menu-icon" id="menuIcon">
+                    <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
+                </div>
+                <div class="mobile-sidebar" id="sideNavbar">
+                    <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+                    <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>">Home</a>
+                    <a href="/user_exercises">Exercises</a>
+                    <a href="/user_nutrition">Nutrition</a>
+                    <div class="sidebar-profile">
+                        <a href="/userprofile" class="active">
+                            <% if (user && user.full_name) { %>
+                                <span><%= user.full_name %></span>
+                            <% } else { %>
+                                <span>User</span>
+                            <% } %>
+                        </a>
+                    </div>
+                </div>
+            </header>
         </div>
-        
-        <div class="nav-menu">
-            <!-- Add 'active' class conditionally based on the current page -->
-            <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>" class="<%= currentPage === 'dashboard' ? 'active' : '' %>">Home</a>
-            <a href="/user_exercises" class="<%= currentPage === 'exercises' ? 'active' : '' %>">Exercises</a>
-            <a href="/user_nutrition" class="<%= currentPage === 'nutrition' ? 'active' : '' %>">Nutrition</a>
-        </div>
-        
-        <div class="right-container">
-            <div class="search-container">
-                <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
-                <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-            </div>
-            
-            <div class="user-profile">
-                <a href="/userprofile" class="<%= currentPage === 'profile' ? 'active' : '' %>">
-                    <% if (user && user.name) { %>
-                        <span><%= user.name %></span>
-                    <% } else if (user && user.full_name) { %>
-                        <span><%= user.full_name.split(' ')[0] %></span>
-                    <% } else { %>
-                        <span>User</span>
-                    <% } %>
-                </a>
-            </div>
-        </div>
-        <div class="mobile-menu-icon" id="menuIcon">
-            <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
-        </div>
-        <div class="mobile-sidebar" id="sideNavbar">
-            <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
-            <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>" class="<%= currentPage === 'dashboard' ? 'active' : '' %>">Home</a>
-            <a href="/user_exercises" class="<%= currentPage === 'exercises' ? 'active' : '' %>">Exercises</a>
-            <a href="/user_nutrition" class="<%= currentPage === 'nutrition' ? 'active' : '' %>">Nutrition</a>
-            <div class="sidebar-profile">
-                <a href="/userprofile">
-                    <% if (user && user.name) { %>
-                        <span><%= user.name %></span>
-                    <% } else if (user && user.full_name) { %>
-                        <span><%= user.full_name.split(' ')[0] %></span>
-                    <% } else { %>
-                        <span>User</span>
-                    <% } %>
-                </a>
-            </div>
-        </div>
-    </header>
-</div>
+    
     <!-- Profile Hero Section -->
     <section class="profile-hero">
         <div class="profile-hero-content">
@@ -109,7 +103,7 @@
             <div class="profile-card user-info-card">
                 <div class="card-header">
                     <h2>Personal Information</h2>
-                    <button class="edit-btn" id="editProfileBtn"><i class="fas fa-edit"></i> Edit</button>
+                    
                 </div>
                 <div class="profile-content">
                     <div class="profile-status-container">
@@ -211,7 +205,6 @@
                 Not provided
             <% } %>
         </span>
-        <input type="number" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.BMI ? user.BMI : '' %>" style="display: none;">
     </div>
 </div>
                     <div class="profile-edit-actions" style="display: none;">
@@ -277,38 +270,66 @@
         <div class="profile-wide-card">
             <div class="card-header">
                 <h2>My Fitness Statistics</h2>
-                <div class="card-actions">
-                    <select id="statsTimeframeSelect" class="select-dropdown">
-                        <option value="month">Last Month</option>
-                        <option value="3months">Last 3 Months</option>
-                        <option value="6months">Last 6 Months</option>
-                        <option value="year">Last Year</option>
-                    </select>
-                </div>
+                
             </div>
             <div class="stats-content">
                 <div class="stats-summary">
-                    <div class="stat-summary-card">
-                        <div class="stat-icon"><i class="fas fa-dumbbell"></i></div>
-                        <div class="stat-number" id="workoutCount">42</div>
-                        <div class="stat-label">Workouts</div>
-                    </div>
-                    <div class="stat-summary-card">
-                        <div class="stat-icon"><i class="fas fa-fire"></i></div>
-                        <div class="stat-number" id="caloriesBurned">48,650</div>
-                        <div class="stat-label">Calories Burned</div>
-                    </div>
-                    <div class="stat-summary-card">
-                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                        <div class="stat-number" id="hoursActive">64</div>
-                        <div class="stat-label">Hours Active</div>
-                    </div>
-                    <div class="stat-summary-card">
-                        <div class="stat-icon"><i class="fas fa-trophy"></i></div>
-                        <div class="stat-number" id="goalsAchieved">12</div>
-                        <div class="stat-label">Goals Achieved</div>
-                    </div>
-                </div>
+    <div class="stat-box">
+        <div class="stat-icon">
+            <i class="fas fa-dumbbell"></i>
+        </div>
+        <div class="stat-value">
+            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.workoutsCompleted !== undefined) { %>
+                <%= fitnessStats.workoutsCompleted %>
+            <% } else { %>
+                0
+            <% } %>
+        </div>
+        <div class="stat-label">Workouts</div>
+    </div>
+    
+    <div class="stat-box">
+        <div class="stat-icon">
+            <i class="fas fa-fire"></i>
+        </div>
+        <div class="stat-value">
+            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.caloriesBurned !== undefined) { %>
+                <%= fitnessStats.caloriesBurned.toLocaleString() %>
+            <% } else { %>
+                0
+            <% } %>
+        </div>
+        <div class="stat-label">Calories Burned</div>
+    </div>
+    
+    <div class="stat-box">
+        <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-value">
+            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.hoursActive !== undefined) { %>
+                <%= fitnessStats.hoursActive %>
+            <% } else { %>
+                0
+            <% } %>
+        </div>
+        <div class="stat-label">Hours Active</div>
+    </div>
+    
+    <div class="stat-box">
+        <div class="stat-icon">
+            <i class="fas fa-trophy"></i>
+        </div>
+        <div class="stat-value">
+            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.goalsAchieved !== undefined) { %>
+                <%= fitnessStats.goalsAchieved %>
+            <% } else { %>
+                0
+            <% } %>
+        </div>
+        <div class="stat-label">Goals Achieved</div>
+    </div>
+</div>
                 
                 <div class="stats-charts">
                     <div class="chart-container">
@@ -328,12 +349,11 @@
         <div class="profile-wide-card">
             <div class="card-header">
                 <h2>Recent Workouts</h2>
-                <button class="view-all-btn">View All</button>
             </div>
             <div class="profile-content">
-                <!-- Replace the workout history section in userprofile.ejs -->
+               
 <div class="workout-history">
-    <!-- Loop through recent workouts -->
+    
     <% 
     // Default workouts if none exist in the database
     const mockWorkouts = [
@@ -432,7 +452,105 @@
             </div>
         </footer>
     </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ensure variables are defined with fallbacks
+        const weeklyWorkoutData = <% if (typeof chartData !== 'undefined' && chartData.weeklyWorkouts) { %> 
+            <%= JSON.stringify(chartData.weeklyWorkouts) %> 
+        <% } else { %> 
+            [0, 0, 0, 0] 
+        <% } %>;
+        
+        const weekLabels = <% if (typeof chartData !== 'undefined' && chartData.weekLabels) { %> 
+            <%= JSON.stringify(chartData.weekLabels) %> 
+        <% } else { %> 
+            ['Week 1', 'Week 2', 'Week 3', 'Week 4'] 
+        <% } %>;
+        
+        const weightProgressData = <% if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData.weightProgress.length > 0) { %> 
+            <%= JSON.stringify(chartData.weightProgress.map(entry => entry.weight)) %> 
+        <% } else { %> 
+            [0, 0, 0, 0] 
+        <% } %>;
+        
+        const weightLabels = <% if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData.weightProgress.length > 0) { %> 
+            <%= JSON.stringify(chartData.weightProgress.map(entry => entry.week)) %> 
+        <% } else { %> 
+            ['Week 1', 'Week 2', 'Week 3', 'Week 4'] 
+        <% } %>;
+        
+        // Initialize charts
+        if (document.getElementById('workoutFrequencyChart')) {
+            const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart').getContext('2d');
+            new Chart(workoutFrequencyCtx, {
+                type: 'bar',
+                data: {
+                    labels: weekLabels,
+                    datasets: [{
+                        label: 'Workouts',
+                        data: weeklyWorkoutData,
+                        backgroundColor: '#8A2BE2',
+                        borderColor: '#8A2BE2',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
 
+        if (document.getElementById('weightProgressChart')) {
+            const weightProgressCtx = document.getElementById('weightProgressChart').getContext('2d');
+            new Chart(weightProgressCtx, {
+                type: 'line',
+                data: {
+                    labels: weightLabels,
+                    datasets: [{
+                        label: 'Weight (kg)',
+                        data: weightProgressData,
+                        backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                        borderColor: '#2ecc71',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointBackgroundColor: '#2ecc71',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            suggestedMin: Math.min(...weightProgressData) - 1,
+                            suggestedMax: Math.max(...weightProgressData) + 1
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
 </body>
 
 <script>
@@ -1365,5 +1483,4 @@ function getWorkoutDetails(workoutName) {
     
 }
 </script>
-
 </html>
