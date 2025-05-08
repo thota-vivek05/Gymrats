@@ -1,0 +1,238 @@
+<!-- views/user_exercises.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymRats - Exercise Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/isolation/isolation.css">
+    <link rel="stylesheet" type="text/css" href="/userdashboard/userdashboard.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+</head>
+    <!-- Add this debug section at the top of the body in user_exercises.ejs -->
+<body>
+
+    <!-- User Dashboard Header -->
+    <div class="main-navbar">
+        <header>
+            <!-- Header Branding -->
+            <div class="brand-logo">
+                <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>" class="brand-name">GymRats</a>
+            </div>
+            
+            <div class="nav-menu">
+                <!-- Add 'active' class conditionally based on the current page -->
+                <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>" class="<%= currentPage === 'dashboard' ? 'active' : '' %>">Home</a>
+                <a href="/user_exercises" class="<%= currentPage === 'exercises' ? 'active' : '' %>">Exercises</a>
+                <a href="/user_nutrition" class="<%= currentPage === 'nutrition' ? 'active' : '' %>">Nutrition</a>
+            </div>
+            
+            <div class="right-container">
+                <div class="search-container">
+                    <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
+                    <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                </div>
+                
+                <div class="user-profile">
+                    <a href="/userprofile" class="<%= currentPage === 'profile' ? 'active' : '' %>">
+                        <% if (user && user.name) { %>
+                            <span><%= user.name %></span>
+                        <% } else if (user && user.full_name) { %>
+                            <span><%= user.full_name.split(' ')[0] %></span>
+                        <% } else { %>
+                            <span>User</span>
+                        <% } %>
+                    </a>
+                </div>
+            </div>
+            <div class="mobile-menu-icon" id="menuIcon">
+                <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
+            </div>
+            <div class="mobile-sidebar" id="sideNavbar">
+                <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+                <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>" class="<%= currentPage === 'dashboard' ? 'active' : '' %>">Home</a>
+                <a href="/user_exercises" class="<%= currentPage === 'exercises' ? 'active' : '' %>">Exercises</a>
+                <a href="/user_nutrition" class="<%= currentPage === 'nutrition' ? 'active' : '' %>">Nutrition</a>
+                <div class="sidebar-profile">
+                    <a href="/userprofile">
+                        <% if (user && user.name) { %>
+                            <span><%= user.name %></span>
+                        <% } else if (user && user.full_name) { %>
+                            <span><%= user.full_name.split(' ')[0] %></span>
+                        <% } else { %>
+                            <span>User</span>
+                        <% } %>
+                    </a>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <!-- Rest of isolation.ejs content from welcome banner down -->
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <h1>Complete Exercise Guide</h1>
+        <p>Discover detailed instructions, illustrations, and videos for exercises targeting every muscle group.</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Category List -->
+        <div class="category-list-container">
+            <h2>Muscle Groups</h2>
+            <div class="category-list" id="category-list">
+                <!-- Categories populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Exercise List Container -->
+        <div class="exercise-list-container">
+            <div id="exercise-overview">
+                <div class="exercise-header">
+                    <h2>All Exercises</h2>
+                </div>
+                <div class="exercise-search-container">
+                    <div class="search-bar" style="max-width: 100%;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="exercise-search" placeholder="Search exercises...">
+                    </div>
+                </div>
+                <div class="exercise-list" id="exercise-list">
+                    <!-- Exercises populated by JavaScript -->
+                    <div class="loader" id="loader"></div>
+                </div>
+            </div>
+
+            <!-- Exercise Detail View -->
+            <div id="exercise-detail" class="exercise-detail">
+                <div class="exercise-header">
+                    <h2 id="exercise-title">Exercise Title</h2>
+                    <button class="back-button" id="back-button">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="exercise-info">
+                    <div class="exercise-images">
+                        <div class="exercise-image" id="exercise-image"></div>
+                    </div>
+                    <div class="exercise-description">
+                        <h3>Description</h3>
+                        <p id="exercise-description">Exercise description goes here.</p>
+
+                        <div id="exercise-muscles">
+                            <h3>Muscles Worked</h3>
+                            <div id="muscles-list">
+                                <!-- Muscle tags will be inserted here -->
+                            </div>
+                        </div>
+
+                        <div class="exercise-steps">
+                            <h3>How to Perform</h3>
+                            <ol id="exercise-steps">
+                                <!-- Exercise steps will be inserted here -->
+                            </ol>
+                        </div>
+
+                        <div class="mind-muscle">
+                            <h3>Mind-Muscle Connection</h3>
+                            <p id="mind-muscle-tip">Mind-muscle connection tip goes here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="video-container">
+                    <h3>Exercise Video Guide</h3>
+                    <div class="video-embed" id="video-embed">
+                        <!-- Video embed will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>GymRats</h3>
+                <ul>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/trainers">Our Trainers</a></li>
+                    <li><a href="/testimonial">Testimonials</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="/isolation">Exercise Guide</a></li>
+                    <li><a href="/nutrition">Nutrition Tips</a></li>
+                    <li><a href="/workout_plans">Workout Plans</a></li>
+                    <li><a href="/calculators">Calculators</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="/contact">Contact Us</a></li>
+                    <li><a href="/about">About us</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/privacy_policy">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Connect With Us</h3>
+                <ul>
+                    <li><a href="/trainer_form">Become a Trainer</a></li>
+                    <li><a href="/verifier_form">Become a Verifier</a></li>
+                </ul>
+                <div class="social-icons">
+                    <a href="#"><img src="/home/icons8-facebook.svg" alt="Facebook"></a>
+                    <a href="#"><img src="/home/icons8-instagram.svg" alt="Instagram"></a>
+                    <a href="#"><img src="/home/icons8-youtube.svg" alt="YouTube"></a>
+                </div>
+                <p class="copyright">GymRats © 2025. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation - Mobile Menu for original isolation page
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+        
+        // Mobile menu for user dashboard header
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('menuIcon').addEventListener('click', function() {
+                document.getElementById('sideNavbar').classList.add('open');
+            });
+
+            document.getElementById('closeBtn').addEventListener('click', function() {
+                document.getElementById('sideNavbar').classList.remove('open');
+            });
+        });
+
+        // Exercise Data - This would typically come from a server
+        const categories = [
+            { id: 'chest', name: 'Chest' },
+            { id: 'back', name: 'Back' },
+            { id: 'legs', name: 'Legs' },
+            { id: 'shoulders', name: 'Shoulders' },
+            { id: 'arms', name: 'Arms' },
+            { id: 'abs', name: 'Abs' }
+        ];
+
+        // The rest of the JavaScript from isolation.ejs
+    </script>
+</body>
+</html>
