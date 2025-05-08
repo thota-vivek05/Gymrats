@@ -6,6 +6,10 @@ const Membership = require('../model/Membership');
 const NutritionPlan = require('../model/NutritionPlan');
 const WorkoutPlan = require('../model/WorkoutPlan');
 const Verifier = require('../model/Verifier');
+const TrainerApplication = require('../model/TrainerApplication');
+const WorkoutHistory = require('../model/WorkoutHistory');
+const NutritionHistory = require('../model/NutritionHistory');
+const bcrypt = require('bcryptjs');
 
 const adminController = {
   // Dashboard
@@ -22,6 +26,24 @@ const adminController = {
       const trainerCount = await Trainer.countDocuments();
       const verifierCount = await Verifier.countDocuments();
       
+      // Fetch recent users (limited to 5)
+      const users = await User.find()
+        .sort({ created_at: -1 })
+        .limit(5)
+        .select('full_name email status membershipType created_at');
+      
+      // Fetch recent trainers (limited to 5)
+      const trainers = await Trainer.find()
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .select('name specializations experience status email');
+      
+      // Fetch recent verifiers (limited to 5)
+      const verifiers = await Verifier.find()
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .select('name');
+      
       res.render('admin_dashboard', {
         pageTitle: 'Admin Dashboard',
         user: req.session.user || null,
@@ -30,13 +52,19 @@ const adminController = {
           activeMembers,
           personalTrainers: trainerCount,
           contentVerifiers: verifierCount
-        }
+        },
+        users: users || [],
+        trainers: trainers || [],
+        verifiers: verifiers || []
       });
     } catch (error) {
       console.error('Dashboard error:', error);
       res.render('admin_dashboard', {
         pageTitle: 'Admin Dashboard',
-        user: req.session.user || null
+        user: req.session.user || null,
+        users: [],
+        trainers: [],
+        verifiers: []
       });
     }
   },
@@ -46,7 +74,7 @@ const adminController = {
     try {
       // Authentication check
       if (!req.session.userId) {
-        return res.redirect('/login_signup');
+        return res.redirect('/admin_login');
       }
 
       const users = await User.find().sort({ created_at: -1 });
@@ -86,10 +114,10 @@ const adminController = {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
 
-      const { fullName, email, password, dob, gender, phone, status, membershipType } = req.body;
+      const { fullName, email, password, dob, gender, phone, status, membershipType, weight, height } = req.body;
 
       // Validate required fields
-      if (!fullName || !email || !password) {
+      if (!fullName || !email || !password || !dob || !gender || !phone || !weight || !height) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
       }
 
@@ -100,17 +128,23 @@ const adminController = {
       }
 
       // Hash password
-      const bcrypt = require('bcryptjs');
       const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Calculate BMI
+      const heightInMeters = Number(height) / 100;
+      const bmi = heightInMeters > 0 ? (Number(weight) / (heightInMeters * heightInMeters)).toFixed(2) : null;
 
       // Create new user
       const newUser = new User({
         full_name: fullName,
         email,
         password_hash: hashedPassword,
-        dob,
+        dob: new Date(dob),
         gender,
         phone,
+        weight: Number(weight),
+        height: Number(height),
+        BMI: bmi ? Number(bmi) : null,
         status: status || 'Active',
         membershipType: membershipType || 'Basic',
         created_at: new Date()
@@ -133,7 +167,14 @@ const adminController = {
       }
 
       const userId = req.params.id;
-      const { fullName, email, dob, gender, phone, status, membershipType } = req.body;
+      const { fullName, email, dob, gender, phone, weight, height, status, membershipType } = req.body;
+
+      // Calculate BMI if weight and height provided
+      let bmi = null;
+      if (weight && height) {
+        const heightInMeters = Number(height) / 100;
+        bmi = heightInMeters > 0 ? (Number(weight) / (heightInMeters * heightInMeters)).toFixed(2) : null;
+      }
 
       // Find and update user
       const updatedUser = await User.findByIdAndUpdate(
@@ -141,12 +182,14 @@ const adminController = {
         {
           full_name: fullName,
           email,
-          dob,
+          dob: dob ? new Date(dob) : undefined,
           gender,
           phone,
+          weight: weight ? Number(weight) : undefined,
+          height: height ? Number(height) : undefined,
+          BMI: bmi ? Number(bmi) : undefined,
           status,
-          membershipType,
-          updated_at: new Date()
+          membershipType
         },
         { new: true }
       );
@@ -179,8 +222,9 @@ const adminController = {
         return res.status(404).json({ success: false, message: 'User not found' });
       }
 
-      // Also delete related memberships
-      await Membership.deleteMany({ user_id: userId });
+      // Also delete related data
+      await WorkoutHistory.deleteMany({ userId });
+      await NutritionHistory.deleteMany({ userId });
 
       res.status(200).json({ success: true, message: 'User deleted successfully' });
     } catch (error) {
@@ -194,12 +238,12 @@ const adminController = {
     try {
       // Authentication check
       if (!req.session.userId) {
-        return res.redirect('/login_signup');
+        return res.redirect('/admin_login');
       }
 
       const trainers = await Trainer.find().sort({ createdAt: -1 });
       const trainerCount = await Trainer.countDocuments();
-      const pendingApprovals = await Trainer.countDocuments({ status: 'Pending' });
+      const pendingApprovals = await TrainerApplication.countDocuments({ status: 'Pending' });
       
       res.render('admin_trainers', {
         pageTitle: 'Trainer Management',
@@ -207,8 +251,6 @@ const adminController = {
         trainers,
         stats: {
           totalTrainers: trainerCount,
-          revenueGenerated: 245750, // This would come from transactions in a real implementation
-          activeSessions: 842, // This would be calculated from active sessions
           pendingApprovals
         }
       });
@@ -230,10 +272,10 @@ const adminController = {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
 
-      const { name, email, specialization, experience, certifications, bio, status } = req.body;
+      const { name, email, password, phone, experience, specializations } = req.body;
 
       // Validate required fields
-      if (!name || !email || !specialization) {
+      if (!name || !email || !password || !phone || !experience) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
       }
 
@@ -243,15 +285,18 @@ const adminController = {
         return res.status(400).json({ success: false, message: 'Email already in use' });
       }
 
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
       // Create new trainer
       const newTrainer = new Trainer({
         name,
         email,
-        specialization,
+        password_hash: hashedPassword,
+        phone,
         experience,
-        certifications,
-        bio,
-        status: status || 'Pending',
+        specializations: specializations || [],
+        status: 'Active',
         createdAt: new Date()
       });
 
@@ -272,7 +317,7 @@ const adminController = {
       }
 
       const trainerId = req.params.id;
-      const { name, email, specialization, experience, certifications, bio, status } = req.body;
+      const { name, email, phone, experience, specializations, status } = req.body;
 
       // Find and update trainer
       const updatedTrainer = await Trainer.findByIdAndUpdate(
@@ -280,10 +325,9 @@ const adminController = {
         {
           name,
           email,
-          specialization,
+          phone,
           experience,
-          certifications,
-          bio,
+          specializations,
           status,
           updatedAt: new Date()
         },
@@ -318,6 +362,12 @@ const adminController = {
         return res.status(404).json({ success: false, message: 'Trainer not found' });
       }
 
+      // Update users who had this trainer
+      await User.updateMany(
+        { trainer: trainerId },
+        { $set: { trainer: null } }
+      );
+
       res.status(200).json({ success: true, message: 'Trainer deleted successfully' });
     } catch (error) {
       console.error('Delete trainer error:', error);
@@ -325,656 +375,34 @@ const adminController = {
     }
   },
 
-  // Membership Management
-  getMemberships: async (req, res) => {
+  // Verifier Management
+  getVerifiers: async (req, res) => {
     try {
       // Authentication check
       if (!req.session.userId) {
-        return res.redirect('/login_signup');
+        return res.redirect('/admin_login');
       }
 
-      const memberships = await Membership.find().sort({ price: 1 });
-      const totalRevenue = 892845; // This would come from transactions in a real implementation
-      const activeMembers = await User.countDocuments({ status: 'Active' });
-      const premiumMembers = await User.countDocuments({ membershipType: 'Platinum' });
-      const newSignups = await User.countDocuments({ 
-        created_at: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
-      });
+      const verifiers = await Verifier.find().sort({ createdAt: -1 });
+      const verifierCount = await Verifier.countDocuments();
       
-      res.render('admin_membership', {
-        pageTitle: 'Membership Management',
+      res.render('admin_verifier', {
+        pageTitle: 'Verifier Management',
         user: req.session.user || null,
-        memberships,
+        verifiers,
         stats: {
-          totalRevenue,
-          activeMembers,
-          premiumMembers,
-          newSignups
+          totalVerifiers: verifierCount
         }
       });
     } catch (error) {
-      console.error('Membership management error:', error);
-      res.render('admin_membership', {
-        pageTitle: 'Membership Management',
+      console.error('Verifier management error:', error);
+      res.render('admin_verifier', {
+        pageTitle: 'Verifier Management',
         user: req.session.user || null,
-        memberships: []
+        verifiers: []
       });
     }
   },
-
-  // Create Membership
-  createMembership: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-
-      const { user_id, plan, duration, price, payment_method, card_type, card_last_four } = req.body;
-
-      // Validate required fields
-      if (!user_id || !plan || !duration || !price) {
-        return res.status(400).json({ success: false, message: 'Missing required fields' });
-      }
-
-      // Check if user exists
-      const userExists = await User.findById(user_id);
-      if (!userExists) {
-        return res.status(400).json({ success: false, message: 'User not found' });
-      }
-
-      // Calculate start and end dates
-      const startDate = new Date();
-      const endDate = new Date(startDate);
-      endDate.setMonth(endDate.getMonth() + parseInt(duration));
-
-      // Create new membership
-      const newMembership = new Membership({
-        user_id,
-        plan,
-        duration: parseInt(duration),
-        start_date: startDate,
-        end_date: endDate,
-        price: parseFloat(price),
-        payment_method,
-        card_type,
-        card_last_four
-      });
-
-      await newMembership.save();
-      
-      // Update user's membership type
-      await User.findByIdAndUpdate(user_id, { membershipType: plan, status: 'Active' });
-
-      res.status(201).json({ success: true, message: 'Membership created successfully', membership: newMembership });
-    } catch (error) {
-      console.error('Create membership error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  // Update Membership
-  updateMembership: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-
-      const membershipId = req.params.id;
-      const { plan, duration, price, payment_method, card_type, card_last_four } = req.body;
-
-      // Find current membership
-      const currentMembership = await Membership.findById(membershipId);
-      if (!currentMembership) {
-        return res.status(404).json({ success: false, message: 'Membership not found' });
-      }
-
-      // Calculate new end date if duration changed
-      let endDate = currentMembership.end_date;
-      if (duration && duration !== currentMembership.duration) {
-        const startDate = currentMembership.start_date;
-        endDate = new Date(startDate);
-        endDate.setMonth(endDate.getMonth() + parseInt(duration));
-      }
-
-      // Find and update membership
-      const updatedMembership = await Membership.findByIdAndUpdate(
-        membershipId,
-        {
-          plan,
-          duration: duration ? parseInt(duration) : currentMembership.duration,
-          end_date: endDate,
-          price: price ? parseFloat(price) : currentMembership.price,
-          payment_method,
-          card_type,
-          card_last_four
-        },
-        { new: true }
-      );
-
-      // If plan changed, update user's membership type
-      if (plan && plan !== currentMembership.plan) {
-        await User.findByIdAndUpdate(currentMembership.user_id, { membershipType: plan });
-      }
-
-      res.status(200).json({ success: true, message: 'Membership updated successfully', membership: updatedMembership });
-    } catch (error) {
-      console.error('Update membership error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  // Delete Membership
-  deleteMembership: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-
-      const membershipId = req.params.id;
-
-      // Find and delete membership
-      const deletedMembership = await Membership.findByIdAndDelete(membershipId);
-
-      if (!deletedMembership) {
-        return res.status(404).json({ success: false, message: 'Membership not found' });
-      }
-
-      // Update user status
-      await User.findByIdAndUpdate(deletedMembership.user_id, { 
-        status: 'Inactive',
-        membershipType: 'None'
-      });
-
-      res.status(200).json({ success: true, message: 'Membership deleted successfully' });
-    } catch (error) {
-      console.error('Delete membership error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  // Nutrition Plans Management
-  getNutritionPlans: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.redirect('/login_signup');
-      }
-
-      const nutritionPlans = await NutritionPlan.find().sort({ userCount: -1 });
-      const totalPlans = await NutritionPlan.countDocuments();
-      const verifiedPlans = await NutritionPlan.countDocuments({ verified: true });
-      const mostPopular = await NutritionPlan.findOne().sort({ userCount: -1 });
-      const activeSubscribers = nutritionPlans.reduce((total, plan) => total + plan.userCount, 0);
-      
-      res.render('admin_nutrition', {
-        pageTitle: 'Nutrition Plans Management',
-        user: req.session.user || null,
-        nutritionPlans,
-        stats: {
-          totalPlans,
-          mostPopular: mostPopular ? mostPopular.name : 'None',
-          mostPopularCount: mostPopular ? mostPopular.userCount : 0,
-          verifiedPlans,
-          verifiedPercent: Math.round((verifiedPlans / totalPlans) * 100),
-          activeSubscribers
-        }
-      });
-    } catch (error) {
-      console.error('Nutrition plans management error:', error);
-      res.render('admin_nutrition', {
-        pageTitle: 'Nutrition Plans Management',
-        user: req.session.user || null,
-        nutritionPlans: []
-      });
-    }
-  },
-
-  // Create Nutrition Plan
-  createNutritionPlan: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-
-      const { name, description, calorie_target, protein_target, carb_target, fat_target, creator_id, verified } = req.body;
-
-      // Validate required fields
-      if (!name || !description || !calorie_target) {
-        return res.status(400).json({ success: false, message: 'Missing required fields' });
-      }
-
-      // Create new nutrition plan
-      const newPlan = new NutritionPlan({
-        name,
-        description,
-        calorie_target: parseInt(calorie_target),
-        protein_target: parseInt(protein_target),
-        carb_target: parseInt(carb_target),
-        fat_target: parseInt(fat_target),
-        creator_id,
-        verified: verified || false,
-        userCount: 0,
-        createdAt: new Date()
-      });
-
-      await newPlan.save();
-      res.status(201).json({ success: true, message: 'Nutrition plan created successfully', plan: newPlan });
-    } catch (error) {
-      console.error('Create nutrition plan error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  // Update Nutrition Plan
-  updateNutritionPlan: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-
-      const planId = req.params.id;
-      const { name, description, calorie_target, protein_target, carb_target, fat_target, verified } = req.body;
-
-      // Find and update nutrition plan
-      const updatedPlan = await NutritionPlan.findByIdAndUpdate(
-        planId,
-        {
-          name,
-          description,
-          calorie_target: calorie_target ? parseInt(calorie_target) : undefined,
-          protein_target: protein_target ? parseInt(protein_target) : undefined,
-          carb_target: carb_target ? parseInt(carb_target) : undefined,
-          fat_target: fat_target ? parseInt(fat_target) : undefined,
-          verified,
-          updatedAt: new Date()
-        },
-        { new: true }
-      );
-
-      if (!updatedPlan) {
-        return res.status(404).json({ success: false, message: 'Nutrition plan not found' });
-      }
-
-      res.status(200).json({ success: true, message: 'Nutrition plan updated successfully', plan: updatedPlan });
-    } catch (error) {
-      console.error('Update nutrition plan error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  // Delete Nutrition Plan
-  deleteNutritionPlan: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-
-      const planId = req.params.id;
-
-      // Find and delete nutrition plan
-      const deletedPlan = await NutritionPlan.findByIdAndDelete(planId);
-
-      if (!deletedPlan) {
-        return res.status(404).json({ success: false, message: 'Nutrition plan not found' });
-      }
-
-      res.status(200).json({ success: true, message: 'Nutrition plan deleted successfully' });
-    } catch (error) {
-      console.error('Delete nutrition plan error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  // Exercises Management
-  getExercises: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.redirect('/login_signup');
-      }
-
-      const exercises = await Exercise.find().sort({ usageCount: -1 });
-      const totalExercises = await Exercise.countDocuments();
-      const verifiedExercises = await Exercise.countDocuments({ verified: true });
-      const mostPopular = await Exercise.findOne().sort({ usageCount: -1 });
-      
-      res.render('admin_exercises', {
-        pageTitle: 'Exercises Management',
-        user: req.session.user || null,
-        exercises,
-        stats: {
-          totalExercises,
-          mostPopular: mostPopular ? mostPopular.name : 'None',
-          mostPopularCount: mostPopular ? mostPopular.usageCount : 0,
-          verifiedExercises,
-          verifiedPercent: Math.round((verifiedExercises / totalExercises) * 100),
-          trendingExercise: 'Kettlebell Swings' // This would be determined by recent usage statistics
-        }
-      });
-    } catch (error) {
-      console.error('Exercises management error:', error);
-      res.render('admin_exercises', {
-        pageTitle: 'Exercises Management',
-        user: req.session.user || null,
-        exercises: []
-      });
-    }
-  },
-
-  // Create Exercise
-  createExercise: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-
-      const { name, description, category, muscle_groups, difficulty, equipment, verified, creator_id } = req.body;
-
-      // Validate required fields
-      if (!name || !description || !category || !muscle_groups) {
-        return res.status(400).json({ success: false, message: 'Missing required fields' });
-      }
-
-      // Create new exercise
-      const newExercise = new Exercise({
-        name,
-        description,
-        category,
-        muscle_groups: Array.isArray(muscle_groups) ? muscle_groups : [muscle_groups],
-        difficulty,
-        equipment,
-        verified: verified || false,
-        creator_id,
-        usageCount: 0,
-        createdAt: new Date()
-      });
-
-      await newExercise.save();
-      res.status(201).json({ success: true, message: 'Exercise created successfully', exercise: newExercise });
-    } catch (error) {
-      console.error('Create exercise error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  // Update Exercise
-  updateExercise: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-
-      const exerciseId = req.params.id;
-      const { name, description, category, muscle_groups, difficulty, equipment, verified } = req.body;
-
-      // Find and update exercise
-      const updatedExercise = await Exercise.findByIdAndUpdate(
-        exerciseId,
-        {
-          name,
-          description,
-          category,
-          muscle_groups: muscle_groups ? (Array.isArray(muscle_groups) ? muscle_groups : [muscle_groups]) : undefined,
-          difficulty,
-          equipment,
-          verified,
-          updatedAt: new Date()
-        },
-        { new: true }
-      );
-
-      if (!updatedExercise) {
-        return res.status(404).json({ success: false, message: 'Exercise not found' });
-      }
-
-      res.status(200).json({ success: true, message: 'Exercise updated successfully', exercise: updatedExercise });
-    } catch (error) {
-      console.error('Update exercise error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  // Delete Exercise
-  deleteExercise: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-
-      const exerciseId = req.params.id;
-
-      // Find and delete exercise
-      const deletedExercise = await Exercise.findByIdAndDelete(exerciseId);
-
-      if (!deletedExercise) {
-        return res.status(404).json({ success: false, message: 'Exercise not found' });
-      }
-
-      res.status(200).json({ success: true, message: 'Exercise deleted successfully' });
-    } catch (error) {
-      console.error('Delete exercise error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  // Workout Plans Management
-  getWorkoutPlans: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.redirect('/login_signup');
-      }
-
-      const workoutPlans = await WorkoutPlan.find().sort({ userCount: -1 });
-      const totalPlans = await WorkoutPlan.countDocuments();
-      const verifiedPlans = await WorkoutPlan.countDocuments({ verified: true });
-      const pendingReview = await WorkoutPlan.countDocuments({ verified: false });
-      const activeUsers = workoutPlans.reduce((total, plan) => total + plan.userCount, 0);
-      
-      res.render('admin_workouts', {
-        pageTitle: 'Workout Plans Management',
-        user: req.session.user || null,
-        workoutPlans,
-        stats: {
-          totalPlans,
-          activeUsers,
-          verifiedPlans,
-          verifiedPercent: Math.round((verifiedPlans / totalPlans) * 100),
-          pendingReview
-        }
-      });
-    } catch (error) {
-      console.error('Workout plans management error:', error);
-      res.render('admin_workouts', {
-        pageTitle: 'Workout Plans Management',
-        user: req.session.user || null,
-        workoutPlans: []
-      });
-    }
-  },
-
-  // Create Workout Plan
-  createWorkoutPlan: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-
-      const { name, description, level, goal, duration, exercises, creator_id, verified } = req.body;
-
-      // Validate required fields
-      if (!name || !description || !level || !goal || !duration) {
-        return res.status(400).json({ success: false, message: 'Missing required fields' });
-      }
-
-      // Create new workout plan
-      const newPlan = new WorkoutPlan({
-        name,
-        description,
-        level,
-        goal,
-        duration: parseInt(duration),
-        exercises: exercises || [],
-        creator_id,
-        verified: verified || false,
-        userCount: 0,
-        createdAt: new Date()
-      });
-
-      await newPlan.save();
-      res.status(201).json({ success: true, message: 'Workout plan created successfully', plan: newPlan });
-    } catch (error) {
-      console.error('Create workout plan error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-// Update Workout Plan
-  updateWorkoutPlan: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-
-      const planId = req.params.id;
-      const { name, description, level, goal, duration, exercises, verified } = req.body;
-
-      // Find and update workout plan
-      const updatedPlan = await WorkoutPlan.findByIdAndUpdate(
-        planId,
-        {
-          name,
-          description,
-          level,
-          goal,
-          duration: duration ? parseInt(duration) : undefined,
-          exercises: exercises || undefined,
-          verified,
-          updatedAt: new Date()
-        },
-        { new: true }
-      );
-
-      if (!updatedPlan) {
-        return res.status(404).json({ success: false, message: 'Workout plan not found' });
-      }
-
-      res.status(200).json({ success: true, message: 'Workout plan updated successfully', plan: updatedPlan });
-    } catch (error) {
-      console.error('Update workout plan error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-// Delete Workout Plan
-  deleteWorkoutPlan: async (req, res) => {
-    try {
-      // Authentication check
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-
-      const planId = req.params.id;
-
-      // Find and delete workout plan
-      const deletedPlan = await WorkoutPlan.findByIdAndDelete(planId);
-
-      if (!deletedPlan) {
-        return res.status(404).json({ success: false, message: 'Workout plan not found' });
-      }
-
-      res.status(200).json({ success: true, message: 'Workout plan deleted successfully' });
-    } catch (error) {
-      console.error('Delete workout plan error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-
-  // Verifiers Management
-getVerifiers: async (req, res) => {
-  try {
-    // Authentication check
-    if (!req.session.userId) {
-      return res.redirect('/login_signup');
-    }
-
-    const verifiers = await Verifier.find().sort({ contentReviewed: -1 });
-    const verifierCount = await Verifier.countDocuments();
-    const pendingVerifiers = await Verifier.countDocuments({ status: 'Pending' });
-    const activeVerifiers = await Verifier.countDocuments({ status: 'Active' });
-    const contentReviewedTotal = verifiers.reduce((total, verifier) => total + verifier.contentReviewed, 0);
-    
-    res.render('admin_verifier', {
-      pageTitle: 'Content Verifiers',
-      user: req.session.user || null,
-      verifiers,
-      stats: {
-        totalVerifiers: verifierCount,
-        pendingVerifiers,
-        activeVerifiers,
-        contentReviewedTotal
-      }
-    });
-  } catch (error) {
-    console.error('Verifier management error:', error);
-    res.render('admin_verifier', {
-      pageTitle: 'Content Verifiers',
-      user: req.session.user || null,
-      verifiers: []
-    });
-  }
-},
-
-getSettings: async (req, res) => {
-  try {
-    // Authentication check
-    if (!req.session.userId) {
-      return res.redirect('/login_signup');
-    }
-    
-    // In a real application, these would be fetched from a database or config file
-    // For demonstration, we'll use hardcoded settings
-    const settings = {
-      siteName: 'GymRats Fitness',
-      maintenanceMode: false,
-      emailNotifications: true,
-      allowUserRegistration: true,
-      membershipPlans: [
-        { name: 'Basic', price: 9.99 },
-        { name: 'Silver', price: 19.99 },
-        { name: 'Gold', price: 29.99 },
-        { name: 'Platinum', price: 49.99 }
-      ],
-      paymentGateways: ['Stripe', 'PayPal', 'Credit Card'],
-      systemEmail: 'admin@gymrats.com'
-    };
-    
-    res.render('admin_settings', {
-      pageTitle: 'System Settings',
-      user: req.session.user || null,
-      settings
-    });
-  } catch (error) {
-    console.error('Settings error:', error);
-    res.render('admin_settings', {
-      pageTitle: 'System Settings',
-      user: req.session.user || null,
-      settings: {}
-    });
-  }
-},
 
   // Create Verifier
   createVerifier: async (req, res) => {
@@ -984,10 +412,10 @@ getSettings: async (req, res) => {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
 
-      const { name, email, expertise, status } = req.body;
+      const { name, email, phone, password, experienceYears } = req.body;
 
       // Validate required fields
-      if (!name || !email || !expertise) {
+      if (!name || !email || !password || !experienceYears) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
       }
 
@@ -997,14 +425,16 @@ getSettings: async (req, res) => {
         return res.status(400).json({ success: false, message: 'Email already in use' });
       }
 
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
       // Create new verifier
       const newVerifier = new Verifier({
         name,
         email,
-        expertise,
-        status: status || 'Pending',
-        contentReviewed: 0,
-        createdAt: new Date()
+        phone,
+        password: hashedPassword,
+        experienceYears: Number(experienceYears)
       });
 
       await newVerifier.save();
@@ -1024,7 +454,7 @@ getSettings: async (req, res) => {
       }
 
       const verifierId = req.params.id;
-      const { name, email, expertise, status, contentReviewed } = req.body;
+      const { name, email, phone, experienceYears } = req.body;
 
       // Find and update verifier
       const updatedVerifier = await Verifier.findByIdAndUpdate(
@@ -1032,10 +462,8 @@ getSettings: async (req, res) => {
         {
           name,
           email,
-          expertise,
-          status,
-          contentReviewed: contentReviewed ? parseInt(contentReviewed) : undefined,
-          updatedAt: new Date()
+          phone,
+          experienceYears: Number(experienceYears)
         },
         { new: true }
       );
@@ -1068,6 +496,12 @@ getSettings: async (req, res) => {
         return res.status(404).json({ success: false, message: 'Verifier not found' });
       }
 
+      // Update trainers who had this verifier
+      await Trainer.updateMany(
+        { verifierId },
+        { $set: { verifierId: null } }
+      );
+
       res.status(200).json({ success: true, message: 'Verifier deleted successfully' });
     } catch (error) {
       console.error('Delete verifier error:', error);
@@ -1075,24 +509,351 @@ getSettings: async (req, res) => {
     }
   },
 
-  // Update Settings (example implementation)
-  updateSettings: async (req, res) => {
+  // Membership Management
+  getMemberships: async (req, res) => {
+    try {
+      // Authentication check
+      if (!req.session.userId) {
+        return res.redirect('/admin_login');
+      }
+
+      const memberships = await Membership.find()
+        .sort({ createdAt: -1 })
+        .populate('user_id', 'full_name email');
+      
+      res.render('admin_membership', {
+        pageTitle: 'Membership Management',
+        user: req.session.user || null,
+        memberships
+      });
+    } catch (error) {
+      console.error('Membership management error:', error);
+      res.render('admin_membership', {
+        pageTitle: 'Membership Management',
+        user: req.session.user || null,
+        memberships: []
+      });
+    }
+  },
+
+  // Create Membership
+  createMembership: async (req, res) => {
     try {
       // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
 
-      // Example settings update logic (adjust based on actual requirements)
-      const { siteName, maintenanceMode, emailNotifications } = req.body;
+      const { userId, type, startDate, endDate, price } = req.body;
 
-      // In a real implementation, this would update a settings collection or configuration file
-      // For demonstration, we'll just return success
-      res.status(200).json({
-        success: true,
-        message: 'Settings updated successfully',
-        settings: { siteName, maintenanceMode, emailNotifications }
+      // Validate required fields
+      if (!userId || !type || !startDate || !endDate || !price) {
+        return res.status(400).json({ success: false, message: 'Missing required fields' });
+      }
+
+      // Check if user exists
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+      }
+
+      // Create new membership
+      const newMembership = new Membership({
+        user_id: userId,
+        type,
+        start_date: new Date(startDate),
+        end_date: new Date(endDate),
+        price: Number(price),
+        status: 'Active'
       });
+
+      await newMembership.save();
+
+      // Update user membership type
+      await User.findByIdAndUpdate(userId, { membershipType: type });
+
+      res.status(201).json({ success: true, message: 'Membership created successfully', membership: newMembership });
+    } catch (error) {
+      console.error('Create membership error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Update Membership
+  updateMembership: async (req, res) => {
+    try {
+      // Authentication check
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+
+      const membershipId = req.params.id;
+      const { type, startDate, endDate, price, status } = req.body;
+
+      // Find and update membership
+      const updatedMembership = await Membership.findByIdAndUpdate(
+        membershipId,
+        {
+          type,
+          start_date: startDate ? new Date(startDate) : undefined,
+          end_date: endDate ? new Date(endDate) : undefined,
+          price: price ? Number(price) : undefined,
+          status
+        },
+        { new: true }
+      );
+
+      if (!updatedMembership) {
+        return res.status(404).json({ success: false, message: 'Membership not found' });
+      }
+
+      // Update user membership type if active
+      if (status === 'Active') {
+        await User.findByIdAndUpdate(updatedMembership.user_id, { membershipType: type });
+      }
+
+      res.status(200).json({ success: true, message: 'Membership updated successfully', membership: updatedMembership });
+    } catch (error) {
+      console.error('Update membership error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Delete Membership
+  deleteMembership: async (req, res) => {
+    try {
+      // Authentication check
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+
+      const membershipId = req.params.id;
+
+      // Find membership before deletion
+      const membership = await Membership.findById(membershipId);
+      if (!membership) {
+        return res.status(404).json({ success: false, message: 'Membership not found' });
+      }
+
+      // Delete membership
+      await Membership.findByIdAndDelete(membershipId);
+
+      // Update user membership type to Basic
+      await User.findByIdAndUpdate(membership.user_id, { membershipType: 'Basic' });
+
+      res.status(200).json({ success: true, message: 'Membership deleted successfully' });
+    } catch (error) {
+      console.error('Delete membership error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Nutrition Plan Management
+  getNutritionPlans: async (req, res) => {
+    try {
+      // Authentication check
+      if (!req.session.userId) {
+        return res.redirect('/admin_login');
+      }
+
+      const nutritionPlans = await NutritionPlan.find()
+        .sort({ createdAt: -1 })
+        .populate('creator', 'name')
+        .populate('userId', 'full_name');
+      
+      res.render('admin_nutrition', {
+        pageTitle: 'Nutrition Plans',
+        user: req.session.user || null,
+        nutritionPlans
+      });
+    } catch (error) {
+      console.error('Nutrition plan management error:', error);
+      res.render('admin_nutrition', {
+        pageTitle: 'Nutrition Plans',
+        user: req.session.user || null,
+        nutritionPlans: []
+      });
+    }
+  },
+
+  // Create Nutrition Plan
+  createNutritionPlan: async (req, res) => {
+    try {
+      // Implementation for creating nutrition plan
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Create nutrition plan error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Update Nutrition Plan
+  updateNutritionPlan: async (req, res) => {
+    try {
+      // Implementation for updating nutrition plan
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Update nutrition plan error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Delete Nutrition Plan
+  deleteNutritionPlan: async (req, res) => {
+    try {
+      // Implementation for deleting nutrition plan
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Delete nutrition plan error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Exercise Management
+  getExercises: async (req, res) => {
+    try {
+      // Authentication check
+      if (!req.session.userId) {
+        return res.redirect('/admin_login');
+      }
+
+      const exercises = await Exercise.find().sort({ name: 1 });
+      
+      res.render('admin_exercises', {
+        pageTitle: 'Exercise Library',
+        user: req.session.user || null,
+        exercises
+      });
+    } catch (error) {
+      console.error('Exercise management error:', error);
+      res.render('admin_exercises', {
+        pageTitle: 'Exercise Library',
+        user: req.session.user || null,
+        exercises: []
+      });
+    }
+  },
+
+  // Create Exercise
+  createExercise: async (req, res) => {
+    try {
+      // Implementation for creating exercise
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Create exercise error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Update Exercise
+  updateExercise: async (req, res) => {
+    try {
+      // Implementation for updating exercise
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Update exercise error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Delete Exercise
+  deleteExercise: async (req, res) => {
+    try {
+      // Implementation for deleting exercise
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Delete exercise error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Workout Plan Management
+  getWorkoutPlans: async (req, res) => {
+    try {
+      // Authentication check
+      if (!req.session.userId) {
+        return res.redirect('/admin_login');
+      }
+
+      const workoutPlans = await WorkoutPlan.find()
+        .sort({ createdAt: -1 })
+        .populate('creator', 'name')
+        .populate('userId', 'full_name');
+      
+      res.render('admin_workouts', {
+        pageTitle: 'Workout Plans',
+        user: req.session.user || null,
+        workoutPlans
+      });
+    } catch (error) {
+      console.error('Workout plan management error:', error);
+      res.render('admin_workouts', {
+        pageTitle: 'Workout Plans',
+        user: req.session.user || null,
+        workoutPlans: []
+      });
+    }
+  },
+
+  // Create Workout Plan
+  createWorkoutPlan: async (req, res) => {
+    try {
+      // Implementation for creating workout plan
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Create workout plan error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Update Workout Plan
+  updateWorkoutPlan: async (req, res) => {
+    try {
+      // Implementation for updating workout plan
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Update workout plan error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Delete Workout Plan
+  deleteWorkoutPlan: async (req, res) => {
+    try {
+      // Implementation for deleting workout plan
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Delete workout plan error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Settings
+  getSettings: async (req, res) => {
+    try {
+      // Authentication check
+      if (!req.session.userId) {
+        return res.redirect('/admin_login');
+      }
+      
+      res.render('admin_settings', {
+        pageTitle: 'Admin Settings',
+        user: req.session.user || null
+      });
+    } catch (error) {
+      console.error('Settings error:', error);
+      res.render('admin_settings', {
+        pageTitle: 'Admin Settings',
+        user: req.session.user || null
+      });
+    }
+  },
+
+  // Update Settings
+  updateSettings: async (req, res) => {
+    try {
+      // Implementation for updating settings
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
       console.error('Update settings error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
