@@ -29,7 +29,6 @@
                 <a href="/contact">Contact</a>
                 <a href="/login_signup">Login / Signup</a>
             </div>
-            
         </header>
     </div>
 
@@ -75,10 +74,9 @@
                     </div>
                     <span class="error-text" id="passwordError"></span>
                 </div>
+                <input type="hidden" name="redirectUrl" value="/admin/dashboard">
                 <button type="submit" class="login-buttons" id="loginBtn">Login</button>
             </form>
-
-            
         </div>
     </div>
 
@@ -158,12 +156,8 @@
 
             if (togglePassword && passwordInput) {
                 togglePassword.addEventListener('click', function () {
-                    // Toggle the type attribute
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' :
-                    'password';
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                     passwordInput.setAttribute('type', type);
-
-                    // Toggle the eye / eye-slash icon
                     const eyeIcon = togglePassword.querySelector('svg');
                     if (type === 'password') {
                         eyeIcon.innerHTML = `
@@ -179,7 +173,7 @@
                 });
             }
 
-            // Form validation
+            // Form validation and AJAX submission
             const loginForm = document.getElementById('adminLoginForm');
             const emailInput = document.getElementById('email');
             const emailError = document.getElementById('emailError');
@@ -187,7 +181,9 @@
             const loginBtn = document.getElementById('loginBtn');
 
             if (loginForm) {
-                loginForm.addEventListener('submit', function (event) {
+                loginForm.addEventListener('submit', async function (event) {
+                    event.preventDefault();
+
                     let isValid = true;
 
                     // Reset error messages
@@ -212,13 +208,34 @@
                         isValid = false;
                     }
 
-                    if (!isValid) {
-                        event.preventDefault();
-                    } else {
-                        // Show loading state on button
+                    if (isValid) {
+                        // Show loading state
                         loginBtn.innerHTML = 'Logging in...';
                         loginBtn.disabled = true;
-                        // Form will submit normally
+
+                        try {
+                            const response = await fetch('/admin/login', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: new URLSearchParams(new FormData(loginForm)).toString(),
+                            });
+
+                            const result = await response.json();
+
+                            if (result.success) {
+                                window.location.href = result.redirectUrl || '/admin/dashboard';
+                            } else {
+                                emailError.textContent = result.message;
+                                loginBtn.innerHTML = 'Login';
+                                loginBtn.disabled = false;
+                            }
+                        } catch (error) {
+                            emailError.textContent = 'An error occurred. Please try again.';
+                            loginBtn.innerHTML = 'Login';
+                            loginBtn.disabled = false;
+                        }
                     }
                 });
 

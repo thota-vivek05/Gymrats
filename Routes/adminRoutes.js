@@ -43,10 +43,10 @@ router.put('/workout-plans/:id', adminController.updateWorkoutPlan);
 router.delete('/workout-plans/:id', adminController.deleteWorkoutPlan);
 
 // Verifier Routes
-router.get('/verifiers', adminController.getVerifiers);
-router.post('/verifiers', adminController.createVerifier);
-router.put('/verifiers/:id', adminController.updateVerifier);
-router.delete('/verifiers/:id', adminController.deleteVerifier);
+router.get('/verifier', adminController.getVerifiers);
+router.post('/verifier', adminController.createVerifier);
+router.put('/verifier/:id', adminController.updateVerifier);
+router.delete('/verifier/:id', adminController.deleteVerifier);
 
 // Settings Routes
 router.get('/settings', adminController.getSettings);

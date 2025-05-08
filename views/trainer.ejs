@@ -10,14 +10,12 @@
 </head>
 
 <body>
-    <!-- Navigation - Updated to match home.html -->
+    <!-- Navigation -->
     <div class="main-navbar">
         <header>
-            <!-- Header Branding -->
             <div class="brand-logo">
                 <a href="/home" class="brand-name">GymRats</a>
             </div>
-
             <div class="nav-menu">
                 <a href="/home">Home</a>
                 <a href="/isolation">Exercises</a>
@@ -25,18 +23,15 @@
                 <a href="/about">About</a>
                 <a href="/contact">Contact</a>
             </div>
-
             <div class="right-container">
                 <div class="search-container">
                     <img src="/trainer/icons8-search.svg" height="18px" alt="Search Icon" />
                     <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
                 </div>
-
                 <div class="login-button">
-                    <a href="/login_signup">Login / Signup</a>
+                    <a href="/trainer_login">Logout</a>
                 </div>
             </div>
-
             <div class="mobile-menu-icon" id="menuIcon">
                 <img src="/trainer/menu.jpg" alt="Menu" height="25px" />
             </div>
@@ -51,113 +46,71 @@
         <a href="/nutrition">Nutrition</a>
         <a href="/about">About</a>
         <a href="/contact">Contact</a>
-        <a href="/login_signup">Login / Signup</a>
+        <a href="/trainer_login">Logout</a>
     </div>
 
     <!-- Welcome Banner -->
     <div class="welcome-banner">
-        <h1>Welcome, Trainer</h1>
+        <h1>Welcome, <%= trainer.name %></h1>
         <p>Manage your clients and track their progress</p>
     </div>
 
     <!-- Main Content Area -->
     <div class="main-content">
-        <!-- Client List - Extended to full height -->
+        <!-- Client List -->
         <div class="client-list-container">
             <h2>Client List</h2>
             <div class="client-list">
-                <div class="client-item active" data-client="client1">
-                    <div class="client-name">Anvesh</div>
-                    <div class="client-stats">
-                        <span>Progress: 75%</span>
-                        <span>Next Session: Today</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client2">
-                    <div class="client-name">vivek</div>
-                    <div class="client-stats">
-                        <span>Progress: 60%</span>
-                        <span>Next Session: Tomorrow</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client3">
-                    <div class="client-name">jay</div>
-                    <div class="client-stats">
-                        <span>Progress: 45%</span>
-                        <span>Next Session: Mar 18</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client4">
-                    <div class="client-name">Rahul</div>
-                    <div class="client-stats">
-                        <span>Progress: 82%</span>
-                        <span>Next Session: Mar 19</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client5">
-                    <div class="client-name">manoj</div>
-                    <div class="client-stats">
-                        <span>Progress: 30%</span>
-                        <span>Next Session: Mar 20</span>
-                    </div>
-                </div>
-                <!-- Added more clients to fill the extended space -->
-                <div class="client-item" data-client="client6">
-                    <div class="client-name">nikhil</div>
-                    <div class="client-stats">
-                        <span>Progress: 55%</span>
-                        <span>Next Session: Mar 21</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client7">
-                    <div class="client-name">tharun</div>
-                    <div class="client-stats">
-                        <span>Progress: 68%</span>
-                        <span>Next Session: Mar 22</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client8">
-                    <div class="client-name">ganesh</div>
-                    <div class="client-stats">
-                        <span>Progress: 40%</span>
-                        <span>Next Session: Mar 23</span>
-                    </div>
-                </div>
+                <% if (clients.length === 0) { %>
+                    <p>No clients assigned yet.</p>
+                <% } else { %>
+                    <% clients.forEach((client, index) => { %>
+                        <div class="client-item <%= index === 0 ? 'active' : '' %>" data-client="<%= client.id %>">
+                            <div class="client-name"><%= client.name %></div>
+                            <div class="client-stats">
+                                <span>Progress: <%= client.progress %>%</span>
+                                <span>Next Session: <%= client.nextSession %></span>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } %>
             </div>
         </div>
 
-        <!-- Client Details Container with new layout -->
+        <!-- Client Details Container -->
         <div class="client-details-container">
-            <!-- Top row with client profile and workout plan side by side -->
+            <!-- Top row -->
             <div class="top-row">
                 <!-- Client Profile -->
                 <div class="client-profile">
-                    <h2>Client Profile: <span id="clientNameDisplay">Anvesh</span></h2>
+                    <h2>Client Profile: <span id="clientNameDisplay">
+                        <%= selectedClient ? selectedClient.name : 'Select a client' %>
+                    </span></h2>
                     <div class="profile-stats">
                         <div class="stat-item">
                             <span class="stat-label">Age:</span>
-                            <span class="stat-value">28</span>
+                            <span class="stat-value">N/A</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Weight:</span>
-                            <span class="stat-value">75 kg</span>
+                            <span class="stat-value">N/A</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Height:</span>
-                            <span class="stat-value">178 cm</span>
+                            <span class="stat-value">N/A</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Body Fat:</span>
-                            <span class="stat-value">18%</span>
+                            <span class="stat-value">N/A</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Goal:</span>
-                            <span class="stat-value">Strength & Muscle Gain</span>
+                            <span class="stat-value">N/A</span>
                         </div>
                     </div>
-                    <button class="btn meet-button"
-                        onclick="window.open('https://meet.google.com/xyz-abcd-123', '_blank')">Join Google
-                        Meet</button>
+                    <% if (selectedClient) { %>
+                        <button class="btn meet-button" onclick="window.open('https://meet.google.com/xyz-abcd-123', '_blank')">Join Google Meet</button>
+                    <% } %>
                 </div>
 
                 <!-- Workout Plan -->
@@ -185,7 +138,7 @@
                 </div>
             </div>
 
-            <!-- Current Stats - Stacked below -->
+            <!-- Current Stats -->
             <div class="current-stats">
                 <h2>Current Stats</h2>
                 <div class="stats-grid">
@@ -198,44 +151,40 @@
                         <p class="stat-value">100 kg</p>
                     </div>
                 </div>
-
                 <h3>Exercise Progress Timeline</h3>
                 <div class="chart-container">
                     <canvas id="exerciseChart"></canvas>
                 </div>
             </div>
 
-            <!-- Nutrition Plan - Stacked below current stats -->
+            <!-- Nutrition Plan -->
             <div class="nutrition-plan">
                 <h2>Food Intake</h2>
-                <div class="nutrition-goal">
-                    <p>Today's protein goal: 90g</p>
-                    <p>Calories: 2000</p>
-                </div>
-                <h3>Foods to Take:</h3>
-                <div class="foods-to-take">
-                    <div class="food-item">
-                        <span class="food-name">1. "No" chicken (BBQ tofu)</span>
-                        <span class="food-protein">35g protein</span>
+                <% if (selectedClient) { %>
+                    <div class="nutrition-goal">
+                        <p>Today's protein goal: N/A</p>
+                        <p>Calories: N/A</p>
                     </div>
-                    <div class="food-item">
-                        <span class="food-name">2. Soy BEANS</span>
-                        <span class="food-protein">20g protein</span>
+                    <h3>Foods to Take:</h3>
+                    <div class="foods-to-take">
+                        <p>No foods assigned yet.</p>
                     </div>
-                </div>
-                <div class="goals-reached">
-                    <p>Food goals reached ✓</p>
-                </div>
-                <h3>Nutritional Breakdown</h3>
-                <div class="pie-chart-container">
-                    <canvas id="nutritionChart"></canvas>
-                </div>
-                <a href="/edit_nutritional_plan" class="btn">Edit Nutrition Plan</a>
+                    <div class="goals-reached">
+                        <p>Food goals not set.</p>
+                    </div>
+                    <h3>Nutritional Breakdown</h3>
+                    <div class="pie-chart-container">
+                        <canvas id="nutritionChart"></canvas>
+                    </div>
+                    <a href="/edit_nutritional_plan/<%= selectedClient.id %>" class="btn">Edit Nutrition Plan</a>
+                <% } else { %>
+                    <p>Select a client to view or edit their nutrition plan.</p>
+                <% } %>
             </div>
         </div>
     </div>
 
-    <!-- Footer - Updated to match home -->
+    <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-content">
             <div class="footer-column">
@@ -247,7 +196,6 @@
                     <li><a href="/blog">Blog</a></li>
                 </ul>
             </div>
-
             <div class="footer-column">
                 <h3>Resources</h3>
                 <ul>
@@ -257,7 +205,6 @@
                     <li><a href="/calculators">Calculators</a></li>
                 </ul>
             </div>
-
             <div class="footer-column">
                 <h3>Support</h3>
                 <ul>
@@ -267,7 +214,6 @@
                     <li><a href="/privacy_policy">Privacy Policy</a></li>
                 </ul>
             </div>
-
             <div class="footer-column">
                 <h3>Connect With Us</h3>
                 <ul>
@@ -277,7 +223,6 @@
                 <div class="social-icons">
                     <a href="#"><img src="/trainer/icons8-facebook.svg" alt="Facebook" height="24"></a>
                     <a href="#"><img src="/trainer/icons8-instagram.svg" alt="Instagram" height="24"></a>
-
                     <a href="#"><img src="/trainer/icons8-youtube.svg" alt="YouTube" height="24"></a>
                 </div>
             </div>
@@ -297,20 +242,11 @@
         // Client selection functionality
         document.querySelectorAll('.client-item').forEach(item => {
             item.addEventListener('click', function () {
-                // Remove active class from all items
                 document.querySelectorAll('.client-item').forEach(client => {
                     client.classList.remove('active');
                 });
-
-                // Add active class to clicked item
                 this.classList.add('active');
-
-                // Update client name display
-                document.getElementById('clientNameDisplay').textContent = this.querySelector(
-                    '.client-name').textContent;
-
-                // You could load client data here based on client ID
-                // For now we'll just show an alert
+                document.getElementById('clientNameDisplay').textContent = this.querySelector('.client-name').textContent;
                 console.log("Selected client: " + this.dataset.client);
             });
         });
@@ -339,31 +275,11 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            color: '#f1f1f1'
-                        }
-                    }
+                    legend: { position: 'top', labels: { color: '#f1f1f1' } }
                 },
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: '#f1f1f1'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: '#f1f1f1'
-                        }
-                    }
+                    y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#f1f1f1' } },
+                    x: { grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#f1f1f1' } }
                 }
             }
         });
@@ -376,11 +292,7 @@
                 labels: ['Protein', 'Carbs', 'Fats'],
                 datasets: [{
                     data: [35, 45, 20],
-                    backgroundColor: [
-                        '#8A2BE2',
-                        '#20B2AA',
-                        '#FF6347'
-                    ],
+                    backgroundColor: ['#8A2BE2', '#20B2AA', '#FF6347'],
                     borderWidth: 0
                 }]
             },
@@ -388,17 +300,10 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: '#f1f1f1',
-                            padding: 10
-                        }
-                    }
+                    legend: { position: 'bottom', labels: { color: '#f1f1f1', padding: 10 } }
                 }
             }
         });
     </script>
 </body>
-
 </html>

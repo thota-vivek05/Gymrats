@@ -18,6 +18,11 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
+        if (user.status !== 'Active') {
+            console.log('User account not active:', email, user.status);
+            return res.status(403).json({ error: `Your account is ${user.status.toLowerCase()}. Please contact support.` });
+        }
+
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
             console.log('Password mismatch for:', email);
@@ -169,7 +174,9 @@ const signupUser = async (req, res) => {
             membershipType: membershipPlan.charAt(0).toUpperCase() + membershipPlan.slice(1).toLowerCase(),
             weight: Number(weight),
             height: height !== undefined ? Number(height) : null,
-            BMI: calculatedBMI
+            BMI: calculatedBMI,
+            status: 'Active',
+            trainer: null // Trainer can be assigned later
         });
         console.log('New user object created:', newUser);
 

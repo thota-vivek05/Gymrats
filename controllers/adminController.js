@@ -916,7 +916,7 @@ getVerifiers: async (req, res) => {
     const activeVerifiers = await Verifier.countDocuments({ status: 'Active' });
     const contentReviewedTotal = verifiers.reduce((total, verifier) => total + verifier.contentReviewed, 0);
     
-    res.render('admin_verifiers', {
+    res.render('admin_verifier', {
       pageTitle: 'Content Verifiers',
       user: req.session.user || null,
       verifiers,
@@ -929,7 +929,7 @@ getVerifiers: async (req, res) => {
     });
   } catch (error) {
     console.error('Verifier management error:', error);
-    res.render('admin_verifiers', {
+    res.render('admin_verifier', {
       pageTitle: 'Content Verifiers',
       user: req.session.user || null,
       verifiers: []

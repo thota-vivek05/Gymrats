@@ -16,4 +16,13 @@ router.get('/trainer_login', trainerController.renderTrainerLogin);
 // Handle trainer login submission
 router.post('/trainer/login', trainerController.loginTrainer);
 
+// Render trainer dashboard
+router.get('/trainer', trainerController.renderTrainerDashboard);
+
+// Render edit nutrition plan
+router.get('/edit_nutritional_plan/:userId', trainerController.renderEditNutritionPlan);
+
+// Save nutrition plan
+router.post('/edit_nutritional_plan', trainerController.editNutritionPlan);
+
 module.exports = router;

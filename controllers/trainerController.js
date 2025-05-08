@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const TrainerApplication = require('../model/TrainerApplication');
 const Trainer = require('../model/Trainer');
+const User = require('../model/User');
 
 const signupTrainer = async (req, res) => {
     try {
@@ -25,7 +26,6 @@ const signupTrainer = async (req, res) => {
             specializations
         });
 
-        // Validate input
         if (
             !firstName ||
             !lastName ||
@@ -41,34 +41,29 @@ const signupTrainer = async (req, res) => {
             return res.status(400).json({ error: 'All fields are required, including terms agreement' });
         }
 
-        // Validate password match
         if (password !== confirmPassword) {
             console.log('Validation failed: Passwords do not match');
             return res.status(400).json({ error: 'Passwords do not match' });
         }
 
-        // Validate email format
         const emailRegex = /^\S+@\S+\.\S+$/;
         if (!emailRegex.test(email)) {
             console.log('Validation failed: Invalid email:', email);
             return res.status(400).json({ error: 'Invalid email address' });
         }
 
-        // Validate phone number
         const phoneRegex = /^\+?[\d\s-]{10,}$/;
         if (!phoneRegex.test(phone)) {
             console.log('Validation failed: Invalid phone number:', phone);
             return res.status(400).json({ error: 'Invalid phone number' });
         }
 
-        // Validate experience
         const validExperience = ['1-2', '3-5', '5-10', '10+'];
         if (!validExperience.includes(experience)) {
             console.log('Validation failed: Invalid experience:', experience);
             return res.status(400).json({ error: 'Invalid experience selection' });
         }
 
-        // Validate specializations
         const validSpecializations = [
             'Weight Loss',
             'Muscle Gain',
@@ -90,19 +85,16 @@ const signupTrainer = async (req, res) => {
             }
         }
 
-        // Check if email already exists
         const existingApplication = await TrainerApplication.findOne({ email });
         if (existingApplication) {
             console.log('Validation failed: Email already registered:', email);
             return res.status(400).json({ error: 'Email already registered' });
         }
 
-        // Hash password
         const saltRounds = 10;
         const password_hash = await bcrypt.hash(password, saltRounds);
         console.log('Password hashed for:', email);
 
-        // Create new trainer application
         const newApplication = new TrainerApplication({
             firstName,
             lastName,
@@ -115,11 +107,9 @@ const signupTrainer = async (req, res) => {
         });
         console.log('New trainer application created:', newApplication);
 
-        // Save to database
         await newApplication.save();
         console.log('Trainer application saved to MongoDB:', email);
 
-        // Set session (optional)
         if (req.session) {
             req.session.trainerApplication = {
                 id: newApplication._id,
@@ -152,7 +142,6 @@ const loginTrainer = async (req, res) => {
 
         console.log('Trainer login request received:', { email });
 
-        // Validate input
         if (!email || !password) {
             console.log('Validation failed: Missing email or password');
             return res.status(400).render('trainer_login', {
@@ -161,7 +150,6 @@ const loginTrainer = async (req, res) => {
             });
         }
 
-        // Find trainer by email
         const trainer = await Trainer.findOne({ email });
         if (!trainer) {
             console.log('Trainer not found:', email);
@@ -171,7 +159,6 @@ const loginTrainer = async (req, res) => {
             });
         }
 
-        // Check if trainer is active
         if (trainer.status !== 'Active') {
             console.log('Trainer account not active:', email, trainer.status);
             return res.status(403).render('trainer_login', {
@@ -180,7 +167,6 @@ const loginTrainer = async (req, res) => {
             });
         }
 
-        // Compare password
         const isMatch = await bcrypt.compare(password, trainer.password_hash);
         if (!isMatch) {
             console.log('Invalid password for:', email);
@@ -190,7 +176,6 @@ const loginTrainer = async (req, res) => {
             });
         }
 
-        // Set session
         req.session.trainer = {
             id: trainer._id,
             email: trainer.email,
@@ -198,7 +183,6 @@ const loginTrainer = async (req, res) => {
         };
         console.log('Session set for trainer:', email);
 
-        // Redirect to dashboard
         res.redirect('/trainer');
     } catch (error) {
         console.error('Trainer login error:', error);
@@ -217,8 +201,214 @@ const renderTrainerLogin = (req, res) => {
     });
 };
 
+const renderTrainerDashboard = async (req, res) => {
+    try {
+        if (!req.session.trainer) {
+            console.log('Unauthorized access to trainer dashboard');
+            return res.redirect('/trainer_login');
+        }
+
+        const trainerId = req.session.trainer.id;
+        console.log('Fetching Platinum users for trainer:', trainerId);
+
+        const users = await User.find({ 
+            trainer: trainerId, 
+            status: 'Active',
+            membershipType: 'Platinum'
+        })
+            .select('full_name dob weight height BMI fitness_goals workout_history class_schedules')
+            .lean();
+
+        console.log('Found Platinum users:', users.length);
+
+        const clients = users.map(user => {
+            const latestWorkout = user.workout_history.length > 0
+                ? user.workout_history[user.workout_history.length - 1]
+                : null;
+            const progress = latestWorkout ? latestWorkout.progress || 0 : 0;
+
+            const nextSession = user.class_schedules.length > 0
+                ? user.class_schedules.find(schedule => new Date(schedule.date) >= new Date())
+                : null;
+            const nextSessionDate = nextSession
+                ? new Date(nextSession.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                : 'None';
+
+            // Calculate age from dob
+            const dob = new Date(user.dob);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            // Determine fitness goal
+            const fitnessGoal = user.fitness_goals.weight_goal
+                ? `${user.fitness_goals.weight_goal} kg`
+                : user.fitness_goals.calorie_goal
+                ? `${user.fitness_goals.calorie_goal} kcal`
+                : 'Not set';
+
+            return {
+                id: user._id,
+                name: user.full_name,
+                progress,
+                nextSession: nextSessionDate,
+                age,
+                weight: user.weight ? `${user.weight} kg` : 'N/A',
+                height: user.height ? `${user.height} cm` : 'N/A',
+                bodyFat: user.BMI ? `${user.BMI.toFixed(1)} (BMI)` : 'N/A',
+                goal: fitnessGoal
+            };
+        });
+
+        res.render('trainer', {
+            trainer: req.session.trainer,
+            clients,
+            selectedClient: clients.length > 0 ? clients[0] : null
+        });
+    } catch (error) {
+        console.error('Error rendering trainer dashboard:', error);
+        res.status(500).render('trainer_login', {
+            errorMessage: 'Server error. Please try again later.',
+            email: ''
+        });
+    }
+};
+
+const renderEditNutritionPlan = async (req, res) => {
+    try {
+        if (!req.session.trainer) {
+            console.log('Unauthorized access to edit nutrition plan');
+            return res.redirect('/trainer_login');
+        }
+
+        const userId = req.params.userId;
+        const trainerId = req.session.trainer.id;
+
+        const user = await User.findOne({ 
+            _id: userId, 
+            trainer: trainerId,
+            membershipType: 'Platinum'
+        })
+            .select('full_name fitness_goals nutrition_history')
+            .lean();
+
+        if (!user) {
+            console.log('Platinum user not found or not assigned to trainer:', userId);
+            return res.status(404).render('trainer', {
+                errorMessage: 'Client not found, not a Platinum member, or not assigned to you'
+            });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const latestNutrition = user.nutrition_history.find(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate >= today && entryDate < tomorrow;
+        }) || null;
+
+        res.render('edit_nutritional_plan', {
+            trainer: req.session.trainer,
+            client: {
+                id: user._id,
+                name: user.full_name,
+                proteinGoal: user.fitness_goals.protein_goal || 90,
+                calorieGoal: user.fitness_goals.calorie_goal || 2000,
+                foods: latestNutrition ? latestNutrition.foods : []
+            }
+        });
+    } catch (error) {
+        console.error('Error rendering edit nutrition plan:', error);
+        res.status(500).render('trainer', {
+            errorMessage: 'Server error. Please try again later.'
+        });
+    }
+};
+
+const editNutritionPlan = async (req, res) => {
+    try {
+        if (!req.session.trainer) {
+            console.log('Unauthorized access to save nutrition plan');
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        const { userId, proteinGoal, calorieGoal, foods } = req.body;
+        const trainerId = req.session.trainer.id;
+
+        console.log('Saving nutrition plan for Platinum user:', userId);
+
+        if (!userId || !proteinGoal || !calorieGoal || !Array.isArray(foods)) {
+            console.log('Validation failed: Missing required fields');
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        const user = await User.findOne({ 
+            _id: userId, 
+            trainer: trainerId,
+            membershipType: 'Platinum'
+        });
+        if (!user) {
+            console.log('Platinum user not found or not assigned to trainer:', userId);
+            return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const nutritionEntryIndex = user.nutrition_history.findIndex(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate >= today && entryDate < tomorrow;
+        });
+
+        const nutritionEntry = {
+            date: new Date(),
+            calories_consumed: foods.reduce((sum, food) => sum + (food.calories || 0), 0),
+            protein_consumed: foods.reduce((sum, food) => sum + (food.protein || 0), 0),
+            macros: {
+                protein: foods.length > 0 ? (foods.reduce((sum, food) => sum + (food.protein || 0), 0) / foods.length) : 0,
+                carbs: foods.length > 0 ? (foods.reduce((sum, food) => sum + (food.carbs || 0), 0) / foods.length) : 0,
+                fats: foods.length > 0 ? (foods.reduce((sum, food) => sum + (food.fats || 0), 0) / foods.length) : 0
+            },
+            foods: foods.map(food => ({
+                name: food.name,
+                protein: food.protein || 0,
+                calories: food.calories || 0
+            }))
+        };
+
+        if (nutritionEntryIndex !== -1) {
+            user.nutrition_history[nutritionEntryIndex] = nutritionEntry;
+            console.log('Updated existing nutrition history entry for today:', userId);
+        } else {
+            user.nutrition_history.push(nutritionEntry);
+            console.log('Added new nutrition history entry for today:', userId);
+        }
+
+        user.fitness_goals.protein_goal = parseInt(proteinGoal);
+        user.fitness_goals.calorie_goal = parseInt(calorieGoal);
+
+        await user.save();
+        console.log('Nutrition plan and goals saved for Platinum user:', userId);
+
+        res.json({ message: 'Nutrition plan saved successfully', redirect: '/trainer' });
+    } catch (error) {
+        console.error('Error saving nutrition plan:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
 module.exports = {
     signupTrainer,
     loginTrainer,
-    renderTrainerLogin
+    renderTrainerLogin,
+    renderTrainerDashboard,
+    renderEditNutritionPlan,
+    editNutritionPlan
 };

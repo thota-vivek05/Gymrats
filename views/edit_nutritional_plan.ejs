@@ -12,16 +12,12 @@
     <!-- Navigation Bar -->
     <div class="main-navbar">
         <header>
-            <!-- Header Branding -->
             <div class="brand-logo">
                 <a href="/home" class="brand-name">GymRats</a>
             </div>
-
-
             <div class="mobile-menu-icon" id="menuIcon">
                 <img src="/home/menu.jpg" alt="Menu" height="25px" />
             </div>
-
             <div class="mobile-sidebar" id="sideNavbar">
                 <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
                 <a href="/home">Home</a>
@@ -29,7 +25,7 @@
                 <a href="/nutrition">Nutrition</a>
                 <a href="/about">About</a>
                 <a href="/contact">Contact</a>
-                <a href="/login_signup">Login / Signup</a>
+                <a href="/trainer_login">Logout</a>
             </div>
         </header>
     </div>
@@ -38,7 +34,7 @@
     <div class="container">
         <div class="header">
             <h1>Edit Nutrition Plan</h1>
-            <p>Customize the nutrition plan for <span id="clientName">Anvesh</span></p>
+            <p>Customize the nutrition plan for <span id="clientName"><%= client.name %></span></p>
         </div>
 
         <div class="content-wrapper">
@@ -72,13 +68,10 @@
                             <p>165 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle protein">
-                                <span>P</span>
-                            </div>
+                            <div class="macro-circle protein"><span>P</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <div class="food-item" data-category="protein">
                         <div class="food-info">
                             <h3>Tofu (BBQ)</h3>
@@ -86,13 +79,10 @@
                             <p>145 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle protein">
-                                <span>P</span>
-                            </div>
+                            <div class="macro-circle protein"><span>P</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <div class="food-item" data-category="protein">
                         <div class="food-info">
                             <h3>Whey Protein</h3>
@@ -100,13 +90,10 @@
                             <p>120 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle protein">
-                                <span>P</span>
-                            </div>
+                            <div class="macro-circle protein"><span>P</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <div class="food-item" data-category="protein">
                         <div class="food-info">
                             <h3>Egg Whites</h3>
@@ -114,13 +101,10 @@
                             <p>52 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle protein">
-                                <span>P</span>
-                            </div>
+                            <div class="macro-circle protein"><span>P</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <div class="food-item" data-category="protein">
                         <div class="food-info">
                             <h3>Greek Yogurt</h3>
@@ -128,13 +112,10 @@
                             <p>59 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle protein">
-                                <span>P</span>
-                            </div>
+                            <div class="macro-circle protein"><span>P</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <div class="food-item" data-category="protein">
                         <div class="food-info">
                             <h3>Soy Beans</h3>
@@ -142,13 +123,10 @@
                             <p>172 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle protein">
-                                <span>P</span>
-                            </div>
+                            <div class="macro-circle protein"><span>P</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <!-- Carbohydrates -->
                     <div class="food-item" data-category="carbs">
                         <div class="food-info">
@@ -157,13 +135,10 @@
                             <p>112 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle carbs">
-                                <span>C</span>
-                            </div>
+                            <div class="macro-circle carbs"><span>C</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <div class="food-item" data-category="carbs">
                         <div class="food-info">
                             <h3>Sweet Potato</h3>
@@ -171,13 +146,10 @@
                             <p>86 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle carbs">
-                                <span>C</span>
-                            </div>
+                            <div class="macro-circle carbs"><span>C</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <div class="food-item" data-category="carbs">
                         <div class="food-info">
                             <h3>Oatmeal</h3>
@@ -185,13 +157,10 @@
                             <p>389 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle carbs">
-                                <span>C</span>
-                            </div>
+                            <div class="macro-circle carbs"><span>C</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <!-- Healthy Fats -->
                     <div class="food-item" data-category="fats">
                         <div class="food-info">
@@ -200,13 +169,10 @@
                             <p>160 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle fats">
-                                <span>F</span>
-                            </div>
+                            <div class="macro-circle fats"><span>F</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <div class="food-item" data-category="fats">
                         <div class="food-info">
                             <h3>Almonds</h3>
@@ -214,13 +180,10 @@
                             <p>579 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle fats">
-                                <span>F</span>
-                            </div>
+                            <div class="macro-circle fats"><span>F</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <!-- Fruits -->
                     <div class="food-item" data-category="fruits">
                         <div class="food-info">
@@ -229,13 +192,10 @@
                             <p>89 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle carbs">
-                                <span>C</span>
-                            </div>
+                            <div class="macro-circle carbs"><span>C</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <div class="food-item" data-category="fruits">
                         <div class="food-info">
                             <h3>Berries Mix</h3>
@@ -243,13 +203,10 @@
                             <p>57 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle carbs">
-                                <span>C</span>
-                            </div>
+                            <div class="macro-circle carbs"><span>C</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <!-- Vegetables -->
                     <div class="food-item" data-category="vegetables">
                         <div class="food-info">
@@ -258,13 +215,10 @@
                             <p>34 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle carbs">
-                                <span>C</span>
-                            </div>
+                            <div class="macro-circle carbs"><span>C</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
-
                     <div class="food-item" data-category="vegetables">
                         <div class="food-info">
                             <h3>Spinach</h3>
@@ -272,9 +226,7 @@
                             <p>23 calories</p>
                         </div>
                         <div class="food-macro">
-                            <div class="macro-circle carbs">
-                                <span>C</span>
-                            </div>
+                            <div class="macro-circle carbs"><span>C</span></div>
                         </div>
                         <button class="add-btn">Add</button>
                     </div>
@@ -287,59 +239,74 @@
                     <h2>Client's Nutrition Plan</h2>
                 </div>
 
-                <div class="nutrition-goals">
-                    <div class="goal-input">
-                        <label for="proteinGoal">Daily Protein Goal (g):</label>
-                        <input type="number" id="proteinGoal" value="90" min="0">
+                <form id="nutritionPlanForm">
+                    <input type="hidden" name="userId" value="<%= client.id %>">
+                    <div class="nutrition-goals">
+                        <div class="goal-input">
+                            <label for="proteinGoal">Daily Protein Goal (g):</label>
+                            <input type="number" id="proteinGoal" name="proteinGoal" value="<%= client.proteinGoal %>" min="0">
+                        </div>
+                        <div class="goal-input">
+                            <label for="calorieGoal">Daily Calorie Goal:</label>
+                            <input type="number" id="calorieGoal" name="calorieGoal" value="<%= client.calorieGoal %>" min="0">
+                        </div>
                     </div>
-                    <div class="goal-input">
-                        <label for="calorieGoal">Daily Calorie Goal:</label>
-                        <input type="number" id="calorieGoal" value="2000" min="0">
-                    </div>
-                </div>
 
-                <div class="nutrition-summary">
-                    <div class="macro-summary">
-                        <div class="macro-item">
-                            <span class="macro-label">Protein:</span>
-                            <span class="macro-value" id="totalProtein">0g</span>
+                    <div class="nutrition-summary">
+                        <div class="macro-summary">
+                            <div class="macro-item">
+                                <span class="macro-label">Protein:</span>
+                                <span class="macro-value" id="totalProtein">0g</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Carbs:</span>
+                                <span class="macro-value" id="totalCarbs">0g</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Fats:</span>
+                                <span class="macro-value" id="totalFats">0g</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Calories:</span>
+                                <span class="macro-value" id="totalCalories">0</span>
+                            </div>
                         </div>
-                        <div class="macro-item">
-                            <span class="macro-label">Carbs:</span>
-                            <span class="macro-value" id="totalCarbs">0g</span>
-                        </div>
-                        <div class="macro-item">
-                            <span class="macro-label">Fats:</span>
-                            <span class="macro-value" id="totalFats">0g</span>
-                        </div>
-                        <div class="macro-item">
-                            <span class="macro-label">Calories:</span>
-                            <span class="macro-value" id="totalCalories">0</span>
+                        <div class="progress-container">
+                            <label>Protein Goal Progress:</label>
+                            <div class="progress-bar">
+                                <div class="progress" id="proteinProgress" style="width: 0%"></div>
+                            </div>
+                            <span id="proteinPercentage">0%</span>
                         </div>
                     </div>
-                    <div class="progress-container">
-                        <label>Protein Goal Progress:</label>
-                        <div class="progress-bar">
-                            <div class="progress" id="proteinProgress" style="width: 0%"></div>
-                        </div>
-                        <span id="proteinPercentage">0%</span>
-                    </div>
-                </div>
 
-                <div class="selected-foods">
-                    <h3>Selected Foods</h3>
-                    <div class="selected-food-list" id="selectedFoodsList">
-                        <div class="empty-state">
-                            <p>No foods selected yet. Add foods from the list on the left.</p>
+                    <div class="selected-foods">
+                        <h3>Selected Foods</h3>
+                        <div class="selected-food-list" id="selectedFoodsList">
+                            <% if (client.foods.length === 0) { %>
+                                <div class="empty-state">
+                                    <p>No foods selected yet. Add foods from the list on the left.</p>
+                                </div>
+                            <% } else { %>
+                                <% client.foods.forEach(food => { %>
+                                    <div class="selected-food-item" data-protein="<%= food.protein %>" data-calories="<%= food.calories %>">
+                                        <div class="food-info">
+                                            <h4><%= food.name %></h4>
+                                            <p>Protein: <%= food.protein %>g | Carbs: 0g | Fats: 0g</p>
+                                            <p>Calories: <%= food.calories %></p>
+                                        </div>
+                                        <button class="remove-btn">Remove</button>
+                                    </div>
+                                <% }) %>
+                            <% } %>
                         </div>
-                        <!-- Selected foods will be added here dynamically -->
                     </div>
-                </div>
 
-                <div class="action-buttons">
-                    <button class="save-btn" id="saveNutritionPlan">Save Nutrition Plan</button>
-                    <button class="cancel-btn" id="cancelEdit">Cancel</button>
-                </div>
+                    <div class="action-buttons">
+                        <button type="submit" class="save-btn" id="saveNutritionPlan">Save Nutrition Plan</button>
+                        <button type="button" class="cancel-btn" id="cancelEdit">Cancel</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -356,7 +323,6 @@
                     <li><a href="/blog">Blog</a></li>
                 </ul>
             </div>
-
             <div class="footer-column">
                 <h3>Resources</h3>
                 <ul>
@@ -366,7 +332,6 @@
                     <li><a href="/calculators">Calculators</a></li>
                 </ul>
             </div>
-
             <div class="footer-column">
                 <h3>Support</h3>
                 <ul>
@@ -376,7 +341,6 @@
                     <li><a href="/privacy_policy">Privacy Policy</a></li>
                 </ul>
             </div>
-
             <div class="footer-column">
                 <h3>Connect With Us</h3>
                 <ul>
@@ -426,11 +390,7 @@
                     const matchesSearch = foodName.includes(searchTerm);
                     const matchesCategory = category === 'all' || foodCategory === category;
 
-                    if (matchesSearch && matchesCategory) {
-                        item.style.display = 'flex';
-                    } else {
-                        item.style.display = 'none';
-                    }
+                    item.style.display = matchesSearch && matchesCategory ? 'flex' : 'none';
                 });
             }
 
@@ -443,8 +403,8 @@
             const emptyState = document.querySelector('.empty-state');
             const proteinGoalInput = document.getElementById('proteinGoal');
             const calorieGoalInput = document.getElementById('calorieGoal');
+            const form = document.getElementById('nutritionPlanForm');
 
-            // Summary elements
             const totalProtein = document.getElementById('totalProtein');
             const totalCarbs = document.getElementById('totalCarbs');
             const totalFats = document.getElementById('totalFats');
@@ -453,10 +413,10 @@
             const proteinPercentage = document.getElementById('proteinPercentage');
 
             let nutritionTotals = {
-                protein: 0,
+                protein: <%= client.foods.reduce((sum, food) => sum + (food.protein || 0), 0) %>,
                 carbs: 0,
                 fats: 0,
-                calories: 0
+                calories: <%= client.foods.reduce((sum, food) => sum + (food.calories || 0), 0) %>
             };
 
             function updateNutritionSummary() {
@@ -472,59 +432,42 @@
                 proteinProgress.style.width = cappedPercentage + '%';
                 proteinPercentage.textContent = Math.round(proteinPercentValue) + '%';
 
-                // Show/hide empty state
-                if (selectedFoodsList.querySelectorAll('.selected-food-item').length > 0) {
-                    emptyState.style.display = 'none';
-                } else {
-                    emptyState.style.display = 'block';
-                }
+                emptyState.style.display = selectedFoodsList.querySelectorAll('.selected-food-item').length > 0 ? 'none' : 'block';
             }
 
             function extractNutritionInfo(foodItem) {
                 const foodInfo = foodItem.querySelector('.food-info');
                 const foodName = foodInfo.querySelector('h3').textContent;
 
-                // Extract protein, assuming format like "31g protein per 100g"
                 const proteinText = foodInfo.querySelectorAll('p')[0].textContent;
-                const proteinMatch = proteinText.match(/(\d+)g protein/);
-                const protein = proteinMatch ? parseInt(proteinMatch[1]) : 0;
+                const proteinMatch = proteinText.match(/(\d+)g protein/) || [null, 0];
+                const protein = parseInt(proteinMatch[1]) || 0;
 
-                // Extract calories, assuming format like "165 calories"
                 const caloriesText = foodInfo.querySelectorAll('p')[1].textContent;
-                const caloriesMatch = caloriesText.match(/(\d+) calories/);
-                const calories = caloriesMatch ? parseInt(caloriesMatch[1]) : 0;
+                const caloriesMatch = caloriesText.match(/(\d+) calories/) || [null, 0];
+                const calories = parseInt(caloriesMatch[1]) || 0;
 
-                // Determine macronutrient type from the macro circle
                 const macroCircle = foodItem.querySelector('.macro-circle');
                 const macroType = macroCircle.classList.contains('protein') ? 'protein' :
                     macroCircle.classList.contains('carbs') ? 'carbs' : 'fats';
 
-                // Rough estimate of other macros based on the primary type
                 let carbs = 0;
                 let fats = 0;
 
                 if (macroType === 'protein') {
-                    carbs = Math.round(calories * 0.15 / 4); // 15% of calories from carbs
-                    fats = Math.round((calories - (protein * 4) - (carbs * 4)) /
-                        9); // Remaining calories from fat
+                    carbs = Math.round(calories * 0.15 / 4);
+                    fats = Math.round((calories - (protein * 4) - (carbs * 4)) / 9);
                 } else if (macroType === 'carbs') {
-                    carbs = Math.round(calories * 0.7 / 4); // 70% of calories from carbs
-                    protein = Math.round(calories * 0.15 / 4); // 15% of calories from protein
-                    fats = Math.round(calories * 0.15 / 9); // 15% of calories from fat
+                    carbs = Math.round(calories * 0.7 / 4);
+                    protein = Math.round(calories * 0.15 / 4);
+                    fats = Math.round(calories * 0.15 / 9);
                 } else if (macroType === 'fats') {
-                    fats = Math.round(calories * 0.7 / 9); // 70% of calories from fat
-                    protein = Math.round(calories * 0.15 / 4); // 15% of calories from protein
-                    carbs = Math.round(calories * 0.15 / 4); // 15% of calories from carbs
+                    fats = Math.round(calories * 0.7 / 9);
+                    protein = Math.round(calories * 0.15 / 4);
+                    carbs = Math.round(calories * 0.15 / 4);
                 }
 
-                return {
-                    name: foodName,
-                    protein: protein,
-                    carbs: carbs,
-                    fats: fats,
-                    calories: calories,
-                    macroType: macroType
-                };
+                return { name: foodName, protein, carbs, fats, calories, macroType };
             }
 
             addButtons.forEach(button => {
@@ -532,9 +475,12 @@
                     const foodItem = this.closest('.food-item');
                     const foodInfo = extractNutritionInfo(foodItem);
 
-                    // Create a selected food item
                     const selectedFoodItem = document.createElement('div');
                     selectedFoodItem.className = 'selected-food-item';
+                    selectedFoodItem.dataset.protein = foodInfo.protein;
+                    selectedFoodItem.dataset.carbs = foodInfo.carbs;
+                    selectedFoodItem.dataset.fats = foodInfo.fats;
+                    selectedFoodItem.dataset.calories = foodInfo.calories;
                     selectedFoodItem.innerHTML = `
                         <div class="food-info">
                             <h4>${foodInfo.name}</h4>
@@ -546,41 +492,76 @@
 
                     selectedFoodsList.appendChild(selectedFoodItem);
 
-                    // Add to nutrition totals
                     nutritionTotals.protein += foodInfo.protein;
                     nutritionTotals.carbs += foodInfo.carbs;
                     nutritionTotals.fats += foodInfo.fats;
                     nutritionTotals.calories += foodInfo.calories;
 
-                    // Update summary
                     updateNutritionSummary();
 
-                    // Add remove functionality
                     const removeBtn = selectedFoodItem.querySelector('.remove-btn');
                     removeBtn.addEventListener('click', function () {
-                        // Subtract from nutrition totals
                         nutritionTotals.protein -= foodInfo.protein;
                         nutritionTotals.carbs -= foodInfo.carbs;
                         nutritionTotals.fats -= foodInfo.fats;
                         nutritionTotals.calories -= foodInfo.calories;
 
-                        // Remove item
                         selectedFoodItem.remove();
-
-                        // Update summary
                         updateNutritionSummary();
                     });
                 });
             });
 
-            // Update when goals change
+            document.querySelectorAll('.selected-food-item .remove-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const item = this.closest('.selected-food-item');
+                    nutritionTotals.protein -= parseInt(item.dataset.protein) || 0;
+                    nutritionTotals.carbs -= parseInt(item.dataset.carbs) || 0;
+                    nutritionTotals.fats -= parseInt(item.dataset.fats) || 0;
+                    nutritionTotals.calories -= parseInt(item.dataset.calories) || 0;
+
+                    item.remove();
+                    updateNutritionSummary();
+                });
+            });
+
             proteinGoalInput.addEventListener('input', updateNutritionSummary);
             calorieGoalInput.addEventListener('input', updateNutritionSummary);
 
-            // Save and cancel buttons
-            document.getElementById('saveNutritionPlan').addEventListener('click', function () {
-                alert('Nutrition plan saved successfully!');
-                window.location.href = '/trainer';
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const selectedFoods = Array.from(selectedFoodsList.querySelectorAll('.selected-food-item')).map(item => ({
+                    name: item.querySelector('h4').textContent,
+                    protein: parseInt(item.dataset.protein) || 0,
+                    carbs: parseInt(item.dataset.carbs) || 0,
+                    fats: parseInt(item.dataset.fats) || 0,
+                    calories: parseInt(item.dataset.calories) || 0
+                }));
+
+                fetch('/edit_nutritional_plan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: formData.get('userId'),
+                        proteinGoal: formData.get('proteinGoal'),
+                        calorieGoal: formData.get('calorieGoal'),
+                        foods: selectedFoods
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                    } else {
+                        alert(data.message);
+                        window.location.href = data.redirect;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving nutrition plan:', error);
+                    alert('Failed to save nutrition plan.');
+                });
             });
 
             document.getElementById('cancelEdit').addEventListener('click', function () {
@@ -588,8 +569,9 @@
                     window.location.href = '/trainer';
                 }
             });
+
+            updateNutritionSummary();
         });
     </script>
 </body>
-
 </html>
