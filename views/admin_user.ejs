@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +9,9 @@
     <link rel="stylesheet" href="/admin/admin_user.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
-    
+
 </head>
+
 <body>
     <div class="container">
         <!-- Sidebar Navigation -->
@@ -72,7 +74,8 @@
                 <h2>User Management</h2>
                 <div class="right-container">
                     <div class="search-container">
-                        <img src="https://img.icons8.com/ios/250/8A2BE2/search--v1.png" height="18px" alt="Search Icon" />
+                        <img src="https://img.icons8.com/ios/250/8A2BE2/search--v1.png" height="18px"
+                            alt="Search Icon" />
                         <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
                     </div>
                     <div class="user-info">
@@ -141,213 +144,59 @@
             <!-- Tab Navigation -->
             <div class="tab-container">
                 <button class="tab active" data-tab="all">All Users</button>
-                <button class="tab" data-tab="active">Active</button>
-                <button class="tab" data-tab="platinum">platinum</button>
-                <button class="tab" data-tab="new">New Users</button>
-                <button class="tab" data-tab="inactive">Inactive</button>
+                
             </div>
 
             <!-- User Table -->
             <div class="section">
                 <div class="table-header">
                     <h3 class="section-title">User List</h3>
-                    <button class="add-btn">+ Add New User</button>
+                    <button class="add-btn" id="addUserBtn">+ Add New User</button>
                 </div>
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
-                                <th>User</th>
+                                <th>Name</th>
                                 <th>Email</th>
-                                <th>Membership</th>
-                                <th>Last Login</th>
-                                <th>Joined Date</th>
                                 <th>Status</th>
-                                <th>Actions</th>
+                                <th>Membership</th>
+                                <th>Registration Date</th>
                             </tr>
                         </thead>
-                        <tbody id="userTableBody">
+                        <tbody>
+                            <% if (users && users.length > 0) { %>
+                            <% users.forEach(user => { %>
                             <tr>
                                 <td>
                                     <div class="user-info">
-                                        <div class="user-image">
-                                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1374&auto=format&fit=crop" alt="John Mitchell">
-                                        </div>
-                                        <div>John Mitchell <span class="platinum-badge">Platinum</span></div>
+                                        <div class="avatar"><%= user.full_name.charAt(0) %></div>
+                                        <span><%= user.full_name %></span>
                                     </div>
                                 </td>
-                                <td>john.mitchell@email.com</td>
-                                <td>
-                                    <img src="https://img.icons8.com/ios-filled/250/8A2BE2/crown.png" class="membership-icon" alt="platinum">
-                                    Platinum Plan
-                                </td>
-                                <td>Today, 10:30 AM</td>
-                                <td>Jan 15, 2023</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
+                                <td><%= user.email %></td>
+                                <td><span class="status <%= user.status.toLowerCase() %>"><%= user.status %></span></td>
+                                <td><%= user.membershipType %></td>
+                                <td><%= new Date(user.created_at).toLocaleDateString() %></td>
                             </tr>
+                            <% }); %>
+                            <% } else { %>
                             <tr>
-                                <td>
-                                    <div class="user-info">
-                                        <div class="user-image">
-                                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1374&auto=format&fit=crop" alt="Sarah Davis">
-                                        </div>
-                                        <div>Sarah Davis <span class="platinum-badge">Gold</span></div>
-                                    </div>
-                                </td>
-                                <td>sarah.davis@email.com</td>
-                                <td>
-                                    <img src="https://img.icons8.com/ios-filled/250/8A2BE2/crown.png" class="membership-icon" alt="platinum">
-                                    Gold Plan
-                                </td>
-                                <td>Today, 9:15 AM</td>
-                                <td>Mar 22, 2023</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
+                                <td colspan="5" class="no-data">No users found</td>
                             </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-info">
-                                        <div class="user-image">
-                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1374&auto=format&fit=crop" alt="Michael Johnson">
-                                        </div>
-                                        <div>Michael Johnson</div>
-                                    </div>
-                                </td>
-                                <td>michael.j@email.com</td>
-                                <td>Basic Plan</td>
-                                <td>Yesterday, 5:30 PM</td>
-                                <td>Jul 5, 2023</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-info">
-                                        <div class="user-image">
-                                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1374&auto=format&fit=crop" alt="Emma Wilson">
-                                        </div>
-                                        <div>Emma Wilson</div>
-                                    </div>
-                                </td>
-                                <td>emma.w@email.com</td>
-                                <td>Basic Plan (Cancelled)</td>
-                                <td>Yesterday, 3:45 PM</td>
-                                <td>Feb 18, 2023</td>
-                                <td><span class="status inactive">Inactive</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-info">
-                                        <div class="user-image">
-                                            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1374&auto=format&fit=crop" alt="Robert Brown">
-                                        </div>
-                                        <div>Robert Brown <span class="platinum-badge">Gold</span></div>
-                                    </div>
-                                </td>
-                                <td>robert.b@email.com</td>
-                                <td>
-                                    <img src="https://img.icons8.com/ios-filled/250/8A2BE2/crown.png" class="membership-icon" alt="platinum">
-                                    Gold Plan
-                                </td>
-                                <td>Mar 14, 2024</td>
-                                <td>Aug 12, 2023</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-info">
-                                        <div class="user-image">
-                                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1376&auto=format&fit=crop" alt="Jennifer Lopez">
-                                        </div>
-                                        <div>Jennifer Lopez <span class="new-badge">New</span></div>
-                                    </div>
-                                </td>
-                                <td>jennifer.l@email.com</td>
-                                <td>Basic Plan</td>
-                                <td>Today, 8:22 AM</td>
-                                <td>Mar 12, 2024</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-info">
-                                        <div class="user-image">
-                                            <img src="https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?q=80&w=1364&auto=format&fit=crop" alt="Thomas White">
-                                        </div>
-                                        <div>Thomas White <span class="new-badge">New</span></div>
-                                    </div>
-                                </td>
-                                <td>thomas.w@email.com</td>
-                                <td>Basic Plan</td>
-                                <td>Mar 14, 2024</td>
-                                <td>Mar 14, 2024</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-info">
-                                        <div class="user-image">
-                                            <img src="https://images.unsplash.com/photo-1546422904-90eab23c3d7e?q=80&w=1372&auto=format&fit=crop" alt="Lisa Robinson">
-                                        </div>
-                                        <div>Lisa Robinson <span class="platinum-badge">Platinum</span></div>
-                                    </div>
-                                </td>
-                                <td>lisa.r@email.com</td>
-                                <td>
-                                    <img src="https://img.icons8.com/ios-filled/250/8A2BE2/crown.png" class="membership-icon" alt="platinum">
-                                    Platinum Plan
-                                </td>
-                                <td>Mar 13, 2024</td>
-                                <td>Nov 5, 2022</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
+                            <% } %>
                         </tbody>
                     </table>
                 </div>
-                
-                <!-- Pagination -->
-                <div class="pagination">
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <button class="page-btn">Next</button>
-                </div>
             </div>
-        </main>
+
+           
+    </div>
+    </main>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Setup interactive elements
             setupResponsiveFeatures();
             setupTabNavigation();
@@ -358,7 +207,7 @@
             // Action buttons
             const actionButtons = document.querySelectorAll('.action-btn');
             actionButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     this.classList.add('clicked');
                     setTimeout(() => {
                         this.classList.remove('clicked');
@@ -369,7 +218,7 @@
             // Filter button
             const filterBtn = document.getElementById('filterBtn');
             if (filterBtn) {
-                filterBtn.addEventListener('click', function() {
+                filterBtn.addEventListener('click', function () {
                     alert('Filter options would appear here');
                 });
             }
@@ -377,7 +226,7 @@
             // Pagination buttons
             const pageButtons = document.querySelectorAll('.page-btn');
             pageButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     pageButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                 });
@@ -386,7 +235,7 @@
             // Add New User button
             const addUserBtn = document.querySelector('.add-btn');
             if (addUserBtn) {
-                addUserBtn.addEventListener('click', function() {
+                addUserBtn.addEventListener('click', function () {
                     alert('Add new user form would appear here');
                 });
             }
@@ -395,22 +244,22 @@
         function setupTabNavigation() {
             const tabs = document.querySelectorAll('.tab');
             const userRows = document.querySelectorAll('#userTableBody tr');
-            
+
             tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
+                tab.addEventListener('click', function () {
                     // Update active tab
                     tabs.forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
-                    
+
                     const tabType = this.getAttribute('data-tab');
-                    
+
                     // Filter users based on tab
                     userRows.forEach(row => {
                         const statusCell = row.querySelector('.status');
                         const platinumBadge = row.querySelector('.platinum-badge');
                         const newBadge = row.querySelector('.new-badge');
-                        
-                        switch(tabType) {
+
+                        switch (tabType) {
                             case 'all':
                                 row.style.display = '';
                                 break;
@@ -451,17 +300,19 @@
         function setupSearchFunctionality() {
             const searchInput = document.getElementById('userSearchInput');
             const userRows = document.querySelectorAll('#userTableBody tr');
-            
+
             if (searchInput) {
-                searchInput.addEventListener('keyup', function() {
+                searchInput.addEventListener('keyup', function () {
                     const searchTerm = this.value.toLowerCase();
-                    
+
                     userRows.forEach(row => {
-                        const userName = row.querySelector('.user-info div:nth-child(2)').textContent.toLowerCase();
+                        const userName = row.querySelector('.user-info div:nth-child(2)').textContent
+                            .toLowerCase();
                         const userEmail = row.querySelectorAll('td')[1].textContent.toLowerCase();
                         const membership = row.querySelectorAll('td')[2].textContent.toLowerCase();
-                        
-                        if (userName.includes(searchTerm) || userEmail.includes(searchTerm) || membership.includes(searchTerm)) {
+
+                        if (userName.includes(searchTerm) || userEmail.includes(searchTerm) ||
+                            membership.includes(searchTerm)) {
                             row.style.display = '';
                         } else {
                             row.style.display = 'none';
@@ -472,4 +323,5 @@
         }
     </script>
 </body>
+
 </html>
