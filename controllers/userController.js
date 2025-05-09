@@ -1,7 +1,221 @@
 const bcrypt = require('bcryptjs');
 const User = require('../model/User');
+const WorkoutPlan = require('../model/WorkoutPlan');
 const WorkoutHistory = require('../model/WorkoutHistory');
 const NutritionHistory = require('../model/NutritionHistory');
+
+const getUserProfile = async (req, res) => {
+    try {
+        if (!req.session || !req.session.user) {
+            console.log('No user session found');
+            return res.redirect('/login_signup?form=login');
+        }
+        
+        const userId = req.session.user.id;
+        console.log('Fetching user profile data for:', userId);
+        
+        // Fetch user data and populate trainer
+        const user = await User.findById(userId)
+            .populate('trainer');
+            
+        if (!user) {
+            console.log('User not found:', userId);
+            return res.status(404).json({ error: 'User not found' });
+        }
+        
+        // Fetch workout history and populate workoutPlanId
+        const workoutHistoryData = await WorkoutHistory.find({ userId })
+            .populate('workoutPlanId')
+            .sort({ date: -1 }) // Most recent first
+            .lean();
+        
+        // Format workout history for display
+        const workoutHistory = workoutHistoryData.map(workout => ({
+            id: workout._id,
+            name: workout.workoutPlanId?.name || 'Unnamed Workout',
+            date: workout.date,
+            exercises: workout.exercises || [],
+            progress: workout.progress || 0,
+            completed: workout.completed || false
+        }));
+        
+        // Fetch nutrition history
+        const nutritionHistoryData = await NutritionHistory.find({ userId })
+            .sort({ date: -1 })
+            .lean();
+        
+        // Calculate fitness statistics
+        const today = new Date();
+        const oneMonthAgo = new Date(today);
+        oneMonthAgo.setMonth(today.getMonth() - 1);
+        
+        let workoutsCompleted = 0;
+        let caloriesBurned = 0;
+        let hoursActive = 0;
+        let goalsAchieved = 0;
+        
+        // Calculate workout statistics
+        workoutsCompleted = workoutHistoryData.filter(w => 
+            new Date(w.date) >= oneMonthAgo && 
+            new Date(w.date) <= today &&
+            w.completed
+        ).length;
+        
+        workoutHistoryData.forEach(workout => {
+            if (new Date(workout.date) >= oneMonthAgo && 
+                new Date(workout.date) <= today &&
+                workout.completed) {
+                if (workout.exercises && workout.exercises.length > 0) {
+                    workout.exercises.forEach(exercise => {
+                        const reps = exercise.reps || 0;
+                        const sets = exercise.sets || 0;
+                        caloriesBurned += (reps * sets * 5);
+                    });
+                }
+            }
+        });
+        
+        hoursActive = workoutHistoryData.reduce((total, workout) => {
+            if (new Date(workout.date) >= oneMonthAgo && 
+                new Date(workout.date) <= today &&
+                workout.completed) {
+                return total + 1;
+            }
+            return total;
+        }, 0);
+        
+        const totalWorkoutsInPeriod = workoutHistoryData.filter(w => 
+            new Date(w.date) >= oneMonthAgo && 
+            new Date(w.date) <= today
+        ).length;
+        
+        if (totalWorkoutsInPeriod > 0 && (workoutsCompleted / totalWorkoutsInPeriod) >= 0.8) {
+            goalsAchieved++;
+        }
+        
+        // Calculate nutrition statistics
+        nutritionHistoryData.forEach(entry => {
+            if (new Date(entry.date) >= oneMonthAgo && 
+                new Date(entry.date) <= today) {
+                if (entry.calories_consumed) {
+                    caloriesBurned += Math.round(entry.calories_consumed * 0.3);
+                }
+            }
+        });
+        
+        if (nutritionHistoryData.length > 0 && user.fitness_goals) {
+            const nutritionEntries = nutritionHistoryData.filter(entry => 
+                new Date(entry.date) >= oneMonthAgo && 
+                new Date(entry.date) <= today
+            );
+            
+            if (nutritionEntries.length > 0) {
+                const avgProtein = nutritionEntries.reduce((sum, entry) => 
+                    sum + (entry.protein_consumed || 0), 0) / nutritionEntries.length;
+                    
+                if (avgProtein >= (user.fitness_goals.protein_goal || 0)) {
+                    goalsAchieved++;
+                }
+                
+                const avgCalories = nutritionEntries.reduce((sum, entry) => 
+                    sum + (entry.calories_consumed || 0), 0) / nutritionEntries.length;
+                    
+                if (user.fitness_goals.calorie_goal && avgCalories <= user.fitness_goals.calorie_goal) {
+                    goalsAchieved++;
+                }
+            }
+        }
+        
+        // Generate weekly workout data for chart (last 4 weeks)
+        const weeklyWorkoutData = [];
+        const weekLabels = [];
+        
+        for (let i = 0; i < 4; i++) {
+            const weekEnd = new Date(today);
+            weekEnd.setDate(today.getDate() - (i * 7));
+            const weekStart = new Date(weekEnd);
+            weekStart.setDate(weekEnd.getDate() - 7);
+            
+            const weeklyCount = workoutHistoryData.filter(w => 
+                new Date(w.date) >= weekStart && 
+                new Date(w.date) < weekEnd &&
+                w.completed
+            ).length;
+            
+            const startMonth = weekStart.toLocaleString('default', { month: 'short' });
+            const endMonth = weekEnd.toLocaleString('default', { month: 'short' });
+            const weekLabel = startMonth === endMonth ? 
+                `${startMonth} ${weekStart.getDate()}-${weekEnd.getDate()}` :
+                `${startMonth} ${weekStart.getDate()}-${endMonth} ${weekEnd.getDate()}`;
+            
+            weeklyWorkoutData.unshift(weeklyCount);
+            weekLabels.unshift(weekLabel);
+        }
+        
+        // Generate weight progress data
+        const weightProgress = [];
+        const sortedWorkouts = workoutHistoryData
+            .filter(w => w.exercises && w.exercises.some(e => e.weight))
+            .sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+        if (sortedWorkouts.length >= 4) {
+            for (let i = 0; i < 4; i++) {
+                const index = Math.floor((sortedWorkouts.length - 4 + i) * (sortedWorkouts.length / 4));
+                const workout = sortedWorkouts[Math.min(index, sortedWorkouts.length - 1)];
+                const maxWeight = workout.exercises.reduce((max, ex) => 
+                    ex.weight > max ? ex.weight : max, 0);
+                    
+                const date = new Date(workout.date);
+                const weekLabel = `${date.toLocaleString('default', { month: 'short' })} ${date.getDate()}`;
+                
+                weightProgress.push({
+                    week: weekLabel,
+                    weight: maxWeight
+                });
+            }
+        } else if (user.weight) {
+            for (let i = 0; i < 4; i++) {
+                const weekNumber = i + 1;
+                weightProgress.push({
+                    week: `Week ${weekNumber}`,
+                    weight: user.weight
+                });
+            }
+        } else {
+            for (let i = 0; i < 4; i++) {
+                const weekNumber = i + 1;
+                weightProgress.push({
+                    week: `Week ${weekNumber}`,
+                    weight: 70
+                });
+            }
+        }
+        
+        const fitnessStats = {
+            workoutsCompleted,
+            caloriesBurned,
+            hoursActive,
+            goalsAchieved
+        };
+        
+        const chartData = {
+            weeklyWorkouts: weeklyWorkoutData,
+            weekLabels,
+            weightProgress
+        };
+        
+        res.render('userprofile', { 
+            user,
+            workoutHistory,
+            fitnessStats,
+            chartData,
+            currentPage: 'profile'
+        });
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
 
 const loginUser = async (req, res) => {
     try {
@@ -20,11 +234,6 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        if (user.status !== 'Active') {
-            console.log('User account not active:', email, user.status);
-            return res.status(403).json({ error: `Your account is ${user.status.toLowerCase()}. Please contact support.` });
-        }
-
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
             console.log('Password mismatch for:', email);
@@ -40,13 +249,28 @@ const loginUser = async (req, res) => {
             console.error('Session middleware not initialized');
             return res.status(500).json({ error: 'Session not available. Please try again later.' });
         }
+
         req.session.user = {
             id: user._id,
             email: user.email,
             full_name: user.full_name,
-            membershipType: user.membershipType
+            name: user.full_name,
+            membershipType: user.membershipType,
+            membership: user.membershipType.toLowerCase(),
+            phone: user.phone,
+            dob: user.dob,
+            gender: user.gender,
+            weight: user.weight,
+            height: user.height,
+            BMI: user.BMI,
+            status: user.status,
+            created_at: user.created_at,
+            fitness_goals: {
+                calorie_goal: user.fitness_goals?.calorie_goal || 2200,
+                protein_goal: user.fitness_goals?.protein_goal || 90,
+                weight_goal: user.fitness_goals?.weight_goal || null
+            }
         };
-        console.log('Session set for user:', user.email);
 
         let redirectUrl;
         switch (user.membershipType.toLowerCase()) {
@@ -61,7 +285,7 @@ const loginUser = async (req, res) => {
                 break;
             default:
                 console.log('Unknown membership type:', user.membershipType);
-                redirectUrl = '/dashboard';
+                redirectUrl = '/userdashboard_b'; // Default to basic dashboard
         }
         console.log('Redirecting to:', redirectUrl);
 
@@ -176,9 +400,7 @@ const signupUser = async (req, res) => {
             membershipType: membershipPlan.charAt(0).toUpperCase() + membershipPlan.slice(1).toLowerCase(),
             weight: Number(weight),
             height: height !== undefined ? Number(height) : null,
-            BMI: calculatedBMI,
-            status: 'Active',
-            trainer: null // Trainer can be assigned later
+            BMI: calculatedBMI
         });
         console.log('New user object created:', newUser);
 
@@ -193,7 +415,9 @@ const signupUser = async (req, res) => {
                 id: newUser._id,
                 email: newUser.email,
                 full_name: newUser.full_name,
-                membershipType: newUser.membershipType
+                name: newUser.full_name,
+                membershipType: newUser.membershipType,
+                membership: newUser.membershipType.toLowerCase()
             };
             console.log('Session set for user:', userEmail);
         }
@@ -214,19 +438,19 @@ const signupUser = async (req, res) => {
     }
 };
 
-const getUserDashboard = async (req, res) => {
+const getUserDashboard = async (req, res, dashboardType) => {
     try {
         if (!req.session || !req.session.user) {
             console.log('No user session found');
             return res.redirect('/login_signup?form=login');
         }
-
         const userId = req.session.user.id;
         console.log('Fetching dashboard data for user:', userId);
 
         const user = await User.findById(userId)
             .populate('trainer')
             .select('full_name weight fitness_goals class_schedules');
+        
         if (!user) {
             console.log('User not found:', userId);
             return res.status(404).json({ error: 'User not found' });
@@ -237,42 +461,48 @@ const getUserDashboard = async (req, res) => {
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
 
-        // Fetch today's workout from WorkoutHistory
+        // Fetch today's workout
         const todayWorkout = await WorkoutHistory.findOne({
-            userId: userId,
+            userId,
             date: { $gte: today, $lt: tomorrow }
-        }).lean() || {};
+        })
+            .populate('workoutPlanId')
+            .lean() || {};
+
         const workoutData = {
-            name: todayWorkout.name || 'No Workout Scheduled',
-            duration: 60, // Default duration since workoutPlanId is not used
+            name: todayWorkout.workoutPlanId?.name || 'No Workout Scheduled',
+            duration: todayWorkout.workoutPlanId?.duration || 60,
             exercises: todayWorkout.exercises || [],
             progress: todayWorkout.progress || 0,
             completed: todayWorkout.completed || false,
-            workoutPlanId: todayWorkout._id || null, // Use WorkoutHistory _id instead
+            workoutPlanId: todayWorkout._id || null, // Use WorkoutHistory _id
             completedExercises: todayWorkout.exercises?.filter(e => e.completed).length || 0,
             totalExercises: todayWorkout.exercises?.length || 0
         };
 
-        // Fetch weekly workouts from WorkoutHistory
+        // Fetch weekly workouts
         const weekStart = new Date(today);
         weekStart.setDate(today.getDate() - today.getDay());
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
+
         const weeklyWorkoutsData = await WorkoutHistory.find({
-            userId: userId,
+            userId,
             date: { $gte: weekStart, $lt: weekEnd }
         }).lean();
+
         const weeklyWorkouts = {
             completed: weeklyWorkoutsData.filter(w => w.completed).length,
             total: weeklyWorkoutsData.length
         };
 
-        // Fetch today's nutrition from NutritionHistory
+        // Fetch today's nutrition
         const todayNutrition = await NutritionHistory.findOne({
-            userId: userId,
+            userId,
             date: { $gte: today, $lt: tomorrow }
         }).lean() || {};
 
+        // Fetch upcoming class
         const upcomingClass = user.class_schedules.find(c => {
             const classDate = new Date(c.date);
             return classDate >= today;
@@ -281,14 +511,14 @@ const getUserDashboard = async (req, res) => {
             upcomingClass.trainerName = user.trainer?.full_name || 'Coach';
         }
 
-        // Fetch exercise progress dynamically from WorkoutHistory
+        // Fetch exercise progress dynamically
         const exercisesToTrack = ['Bicep Curls', 'Deadlift', 'Bench Press'];
         const exerciseProgress = await Promise.all(exercisesToTrack.map(async (exerciseName) => {
             const workoutHistories = await WorkoutHistory.find({
-                userId: userId,
+                userId,
                 'exercises.name': exerciseName
             })
-                .sort({ date: 1 }) // Sort by date ascending
+                .sort({ date: 1 })
                 .lean();
 
             const history = [];
@@ -311,7 +541,6 @@ const getUserDashboard = async (req, res) => {
                 }
             });
 
-            // Fill in missing weeks if necessary
             while (history.length < 6) {
                 history.unshift({
                     week: `Week ${history.length + 1}`,
@@ -325,7 +554,7 @@ const getUserDashboard = async (req, res) => {
                 currentWeight: currentWeight || 0,
                 goalWeight: goalWeight || 0,
                 progress: goalWeight ? Math.round((currentWeight / goalWeight) * 100) : 0,
-                history: history.slice(-6), // Last 6 entries
+                history: history.slice(-6),
                 color: {
                     'Bicep Curls': '#8A2BE2',
                     'Deadlift': '#32CD32',
@@ -341,17 +570,21 @@ const getUserDashboard = async (req, res) => {
             { name: 'Salmon', protein: 25, perUnit: '100g', icon: 'fa-fish' }
         ];
 
-        res.render('userdashboard_p', {
-            user,
+        const template = `userdashboard_${dashboardType}`;
+        console.log(`Rendering template: ${template}`);
+
+        res.render(template, { 
+            user: req.session.user,
             todayWorkout: workoutData,
             weeklyWorkouts,
             todayNutrition,
             upcomingClass,
             exerciseProgress,
-            recommendedFoods
+            recommendedFoods,
+            currentPage: 'dashboard'
         });
     } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error('Error getting user dashboard:', error);
         res.status(500).json({ error: 'Server error' });
     }
 };
@@ -364,7 +597,7 @@ const completeWorkout = async (req, res) => {
         }
 
         const userId = req.session.user.id;
-        const { workoutPlanId } = req.body; // This is actually the WorkoutHistory _id
+        const { workoutPlanId } = req.body; // This is WorkoutHistory _id
 
         if (!workoutPlanId) {
             console.log('Missing workoutPlanId');
@@ -373,7 +606,7 @@ const completeWorkout = async (req, res) => {
 
         console.log('Completing workout for user:', userId, 'Workout ID:', workoutPlanId);
 
-        const workout = await WorkoutHistory.findOne({ _id: workoutPlanId, userId: userId });
+        const workout = await WorkoutHistory.findOne({ _id: workoutPlanId, userId });
         if (!workout) {
             console.log('Workout not found:', workoutPlanId);
             return res.status(404).json({ error: 'Workout not found' });
@@ -400,10 +633,76 @@ const completeWorkout = async (req, res) => {
     }
 };
 
+const markWorkoutCompleted = async (req, res) => {
+    try {
+        const { workoutId } = req.body;
+        
+        if (!req.session || !req.session.user) {
+            return res.status(401).json({ error: 'Not authenticated' });
+        }
+        
+        const userId = req.session.user.id;
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Check if workout history exists for today
+        let workoutEntry = await WorkoutHistory.findOne({
+            userId,
+            workoutPlanId: workoutId,
+            date: { $gte: today, $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) }
+        });
+        
+        if (workoutEntry) {
+            // Update existing entry
+            workoutEntry.completed = true;
+            workoutEntry.progress = 100;
+            if (workoutEntry.exercises) {
+                workoutEntry.exercises.forEach(exercise => {
+                    exercise.completed = true;
+                });
+            }
+            await workoutEntry.save();
+        } else {
+            // Fetch workout plan
+            const workoutPlan = await WorkoutPlan.findById(workoutId);
+            if (!workoutPlan) {
+                return res.status(404).json({ error: 'Workout plan not found' });
+            }
+            
+            // Create new workout history entry
+            const newWorkoutEntry = new WorkoutHistory({
+                userId,
+                workoutPlanId: workoutId,
+                date: today,
+                completed: true,
+                progress: 100,
+                exercises: workoutPlan.exercises.map(exercise => ({
+                    day: new Date().toLocaleString('en-US', { weekday: 'long' }),
+                    name: exercise.name,
+                    sets: exercise.sets || 3,
+                    reps: exercise.reps || 10,
+                    duration: exercise.duration,
+                    weight: exercise.weight,
+                    completed: true
+                }))
+            });
+            
+            await newWorkoutEntry.save();
+        }
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error marking workout as completed:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
 
 module.exports = {
     loginUser,
     signupUser,
     getUserDashboard,
-    completeWorkout
+    completeWorkout,
+    getUserProfile,
+    markWorkoutCompleted
 };

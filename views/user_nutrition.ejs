@@ -1,0 +1,323 @@
+<!-- views/user_nutrition.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymRats - Advanced Nutrition Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/nutrition/user_nutrition.css">
+    <link rel="stylesheet" type="text/css" href="/userdashboard/userdashboard.css" />
+</head>
+<body>
+    <!-- User Dashboard Header -->
+    <div class="main-navbar">
+        <header>
+            <!-- Header Branding -->
+            <div class="brand-logo">
+                <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>" class="brand-name">GymRats</a>
+            </div>
+            
+            <div class="nav-menu">
+                <!-- Add 'active' class conditionally based on the current page -->
+                <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>" class="<%= currentPage === 'dashboard' ? 'active' : '' %>">Home</a>
+                <a href="/user_exercises" class="<%= currentPage === 'exercises' ? 'active' : '' %>">Exercises</a>
+                <a href="/user_nutrition" class="<%= currentPage === 'nutrition' ? 'active' : '' %>">Nutrition</a>
+            </div>
+            
+            <div class="right-container">
+                <div class="search-container">
+                    <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
+                    <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                </div>
+                
+                <div class="user-profile">
+                    <a href="/userprofile" class="<%= currentPage === 'profile' ? 'active' : '' %>">
+                        <% if (user && user.name) { %>
+                            <span><%= user.name %></span>
+                        <% } else if (user && user.full_name) { %>
+                            <span><%= user.full_name.split(' ')[0] %></span>
+                        <% } else { %>
+                            <span>User</span>
+                        <% } %>
+                    </a>
+                </div>
+            </div>
+            <div class="mobile-menu-icon" id="menuIcon">
+                <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
+            </div>
+            <div class="mobile-sidebar" id="sideNavbar">
+                <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+                <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>" class="<%= currentPage === 'dashboard' ? 'active' : '' %>">Home</a>
+                <a href="/user_exercises" class="<%= currentPage === 'exercises' ? 'active' : '' %>">Exercises</a>
+                <a href="/user_nutrition" class="<%= currentPage === 'nutrition' ? 'active' : '' %>">Nutrition</a>
+                <div class="sidebar-profile">
+                    <a href="/userprofile">
+                        <% if (user && user.name) { %>
+                            <span><%= user.name %></span>
+                        <% } else if (user && user.full_name) { %>
+                            <span><%= user.full_name.split(' ')[0] %></span>
+                        <% } else { %>
+                            <span>User</span>
+                        <% } %>
+                    </a>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <h1>Evidence-Based Nutrition Guide</h1>
+        <p>Science-backed nutrition strategies tailored to your fitness goals</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Science-based Nutrition Section -->
+        <div class="section">
+            <h2>The Science of Nutrition for Athletes</h2>
+            <p class="section-intro">Understanding the scientific principles behind nutrition can help optimize your training and recovery. Below are key findings from recent research:</p>
+            
+            <div class="nutrition-grid">
+                <div class="nutrition-card research-card">
+                    <h3>Protein Timing and Distribution</h3>
+                    <p>Research shows that distributing protein intake evenly throughout the day (20-40g per meal) maximizes muscle protein synthesis more effectively than consuming the same amount in fewer, larger servings.</p>
+                    <div class="research-link">
+                        <i class="fas fa-file-alt"></i>
+                        <a href="https://pubmed.ncbi.nlm.nih.gov/24257722/" target="_blank">Mamerow et al. (2014). Journal of Nutrition</a>
+                    </div>
+                    <div class="key-finding">
+                        Consuming 25-30g of protein per meal stimulates maximal protein synthesis in most individuals.
+                    </div>
+                </div>
+
+                <div class="nutrition-card research-card">
+                    <h3>Carbohydrate Periodization</h3>
+                    <p>Strategic manipulation of carbohydrate intake based on training phases can enhance metabolic flexibility and performance. This approach involves timing higher carb intake around intense training sessions.</p>
+                    <div class="research-link">
+                        <i class="fas fa-file-alt"></i>
+                        <a href="https://pubmed.ncbi.nlm.nih.gov/29453741/" target="_blank">Impey et al. (2018). Journal of Sports Sciences</a>
+                    </div>
+                    <div class="key-finding">
+                        "Train low, compete high" strategies can improve fat oxidation while preserving high-intensity performance.
+                    </div>
+                </div>
+
+                <div class="nutrition-card research-card">
+                    <h3>Fasting and Performance</h3>
+                    <p>Intermittent fasting protocols may provide metabolic benefits, but timing is crucial. Research suggests avoiding fasting before high-intensity or strength-focused training sessions.</p>
+                    <div class="research-link">
+                        <i class="fas fa-file-alt"></i>
+                        <a href="https://pubmed.ncbi.nlm.nih.gov/27710558/" target="_blank">Tinsley & Willoughby (2016). Journal of the International Society of Sports Nutrition</a>
+                    </div>
+                    <div class="key-finding">
+                        Fasting may enhance certain metabolic pathways but can impair performance in high-intensity training if not properly implemented.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evidence-Based Supplements Section -->
+        <div class="section">
+            <h2>Evidence-Based Supplements</h2>
+            <p class="section-intro">These supplements have substantial scientific support for their efficacy and safety when used appropriately:</p>
+            
+            <div class="nutrition-grid">
+                <div class="nutrition-card supplement-card">
+                    <h3>Creatine Monohydrate</h3>
+                    <p><strong>Efficacy Rating:</strong> <span class="rating">★★★★★</span></p>
+                    <p>Consistently shown to increase strength, power output, and muscle mass when combined with resistance training. Beneficial for both short-duration, high-intensity exercise and recovery.</p>
+                    <div class="dosage-info">
+                        <h4>Research-Based Dosage:</h4>
+                        <p>Loading phase: 20g/day for 5-7 days (split into 4 doses)<br>Maintenance: 3-5g/day</p>
+                    </div>
+                    <div class="research-link">
+                        <i class="fas fa-file-alt"></i>
+                        <a href="https://pubmed.ncbi.nlm.nih.gov/28615996/" target="_blank">Kreider et al. (2017). Journal of the International Society of Sports Nutrition</a>
+                    </div>
+                </div>
+
+                <div class="nutrition-card supplement-card">
+                    <h3>Beta-Alanine</h3>
+                    <p><strong>Efficacy Rating:</strong> <span class="rating">★★★★☆</span></p>
+                    <p>Improves performance in high-intensity exercise lasting 1-4 minutes through increased muscle carnosine levels, enhancing buffering capacity against exercise-induced acidosis.</p>
+                    <div class="dosage-info">
+                        <h4>Research-Based Dosage:</h4>
+                        <p>3.2-6.4g/day (divided into multiple smaller doses to minimize paresthesia)</p>
+                    </div>
+                    <div class="research-link">
+                        <i class="fas fa-file-alt"></i>
+                        <a href="https://pubmed.ncbi.nlm.nih.gov/30997908/" target="_blank">Trexler et al. (2015). Sports Medicine</a>
+                    </div>
+                </div>
+
+                <div class="nutrition-card supplement-card">
+                    <h3>Vitamin D</h3>
+                    <p><strong>Efficacy Rating:</strong> <span class="rating">★★★★☆</span></p>
+                    <p>Important for bone health, immune function, and potentially muscle function. Deficiency is common in athletes, especially those training indoors or in northern latitudes.</p>
+                    <div class="dosage-info">
+                        <h4>Research-Based Dosage:</h4>
+                        <p>1,000-2,000 IU/day (higher doses may be necessary to correct deficiency, based on blood work)</p>
+                    </div>
+                    <div class="research-link">
+                        <i class="fas fa-file-alt"></i>
+                        <a href="https://pubmed.ncbi.nlm.nih.gov/29273683/" target="_blank">Owens et al. (2018). European Journal of Sport Science</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nutrition Strategies Section -->
+        <div class="section">
+            <h2>Periodized Nutrition Strategies by Training Phase</h2>
+            
+            <table class="periodization-table">
+                <thead>
+                    <tr>
+                        <th>Training Phase</th>
+                        <th>Protein</th>
+                        <th>Carbohydrates</th>
+                        <th>Fat</th>
+                        <th>Key Considerations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Hypertrophy</td>
+                        <td>1.6-2.2g/kg/day</td>
+                        <td>4-7g/kg/day</td>
+                        <td>0.5-1.5g/kg/day</td>
+                        <td>Slight caloric surplus (+200-500 kcal); emphasis on post-workout nutrition</td>
+                    </tr>
+                    <tr>
+                        <td>Strength</td>
+                        <td>1.6-2.0g/kg/day</td>
+                        <td>3-5g/kg/day</td>
+                        <td>0.8-1.5g/kg/day</td>
+                        <td>Focus on recovery between high CNS-demand sessions; maintenance calories</td>
+                    </tr>
+                    <tr>
+                        <td>Fat Loss</td>
+                        <td>2.0-2.4g/kg/day</td>
+                        <td>2-4g/kg/day</td>
+                        <td>0.8-1.2g/kg/day</td>
+                        <td>Moderate caloric deficit (-300-500 kcal); higher protein to preserve lean mass</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>1.4-1.8g/kg/day</td>
+                        <td>5-10g/kg/day</td>
+                        <td>0.8-1.0g/kg/day</td>
+                        <td>Carb loading pre-competition; emphasis on fueling for workouts</td>
+                    </tr>
+                    <tr>
+                        <td>Maintenance</td>
+                        <td>1.6-1.8g/kg/day</td>
+                        <td>3-5g/kg/day</td>
+                        <td>0.8-1.2g/kg/day</td>
+                        <td>Caloric balance; focus on nutrient density and meal consistency</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="research-note">
+                <i class="fas fa-info-circle"></i>
+                <p>Based on research from the International Society of Sports Nutrition position stands (Kerksick et al., 2018) and the American College of Sports Medicine guidelines.</p>
+                <div class="research-link">
+                    <i class="fas fa-file-alt"></i>
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/29642608/" target="_blank">Kerksick et al. (2018). Journal of the International Society of Sports Nutrition</a>
+                </div>
+            </div>
+        </div>
+
+        
+        <!-- Member-exclusive section -->
+<div class="section membership-section <%= user && user.membership ? user.membership.toLowerCase() : 'basic' %>-tier">
+    <h2><%= user && user.membership ? user.membership : 'Basic' %> Member Nutrition Resources</h2>
+    <p class="exclusive-tag"><i class="fas fa-star"></i> Exclusive Content</p>
+    
+    <div class="nutrition-grid">
+        <div class="nutrition-card">
+            <h3>Personalized Macro Calculator</h3>
+            <p>Access our advanced algorithm that calculates your precise macro needs based on your body composition, training schedule, and specific goals.</p>
+
+        </div>
+
+        <div class="nutrition-card">
+            <h3>Meal Timing Protocols</h3>
+            <p>Science-based meal timing strategies to optimize performance, recovery, and body composition based on your training schedule.</p>
+
+        </div>
+
+        <div class="nutrition-card">
+            <h3>Supplement Stack Builder</h3>
+            <p>Create a personalized, evidence-based supplement stack based on your specific goals, dietary preferences, and budget constraints.</p>
+
+        </div>
+    </div>
+</div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>GymRats</h3>
+                <ul>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/trainers">Our Trainers</a></li>
+                    <li><a href="/testimonial">Testimonials</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="/isolation">Exercise Guide</a></li>
+                    <li><a href="/nutrition">Nutrition Tips</a></li>
+                    <li><a href="/workout_plans">Workout Plans</a></li>
+                    <li><a href="/calculators">Calculators</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="/contact">Contact Us</a></li>
+                    <li><a href="/about">About us</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/privacy_policy">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Connect With Us</h3>
+                <ul>
+                    <li><a href="/trainer_form">Become a Trainer</a></li>
+                    <li><a href="/verifier_form">Become a Verifier</a></li>
+                </ul>
+                <div class="social-icons">
+                    <a href="#"><img src="/home/icons8-facebook.svg" alt="Facebook"></a>
+                    <a href="#"><img src="/home/icons8-instagram.svg" alt="Instagram"></a>
+                    <a href="#"><img src="/home/icons8-youtube.svg" alt="YouTube"></a>
+                </div>
+                <p class="copyright">GymRats © 2025. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('menuIcon').addEventListener('click', function() {
+                document.getElementById('sideNavbar').classList.add('open');
+            });
+
+            document.getElementById('closeBtn').addEventListener('click', function() {
+                document.getElementById('sideNavbar').classList.remove('open');
+            });
+        });
+    </script>
+</body>
+</html>
