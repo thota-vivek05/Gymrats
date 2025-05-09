@@ -440,6 +440,7 @@ const signupUser = async (req, res) => {
 
 // Update the getUserDashboard function in userController.js to fetch nutrition data:
 
+// Get user dashboard based on membership type
 const getUserDashboard = async (req, res, membershipCode) => {
     try {
         if (!req.session || !req.session.user) {
@@ -525,7 +526,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
             nutritionChartData.protein.push(dayData ? dayData.protein_consumed || 0 : 0);
         });
         
-        // Get most recent foods for food log
+        // Most recent foods for food log (platinum feature only)
         const recentFoods = weeklyNutrition.reduce((foods, entry) => {
             if (entry.foods && entry.foods.length > 0) {
                 return [...foods, ...entry.foods.map(food => ({
@@ -563,25 +564,15 @@ const getUserDashboard = async (req, res, membershipCode) => {
             }
         }
         
-        // Render dashboard with user data
-        res.render(dashboardTemplate, {
+        // Common data for all membership types
+        const commonData = {
             user: user,
             recentWorkouts: recentWorkouts,
             todayNutrition: todayNutrition,
-            nutritionChartData: nutritionChartData,
-            recentFoods: recentFoods,
-            nutritionStats: {
-                calorieAvg: Math.round(calorieAvg),
-                proteinAvg: Math.round(proteinAvg),
-                macros: macrosData
-            },
             weeklyWorkouts: {
                 completed: recentWorkouts.filter(w => w.completed).length,
                 total: recentWorkouts.length
             },
-            upcomingClass: user.class_schedules && user.class_schedules.length > 0 
-                ? user.class_schedules[0] 
-                : null,
             todayWorkout: recentWorkouts.length > 0 
                 ? {
                     exercises: recentWorkouts[0].exercises || [],
@@ -599,7 +590,31 @@ const getUserDashboard = async (req, res, membershipCode) => {
                 { name: 'Deadlift', progress: 85, currentWeight: 110, goalWeight: 130 }
             ],
             currentPage: 'dashboard'
-        });
+        };
+        
+        // Additional data for platinum members
+        if (membershipCode === 'p') {
+            // Add platinum-specific data
+            const platinumData = {
+                ...commonData,
+                nutritionChartData: nutritionChartData,
+                recentFoods: recentFoods,
+                nutritionStats: {
+                    calorieAvg: Math.round(calorieAvg),
+                    proteinAvg: Math.round(proteinAvg),
+                    macros: macrosData
+                },
+                upcomingClass: user.class_schedules && user.class_schedules.length > 0 
+                    ? user.class_schedules[0] 
+                    : null
+            };
+            
+            // Render platinum dashboard with all features
+            res.render(dashboardTemplate, platinumData);
+        } else {
+            // Render gold/basic dashboard with limited features
+            res.render(dashboardTemplate, commonData);
+        }
         
     } catch (error) {
         console.error('Error fetching dashboard:', error);
