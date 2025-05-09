@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const User = require('../model/User');
 const WorkoutPlan = require('../model/WorkoutPlan');
+const WorkoutHistory = require('../model/WorkoutHistory');
 
 const getUserProfile = async (req, res) => {
     try {
@@ -705,7 +706,7 @@ exports.getUserDashboard = async (req, res, membershipType) => {
         const userId = req.session.user.id;
         console.log(`Fetching dashboard data for user: ${userId}, membership: ${membershipType}`);
         
-        // Fetch complete user data with populated workout history
+        // Fetch complete user data
         const user = await User.findById(userId)
             .populate('workout_history.workoutPlanId')
             .exec();
@@ -730,6 +731,10 @@ exports.getUserDashboard = async (req, res, membershipType) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
+        // Get the day of week for today
+        const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const todayDay = daysOfWeek[today.getDay()];
+        
         // Initialize today's workout with default values
         let todayWorkout = {
             name: 'Rest Day',
@@ -742,71 +747,168 @@ exports.getUserDashboard = async (req, res, membershipType) => {
             workoutPlanId: null
         };
         
-        // Find today's workout in user's workout history
-        let todayWorkoutHistory = null;
-        
-        if (user.workout_history && user.workout_history.length > 0) {
-            todayWorkoutHistory = user.workout_history.find(entry => {
-                const entryDate = new Date(entry.date);
-                entryDate.setHours(0, 0, 0, 0);
-                return entryDate.getTime() === today.getTime();
-            });
-        }
-        
-        // If no workout for today in history, try to find the latest workout from WorkoutHistory model
-        if (!todayWorkoutHistory) {
-            console.log("No workout for today in user history, checking WorkoutHistory collection");
+        // First try to get Friday's workout from WorkoutHistory collection
+        try {
+            console.log(`Looking for Friday workout history for user: ${userId}`);
             
-            const WorkoutHistory = require('../model/WorkoutHistory');
-            const latestWorkout = await WorkoutHistory.findOne({ 
-                userId: userId 
+            // Find workout with Friday exercises for this user
+            const fridayWorkout = await WorkoutHistory.findOne({
+                userId: userId,
+                'exercises.day': 'Friday'
             })
-            .sort({ date: -1 })
             .populate('workoutPlanId')
             .exec();
             
-            if (latestWorkout) {
-                console.log(`Found latest workout history for user: ${latestWorkout._id}`);
+            if (fridayWorkout) {
+                console.log(`Found workout history with Friday exercises: ${fridayWorkout._id}`);
                 
-                // Get the day of week for today
-                const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                const todayDay = daysOfWeek[today.getDay()];
+                // Filter out only the Friday exercises
+                const fridayExercises = fridayWorkout.exercises.filter(ex => ex.day === 'Friday');
                 
-                // Filter exercises for today's day
-                const todayExercises = latestWorkout.exercises.filter(ex => ex.day === todayDay);
-                
-                if (todayExercises.length > 0) {
-                    // Create a workout object from the filtered exercises
+                if (fridayExercises.length > 0) {
+                    // Calculate completed exercises
+                    const completedExercises = fridayExercises.filter(ex => ex.completed).length;
+                    
+                    // Get progress percentage
+                    const progress = fridayExercises.length > 0 
+                        ? Math.round((completedExercises / fridayExercises.length) * 100) 
+                        : 0;
+                    
+                    // Create today's workout object using Friday's workout
                     todayWorkout = {
-                        name: latestWorkout.workoutPlanId ? latestWorkout.workoutPlanId.type : `${todayDay}'s Workout`,
-                        duration: "45 min", // Default duration
-                        workoutPlanId: latestWorkout.workoutPlanId ? latestWorkout.workoutPlanId._id : latestWorkout._id,
-                        exercises: todayExercises.map(exercise => ({
-                            name: exercise.name,
-                            sets: exercise.sets,
-                            reps: exercise.reps,
-                            duration: exercise.duration,
-                            weight: exercise.weight,
-                            completed: exercise.completed
-                        })),
-                        totalExercises: todayExercises.length,
-                        completedExercises: todayExercises.filter(ex => ex.completed).length,
-                        progress: 0,
-                        completed: latestWorkout.completed
+                        name: fridayWorkout.workoutPlanId ? 
+                            `${fridayWorkout.workoutPlanId.type || 'Friday Workout'}` : 
+                            "Friday's Workout",
+                        duration: fridayWorkout.workoutPlanId ? 
+                            fridayWorkout.workoutPlanId.duration : 
+                            fridayExercises.reduce((total, ex) => total + (ex.duration || 0), 45),
+                        workoutPlanId: fridayWorkout.workoutPlanId ? fridayWorkout.workoutPlanId._id : null,
+                        exercises: fridayExercises,
+                        totalExercises: fridayExercises.length,
+                        completedExercises: completedExercises,
+                        progress: progress,
+                        completed: completedExercises === fridayExercises.length && fridayExercises.length > 0
                     };
                     
-                    // Calculate progress
-                    if (todayWorkout.totalExercises > 0) {
-                        todayWorkout.progress = Math.round((todayWorkout.completedExercises / todayWorkout.totalExercises) * 100);
-                    }
-                    
-                    console.log(`Today's workout has ${todayWorkout.exercises.length} exercises, ${todayWorkout.completedExercises} completed`);
+                    console.log(`Today's workout set to Friday workout with ${todayWorkout.exercises.length} exercises`);
+                } else {
+                    console.log('No Friday exercises found in workout history');
                 }
             } else {
-                console.log("No workout history found, checking WorkoutPlan collection");
+                console.log('No workout history with Friday exercises found');
                 
-                // If no workout history, try to find a workout plan
-                // Fetch a workout plan appropriate for the membership type
+                // Try for any workout history
+                const workoutHistory = await WorkoutHistory.findOne({ 
+                    userId: userId 
+                })
+                .sort({ date: -1 })
+                .populate('workoutPlanId')
+                .exec();
+                
+                if (workoutHistory) {
+                    console.log(`Found general workout history: ${workoutHistory._id}`);
+                    
+                    // Even if not Friday exercises, see if we can find any exercises
+                    if (workoutHistory.exercises && workoutHistory.exercises.length > 0) {
+                        // Create today's workout with all available exercises
+                        const allExercises = workoutHistory.exercises;
+                        const completedExercises = allExercises.filter(ex => ex.completed).length;
+                        
+                        todayWorkout = {
+                            name: workoutHistory.workoutPlanId ? workoutHistory.workoutPlanId.type : "Today's Workout",
+                            duration: workoutHistory.workoutPlanId ? workoutHistory.workoutPlanId.duration : 45,
+                            workoutPlanId: workoutHistory.workoutPlanId ? workoutHistory.workoutPlanId._id : null,
+                            exercises: allExercises,
+                            totalExercises: allExercises.length,
+                            completedExercises: completedExercises,
+                            progress: Math.round((completedExercises / allExercises.length) * 100),
+                            completed: workoutHistory.completed
+                        };
+                        
+                        console.log(`Using all ${todayWorkout.exercises.length} exercises from workout history`);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching workout history:', error);
+        }
+        
+        // If we still don't have exercises for today's workout, try to use workout_history from user object
+        if (todayWorkout.exercises.length === 0 && user.workout_history && user.workout_history.length > 0) {
+            console.log('Falling back to user.workout_history');
+            
+            // Try to find any workout history entries in the user object that have Friday exercises
+            const fridayWorkouts = user.workout_history.filter(workout => 
+                workout.exercises && workout.exercises.some(ex => ex.day === 'Friday')
+            );
+            
+            if (fridayWorkouts.length > 0) {
+                // Get the latest workout with Friday exercises
+                const latestFridayWorkout = fridayWorkouts[fridayWorkouts.length - 1];
+                
+                // Filter for Friday exercises only
+                const fridayExercises = latestFridayWorkout.exercises.filter(ex => ex.day === 'Friday');
+                
+                if (fridayExercises.length > 0) {
+                    const completedExercises = fridayExercises.filter(ex => ex.completed).length;
+                    
+                    todayWorkout = {
+                        name: latestFridayWorkout.workoutPlanId ? 
+                            latestFridayWorkout.workoutPlanId.name : 
+                            "Friday's Workout",
+                        duration: latestFridayWorkout.workoutPlanId ? 
+                            latestFridayWorkout.workoutPlanId.duration : 
+                            45,
+                        workoutPlanId: latestFridayWorkout.workoutPlanId ? 
+                            latestFridayWorkout.workoutPlanId._id : 
+                            null,
+                        exercises: fridayExercises,
+                        totalExercises: fridayExercises.length,
+                        completedExercises: completedExercises,
+                        progress: fridayExercises.length > 0 ? 
+                            Math.round((completedExercises / fridayExercises.length) * 100) : 
+                            0,
+                        completed: latestFridayWorkout.completed
+                    };
+                    
+                    console.log(`Using ${todayWorkout.exercises.length} Friday exercises from user.workout_history`);
+                } else {
+                    // Get the latest workout with any exercises
+                    const latestWorkout = user.workout_history[user.workout_history.length - 1];
+                    
+                    if (latestWorkout && latestWorkout.exercises && latestWorkout.exercises.length > 0) {
+                        const exercises = latestWorkout.exercises;
+                        const completedExercises = exercises.filter(ex => ex.completed).length;
+                        
+                        todayWorkout = {
+                            name: latestWorkout.workoutPlanId ? 
+                                latestWorkout.workoutPlanId.name : 
+                                "Today's Workout",
+                            duration: latestWorkout.workoutPlanId ? 
+                                latestWorkout.workoutPlanId.duration : 
+                                45,
+                            workoutPlanId: latestWorkout.workoutPlanId ? 
+                                latestWorkout.workoutPlanId._id : 
+                                null,
+                            exercises: exercises,
+                            totalExercises: exercises.length,
+                            completedExercises: completedExercises,
+                            progress: exercises.length > 0 ? 
+                                Math.round((completedExercises / exercises.length) * 100) : 
+                                0,
+                            completed: latestWorkout.completed
+                        };
+                    }
+                }
+            }
+        }
+        
+        // If still no exercises, try to find a workout plan based on user's membership type
+        if (todayWorkout.exercises.length === 0) {
+            console.log('No exercises found in history, looking for workout plans');
+            
+            try {
+                // Determine difficulty level based on membership type
                 let difficultyLevel = "Beginner";
                 
                 if (membershipType === 'p') {
@@ -816,77 +918,63 @@ exports.getUserDashboard = async (req, res, membershipType) => {
                 }
                 
                 const WorkoutPlan = require('../model/WorkoutPlan');
-                const workoutPlan = await WorkoutPlan.findOne({ 
-                    difficulty: difficultyLevel 
+                
+                // Try to find a workout plan with Friday exercises
+                const workoutPlan = await WorkoutPlan.findOne({
+                    'exercises.day': 'Friday'
                 }).exec();
                 
-                if (workoutPlan) {
-                    console.log(`Found workout plan: ${workoutPlan.name} (${workoutPlan.type})`);
+                if (workoutPlan && workoutPlan.exercises && workoutPlan.exercises.length > 0) {
+                    console.log(`Found workout plan: ${workoutPlan.name || workoutPlan.type || 'Unnamed'}`);
                     
-                    // Get the day of week for today
-                    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                    const todayDay = daysOfWeek[today.getDay()];
+                    // Filter for Friday exercises
+                    const fridayExercises = workoutPlan.exercises.filter(ex => ex.day === 'Friday');
                     
-                    // If the workout plan has exercises for today
-                    if (workoutPlan.exercises && workoutPlan.exercises.length > 0) {
-                        // Filter for today's exercises if day field exists, otherwise use all
-                        const relevantExercises = workoutPlan.exercises.filter(ex => 
-                            !ex.day || ex.day === todayDay
-                        );
-                        
-                        if (relevantExercises.length > 0) {
-                            todayWorkout = {
-                                name: workoutPlan.type || `${todayDay}'s Training`,
-                                duration: workoutPlan.duration || "45 min",
-                                workoutPlanId: workoutPlan._id,
-                                exercises: relevantExercises.map(exercise => ({
-                                    name: exercise.name,
-                                    sets: exercise.sets,
-                                    reps: exercise.reps,
-                                    duration: exercise.duration,
-                                    weight: exercise.weight,
-                                    completed: false
-                                })),
-                                totalExercises: relevantExercises.length,
-                                completedExercises: 0,
-                                progress: 0,
+                    if (fridayExercises.length > 0) {
+                        todayWorkout = {
+                            name: workoutPlan.type || "Friday's Workout",
+                            duration: workoutPlan.duration || 45,
+                            workoutPlanId: workoutPlan._id,
+                            exercises: fridayExercises.map(ex => ({
+                                day: 'Friday',
+                                name: ex.name,
+                                sets: ex.sets,
+                                reps: ex.reps,
+                                weight: ex.weight,
+                                duration: ex.duration,
                                 completed: false
-                            };
-                            
-                            console.log(`Created new workout with ${todayWorkout.exercises.length} exercises`);
-                        }
+                            })),
+                            totalExercises: fridayExercises.length,
+                            completedExercises: 0,
+                            progress: 0,
+                            completed: false
+                        };
+                        
+                        console.log(`Using ${todayWorkout.exercises.length} Friday exercises from workout plan`);
+                    } else {
+                        // Use any exercises from the workout plan
+                        todayWorkout = {
+                            name: workoutPlan.type || "Today's Workout",
+                            duration: workoutPlan.duration || 45,
+                            workoutPlanId: workoutPlan._id,
+                            exercises: workoutPlan.exercises.map(ex => ({
+                                day: ex.day || todayDay,
+                                name: ex.name,
+                                sets: ex.sets,
+                                reps: ex.reps,
+                                weight: ex.weight,
+                                duration: ex.duration,
+                                completed: false
+                            })),
+                            totalExercises: workoutPlan.exercises.length,
+                            completedExercises: 0,
+                            progress: 0,
+                            completed: false
+                        };
                     }
                 }
-            }
-        } else {
-            // We found today's workout in user history
-            console.log(`Found today's workout in user history: ${todayWorkoutHistory._id}`);
-            
-            const planName = todayWorkoutHistory.workoutPlanId ? 
-                (todayWorkoutHistory.workoutPlanId.type || todayWorkoutHistory.workoutPlanId.name) : 
-                "Today's Workout";
-                
-            todayWorkout = {
-                name: planName,
-                duration: todayWorkoutHistory.workoutPlanId ? todayWorkoutHistory.workoutPlanId.duration : "45 min",
-                workoutPlanId: todayWorkoutHistory.workoutPlanId ? todayWorkoutHistory.workoutPlanId._id : null,
-                exercises: todayWorkoutHistory.exercises.map(exercise => ({
-                    name: exercise.name,
-                    sets: exercise.sets,
-                    reps: exercise.reps,
-                    duration: exercise.duration,
-                    weight: exercise.weight,
-                    completed: exercise.completed
-                })),
-                totalExercises: todayWorkoutHistory.exercises.length,
-                completedExercises: todayWorkoutHistory.exercises.filter(ex => ex.completed).length,
-                progress: todayWorkoutHistory.progress || 0,
-                completed: todayWorkoutHistory.completed
-            };
-            
-            // Calculate progress if not already set
-            if (todayWorkout.progress === 0 && todayWorkout.totalExercises > 0) {
-                todayWorkout.progress = Math.round((todayWorkout.completedExercises / todayWorkout.totalExercises) * 100);
+            } catch (error) {
+                console.error('Error fetching workout plan:', error);
             }
         }
         
@@ -934,10 +1022,6 @@ exports.getUserDashboard = async (req, res, membershipType) => {
             
             // Find the next upcoming class
             upcomingClass = sortedClasses.find(cls => new Date(cls.date) >= today);
-            
-            if (upcomingClass) {
-                console.log(`Found upcoming class: ${upcomingClass.name} on ${upcomingClass.date}`);
-            }
         }
         
         // Log what we're rendering
@@ -969,86 +1053,175 @@ exports.getUserDashboard = async (req, res, membershipType) => {
 
 exports.markWorkoutCompleted = async (req, res) => {
     try {
-        const { workoutId } = req.body;
-        
         if (!req.session || !req.session.user) {
-            return res.status(401).json({ error: 'Not authenticated' });
+            return res.status(401).json({ success: false, message: 'Not authenticated' });
         }
         
         const userId = req.session.user.id;
-        const user = await User.findById(userId);
+        const workoutPlanId = req.body.workoutPlanId;
         
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+        console.log(`Marking workout as completed for user ${userId}, workout plan ${workoutPlanId}`);
+        
+        if (!workoutPlanId) {
+            return res.status(400).json({ success: false, message: 'Workout plan ID is required' });
         }
         
-        // Get today's date
+        // Find today's date
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
-        // Check if workout is already logged for today
-        let workoutEntry = null;
+        // Check if there's an entry in WorkoutHistory for today
+        let workoutHistory = await WorkoutHistory.findOne({
+            userId: userId,
+            workoutPlanId: workoutPlanId,
+            date: {
+                $gte: new Date(today.setHours(0, 0, 0, 0)),
+                $lt: new Date(today.setHours(23, 59, 59, 999))
+            }
+        });
         
-        if (user.workout_history) {
-            workoutEntry = user.workout_history.find(entry => {
-                const entryDate = new Date(entry.date);
-                entryDate.setHours(0, 0, 0, 0);
-                
-                return entryDate.getTime() === today.getTime() && 
-                       entry.workoutPlanId && 
-                       entry.workoutPlanId.toString() === workoutId;
+        // If not found for today, check if there's any entry for this workout plan
+        if (!workoutHistory) {
+            workoutHistory = await WorkoutHistory.findOne({
+                userId: userId,
+                workoutPlanId: workoutPlanId
             });
         }
         
-        if (workoutEntry) {
-            // Update existing entry
-            workoutEntry.completed = true;
+        // If still not found, create a new workout history entry
+        if (!workoutHistory) {
+            // Get the workout plan for details
+            const WorkoutPlan = require('../model/WorkoutPlan');
+            const workoutPlan = await WorkoutPlan.findById(workoutPlanId);
             
-            // Mark all exercises as completed
-            if (workoutEntry.exercises) {
-                workoutEntry.exercises.forEach(exercise => {
-                    exercise.completed = true;
+            if (!workoutPlan) {
+                // If no workout plan found, create a basic workout history entry
+                workoutHistory = new WorkoutHistory({
+                    userId: userId,
+                    workoutPlanId: workoutPlanId,
+                    date: new Date(),
+                    exercises: [
+                        {
+                            day: 'Monday',
+                            name: 'Default Exercise',
+                            sets: 3,
+                            reps: 10,
+                            weight: 0,
+                            duration: 0,
+                            completed: true
+                        }
+                    ],
+                    progress: 100,
+                    completed: true
+                });
+            } else {
+                // Create new entry with workout plan exercises
+                const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const todayDay = daysOfWeek[new Date().getDay()];
+                
+                // Get exercises for today or all exercises
+                let exercises = workoutPlan.exercises.filter(ex => ex.day === todayDay);
+                if (exercises.length === 0) {
+                    exercises = workoutPlan.exercises;
+                }
+                
+                workoutHistory = new WorkoutHistory({
+                    userId: userId,
+                    workoutPlanId: workoutPlanId,
+                    date: new Date(),
+                    exercises: exercises.map(ex => ({
+                        day: ex.day || todayDay,
+                        name: ex.name,
+                        sets: ex.sets,
+                        reps: ex.reps,
+                        weight: ex.weight,
+                        duration: ex.duration,
+                        completed: true
+                    })),
+                    progress: 100,
+                    completed: true
                 });
             }
         } else {
-            // Fetch workout plan
-            const workoutPlan = await WorkoutPlan.findById(workoutId);
+            // Mark all exercises as completed
+            workoutHistory.exercises.forEach(exercise => {
+                exercise.completed = true;
+            });
             
-            if (!workoutPlan) {
-                return res.status(404).json({ error: 'Workout plan not found' });
-            }
-            
-            // Create new workout history entry
-            const newWorkoutEntry = {
-                date: today,
-                workoutPlanId: workoutId,
-                completed: true,
-                exercises: workoutPlan.exercises.map(exercise => ({
-                    name: exercise.name,
-                    sets: exercise.sets || 3,
-                    reps: exercise.reps || 10,
-                    duration: exercise.duration,
-                    weight: exercise.weight,
-                    completed: true
-                }))
-            };
-            
-            // Add to workout history
-            if (!user.workout_history) {
-                user.workout_history = [];
-            }
-            
-            user.workout_history.push(newWorkoutEntry);
+            // Update progress and completion status
+            workoutHistory.progress = 100;
+            workoutHistory.completed = true;
+            workoutHistory.date = new Date(); // Update date to today if it's an old record
         }
         
-        // Save updated user data
-        await user.save();
+        // Save the workout history
+        await workoutHistory.save();
+        console.log(`Saved workout history: ${workoutHistory._id}`);
         
-        res.json({ success: true });
+        // Also update the user's embedded workout_history if needed
+        try {
+            const user = await User.findById(userId);
+            
+            if (user) {
+                // Check if this workout is already in user's history
+                const workoutIndex = user.workout_history.findIndex(w => 
+                    w.workoutPlanId && w.workoutPlanId.toString() === workoutPlanId.toString()
+                );
+                
+                if (workoutIndex >= 0) {
+                    // Update existing workout
+                    user.workout_history[workoutIndex].exercises.forEach(ex => {
+                        ex.completed = true;
+                    });
+                    user.workout_history[workoutIndex].progress = 100;
+                    user.workout_history[workoutIndex].completed = true;
+                    user.workout_history[workoutIndex].date = new Date();
+                } else {
+                    // Add new workout to history
+                    user.workout_history.push({
+                        workoutPlanId: workoutPlanId,
+                        date: new Date(),
+                        exercises: workoutHistory.exercises,
+                        progress: 100,
+                        completed: true
+                    });
+                }
+                
+                await user.save();
+                console.log(`Updated user workout history for user: ${userId}`);
+            }
+        } catch (error) {
+            console.error('Error updating user workout history:', error);
+            // Continue even if this part fails
+        }
         
+        return res.json({
+            success: true,
+            message: 'Workout marked as completed',
+            workout: workoutHistory
+        });
     } catch (error) {
         console.error('Error marking workout as completed:', error);
-        res.status(500).json({ error: 'Server error' });
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+exports.createWorkoutHistory = async (req, res) => {
+    try {
+        const workoutHistory = new WorkoutHistory({
+            userId: req.session.user.id,
+            workoutPlanId: req.body.workoutPlanId,
+            date: new Date(),
+            exercises: req.body.exercises,
+            progress: req.body.progress || 0,
+            completed: req.body.completed || false
+        });
+        
+        const savedWorkoutHistory = await workoutHistory.save();
+        res.status(201).json(savedWorkoutHistory);
+    } catch (error) {
+        console.error('Error creating workout history:', error);
+        res.status(500).json({ error: 'Failed to create workout history' });
     }
 };
 

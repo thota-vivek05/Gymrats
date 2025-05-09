@@ -113,50 +113,51 @@
             
             <div class="dashboard-grid">
                 <!-- Today's Workout Section -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h2>Today's Workout: <%= todayWorkout.name || 'No Workout Scheduled' %></h2>
-                        <span class="badge"><%= todayWorkout.duration || 60 %> min</span>
-                    </div>
-                    <div class="workout-content">
-                        <% if (todayWorkout.exercises && todayWorkout.exercises.length > 0) { %>
-                            <div class="workout-progress">
-                                <div class="progress-circle">
-                                    <svg viewBox="0 0 36 36" class="circular-chart">
-                                        <path class="circle-bg" d="M18 2.0845
-                                            a 15.9155 15.9155 0 0 1 0 31.831
-                                            a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <path class="circle" stroke-dasharray="<%= todayWorkout.progress || 0 %>, 100" d="M18 2.0845
-                                            a 15.9155 15.9155 0 0 1 0 31.831
-                                            a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <text x="18" y="20.35" class="percentage"><%= todayWorkout.progress || 0 %>%</text>
-                                    </svg>
-                                </div>
-                                <p><%= todayWorkout.completedExercises %> of <%= todayWorkout.totalExercises %> exercises completed</p>
-                            </div>
-                            
-                            <h3>Exercises:</h3>
-                            <ul class="workout-list">
-                                <% todayWorkout.exercises.forEach(exercise => { %>
-                                    <li class="<%= exercise.completed ? 'completed' : '' %>">
-                                        <span class="exercise-name"><%= exercise.name %></span>
-                                        <span class="exercise-details">
-                                            <%= exercise.sets %> sets * 
-                                            <%= exercise.reps ? `${exercise.reps} reps` : `${exercise.duration} seconds` %>
-                                            <%= exercise.weight ? `(${exercise.weight} kg)` : '' %>
-                                        </span>
-                                    </li>
-                                <% }); %>
-                            </ul>
-                            
-                            <button class="workout-btn" <%= todayWorkout.completed ? 'disabled' : '' %> data-workout-id="<%= todayWorkout.workoutPlanId %>">
-                                <%= todayWorkout.completed ? 'Completed ✓' : 'Complete Workout' %>
-                            </button>
-                        <% } else { %>
-                            <p>No exercises scheduled for today.</p>
-                        <% } %>
-                    </div>
+                <!-- Modify the Today's Workout Section in userdashboard_p.ejs -->
+<div class="dashboard-card">
+    <div class="card-header">
+        <h2>Today's Workout: <%= todayWorkout.name || 'No Workout Scheduled' %></h2>
+        <span class="badge"><%= todayWorkout.duration || 60 %> min</span>
+    </div>
+    <div class="workout-content">
+        <% if (todayWorkout.exercises && todayWorkout.exercises.length > 0) { %>
+            <div class="workout-progress">
+                <div class="progress-circle">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                        <path class="circle-bg" d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle" stroke-dasharray="<%= todayWorkout.progress || 0 %>, 100" d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" class="percentage"><%= todayWorkout.progress || 0 %>%</text>
+                    </svg>
                 </div>
+                <p><%= todayWorkout.completedExercises %> of <%= todayWorkout.totalExercises %> exercises completed</p>
+            </div>
+            
+            <h3>Exercises:</h3>
+            <ul class="workout-list">
+                <% todayWorkout.exercises.forEach(exercise => { %>
+                    <li class="<%= exercise.completed ? 'completed' : '' %>">
+                        <span class="exercise-name"><%= exercise.name %></span>
+                        <span class="exercise-details">
+                            <%= exercise.sets %> sets * 
+                            <%= exercise.reps ? `${exercise.reps} reps` : `${exercise.duration} seconds` %>
+                            <%= exercise.weight ? `(${exercise.weight} kg)` : '' %>
+                        </span>
+                    </li>
+                <% }); %>
+            </ul>
+            
+            <button class="workout-btn" <%= todayWorkout.completed ? 'disabled' : '' %> data-workout-id="<%= todayWorkout.workoutPlanId %>">
+                <%= todayWorkout.completed ? 'Completed ✓' : 'Complete Workout' %>
+            </button>
+        <% } else { %>
+            <p>No exercises scheduled for today.</p>
+        <% } %>
+    </div>
+</div>
 
                 <!-- Online Class Card -->
                 <div class="dashboard-card">
@@ -553,74 +554,164 @@
             });
         </script>
         <script>
+            // Add event listener to the workout completion button
             document.addEventListener('DOMContentLoaded', function() {
-                // Find the workout complete button
                 const workoutBtn = document.querySelector('.workout-btn');
                 
                 if (workoutBtn) {
                     workoutBtn.addEventListener('click', function() {
-                        const workoutId = this.getAttribute('data-workout-id');
-                        
-                        if (!workoutId) {
-                            alert('No workout selected');
+                        // Check if button is disabled
+                        if (this.hasAttribute('disabled')) {
                             return;
                         }
                         
-                        // Disable button to prevent multiple clicks
-                        this.disabled = true;
-                        this.innerHTML = 'Completing...';
+                        const workoutId = this.getAttribute('data-workout-id');
                         
-                        // Send request to mark workout as completed
-                        fetch('/api/workout/complete', {
+                        if (!workoutId) {
+                            alert('No workout ID found');
+                            return;
+                        }
+                        
+                        // Mark workout as completed
+                        fetch('/mark-workout-completed', {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({ workoutId: workoutId })
+                            body: JSON.stringify({
+                                workoutPlanId: workoutId
+                            }),
                         })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                // Update button
-                                this.innerHTML = 'Completed ✓';
+                                // Update the button
+                                this.textContent = 'Completed ✓';
+                                this.setAttribute('disabled', true);
                                 
-                                // Mark all exercises as completed
-                                document.querySelectorAll('.workout-list li').forEach(li => {
+                                // Update the exercise list
+                                const exerciseList = document.querySelectorAll('.workout-list li');
+                                exerciseList.forEach(li => {
                                     li.classList.add('completed');
                                 });
                                 
-                                // Update progress circle
+                                // Update the progress circle
                                 const progressCircle = document.querySelector('.circle');
+                                const percentageText = document.querySelector('.percentage');
+                                const completedText = document.querySelector('.workout-progress p');
+                                
                                 if (progressCircle) {
                                     progressCircle.setAttribute('stroke-dasharray', '100, 100');
                                 }
                                 
-                                const percentageText = document.querySelector('.percentage');
                                 if (percentageText) {
                                     percentageText.textContent = '100%';
                                 }
                                 
-                                // Update completed count
-                                const progressText = document.querySelector('.workout-progress p');
-                                if (progressText) {
+                                if (completedText) {
                                     const totalExercises = document.querySelectorAll('.workout-list li').length;
-                                    progressText.textContent = `${totalExercises} of ${totalExercises} exercises completed`;
+                                    completedText.textContent = `${totalExercises} of ${totalExercises} exercises completed`;
                                 }
+                                
+                                // Reload page after a short delay
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1500);
                             } else {
-                                alert('Error completing workout');
-                                this.disabled = false;
-                                this.innerHTML = 'Complete Workout';
+                                alert('Error completing workout: ' + data.message);
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert('Error completing workout');
-                            this.disabled = false;
-                            this.innerHTML = 'Complete Workout';
+                            alert('An error occurred while marking the workout as completed');
                         });
                     });
                 }
             });
         </script>
+        <!-- Add at the end of userdashboard_p.ejs, before closing </body> tag -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the workout completion button
+        const completeWorkoutBtn = document.querySelector('.workout-btn');
+        
+        if (completeWorkoutBtn) {
+            completeWorkoutBtn.addEventListener('click', function() {
+                // If button is already disabled (workout completed), do nothing
+                if (this.hasAttribute('disabled')) {
+                    return;
+                }
+                
+                const workoutId = this.getAttribute('data-workout-id');
+                
+                if (!workoutId) {
+                    alert('No workout ID found');
+                    return;
+                }
+                
+                // Show loading state
+                this.textContent = 'Marking as completed...';
+                this.disabled = true;
+                
+                // Send AJAX request to mark workout as completed
+                fetch('/mark-workout-completed', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ workoutPlanId: workoutId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update UI to show workout as completed
+                        this.textContent = 'Completed ✓';
+                        
+                        // Mark all exercises as completed
+                        const exerciseItems = document.querySelectorAll('.workout-list li');
+                        exerciseItems.forEach(item => {
+                            item.classList.add('completed');
+                        });
+                        
+                        // Update progress circle
+                        const progressCircle = document.querySelector('.circle');
+                        if (progressCircle) {
+                            progressCircle.setAttribute('stroke-dasharray', '100, 100');
+                        }
+                        
+                        // Update percentage text
+                        const percentageText = document.querySelector('.percentage');
+                        if (percentageText) {
+                            percentageText.textContent = '100%';
+                        }
+                        
+                        // Update exercises completed text
+                        const exercisesCompletedText = document.querySelector('.workout-progress p');
+                        if (exercisesCompletedText) {
+                            const totalExercises = document.querySelectorAll('.workout-list li').length;
+                            exercisesCompletedText.textContent = `${totalExercises} of ${totalExercises} exercises completed`;
+                        }
+                        
+                        // Reload the page after a short delay to get fresh data
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        // If there was an error, re-enable the button
+                        this.textContent = 'Complete Workout';
+                        this.disabled = false;
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    this.textContent = 'Complete Workout';
+                    this.disabled = false;
+                    alert('An error occurred while completing the workout');
+                });
+            });
+        }
+    });
+    </script>
     </body>
 </html>

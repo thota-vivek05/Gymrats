@@ -33,6 +33,9 @@ router.get('/userdashboard_g', isAuthenticated, (req, res) => {
 router.get('/userprofile', isAuthenticated, userController.getUserProfile);
 router.get('/userprofile/', isAuthenticated, userController.getUserProfile);
 
+router.post('/mark-workout-completed', isAuthenticated, (req, res) => {
+    userController.markWorkoutCompleted(req, res);
+});
 // For nutrition page
 router.get('/user_nutrition', isAuthenticated, (req, res) => {
     res.render('user_nutrition', { 
