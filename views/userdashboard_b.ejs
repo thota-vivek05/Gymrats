@@ -1,326 +1,493 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>GymRats - User Dashboard</title>
-        <link rel="stylesheet" type="text/css" href="/userdashboard/userdashboard.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
-    </head>
-    <body>
-<div class="main-navbar">
-    <header>
-        <!-- Header Branding -->
-        <div class="brand-logo">
-            <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>" class="brand-name">GymRats</a>
-        </div>
-        
-        <div class="nav-menu">
-            <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>" class="active">Home</a>
-            <a href="/user_exercises">Exercises</a>
-            <a href="/user_nutrition">Nutrition</a>
-        </div>
-        
-        <div class="right-container">
-            <div class="search-container">
-                <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
-                <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-            </div>
-            
-            <div class="user-profile">
-                <a href="/userprofile">
-                    <% if (user && user.full_name) { %>
-                        <span><%= user.full_name %></span>
-                    <% } else { %>
-                        <span>User</span>
-                    <% } %>
-                </a>
-            </div>
-        </div>
-        <div class="mobile-menu-icon" id="menuIcon">
-            <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
-        </div>
-        <div class="mobile-sidebar" id="sideNavbar">
-            <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
-            <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>" class="active">Home</a>
-            <a href="/user_exercises">Exercises</a>
-            <a href="/user_nutrition">Nutrition</a>
-            <div class="sidebar-profile">
-                <a href="/userprofile">
-                    <% if (user && user.full_name) { %>
-                        <span><%= user.full_name %></span>
-                    <% } else { %>
-                        <span>User</span>
-                    <% } %>
-                </a>
-            </div>
-        </div>
-    </header>
-</div>
 
-        <!-- Dashboard Hero Section -->
-        <section class="dashboard-hero">
-            <div class="dashboard-hero-content">
-                <h1>Welcome back, 
-                    <% if (user && user.name) { %>
-                        <%= user.name %>
-                    <% } else if (user && user.full_name) { %>
-                        <%= user.full_name.split(' ')[0] %>
-                    <% } else { %>
-                        User
-                    <% } %>
-                </h1>
-                <p>Track your progress and stay on top of your fitness goals</p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymRats - User Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/userdashboard/userdashboard.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+</head>
+
+<body>
+    <div class="main-navbar">
+        <header>
+            <!-- Header Branding -->
+            <div class="brand-logo">
+                <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>"
+                    class="brand-name">GymRats</a>
             </div>
-        </section>
-        
-        <!-- Dashboard Content -->
-        <div class="dashboard-container">
-            <!-- Dashboard Overview -->
-            <div class="dashboard-overview">
-                <div class="overview-card">
-                    <div class="overview-icon">
-                        <i class="fas fa-fire"></i>
-                    </div>
-                    <div class="overview-details">
-                        <h3>Today's Calories</h3>
-                        <p class="overview-value"><%= todayNutrition.calories_consumed || 0 %> / <%= (user.fitness_goals && user.fitness_goals.calorie_goal) ? user.fitness_goals.calorie_goal : 2200 %></p>
-</div>
-                </div>
-                
-                <div class="overview-card">
-                    <div class="overview-icon">
-                        <i class="fas fa-dumbbell"></i>
-                    </div>
-                    <div class="overview-details">
-                        <h3>Workouts Completed</h3>
-                        <p class="overview-value"><%= weeklyWorkouts.completed %> / <%= weeklyWorkouts.total %> this week</p>
-                    </div>
-                </div>
-                
-                <div class="overview-card">
-                    <div class="overview-icon">
-                        <i class="fas fa-utensils"></i>
-                    </div>
-                    <div class="overview-details">
-                        <h3>Protein Intake</h3>
-                        <p class="overview-value"><%= todayNutrition.protein_consumed || 0 %>g / <%= (user.fitness_goals && user.fitness_goals.protein_goal) ? user.fitness_goals.protein_goal : 90 %>g</p></div>
-                </div>
-                
-                <div class="overview-card">
-                    <div class="overview-icon">
-                        <i class="fas fa-weight"></i>
-                    </div>
-                    <div class="overview-details">
-                        <h3>Current Weight</h3>
-                        <p class="overview-value"><%= user.weight || 75 %> kg</p>
-                    </div>
-                </div>
+
+            <div class="nav-menu">
+                <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>"
+                    class="active">Home</a>
+                <a href="/user_exercises">Exercises</a>
+                <a href="/user_nutrition">Nutrition</a>
             </div>
-             
-            
-            <div class="dashboard-grid">
-                <!-- Today's Workout Section -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h2>Today's Workout: <%= todayWorkout.name || 'No Workout Scheduled' %></h2>
-                        <span class="badge"><%= todayWorkout.duration || 60 %> min</span>
-                    </div>
-                    <div class="workout-content">
-                        <% if (todayWorkout.exercises && todayWorkout.exercises.length > 0) { %>
-                            <div class="workout-progress">
-                                <div class="progress-circle">
-                                    <svg viewBox="0 0 36 36" class="circular-chart">
-                                        <path class="circle-bg" d="M18 2.0845
-                                            a 15.9155 15.9155 0 0 1 0 31.831
-                                            a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <path class="circle" stroke-dasharray="<%= todayWorkout.progress || 0 %>, 100" d="M18 2.0845
-                                            a 15.9155 15.9155 0 0 1 0 31.831
-                                            a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <text x="18" y="20.35" class="percentage"><%= todayWorkout.progress || 0 %>%</text>
-                                    </svg>
-                                </div>
-                                <p><%= todayWorkout.completedExercises %> of <%= todayWorkout.totalExercises %> exercises completed</p>
-                            </div>
-                            
-                            <h3>Exercises:</h3>
-                            <ul class="workout-list">
-                                <% todayWorkout.exercises.forEach(exercise => { %>
-                                    <li class="<%= exercise.completed ? 'completed' : '' %>">
-                                        <span class="exercise-name"><%= exercise.name %></span>
-                                        <span class="exercise-details">
-                                            <%= exercise.sets %> sets * 
-                                            <%= exercise.reps ? `${exercise.reps} reps` : `${exercise.duration} seconds` %>
-                                            <%= exercise.weight ? `(${exercise.weight} kg)` : '' %>
-                                        </span>
-                                    </li>
-                                <% }); %>
-                            </ul>
-                            
-                            <button class="workout-btn" <%= todayWorkout.completed ? 'disabled' : '' %> data-workout-id="<%= todayWorkout.workoutPlanId %>">
-                                <%= todayWorkout.completed ? 'Completed ✓' : 'Complete Workout' %>
-                            </button>
+
+            <div class="right-container">
+                <div class="search-container">
+                    <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
+                    <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                </div>
+
+                <div class="user-profile">
+                    <a href="/userprofile">
+                        <% if (user && user.full_name) { %>
+                        <span><%= user.full_name %></span>
                         <% } else { %>
-                            <p>No exercises scheduled for today.</p>
+                        <span>User</span>
                         <% } %>
-                    </div>
+                    </a>
                 </div>
+            </div>
+            <div class="mobile-menu-icon" id="menuIcon">
+                <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
+            </div>
+            <div class="mobile-sidebar" id="sideNavbar">
+                <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+                <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>"
+                    class="active">Home</a>
+                <a href="/user_exercises">Exercises</a>
+                <a href="/user_nutrition">Nutrition</a>
+                <div class="sidebar-profile">
+                    <a href="/userprofile">
+                        <% if (user && user.full_name) { %>
+                        <span><%= user.full_name %></span>
+                        <% } else { %>
+                        <span>User</span>
+                        <% } %>
+                    </a>
+                </div>
+            </div>
+        </header>
+    </div>
 
-                
+    <!-- Dashboard Hero Section -->
+    <section class="dashboard-hero">
+        <div class="dashboard-hero-content">
+            <h1>Welcome back,
+                <% if (user && user.name) { %>
+                <%= user.name %>
+                <% } else if (user && user.full_name) { %>
+                <%= user.full_name.split(' ')[0] %>
+                <% } else { %>
+                User
+                <% } %>
+            </h1>
+            <p>Track your progress and stay on top of your fitness goals</p>
+        </div>
+    </section>
 
-           
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <!-- Dashboard Overview -->
+        <div class="dashboard-overview">
+            <div class="overview-card">
+                <div class="overview-icon">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="overview-details">
+                    <h3>Today's Calories</h3>
+                    <p class="overview-value"><%= todayNutrition.calories_consumed || 0 %> /
+                        <%= (user.fitness_goals && user.fitness_goals.calorie_goal) ? user.fitness_goals.calorie_goal : 2200 %>
+                    </p>
+                </div>
+            </div>
 
-            <!-- Nutrition Section -->
-            <div class="dashboard-wide-card">
+            <div class="overview-card">
+                <div class="overview-icon">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <div class="overview-details">
+                    <h3>Workouts Completed</h3>
+                    <p class="overview-value"><%= weeklyWorkouts.completed %> / <%= weeklyWorkouts.total %> this week
+                    </p>
+                </div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="overview-details">
+                    <h3>Protein Intake</h3>
+                    <p class="overview-value"><%= todayNutrition.protein_consumed || 0 %>g /
+                        <%= (user.fitness_goals && user.fitness_goals.protein_goal) ? user.fitness_goals.protein_goal : 90 %>g
+                    </p>
+                </div>
+            </div>
+
+            <div class="overview-card">
+                <div class="overview-icon">
+                    <i class="fas fa-weight"></i>
+                </div>
+                <div class="overview-details">
+                    <h3>Current Weight</h3>
+                    <p class="overview-value"><%= user.weight || 75 %> kg</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="dashboard-grid">
+            <!-- Today's Workout Section -->
+            <!-- Today's Workout Section -->
+            <div class="dashboard-card">
                 <div class="card-header">
-                    <h2>Nutrition Tracking</h2>
-                    <span class="badge">Today</span>
+                    <h2>Today's Workout<%= todayWorkout.name ? ': ' + todayWorkout.name : '' %></h2>
+                    <span class="badge"><%= todayWorkout.duration || 60 %> min</span>
                 </div>
-                
-                <div class="nutrition-content">
-                    
-                    
-                    <div class="nutrition-recommendations">
-                        <h3>Recommended Protein Sources</h3>
-                        <div class="food-items">
-                            <div class="food-item">
-                                <div class="food-icon">
-                                    <i class="fas fa-drumstick-bite"></i>
-                                </div>
-                                <div class="food-details">
-                                    <h4>Grilled Chicken Breast</h4>
-                                    <p>31g protein per 100g</p>
-                                </div>
+                <div class="workout-content">
+                    <% if (todayWorkout.exercises && todayWorkout.exercises.length > 0) { %>
+                    <div class="workout-progress">
+                        <div class="progress-circle">
+                            <svg viewBox="0 0 36 36" class="circular-chart">
+                                <path class="circle-bg" d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="circle" stroke-dasharray="<%= todayWorkout.progress || 0 %>, 100" d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <text x="18" y="20.35" class="percentage"><%= todayWorkout.progress || 0 %>%</text>
+                            </svg>
+                        </div>
+                        <p><%= todayWorkout.completedExercises || 0 %> of <%= todayWorkout.totalExercises || 0 %>
+                            exercises completed</p>
+                    </div>
+
+                    <h3>Exercises:</h3>
+                    <ul class="workout-list">
+                        <% todayWorkout.exercises.forEach(exercise => { %>
+                        <li class="<%= exercise.completed ? 'completed' : '' %>">
+                            <span class="exercise-name"><%= exercise.name %></span>
+                            <span class="exercise-details">
+                                <%= exercise.sets ? `${exercise.sets} sets *` : '' %>
+                                <%= exercise.reps ? `${exercise.reps} reps` : (exercise.duration ? `${exercise.duration} seconds` : '') %>
+                                <%= exercise.weight ? `(${exercise.weight} kg)` : '' %>
+                            </span>
+                        </li>
+                        <% }); %>
+                    </ul>
+
+                    <button class="workout-btn" <%= todayWorkout.completed ? 'disabled' : '' %>
+                        data-workout-id="<%= todayWorkout.workoutPlanId %>">
+                        <%= todayWorkout.completed ? 'Completed ✓' : 'Complete Workout' %>
+                    </button>
+                    <% } else { %>
+                    <p>No exercises scheduled for today.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <!-- Nutrition Section -->
+        <div class="dashboard-wide-card">
+            <div class="card-header">
+                <h2>Nutrition Tracking</h2>
+                <span class="badge">Today</span>
+            </div>
+
+            <div class="nutrition-content">
+
+
+                <div class="nutrition-recommendations">
+                    <h3>Recommended Protein Sources</h3>
+                    <div class="food-items">
+                        <div class="food-item">
+                            <div class="food-icon">
+                                <i class="fas fa-drumstick-bite"></i>
                             </div>
-                            
-                            <div class="food-item">
-                                <div class="food-icon">
-                                    <i class="fas fa-egg"></i>
-                                </div>
-                                <div class="food-details">
-                                    <h4>Whole Eggs</h4>
-                                    <p>13g protein per 2 eggs</p>
-                                </div>
+                            <div class="food-details">
+                                <h4>Grilled Chicken Breast</h4>
+                                <p>31g protein per 100g</p>
                             </div>
-                            
-                            <div class="food-item">
-                                <div class="food-icon">
-                                    <i class="fas fa-seedling"></i>
-                                </div>
-                                <div class="food-details">
-                                    <h4>Tofu (Firm)</h4>
-                                    <p>20g protein per 100g</p>
-                                </div>
+                        </div>
+
+                        <div class="food-item">
+                            <div class="food-icon">
+                                <i class="fas fa-egg"></i>
                             </div>
-                            
-                            <div class="food-item">
-                                <div class="food-icon">
-                                    <i class="fas fa-fish"></i>
-                                </div>
-                                <div class="food-details">
-                                    <h4>Salmon</h4>
-                                    <p>25g protein per 100g</p>
-                                </div>
+                            <div class="food-details">
+                                <h4>Whole Eggs</h4>
+                                <p>13g protein per 2 eggs</p>
+                            </div>
+                        </div>
+
+                        <div class="food-item">
+                            <div class="food-icon">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="food-details">
+                                <h4>Tofu (Firm)</h4>
+                                <p>20g protein per 100g</p>
+                            </div>
+                        </div>
+
+                        <div class="food-item">
+                            <div class="food-icon">
+                                <i class="fas fa-fish"></i>
+                            </div>
+                            <div class="food-details">
+                                <h4>Salmon</h4>
+                                <p>25g protein per 100g</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Footer -->
-        <footer class="site-footer">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>GymRats</h3>
-                    <ul>
-                        <li><a href="/about">About Us</a></li>
-                        <li><a href="/trainers">Our Trainers</a></li>
-                        <li><a href="/testimonial">Testimonials</a></li>
-                        <li><a href="/blog">Blog</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-column">
-                    <h3>Resources</h3>
-                    <ul>
-                        <li><a href="/isolation">Exercise Guide</a></li>
-                        <li><a href="/nutrition">Nutrition Tips</a></li>
-                        <li><a href="/workout_plans">Workout Plans</a></li>
-                        <li><a href="/calculators">Calculators</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-column">
-                    <h3>Support</h3>
-                    <ul>
-                        <li><a href="/contact">Contact Us</a></li>
-                        <li><a href="/about">About us</a></li>
-                        <li><a href="/terms">Terms of Service</a></li>
-                        <li><a href="/privacy_policy">Privacy Policy</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-column">
-                    <h3>Connect With Us</h3>
-                    <ul>
-                        <li><a href="/login_signup">Become a Trainer</a></li>
-                        <li><a href="/verifier_login">Become a Verifier</a></li>
-                    </ul>
-                    <div class="social-icons">
-                        <a href="#"><img src="/userdashboard/icons8-facebook.svg" alt="Facebook"></a>
-                        <a href="#"><img src="/userdashboard/icons8-instagram.svg" alt="Instagram"></a>
-                        <a href="#"><img src="/userdashboard/icons8-youtube.svg" alt="YouTube"></a>
-                    </div>
-                    <p class="copyright">GymRats © 2025. All rights reserved.</p>
-                </div>
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>GymRats</h3>
+                <ul>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/trainers">Our Trainers</a></li>
+                    <li><a href="/testimonial">Testimonials</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                </ul>
             </div>
-        </footer>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Mobile menu toggle
-                document.getElementById('menuIcon').addEventListener('click', function() {
-                    document.getElementById('sideNavbar').classList.add('open');
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="/isolation">Exercise Guide</a></li>
+                    <li><a href="/nutrition">Nutrition Tips</a></li>
+                    <li><a href="/workout_plans">Workout Plans</a></li>
+                    <li><a href="/calculators">Calculators</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="/contact">Contact Us</a></li>
+                    <li><a href="/about">About us</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/privacy_policy">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Connect With Us</h3>
+                <ul>
+                    <li><a href="/login_signup">Become a Trainer</a></li>
+                    <li><a href="/verifier_login">Become a Verifier</a></li>
+                </ul>
+                <div class="social-icons">
+                    <a href="#"><img src="/userdashboard/icons8-facebook.svg" alt="Facebook"></a>
+                    <a href="#"><img src="/userdashboard/icons8-instagram.svg" alt="Instagram"></a>
+                    <a href="#"><img src="/userdashboard/icons8-youtube.svg" alt="YouTube"></a>
+                </div>
+                <p class="copyright">GymRats © 2025. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mobile menu toggle
+            document.getElementById('menuIcon').addEventListener('click', function () {
+                document.getElementById('sideNavbar').classList.add('open');
+            });
+
+            document.getElementById('closeBtn').addEventListener('click', function () {
+                document.getElementById('sideNavbar').classList.remove('open');
+            });
+
+            // Exercise Progress Chart
+            const exerciseCtx = document.getElementById('exerciseChart').getContext('2d');
+            const exerciseChart = new Chart(exerciseCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                    datasets: [{
+                            label: 'Bicep Curls (kg)',
+                            data: [5, 6, 7, 8, 9, 10],
+                            borderColor: '#8A2BE2',
+                            backgroundColor: 'rgba(138, 43, 226, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Deadlift (kg)',
+                            data: [60, 70, 75, 85, 95, 100],
+                            borderColor: '#32CD32',
+                            backgroundColor: 'rgba(50, 205, 50, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Bench Press (kg)',
+                            data: [40, 45, 48, 52, 55, 60],
+                            borderColor: '#FF6347',
+                            backgroundColor: 'rgba(255, 99, 71, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#f1f1f1'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Exercise Progress Over Time',
+                            color: '#f1f1f1',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#f1f1f1'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#f1f1f1'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Nutrition Chart
+            const nutritionCtx = document.getElementById('nutritionChart').getContext('2d');
+            const nutritionChart = new Chart(nutritionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Protein', 'Carbs', 'Fats'],
+                    datasets: [{
+                        data: [35, 45, 20],
+                        backgroundColor: [
+                            '#8A2BE2',
+                            '#32CD32',
+                            '#FF6347'
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#f1f1f1'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Calorie Chart
+            const calorieCtx = document.getElementById('calorieChart').getContext('2d');
+            const calorieChart = new Chart(calorieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Consumed', 'Remaining'],
+                    datasets: [{
+                        data: [1850, 350],
+                        backgroundColor: [
+                            '#8A2BE2',
+                            'rgba(255, 255, 255, 0.1)'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true
+                        }
+                    }
+                }
+            });
+
+            // Complete workout button
+            const workoutBtn = document.querySelector('.workout-btn');
+            if (workoutBtn) {
+                workoutBtn.addEventListener('click', function () {
+                    alert('Workout completed! Great job!');
+
+                    // In a real app, this would update the UI and save to a database
+                    const exercises = document.querySelectorAll('.workout-list li');
+                    exercises.forEach(exercise => {
+                        exercise.classList.add('completed');
+                    });
+
+                    // Update progress circle
+                    const circlePath = document.querySelector('.circle');
+                    circlePath.setAttribute('stroke-dasharray', '100, 100');
+
+                    const percentageText = document.querySelector('.percentage');
+                    percentageText.textContent = '100%';
+
+                    // Disable button after completion
+                    this.disabled = true;
+                    this.textContent = 'Completed ✓';
                 });
+            }
+        });
+    </script>
+    <script>
+        // Chart initialization
+        document.addEventListener('DOMContentLoaded', function () {
+            // Exercise Chart
+            const exerciseChartCtx = document.getElementById('exerciseChart');
+            if (exerciseChartCtx) {
+                const exerciseData = < % -JSON.stringify(exerciseProgress) % > ;
+                const firstExercise = exerciseData[0];
 
-                document.getElementById('closeBtn').addEventListener('click', function() {
-                    document.getElementById('sideNavbar').classList.remove('open');
-                });
-
-                // Exercise Progress Chart
-                const exerciseCtx = document.getElementById('exerciseChart').getContext('2d');
-                const exerciseChart = new Chart(exerciseCtx, {
+                // Create initial chart
+                const exerciseChart = new Chart(exerciseChartCtx, {
                     type: 'line',
                     data: {
-                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
-                        datasets: [
-                            {
-                                label: 'Bicep Curls (kg)',
-                                data: [5, 6, 7, 8, 9, 10],
-                                borderColor: '#8A2BE2',
-                                backgroundColor: 'rgba(138, 43, 226, 0.1)',
-                                tension: 0.3,
-                                fill: true
-                            },
-                            {
-                                label: 'Deadlift (kg)',
-                                data: [60, 70, 75, 85, 95, 100],
-                                borderColor: '#32CD32',
-                                backgroundColor: 'rgba(50, 205, 50, 0.1)',
-                                tension: 0.3,
-                                fill: true
-                            },
-                            {
-                                label: 'Bench Press (kg)',
-                                data: [40, 45, 48, 52, 55, 60],
-                                borderColor: '#FF6347',
-                                backgroundColor: 'rgba(255, 99, 71, 0.1)',
-                                tension: 0.3,
-                                fill: true
-                            }
-                        ]
+                        labels: firstExercise.history.map(h => h.week),
+                        datasets: [{
+                            label: firstExercise.name,
+                            data: firstExercise.history.map(h => h.weight),
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                            pointRadius: 4
+                        }]
                     },
                     options: {
                         responsive: true,
@@ -328,222 +495,72 @@
                         plugins: {
                             legend: {
                                 position: 'top',
-                                labels: {
-                                    color: '#f1f1f1'
-                                }
-                            },
-                            title: {
-                                display: true,
-                                text: 'Exercise Progress Over Time',
-                                color: '#f1f1f1',
-                                font: {
-                                    size: 16
-                                }
                             }
                         },
                         scales: {
                             y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: '#f1f1f1'
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#f1f1f1'
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
+                                beginAtZero: false,
+                                title: {
+                                    display: true,
+                                    text: 'Weight (kg)'
                                 }
                             }
                         }
                     }
                 });
 
-                // Nutrition Chart
-                const nutritionCtx = document.getElementById('nutritionChart').getContext('2d');
-                const nutritionChart = new Chart(nutritionCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Protein', 'Carbs', 'Fats'],
-                        datasets: [{
-                            data: [35, 45, 20],
-                            backgroundColor: [
-                                '#8A2BE2', 
-                                '#32CD32',
-                                '#FF6347'
-                            ],
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    color: '#f1f1f1'
-                                }
+                // Update chart on exercise selection
+                const exerciseSelect = document.getElementById('exerciseSelect');
+                if (exerciseSelect) {
+                    exerciseSelect.addEventListener('change', function () {
+                        const selectedValue = this.value;
+                        let selectedData;
+
+                        if (selectedValue === 'all') {
+                            // Show all exercises
+                            exerciseChart.data.datasets = exerciseData.map((ex, index) => {
+                                const colors = [
+                                    'rgba(54, 162, 235, 1)', // blue
+                                    'rgba(255, 99, 132, 1)', // red
+                                    'rgba(75, 192, 192, 1)' // green
+                                ];
+                                return {
+                                    label: ex.name,
+                                    data: ex.history.map(h => h.weight),
+                                    borderColor: colors[index % colors.length],
+                                    backgroundColor: colors[index % colors.length].replace('1)',
+                                        '0.2)'),
+                                    borderWidth: 2,
+                                    tension: 0.3,
+                                    pointBackgroundColor: colors[index % colors.length],
+                                    pointRadius: 4
+                                };
+                            });
+                            exerciseChart.data.labels = exerciseData[0].history.map(h => h.week);
+                        } else {
+                            // Show only selected exercise
+                            selectedData = exerciseData.find(ex => ex.name.toLowerCase().includes(
+                                selectedValue.toLowerCase()));
+                            if (selectedData) {
+                                exerciseChart.data.datasets = [{
+                                    label: selectedData.name,
+                                    data: selectedData.history.map(h => h.weight),
+                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 2,
+                                    tension: 0.3,
+                                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                                    pointRadius: 4
+                                }];
+                                exerciseChart.data.labels = selectedData.history.map(h => h.week);
                             }
                         }
-                    }
-                });
-                
-                // Calorie Chart
-                const calorieCtx = document.getElementById('calorieChart').getContext('2d');
-                const calorieChart = new Chart(calorieCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Consumed', 'Remaining'],
-                        datasets: [{
-                            data: [1850, 350],
-                            backgroundColor: [
-                                '#8A2BE2', 
-                                'rgba(255, 255, 255, 0.1)'
-                            ],
-                            borderWidth: 0,
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '75%',
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                enabled: true
-                            }
-                        }
-                    }
-                });
-                
-                // Complete workout button
-                const workoutBtn = document.querySelector('.workout-btn');
-                if (workoutBtn) {
-                    workoutBtn.addEventListener('click', function() {
-                        alert('Workout completed! Great job!');
-                        
-                        // In a real app, this would update the UI and save to a database
-                        const exercises = document.querySelectorAll('.workout-list li');
-                        exercises.forEach(exercise => {
-                            exercise.classList.add('completed');
-                        });
-                        
-                        // Update progress circle
-                        const circlePath = document.querySelector('.circle');
-                        circlePath.setAttribute('stroke-dasharray', '100, 100');
-                        
-                        const percentageText = document.querySelector('.percentage');
-                        percentageText.textContent = '100%';
-                        
-                        // Disable button after completion
-                        this.disabled = true;
-                        this.textContent = 'Completed ✓';
+                        exerciseChart.update();
                     });
                 }
-            });
-        </script>
-        <script>
-            // Chart initialization
-            document.addEventListener('DOMContentLoaded', function() {
-                // Exercise Chart
-                const exerciseChartCtx = document.getElementById('exerciseChart');
-                if (exerciseChartCtx) {
-                    const exerciseData = <%- JSON.stringify(exerciseProgress) %>;
-                    const firstExercise = exerciseData[0];
-                    
-                    // Create initial chart
-                    const exerciseChart = new Chart(exerciseChartCtx, {
-                        type: 'line',
-                        data: {
-                            labels: firstExercise.history.map(h => h.week),
-                            datasets: [{
-                                label: firstExercise.name,
-                                data: firstExercise.history.map(h => h.weight),
-                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 2,
-                                tension: 0.3,
-                                pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                                pointRadius: 4
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    position: 'top',
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: false,
-                                    title: {
-                                        display: true,
-                                        text: 'Weight (kg)'
-                                    }
-                                }
-                            }
-                        }
-                    });
-                    
-                    // Update chart on exercise selection
-                    const exerciseSelect = document.getElementById('exerciseSelect');
-                    if (exerciseSelect) {
-                        exerciseSelect.addEventListener('change', function() {
-                            const selectedValue = this.value;
-                            let selectedData;
-                            
-                            if (selectedValue === 'all') {
-                                // Show all exercises
-                                exerciseChart.data.datasets = exerciseData.map((ex, index) => {
-                                    const colors = [
-                                        'rgba(54, 162, 235, 1)', // blue
-                                        'rgba(255, 99, 132, 1)', // red
-                                        'rgba(75, 192, 192, 1)' // green
-                                    ];
-                                    return {
-                                        label: ex.name,
-                                        data: ex.history.map(h => h.weight),
-                                        borderColor: colors[index % colors.length],
-                                        backgroundColor: colors[index % colors.length].replace('1)', '0.2)'),
-                                        borderWidth: 2,
-                                        tension: 0.3,
-                                        pointBackgroundColor: colors[index % colors.length],
-                                        pointRadius: 4
-                                    };
-                                });
-                                exerciseChart.data.labels = exerciseData[0].history.map(h => h.week);
-                            } else {
-                                // Show only selected exercise
-                                selectedData = exerciseData.find(ex => ex.name.toLowerCase().includes(selectedValue.toLowerCase()));
-                                if (selectedData) {
-                                    exerciseChart.data.datasets = [{
-                                        label: selectedData.name,
-                                        data: selectedData.history.map(h => h.weight),
-                                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                        borderColor: 'rgba(54, 162, 235, 1)',
-                                        borderWidth: 2,
-                                        tension: 0.3,
-                                        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                                        pointRadius: 4
-                                    }];
-                                    exerciseChart.data.labels = selectedData.history.map(h => h.week);
-                                }
-                            }
-                            exerciseChart.update();
-                        });
-                    }
-                }
-            });
-        </script>
-    </body>
+            }
+        });
+    </script>
+</body>
+
 </html>
