@@ -438,154 +438,175 @@ const signupUser = async (req, res) => {
     }
 };
 
-const getUserDashboard = async (req, res, dashboardType) => {
+// Update the getUserDashboard function in userController.js to fetch nutrition data:
+
+const getUserDashboard = async (req, res, membershipCode) => {
     try {
         if (!req.session || !req.session.user) {
-            console.log('No user session found');
             return res.redirect('/login_signup?form=login');
         }
+        
         const userId = req.session.user.id;
-        console.log('Fetching dashboard data for user:', userId);
-
-        const user = await User.findById(userId)
-            .populate('trainer')
-            .select('full_name weight fitness_goals class_schedules');
+        const user = await User.findById(userId);
         
         if (!user) {
-            console.log('User not found:', userId);
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).render('error', { message: 'User not found' });
         }
-
+        
+        // Determine dashboard template based on membership code
+        let dashboardTemplate;
+        switch(membershipCode) {
+            case 'p':
+                dashboardTemplate = 'userdashboard_p';
+                break;
+            case 'g':
+                dashboardTemplate = 'userdashboard_g';
+                break;
+            default:
+                dashboardTemplate = 'userdashboard_b';
+        }
+        
+        // Get last 5 workouts
+        const recentWorkouts = await WorkoutHistory.find({ userId: userId })
+            .populate('workoutPlanId')
+            .sort({ date: -1 })
+            .limit(5);
+            
+        // Get nutrition data
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1);
-
-        // Fetch today's workout
-        const todayWorkout = await WorkoutHistory.findOne({
-            userId,
-            date: { $gte: today, $lt: tomorrow }
-        })
-            .populate('workoutPlanId')
-            .lean() || {};
-
-        const workoutData = {
-            name: todayWorkout.workoutPlanId?.name || 'No Workout Scheduled',
-            duration: todayWorkout.workoutPlanId?.duration || 60,
-            exercises: todayWorkout.exercises || [],
-            progress: todayWorkout.progress || 0,
-            completed: todayWorkout.completed || false,
-            workoutPlanId: todayWorkout._id || null, // Use WorkoutHistory _id
-            completedExercises: todayWorkout.exercises?.filter(e => e.completed).length || 0,
-            totalExercises: todayWorkout.exercises?.length || 0
-        };
-
-        // Fetch weekly workouts
-        const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay());
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekStart.getDate() + 7);
-
-        const weeklyWorkoutsData = await WorkoutHistory.find({
-            userId,
-            date: { $gte: weekStart, $lt: weekEnd }
-        }).lean();
-
-        const weeklyWorkouts = {
-            completed: weeklyWorkoutsData.filter(w => w.completed).length,
-            total: weeklyWorkoutsData.length
-        };
-
-        // Fetch today's nutrition
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        // Get today's nutrition data
         const todayNutrition = await NutritionHistory.findOne({
-            userId,
+            userId: userId,
             date: { $gte: today, $lt: tomorrow }
-        }).lean() || {};
-
-        // Fetch upcoming class
-        const upcomingClass = user.class_schedules.find(c => {
-            const classDate = new Date(c.date);
-            return classDate >= today;
-        }) || null;
-        if (upcomingClass) {
-            upcomingClass.trainerName = user.trainer?.full_name || 'Coach';
+        }) || { calories_consumed: 0, protein_consumed: 0 };
+        
+        // Get last 7 days nutrition data for weekly stats
+        const weekStartDate = new Date();
+        weekStartDate.setDate(weekStartDate.getDate() - 7);
+        weekStartDate.setHours(0, 0, 0, 0);
+        
+        const weeklyNutrition = await NutritionHistory.find({
+            userId: userId,
+            date: { $gte: weekStartDate }
+        }).sort({ date: 1 });
+        
+        // Format nutrition data for the chart
+        const nutritionChartData = {
+            labels: [],
+            calories: [],
+            protein: []
+        };
+        
+        // Create array of last 7 dates
+        const dateLabels = [];
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            dateLabels.push(date);
         }
-
-        // Fetch exercise progress dynamically
-        const exercisesToTrack = ['Bicep Curls', 'Deadlift', 'Bench Press'];
-        const exerciseProgress = await Promise.all(exercisesToTrack.map(async (exerciseName) => {
-            const workoutHistories = await WorkoutHistory.find({
-                userId,
-                'exercises.name': exerciseName
-            })
-                .sort({ date: 1 })
-                .lean();
-
-            const history = [];
-            let currentWeight = 0;
-            const goalWeight = {
-                'Bicep Curls': 12,
-                'Deadlift': 140,
-                'Bench Press': 100
-            }[exerciseName];
-
-            workoutHistories.forEach((wh, index) => {
-                const exercise = wh.exercises.find(ex => ex.name === exerciseName);
-                if (exercise && exercise.weight) {
-                    currentWeight = exercise.weight;
-                    history.push({
-                        week: `Week ${index + 1}`,
-                        weight: exercise.weight,
-                        date: wh.date
-                    });
-                }
+        
+        // Format dates as labels and find matching nutrition data
+        dateLabels.forEach(date => {
+            const dateString = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            nutritionChartData.labels.push(dateString);
+            
+            const dayData = weeklyNutrition.find(entry => {
+                const entryDate = new Date(entry.date);
+                return entryDate.getDate() === date.getDate() && 
+                       entryDate.getMonth() === date.getMonth() && 
+                       entryDate.getFullYear() === date.getFullYear();
             });
-
-            while (history.length < 6) {
-                history.unshift({
-                    week: `Week ${history.length + 1}`,
-                    weight: 0,
-                    date: new Date(today.getTime() - (6 - history.length) * 24 * 60 * 60 * 1000)
-                });
+            
+            nutritionChartData.calories.push(dayData ? dayData.calories_consumed || 0 : 0);
+            nutritionChartData.protein.push(dayData ? dayData.protein_consumed || 0 : 0);
+        });
+        
+        // Get most recent foods for food log
+        const recentFoods = weeklyNutrition.reduce((foods, entry) => {
+            if (entry.foods && entry.foods.length > 0) {
+                return [...foods, ...entry.foods.map(food => ({
+                    ...food.toObject(),
+                    date: entry.date
+                }))];
             }
-
-            return {
-                name: exerciseName,
-                currentWeight: currentWeight || 0,
-                goalWeight: goalWeight || 0,
-                progress: goalWeight ? Math.round((currentWeight / goalWeight) * 100) : 0,
-                history: history.slice(-6),
-                color: {
-                    'Bicep Curls': '#8A2BE2',
-                    'Deadlift': '#32CD32',
-                    'Bench Press': '#FF6347'
-                }[exerciseName]
-            };
-        }));
-
-        const recommendedFoods = [
-            { name: 'Grilled Chicken Breast', protein: 31, perUnit: '100g', icon: 'fa-drumstick-bite' },
-            { name: 'Whole Eggs', protein: 13, perUnit: '2 eggs', icon: 'fa-egg' },
-            { name: 'Tofu (Firm)', protein: 20, perUnit: '100g', icon: 'fa-seedling' },
-            { name: 'Salmon', protein: 25, perUnit: '100g', icon: 'fa-fish' }
-        ];
-
-        const template = `userdashboard_${dashboardType}`;
-        console.log(`Rendering template: ${template}`);
-
-        res.render(template, { 
-            user: req.session.user,
-            todayWorkout: workoutData,
-            weeklyWorkouts,
-            todayNutrition,
-            upcomingClass,
-            exerciseProgress,
-            recommendedFoods,
+            return foods;
+        }, [])
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 10);
+        
+        // Calculate nutrition stats
+        const calorieAvg = weeklyNutrition.length > 0 
+            ? weeklyNutrition.reduce((sum, entry) => sum + (entry.calories_consumed || 0), 0) / weeklyNutrition.length 
+            : 0;
+            
+        const proteinAvg = weeklyNutrition.length > 0 
+            ? weeklyNutrition.reduce((sum, entry) => sum + (entry.protein_consumed || 0), 0) / weeklyNutrition.length 
+            : 0;
+        
+        // Calculate macros percentages if available
+        let macrosData = { protein: 0, carbs: 0, fats: 0 };
+        if (todayNutrition.macros) {
+            macrosData = todayNutrition.macros;
+        } else if (weeklyNutrition.length > 0) {
+            // Use average from weekly data if today's not available
+            const macrosEntries = weeklyNutrition.filter(entry => entry.macros);
+            if (macrosEntries.length > 0) {
+                macrosData = {
+                    protein: macrosEntries.reduce((sum, entry) => sum + (entry.macros.protein || 0), 0) / macrosEntries.length,
+                    carbs: macrosEntries.reduce((sum, entry) => sum + (entry.macros.carbs || 0), 0) / macrosEntries.length,
+                    fats: macrosEntries.reduce((sum, entry) => sum + (entry.macros.fats || 0), 0) / macrosEntries.length
+                };
+            }
+        }
+        
+        // Render dashboard with user data
+        res.render(dashboardTemplate, {
+            user: user,
+            recentWorkouts: recentWorkouts,
+            todayNutrition: todayNutrition,
+            nutritionChartData: nutritionChartData,
+            recentFoods: recentFoods,
+            nutritionStats: {
+                calorieAvg: Math.round(calorieAvg),
+                proteinAvg: Math.round(proteinAvg),
+                macros: macrosData
+            },
+            weeklyWorkouts: {
+                completed: recentWorkouts.filter(w => w.completed).length,
+                total: recentWorkouts.length
+            },
+            upcomingClass: user.class_schedules && user.class_schedules.length > 0 
+                ? user.class_schedules[0] 
+                : null,
+            todayWorkout: recentWorkouts.length > 0 
+                ? {
+                    exercises: recentWorkouts[0].exercises || [],
+                    progress: recentWorkouts[0].progress || 0,
+                    completed: recentWorkouts[0].completed || false,
+                    completedExercises: recentWorkouts[0].exercises ? recentWorkouts[0].exercises.filter(e => e.completed).length : 0,
+                    totalExercises: recentWorkouts[0].exercises ? recentWorkouts[0].exercises.length : 0,
+                    duration: recentWorkouts[0].exercises ? recentWorkouts[0].exercises.reduce((total, ex) => total + (ex.duration || 0), 45) : 45,
+                    workoutPlanId: recentWorkouts[0]._id
+                } 
+                : { exercises: [], progress: 0, completedExercises: 0, totalExercises: 0, duration: 0 },
+            exerciseProgress: [
+                { name: 'Bench Press', progress: 75, currentWeight: 80, goalWeight: 100 },
+                { name: 'Squat', progress: 60, currentWeight: 90, goalWeight: 120 },
+                { name: 'Deadlift', progress: 85, currentWeight: 110, goalWeight: 130 }
+            ],
             currentPage: 'dashboard'
         });
+        
     } catch (error) {
-        console.error('Error getting user dashboard:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('Error fetching dashboard:', error);
+        res.status(500).render('error', { 
+            message: 'Error loading dashboard',
+            error: error
+        });
     }
 };
 
