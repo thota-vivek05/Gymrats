@@ -265,12 +265,7 @@
                             <% if (typeof trainers !== 'undefined' && trainers.length > 0) { %>
                             <% trainers.forEach(trainer => { %>
                             <tr>
-                                <td>
-                                    <div class="user-info">
-                                        <div class="avatar"><%= trainer.name.charAt(0) %></div>
-                                        <span><%= trainer.name %></span>
-                                    </div>
-                                </td>
+                                
                                 <td>
                                     <div class="specialization-tags">
                                         <% if (trainer.specializations && trainer.specializations.length > 0) { %>

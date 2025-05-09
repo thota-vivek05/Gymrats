@@ -1,3 +1,4 @@
+// Import dependencies
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
@@ -14,6 +15,7 @@ router.delete('/users/:id', adminController.deleteUser);
 
 // Trainer Routes
 router.get('/trainers', adminController.getTrainers);
+router.get('/api/trainers', adminController.getTrainersApi); // New API endpoint for dynamic fetching
 router.post('/trainers', adminController.createTrainer);
 router.put('/trainers/:id', adminController.updateTrainer);
 router.delete('/trainers/:id', adminController.deleteTrainer);

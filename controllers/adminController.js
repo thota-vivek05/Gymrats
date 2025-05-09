@@ -14,35 +14,16 @@ const adminController = {
   // Dashboard
   getDashboard: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.redirect('/admin_login');
       }
-
-      // Get counts from database
       const userCount = await User.countDocuments();
       const activeMembers = await User.countDocuments({ status: 'Active' });
       const trainerCount = await Trainer.countDocuments();
       const verifierCount = await Verifier.countDocuments();
-      
-      // Fetch recent users (limited to 5)
-      const users = await User.find()
-        .sort({ created_at: -1 })
-        .limit(5)
-        .select('full_name email status membershipType created_at');
-      
-      // Fetch recent trainers (limited to 5)
-      const trainers = await Trainer.find()
-        .sort({ createdAt: -1 })
-        .limit(5)
-        .select('name specializations experience status email');
-      
-      // Fetch recent verifiers (limited to 5)
-      const verifiers = await Verifier.find()
-        .sort({ createdAt: -1 })
-        .limit(5)
-        .select('name');
-      
+      const users = await User.find().sort({ created_at: -1 }).limit(5).select('full_name email status membershipType created_at');
+      const trainers = await Trainer.find().sort({ createdAt: -1 }).limit(5).select('name specializations experience status email');
+      const verifiers = await Verifier.find().sort({ createdAt: -1 }).limit(5).select('name');
       res.render('admin_dashboard', {
         pageTitle: 'Admin Dashboard',
         user: req.session.user || null,
@@ -71,11 +52,9 @@ const adminController = {
   // User Management
   getUsers: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.redirect('/admin_login');
       }
-
       const users = await User.find().sort({ created_at: -1 });
       const userCount = await User.countDocuments();
       const activeMembers = await User.countDocuments({ status: 'Active' });
@@ -83,7 +62,6 @@ const adminController = {
       const newSignups = await User.countDocuments({ 
         created_at: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
       });
-      
       res.render('admin_user', {
         pageTitle: 'User Management',
         user: req.session.user || null,
@@ -105,35 +83,22 @@ const adminController = {
     }
   },
 
-  // Create User
   createUser: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-
       const { fullName, email, password, dob, gender, phone, status, membershipType, weight, height } = req.body;
-
-      // Validate required fields
       if (!fullName || !email || !password || !dob || !gender || !phone || !weight || !height) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
       }
-
-      // Check if email already exists
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({ success: false, message: 'Email already in use' });
       }
-
-      // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Calculate BMI
       const heightInMeters = Number(height) / 100;
       const bmi = heightInMeters > 0 ? (Number(weight) / (heightInMeters * heightInMeters)).toFixed(2) : null;
-
-      // Create new user
       const newUser = new User({
         full_name: fullName,
         email,
@@ -148,7 +113,6 @@ const adminController = {
         membershipType: membershipType || 'Basic',
         created_at: new Date()
       });
-
       await newUser.save();
       res.status(201).json({ success: true, message: 'User created successfully', user: newUser });
     } catch (error) {
@@ -157,25 +121,18 @@ const adminController = {
     }
   },
 
-  // Update User
   updateUser: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-
       const userId = req.params.id;
       const { fullName, email, dob, gender, phone, weight, height, status, membershipType } = req.body;
-
-      // Calculate BMI if weight and height provided
       let bmi = null;
       if (weight && height) {
         const heightInMeters = Number(height) / 100;
         bmi = heightInMeters > 0 ? (Number(weight) / (heightInMeters * heightInMeters)).toFixed(2) : null;
       }
-
-      // Find and update user
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         {
@@ -192,11 +149,9 @@ const adminController = {
         },
         { new: true }
       );
-
       if (!updatedUser) {
         return res.status(404).json({ success: false, message: 'User not found' });
       }
-
       res.status(200).json({ success: true, message: 'User updated successfully', user: updatedUser });
     } catch (error) {
       console.error('Update user error:', error);
@@ -204,27 +159,18 @@ const adminController = {
     }
   },
 
-  // Delete User
   deleteUser: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-
       const userId = req.params.id;
-
-      // Find and delete user
       const deletedUser = await User.findByIdAndDelete(userId);
-
       if (!deletedUser) {
         return res.status(404).json({ success: false, message: 'User not found' });
       }
-
-      // Also delete related data
       await WorkoutHistory.deleteMany({ userId });
       await NutritionHistory.deleteMany({ userId });
-
       res.status(200).json({ success: true, message: 'User deleted successfully' });
     } catch (error) {
       console.error('Delete user error:', error);
@@ -235,15 +181,12 @@ const adminController = {
   // Trainer Management
   getTrainers: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.redirect('/admin_login');
       }
-
       const trainers = await Trainer.find().sort({ createdAt: -1 });
       const trainerCount = await Trainer.countDocuments();
       const pendingApprovals = await TrainerApplication.countDocuments({ status: 'Pending' });
-      
       res.render('admin_trainers', {
         pageTitle: 'Trainer Management',
         user: req.session.user || null,
@@ -263,31 +206,45 @@ const adminController = {
     }
   },
 
-  // Create Trainer
-  createTrainer: async (req, res) => {
+  // New API endpoint to fetch trainers dynamically
+  getTrainersApi: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
+      const { search } = req.query; // Allow search query parameter
+      let query = {};
+      if (search) {
+        query = {
+          $or: [
+            { name: { $regex: search, $options: 'i' } },
+            { email: { $regex: search, $options: 'i' } },
+            { specializations: { $regex: search, $options: 'i' } }
+          ]
+        };
+      }
+      const trainers = await Trainer.find(query).sort({ createdAt: -1 }).select('name email specializations experience status');
+      res.status(200).json({ success: true, trainers });
+    } catch (error) {
+      console.error('Get trainers API error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
 
+  createTrainer: async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
       const { name, email, password, phone, experience, specializations } = req.body;
-
-      // Validate required fields
       if (!name || !email || !password || !phone || !experience) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
       }
-
-      // Check if email already exists
       const existingTrainer = await Trainer.findOne({ email });
       if (existingTrainer) {
         return res.status(400).json({ success: false, message: 'Email already in use' });
       }
-
-      // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Create new trainer
       const newTrainer = new Trainer({
         name,
         email,
@@ -298,7 +255,6 @@ const adminController = {
         status: 'Active',
         createdAt: new Date()
       });
-
       await newTrainer.save();
       res.status(201).json({ success: true, message: 'Trainer created successfully', trainer: newTrainer });
     } catch (error) {
@@ -307,18 +263,13 @@ const adminController = {
     }
   },
 
-  // Update Trainer
   updateTrainer: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-
       const trainerId = req.params.id;
       const { name, email, phone, experience, specializations, status } = req.body;
-
-      // Find and update trainer
       const updatedTrainer = await Trainer.findByIdAndUpdate(
         trainerId,
         {
@@ -332,11 +283,9 @@ const adminController = {
         },
         { new: true }
       );
-
       if (!updatedTrainer) {
         return res.status(404).json({ success: false, message: 'Trainer not found' });
       }
-
       res.status(200).json({ success: true, message: 'Trainer updated successfully', trainer: updatedTrainer });
     } catch (error) {
       console.error('Update trainer error:', error);
@@ -344,29 +293,20 @@ const adminController = {
     }
   },
 
-  // Delete Trainer
   deleteTrainer: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-
       const trainerId = req.params.id;
-
-      // Find and delete trainer
       const deletedTrainer = await Trainer.findByIdAndDelete(trainerId);
-
       if (!deletedTrainer) {
         return res.status(404).json({ success: false, message: 'Trainer not found' });
       }
-
-      // Update users who had this trainer
       await User.updateMany(
         { trainer: trainerId },
         { $set: { trainer: null } }
       );
-
       res.status(200).json({ success: true, message: 'Trainer deleted successfully' });
     } catch (error) {
       console.error('Delete trainer error:', error);
@@ -374,17 +314,13 @@ const adminController = {
     }
   },
 
-  // Verifier Management
   getVerifiers: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.redirect('/admin_login');
       }
-
       const verifiers = await Verifier.find().sort({ createdAt: -1 });
       const verifierCount = await Verifier.countDocuments();
-      
       res.render('admin_verifier', {
         pageTitle: 'Verifier Management',
         user: req.session.user || null,
@@ -403,31 +339,20 @@ const adminController = {
     }
   },
 
-  // Create Verifier
   createVerifier: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-
       const { name, email, phone, password, experienceYears } = req.body;
-
-      // Validate required fields
       if (!name || !email || !password || !experienceYears) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
       }
-
-      // Check if email already exists
       const existingVerifier = await Verifier.findOne({ email });
       if (existingVerifier) {
         return res.status(400).json({ success: false, message: 'Email already in use' });
       }
-
-      // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Create new verifier
       const newVerifier = new Verifier({
         name,
         email,
@@ -435,7 +360,6 @@ const adminController = {
         password: hashedPassword,
         experienceYears: Number(experienceYears)
       });
-
       await newVerifier.save();
       res.status(201).json({ success: true, message: 'Verifier created successfully', verifier: newVerifier });
     } catch (error) {
@@ -444,18 +368,13 @@ const adminController = {
     }
   },
 
-  // Update Verifier
   updateVerifier: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-
       const verifierId = req.params.id;
       const { name, email, phone, experienceYears } = req.body;
-
-      // Find and update verifier
       const updatedVerifier = await Verifier.findByIdAndUpdate(
         verifierId,
         {
@@ -466,11 +385,9 @@ const adminController = {
         },
         { new: true }
       );
-
       if (!updatedVerifier) {
         return res.status(404).json({ success: false, message: 'Verifier not found' });
       }
-
       res.status(200).json({ success: true, message: 'Verifier updated successfully', verifier: updatedVerifier });
     } catch (error) {
       console.error('Update verifier error:', error);
@@ -478,29 +395,20 @@ const adminController = {
     }
   },
 
-  // Delete Verifier
   deleteVerifier: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-
       const verifierId = req.params.id;
-
-      // Find and delete verifier
       const deletedVerifier = await Verifier.findByIdAndDelete(verifierId);
-
       if (!deletedVerifier) {
         return res.status(404).json({ success: false, message: 'Verifier not found' });
       }
-
-      // Update trainers who had this verifier
       await Trainer.updateMany(
         { verifierId },
         { $set: { verifierId: null } }
       );
-
       res.status(200).json({ success: true, message: 'Verifier deleted successfully' });
     } catch (error) {
       console.error('Delete verifier error:', error);
@@ -508,18 +416,12 @@ const adminController = {
     }
   },
 
-  // Membership Management
   getMemberships: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.redirect('/admin_login');
       }
-
-      const memberships = await Membership.find()
-        .sort({ createdAt: -1 })
-        .populate('user_id', 'full_name email');
-      
+      const memberships = await Membership.find().sort({ createdAt: -1 }).populate('user_id', 'full_name email');
       res.render('admin_membership', {
         pageTitle: 'Membership Management',
         user: req.session.user || null,
@@ -535,28 +437,19 @@ const adminController = {
     }
   },
 
-  // Create Membership
   createMembership: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-
       const { userId, type, startDate, endDate, price } = req.body;
-
-      // Validate required fields
       if (!userId || !type || !startDate || !endDate || !price) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
       }
-
-      // Check if user exists
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ success: false, message: 'User not found' });
       }
-
-      // Create new membership
       const newMembership = new Membership({
         user_id: userId,
         type,
@@ -565,12 +458,8 @@ const adminController = {
         price: Number(price),
         status: 'Active'
       });
-
       await newMembership.save();
-
-      // Update user membership type
       await User.findByIdAndUpdate(userId, { membershipType: type });
-
       res.status(201).json({ success: true, message: 'Membership created successfully', membership: newMembership });
     } catch (error) {
       console.error('Create membership error:', error);
@@ -578,18 +467,13 @@ const adminController = {
     }
   },
 
-  // Update Membership
   updateMembership: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-
       const membershipId = req.params.id;
       const { type, startDate, endDate, price, status } = req.body;
-
-      // Find and update membership
       const updatedMembership = await Membership.findByIdAndUpdate(
         membershipId,
         {
@@ -601,16 +485,12 @@ const adminController = {
         },
         { new: true }
       );
-
       if (!updatedMembership) {
         return res.status(404).json({ success: false, message: 'Membership not found' });
       }
-
-      // Update user membership type if active
       if (status === 'Active') {
         await User.findByIdAndUpdate(updatedMembership.user_id, { membershipType: type });
       }
-
       res.status(200).json({ success: true, message: 'Membership updated successfully', membership: updatedMembership });
     } catch (error) {
       console.error('Update membership error:', error);
@@ -618,28 +498,18 @@ const adminController = {
     }
   },
 
-  // Delete Membership
   deleteMembership: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-
       const membershipId = req.params.id;
-
-      // Find membership before deletion
       const membership = await Membership.findById(membershipId);
       if (!membership) {
         return res.status(404).json({ success: false, message: 'Membership not found' });
       }
-
-      // Delete membership
       await Membership.findByIdAndDelete(membershipId);
-
-      // Update user membership type to Basic
       await User.findByIdAndUpdate(membership.user_id, { membershipType: 'Basic' });
-
       res.status(200).json({ success: true, message: 'Membership deleted successfully' });
     } catch (error) {
       console.error('Delete membership error:', error);
@@ -647,19 +517,12 @@ const adminController = {
     }
   },
 
-  // Nutrition Plan Management
   getNutritionPlans: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.redirect('/admin_login');
       }
-
-      const nutritionPlans = await NutritionPlan.find()
-        .sort({ createdAt: -1 })
-        .populate('creator', 'name')
-        .populate('userId', 'full_name');
-      
+      const nutritionPlans = await NutritionPlan.find().sort({ createdAt: -1 }).populate('creator', 'name').populate('userId', 'full_name');
       res.render('admin_nutrition', {
         pageTitle: 'Nutrition Plans',
         user: req.session.user || null,
@@ -675,10 +538,8 @@ const adminController = {
     }
   },
 
-  // Create Nutrition Plan
   createNutritionPlan: async (req, res) => {
     try {
-      // Implementation for creating nutrition plan
       res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
       console.error('Create nutrition plan error:', error);
@@ -686,10 +547,8 @@ const adminController = {
     }
   },
 
-  // Update Nutrition Plan
   updateNutritionPlan: async (req, res) => {
     try {
-      // Implementation for updating nutrition plan
       res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
       console.error('Update nutrition plan error:', error);
@@ -697,10 +556,8 @@ const adminController = {
     }
   },
 
-  // Delete Nutrition Plan
   deleteNutritionPlan: async (req, res) => {
     try {
-      // Implementation for deleting nutrition plan
       res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
       console.error('Delete nutrition plan error:', error);
@@ -708,16 +565,12 @@ const adminController = {
     }
   },
 
-  // Exercise Management
   getExercises: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.redirect('/admin_login');
       }
-
       const exercises = await Exercise.find().sort({ name: 1 });
-      
       res.render('admin_exercises', {
         pageTitle: 'Exercise Library',
         user: req.session.user || null,
@@ -733,10 +586,8 @@ const adminController = {
     }
   },
 
-  // Create Exercise
   createExercise: async (req, res) => {
     try {
-      // Implementation for creating exercise
       res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
       console.error('Create exercise error:', error);
@@ -744,10 +595,8 @@ const adminController = {
     }
   },
 
-  // Update Exercise
   updateExercise: async (req, res) => {
     try {
-      // Implementation for updating exercise
       res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
       console.error('Update exercise error:', error);
@@ -755,10 +604,8 @@ const adminController = {
     }
   },
 
-  // Delete Exercise
   deleteExercise: async (req, res) => {
     try {
-      // Implementation for deleting exercise
       res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
       console.error('Delete exercise error:', error);
@@ -766,19 +613,12 @@ const adminController = {
     }
   },
 
-  // Workout Plan Management
   getWorkoutPlans: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.redirect('/admin_login');
       }
-
-      const workoutPlans = await WorkoutPlan.find()
-        .sort({ createdAt: -1 })
-        .populate('creator', 'name')
-        .populate('userId', 'full_name');
-      
+      const workoutPlans = await WorkoutPlan.find().sort({ createdAt: -1 }).populate('creator', 'name').populate('userId', 'full_name');
       res.render('admin_workouts', {
         pageTitle: 'Workout Plans',
         user: req.session.user || null,
@@ -794,10 +634,8 @@ const adminController = {
     }
   },
 
-  // Create Workout Plan
   createWorkoutPlan: async (req, res) => {
     try {
-      // Implementation for creating workout plan
       res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
       console.error('Create workout plan error:', error);
@@ -805,10 +643,8 @@ const adminController = {
     }
   },
 
-  // Update Workout Plan
   updateWorkoutPlan: async (req, res) => {
     try {
-      // Implementation for updating workout plan
       res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
       console.error('Update workout plan error:', error);
@@ -816,10 +652,8 @@ const adminController = {
     }
   },
 
-  // Delete Workout Plan
   deleteWorkoutPlan: async (req, res) => {
     try {
-      // Implementation for deleting workout plan
       res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
       console.error('Delete workout plan error:', error);
@@ -827,14 +661,11 @@ const adminController = {
     }
   },
 
-  // Settings
   getSettings: async (req, res) => {
     try {
-      // Authentication check
       if (!req.session.userId) {
         return res.redirect('/admin_login');
       }
-      
       res.render('admin_settings', {
         pageTitle: 'Admin Settings',
         user: req.session.user || null
@@ -848,10 +679,8 @@ const adminController = {
     }
   },
 
-  // Update Settings
   updateSettings: async (req, res) => {
     try {
-      // Implementation for updating settings
       res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
       console.error('Update settings error:', error);
