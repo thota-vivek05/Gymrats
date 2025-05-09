@@ -260,12 +260,39 @@ const renderTrainerDashboard = async (req, res) => {
             };
         });
 
+        // Fetch nutrition data for the selected client (first client by default)
+        let selectedClient = clients.length > 0 ? clients[0] : null;
+        let nutritionData = null;
+        let workoutData = null;
+
+        if (selectedClient) {
+            // Simulate a request to getNutritionData
+            const nutritionReq = { params: { userId: selectedClient.id }, session: req.session };
+            const nutritionRes = {
+                json: (data) => { nutritionData = data; },
+                status: (code) => ({
+                    json: (data) => { throw new Error(data.error); }
+                })
+            };
+            await getNutritionData(nutritionReq, nutritionRes);
+
+            // Simulate a request to getWorkoutData
+            const workoutReq = { params: { userId: selectedClient.id }, session: req.session };
+            const workoutRes = {
+                json: (data) => { workoutData = data; },
+                status: (code) => ({
+                    json: (data) => { throw new Error(data.error); }
+                })
+            };
+            await getWorkoutData(workoutReq, workoutRes);
+        }
+
         res.render('trainer', {
             trainer: req.session.trainer,
             clients,
-            selectedClient: clients.length > 0 ? clients[0] : null,
-            workoutData: null,
-            nutritionData: null
+            selectedClient,
+            workoutData,
+            nutritionData
         });
     } catch (error) {
         console.error('Error rendering trainer dashboard:', error);
