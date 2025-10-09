@@ -815,6 +815,31 @@ input:focus {
     transition: opacity 0.3s ease;
 }
 
+
+.logout-container {
+    display: flex;
+    align-items: center;
+}
+
+.logout-container a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #8A2BE2;
+    padding: 6px 14px;
+    border-radius: 30px;
+    transition: 0.3s all ease;
+}
+
+.logout-container a:hover {
+    background-color: #8A2BE2;
+}
+
+.logout-container a.active {
+    background-color: #8A2BE2;
+}
+
+
 .modal.active {
     display: block;
     opacity: 1;

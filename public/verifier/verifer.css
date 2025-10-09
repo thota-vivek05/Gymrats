@@ -177,6 +177,42 @@ body {
     flex-direction: column;
 }
 
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #333;
+    border-radius: 5px;
+}
+
+.btn-approve {
+    background-color: #8A2BE2;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-approve:hover {
+    background-color: #333;
+}
+
+.btn-reject {
+    background-color: #8A2BE2;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-reject:hover {
+    background-color: #333;
+}
+
 /* Top Navbar */
 .top-navbar {
     height: 70px;

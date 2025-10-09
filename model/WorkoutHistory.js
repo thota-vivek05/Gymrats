@@ -53,7 +53,7 @@ const workoutHistorySchema = new mongoose.Schema({
     completed: { 
         type: Boolean, 
         default: false 
-    }   
+    }
 });
 
 module.exports = mongoose.model('WorkoutHistory', workoutHistorySchema);

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
 </head>
+
 <body>
     <div class="container">
         <!-- Sidebar Navigation -->
@@ -197,11 +199,12 @@
                 </div>
             </div>
 
-            <!-- Recent Activity Section -->
+            <!-- User Activity Section -->
+            <!-- User Activity Section -->
             <div class="section">
                 <div class="section-header">
-                    <h3 class="section-title">Recent User Activity</h3>
-                    <button class="btn">View All</button>
+                    <h3 class="section-title">User Activity</h3>
+                    <a href="/admin_user" class="view-all">View All</a>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -209,198 +212,131 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Activity</th>
-                                <th>Date</th>
                                 <th>Status</th>
-                                <th>Action</th>
+                                <th>Membership</th>
+                                <th>Registration Date</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <% if (typeof users !== 'undefined' && users.length > 0) { %>
+                            <% users.forEach(user => { %>
                             <tr>
-                                <td>John Mitchell</td>
-                                <td>john.mitchell@email.com</td>
-                                <td>Purchased Platinum Plan</td>
-                                <td>Today, 10:30 AM</td>
-                                <td><span class="status active">Active</span></td>
                                 <td>
-                                    <button class="action-btn">View</button>
+                                    <div class="user-info">
+                                        <div class="avatar"><%= user.full_name.charAt(0) %></div>
+                                        <span><%= user.full_name %></span>
+                                    </div>
                                 </td>
+                                <td><%= user.email %></td>
+                                <td><span class="status <%= user.status.toLowerCase() %>"><%= user.status %></span></td>
+                                <td><%= user.membershipType %></td>
+                                <td><%= new Date(user.created_at).toLocaleDateString() %></td>
                             </tr>
+                            <% }); %>
+                            <% } else { %>
                             <tr>
-                                <td>Sarah Davis</td>
-                                <td>sarah.davis@email.com</td>
-                                <td>Updated Profile</td>
-                                <td>Today, 9:15 AM</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                </td>
+                                <td colspan="5" class="no-data">No users found</td>
                             </tr>
-                            <tr>
-                                <td>Michael Johnson</td>
-                                <td>michael.j@email.com</td>
-                                <td>Logged Workout</td>
-                                <td>Yesterday, 5:30 PM</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Emma Wilson</td>
-                                <td>emma.w@email.com</td>
-                                <td>Cancelled Membership</td>
-                                <td>Yesterday, 3:45 PM</td>
-                                <td><span class="status inactive">Inactive</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Robert Brown</td>
-                                <td>robert.b@email.com</td>
-                                <td>Purchased Gold Plan</td>
-                                <td>Aug 12, 2023</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                </td>
-                            </tr>
+                            <% } %>
                         </tbody>
                     </table>
                 </div>
+
             </div>
 
-            <!-- New Trainers Section -->
+            <!-- Trainer Activity Section -->
             <div class="section">
                 <div class="section-header">
-                    <h3 class="section-title">New Trainers</h3>
-                    <button class="btn">View All</button>
+                    <h3 class="section-title">Trainer Activity</h3>
+                    <a href="/admin_trainers" class="view-all">View All</a>
                 </div>
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Specialty</th>
+                                <th>Trainer</th>
+                                <th>Specializations</th>
                                 <th>Experience</th>
                                 <th>Status</th>
-                                <th>Join Date</th>
-                                <th>Action</th>
+                                <th>Email</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <% if (typeof trainers !== 'undefined' && trainers.length > 0) { %>
+                            <% trainers.forEach(trainer => { %>
                             <tr>
-                                <td>Alex Turner</td>
-                                <td>Strength Training</td>
-                                <td>8 years</td>
-                                <td><span class="status pending">Pending</span></td>
-                                <td>Aug 15, 2023</td>
+                                
                                 <td>
-                                    <button class="action-btn approve">Approve</button>
+                                    <div class="specialization-tags">
+                                        <% if (trainer.specializations && trainer.specializations.length > 0) { %>
+                                        <% trainer.specializations.slice(0, 3).forEach(spec => { %>
+                                        <span class="tag"><%= spec %></span>
+                                        <% }); %>
+                                        <% if (trainer.specializations.length > 3) { %>
+                                        <span class="tag">+<%= trainer.specializations.length - 3 %></span>
+                                        <% } %>
+                                        <% } else { %>
+                                        <span class="tag">No specializations</span>
+                                        <% } %>
+                                    </div>
                                 </td>
+                                <td><%= trainer.experience %> years</td>
+                                <td><span
+                                        class="status <%= trainer.status.toLowerCase() %>"><%= trainer.status %></span>
+                                </td>
+                                <td><%= trainer.email %></td>
                             </tr>
+                            <% }); %>
+                            <% } else { %>
                             <tr>
-                                <td>Jessica Moore</td>
-                                <td>Yoga Instructor</td>
-                                <td>5 years</td>
-                                <td><span class="status active">Approved</span></td>
-                                <td>Aug 13, 2023</td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                </td>
+                                <td colspan="5" class="no-data">No trainers found</td>
                             </tr>
-                            <tr>
-                                <td>David Lee</td>
-                                <td>Bodybuilding</td>
-                                <td>12 years</td>
-                                <td><span class="status pending">Pending</span></td>
-                                <td>Aug 10, 2023</td>
-                                <td>
-                                    <button class="action-btn approve">Approve</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Sophia Garcia</td>
-                                <td>Nutrition Expert</td>
-                                <td>7 years</td>
-                                <td><span class="status active">Approved</span></td>
-                                <td>Aug 8, 2023</td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                </td>
-                            </tr>
+                            <% } %>
                         </tbody>
                     </table>
                 </div>
+
             </div>
-            
-            <!-- Verifiers Section -->
+
+            <!-- Verifier Activity Section -->
             <div class="section">
                 <div class="section-header">
-                    <h3 class="section-title">Content Verifiers</h3>
-                    <button class="btn">View All</button>
+                    <h3 class="section-title">Verifier Activity</h3>
+                    <a href="/admin_verifier" class="view-all">View All</a>
                 </div>
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Expertise</th>
-                                <th>Content Reviewed</th>
                                 <th>Status</th>
-                                <th>Join Date</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <% if (typeof verifiers !== 'undefined' && verifiers.length > 0) { %>
+                            <% verifiers.forEach(verifier => { %>
                             <tr>
-                                <td>Mark Johnson</td>
-                                <td>Exercise Form</td>
-                                <td>215 exercises</td>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="avatar"><%= verifier.name.charAt(0) %></div>
+                                        <span><%= verifier.name %></span>
+                                    </div>
+                                </td>
                                 <td><span class="status active">Active</span></td>
-                                <td>Jul 15, 2023</td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                </td>
                             </tr>
+                            <% }); %>
+                            <% } else { %>
                             <tr>
-                                <td>Linda Williams</td>
-                                <td>Nutrition Facts</td>
-                                <td>142 nutrition plans</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>Jul 10, 2023</td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                </td>
+                                <td colspan="2" class="no-data">No verifiers found</td>
                             </tr>
-                            <tr>
-                                <td>Thomas Martin</td>
-                                <td>Workout Plans</td>
-                                <td>98 workout plans</td>
-                                <td><span class="status pending">Pending</span></td>
-                                <td>Aug 2, 2023</td>
-                                <td>
-                                    <button class="action-btn approve">Approve</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Rebecca Kim</td>
-                                <td>Exercise Safety</td>
-                                <td>187 exercises</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>Jun 28, 2023</td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                </td>
-                            </tr>
+                            <% } %>
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </main>
-    </div>
 
-    <script src="/admin/admin.js"></script>
+            </div>
+
+            <script src="/admin/admin.js"></script>
 </body>
+
 </html>

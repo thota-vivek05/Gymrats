@@ -8,6 +8,9 @@
         <link rel="stylesheet" type="text/css" href="/userprofile/userprofile.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+        <style>
+            
+        </style>
     </head>
     <body>
         <div class="main-navbar">
@@ -38,6 +41,13 @@
                             <% } %>
                         </a>
                     </div>
+                    
+                    <!-- Add Logout Button -->
+                    <div class="logout-container">
+                        <a href="/logout" class="logout-btn">
+                            <span>Logout</span>
+                        </a>
+                    </div>
                 </div>
                 <div class="mobile-menu-icon" id="menuIcon">
                     <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
@@ -54,6 +64,12 @@
                             <% } else { %>
                                 <span>User</span>
                             <% } %>
+                        </a>
+                    </div>
+                    <!-- Add Logout Button in Mobile Sidebar -->
+                    <div class="sidebar-logout">
+                        <a href="/logout" class="logout-btn">
+                            <span>Logout</span>
                         </a>
                     </div>
                 </div>
@@ -103,110 +119,101 @@
             <div class="profile-card user-info-card">
                 <div class="card-header">
                     <h2>Personal Information</h2>
-                    
                 </div>
                 <div class="profile-content">
                     <div class="profile-status-container">
                         <div class="profile-status">Active Member</div>
                     </div>
-                    <!-- Personal Information section -->
-<!-- Replace the profile-details section in userprofile.ejs -->
-<!-- Update these profile items in userprofile.ejs -->
-<div class="profile-details">
-
-    <div class="profile-item">
-        <span class="profile-label">Name:</span>
-        <span class="profile-value">
-            <% if (user && typeof user === 'object') { %>
-                <%= user.full_name || user.name || 'Not provided' %>
-            <% } else { %>
-                Not provided
-            <% } %>
-        </span>
-        <input type="text" class="profile-edit-input" value="<%= user && typeof user === 'object' ? (user.full_name || user.name || '') : '' %>" style="display: none;">
-    </div>
-    <div class="profile-item">
-        <span class="profile-label">Email:</span>
-        <span class="profile-value">
-            <% if (typeof user === 'object' && user !== null && user.email) { %>
-                <%= user.email %>
-            <% } else { %>
-                Not provided
-            <% } %>
-        </span>
-        <input type="email" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.email ? user.email : '' %>" style="display: none;">
-    </div>
-    <div class="profile-item">
-        <span class="profile-label">Phone:</span>
-        <span class="profile-value">
-            <% if (typeof user === 'object' && user !== null && user.phone) { %>
-                <%= user.phone %>
-            <% } else { %>
-                Not provided
-            <% } %>
-        </span>
-        <input type="tel" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.phone ? user.phone : '' %>" style="display: none;">
-    </div>
-    
-    <div class="profile-item">
-        <span class="profile-label">Age:</span>
-        <span class="profile-value">
-            <% if (typeof user === 'object' && user !== null && user.dob) { 
-                try {
-                    const today = new Date();
-                    const birthDate = new Date(user.dob);
-                    let age = today.getFullYear() - birthDate.getFullYear();
-                    const m = today.getMonth() - birthDate.getMonth();
-                    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                        age--;
-                    }
-                    %>
-                    <%= age %> years
-                <% } catch(e) { %>
-                    Not provided
-                <% }
-            } else { %>
-                Not provided
-            <% } %>
-        </span>
-        <input type="number" class="profile-edit-input" value="" style="display: none;">
-    </div>
-    <!-- Height field -->
-    <div class="profile-item">
-        <span class="profile-label">Height:</span>
-        <span class="profile-value">
-            <% if (typeof user === 'object' && user !== null && user.height) { %>
-                <%= user.height %> cm
-            <% } else { %>
-                Not provided
-            <% } %>
-        </span>
-        <input type="number" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.height ? user.height : '' %>" style="display: none;">
-    </div>
-    <!-- Weight field -->
-    <div class="profile-item">
-        <span class="profile-label">Weight:</span>
-        <span class="profile-value">
-            <% if (typeof user === 'object' && user !== null && user.weight) { %>
-                <%= user.weight %> kg
-            <% } else { %>
-                Not provided
-            <% } %>
-        </span>
-        <input type="number" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.weight ? user.weight : '' %>" style="display: none;">
-    </div>
-    <!-- BMI field -->
-    <div class="profile-item">
-        <span class="profile-label">BMI:</span>
-        <span class="profile-value">
-            <% if (typeof user === 'object' && user !== null && user.BMI) { %>
-                <%= user.BMI %>
-            <% } else { %>
-                Not provided
-            <% } %>
-        </span>
-    </div>
-</div>
+                    <div class="profile-details">
+                        <div class="profile-item">
+                            <span class="profile-label">Name:</span>
+                            <span class="profile-value">
+                                <% if (user && typeof user === 'object') { %>
+                                    <%= user.full_name || user.name || 'Not provided' %>
+                                <% } else { %>
+                                    Not provided
+                                <% } %>
+                            </span>
+                            <input type="text" class="profile-edit-input" value="<%= user && typeof user === 'object' ? (user.full_name || user.name || '') : '' %>" style="display: none;">
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Email:</span>
+                            <span class="profile-value">
+                                <% if (typeof user === 'object' && user !== null && user.email) { %>
+                                    <%= user.email %>
+                                <% } else { %>
+                                    Not provided
+                                <% } %>
+                            </span>
+                            <input type="email" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.email ? user.email : '' %>" style="display: none;">
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Phone:</span>
+                            <span class="profile-value">
+                                <% if (typeof user === 'object' && user !== null && user.phone) { %>
+                                    <%= user.phone %>
+                                <% } else { %>
+                                    Not provided
+                                <% } %>
+                            </span>
+                            <input type="tel" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.phone ? user.phone : '' %>" style="display: none;">
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Age:</span>
+                            <span class="profile-value">
+                                <% if (typeof user === 'object' && user !== null && user.dob) { 
+                                    try {
+                                        const today = new Date();
+                                        const birthDate = new Date(user.dob);
+                                        let age = today.getFullYear() - birthDate.getFullYear();
+                                        const m = today.getMonth() - birthDate.getMonth();
+                                        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                                            age--;
+                                        }
+                                        %>
+                                        <%= age %> years
+                                    <% } catch(e) { %>
+                                        Not provided
+                                    <% }
+                                } else { %>
+                                    Not provided
+                                <% } %>
+                            </span>
+                            <input type="number" class="profile-edit-input" value="" style="display: none;">
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Height:</span>
+                            <span class="profile-value">
+                                <% if (typeof user === 'object' && user !== null && user.height) { %>
+                                    <%= user.height %> cm
+                                <% } else { %>
+                                    Not provided
+                                <% } %>
+                            </span>
+                            <input type="number" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.height ? user.height : '' %>" style="display: none;">
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Weight:</span>
+                            <span class="profile-value">
+                                <% if (typeof user === 'object' && user !== null && user.weight) { %>
+                                    <%= user.weight %> kg
+                                <% } else { %>
+                                    Not provided
+                                <% } %>
+                            </span>
+                            <input type="number" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.weight ? user.weight : '' %>" style="display: none;">
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">BMI:</span>
+                            <span class="profile-value">
+                                <% if (typeof user === 'object' && user !== null && user.BMI) { %>
+                                    <%= user.BMI %>
+                                <% } else { %>
+                                    Not provided
+                                <% } %>
+                            </span>
+                        </div>
+                    </div>
                     <div class="profile-edit-actions" style="display: none;">
                         <button class="save-btn" id="saveProfileBtn">Save Changes</button>
                         <button class="cancel-btn" id="cancelEditBtn">Cancel</button>
@@ -215,128 +222,119 @@
             </div>
 
             <!-- Membership Card -->
-            <!-- Simple fix for userprofile.ejs - replace the membership section -->
-
-<!-- Membership Card -->
-<div class="profile-card membership-card">
-    <div class="card-header">
-        <h2>Membership Details</h2>
-    </div>
-    <div class="profile-content">
-        <div class="membership-status">
-            <div class="membership-badge premium">
-                <%= user && user.membershipType ? user.membershipType : 'Basic' %> Member
+            <div class="profile-card membership-card">
+                <div class="card-header">
+                    <h2>Membership Details</h2>
+                </div>
+                <div class="profile-content">
+                    <div class="membership-status">
+                        <div class="membership-badge premium">
+                            <%= user && user.membershipType ? user.membershipType : 'Basic' %> Member
+                        </div>
+                        <p class="membership-since">Member since: 
+                            <% if (user && user.created_at) { %>
+                                <%= new Date(user.created_at).toLocaleDateString() %>
+                            <% } else { %>
+                                March 15, 2023
+                            <% } %>
+                        </p>
+                    </div>
+                    <div class="membership-details">
+                        <div class="membership-item">
+                            <span class="membership-label">Plan:</span>
+                            <span class="membership-value">
+                                <%= user && user.membershipType ? user.membershipType : 'Basic' %>
+                            </span>
+                        </div>
+                        <div class="membership-item">
+                            <span class="membership-label">Renewal Date:</span>
+                            <span class="membership-value">March 15, 2024</span>
+                        </div>
+                        <div class="membership-item">
+                            <span class="membership-label">Status:</span>
+                            <span class="membership-value active">
+                                <%= user && user.status ? user.status : 'Active' %>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="membership-features">
+                        <h3>Features Included:</h3>
+                        <ul class="features-list">
+                            <li><i class="fas fa-check"></i> Unlimited workout plans</li>
+                            <li><i class="fas fa-check"></i> Personal trainer consultations</li>
+                            <li><i class="fas fa-check"></i> Nutrition planning</li>
+                            <li><i class="fas fa-check"></i> Advanced progress tracking</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <p class="membership-since">Member since: 
-                <% if (user && user.created_at) { %>
-                    <%= new Date(user.created_at).toLocaleDateString() %>
-                <% } else { %>
-                    March 15, 2023
-                <% } %>
-            </p>
-        </div>
-        <div class="membership-details">
-            <div class="membership-item">
-                <span class="membership-label">Plan:</span>
-                <span class="membership-value">
-                    <%= user && user.membershipType ? user.membershipType : 'Basic' %>
-                </span>
-            </div>
-            <div class="membership-item">
-                <span class="membership-label">Renewal Date:</span>
-                <span class="membership-value">March 15, 2024</span>
-            </div>
-            <div class="membership-item">
-                <span class="membership-label">Status:</span>
-                <span class="membership-value active">
-                    <%= user && user.status ? user.status : 'Active' %>
-                </span>
-            </div>
-        </div>
-        <div class="membership-features">
-            <h3>Features Included:</h3>
-            <ul class="features-list">
-                <li><i class="fas fa-check"></i> Unlimited workout plans</li>
-                <li><i class="fas fa-check"></i> Personal trainer consultations</li>
-                <li><i class="fas fa-check"></i> Nutrition planning</li>
-                <li><i class="fas fa-check"></i> Advanced progress tracking</li>
-            </ul>
-        </div>
-    </div>
-</div>
         </div>
 
         <!-- Statistics Card -->
         <div class="profile-wide-card">
             <div class="card-header">
                 <h2>My Fitness Statistics</h2>
-                
             </div>
             <div class="stats-content">
                 <div class="stats-summary">
-    <div class="stat-box">
-        <div class="stat-icon">
-            <i class="fas fa-dumbbell"></i>
-        </div>
-        <div class="stat-value">
-            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.workoutsCompleted !== undefined) { %>
-                <%= fitnessStats.workoutsCompleted %>
-            <% } else { %>
-                0
-            <% } %>
-        </div>
-        <div class="stat-label">Workouts</div>
-    </div>
-    
-    <div class="stat-box">
-        <div class="stat-icon">
-            <i class="fas fa-fire"></i>
-        </div>
-        <div class="stat-value">
-            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.caloriesBurned !== undefined) { %>
-                <%= fitnessStats.caloriesBurned.toLocaleString() %>
-            <% } else { %>
-                0
-            <% } %>
-        </div>
-        <div class="stat-label">Calories Burned</div>
-    </div>
-    
-    <div class="stat-box">
-        <div class="stat-icon">
-            <i class="fas fa-clock"></i>
-        </div>
-        <div class="stat-value">
-            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.hoursActive !== undefined) { %>
-                <%= fitnessStats.hoursActive %>
-            <% } else { %>
-                0
-            <% } %>
-        </div>
-        <div class="stat-label">Hours Active</div>
-    </div>
-    
-    <div class="stat-box">
-        <div class="stat-icon">
-            <i class="fas fa-trophy"></i>
-        </div>
-        <div class="stat-value">
-            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.goalsAchieved !== undefined) { %>
-                <%= fitnessStats.goalsAchieved %>
-            <% } else { %>
-                0
-            <% } %>
-        </div>
-        <div class="stat-label">Goals Achieved</div>
-    </div>
-</div>
-                
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <div class="stat-value">
+                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.workoutsCompleted !== undefined) { %>
+                                <%= fitnessStats.workoutsCompleted %>
+                            <% } else { %>
+                                0
+                            <% } %>
+                        </div>
+                        <div class="stat-label">Workouts</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="stat-value">
+                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.caloriesBurned !== undefined) { %>
+                                <%= fitnessStats.caloriesBurned.toLocaleString() %>
+                            <% } else { %>
+                                0
+                            <% } %>
+                        </div>
+                        <div class="stat-label">Calories Burned</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-value">
+                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.hoursActive !== undefined) { %>
+                                <%= fitnessStats.hoursActive %>
+                            <% } else { %>
+                                0
+                            <% } %>
+                        </div>
+                        <div class="stat-label">Hours Active</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-value">
+                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.goalsAchieved !== undefined) { %>
+                                <%= fitnessStats.goalsAchieved %>
+                            <% } else { %>
+                                0
+                            <% } %>
+                        </div>
+                        <div class="stat-label">Goals Achieved</div>
+                    </div>
+                </div>
                 <div class="stats-charts">
                     <div class="chart-container">
                         <h3>Workout Frequency</h3>
                         <canvas id="workoutFrequencyChart"></canvas>
                     </div>
-                    
                     <div class="chart-container">
                         <h3>Weight Progress</h3>
                         <canvas id="weightProgressChart"></canvas>
@@ -351,55 +349,48 @@
                 <h2>Recent Workouts</h2>
             </div>
             <div class="profile-content">
-               
-<div class="workout-history">
-    
-    <% 
-    // Default workouts if none exist in the database
-    const mockWorkouts = [
-        { day: '16', month: 'MAR', name: 'HIIT Training', duration: '45 min', calories: '450', exercises: '4', rating: 4 },
-        { day: '14', month: 'MAR', name: 'Strength Training', duration: '60 min', calories: '380', exercises: '6', rating: 5 },
-        { day: '12', month: 'MAR', name: 'Cardio Run', duration: '30 min', calories: '320', exercises: '1', rating: 4 }
-    ];
-    
-    // Check if user has workout history
-    let recentWorkouts = [];
-    if (user && user.workout_history && Array.isArray(user.workout_history)) {
-        recentWorkouts = user.workout_history.slice(0, 3);
-    } else {
-        // Use empty array instead of mocks since we don't want to display fake data
-        recentWorkouts = [];
-    }
-    %>
-    
-    <% if (recentWorkouts.length > 0) { %>
-        <% recentWorkouts.forEach(workout => { %>
-            <div class="workout-item" data-workout-id="<%= workout.id || '' %>">
-                <div class="workout-date">
-                    <span class="workout-day"><%= workout.day %></span>
-                    <span class="workout-month"><%= workout.month %></span>
-                </div>
-                <div class="workout-info">
-                    <h3 class="workout-name"><%= workout.name %></h3>
-                    <div class="workout-stats">
-                        <span><i class="fas fa-clock"></i> <%= workout.duration %></span>
-                        <span><i class="fas fa-fire-alt"></i> <%= workout.calories %> cal</span>
-                        <span><i class="fas fa-dumbbell"></i> <%= workout.exercises %> exercises</span>
-                    </div>
-                </div>
-                <div class="workout-rating">
-                    <% for (let i = 1; i <= 5; i++) { %>
-                        <i class="fas fa-star <%= i <= workout.rating ? 'active' : '' %>"></i>
+                <div class="workout-history">
+                    <% 
+                    const mockWorkouts = [
+                        { day: '16', month: 'MAR', name: 'HIIT Training', duration: '45 min', calories: '450', exercises: '4', rating: 4 },
+                        { day: '14', month: 'MAR', name: 'Strength Training', duration: '60 min', calories: '380', exercises: '6', rating: 5 },
+                        { day: '12', month: 'MAR', name: 'Cardio Run', duration: '30 min', calories: '320', exercises: '1', rating: 4 }
+                    ];
+                    let recentWorkouts = [];
+                    if (user && user.workout_history && Array.isArray(user.workout_history)) {
+                        recentWorkouts = user.workout_history.slice(0, 3);
+                    } else {
+                        recentWorkouts = [];
+                    }
+                    %>
+                    <% if (recentWorkouts.length > 0) { %>
+                        <% recentWorkouts.forEach(workout => { %>
+                            <div class="workout-item" data-workout-id="<%= workout.id || '' %>">
+                                <div class="workout-date">
+                                    <span class="workout-day"><%= workout.day %></span>
+                                    <span class="workout-month"><%= workout.month %></span>
+                                </div>
+                                <div class="workout-info">
+                                    <h3 class="workout-name"><%= workout.name %></h3>
+                                    <div class="workout-stats">
+                                        <span><i class="fas fa-clock"></i> <%= workout.duration %></span>
+                                        <span><i class="fas fa-fire-alt"></i> <%= workout.calories %> cal</span>
+                                        <span><i class="fas fa-dumbbell"></i> <%= workout.exercises %> exercises</span>
+                                    </div>
+                                </div>
+                                <div class="workout-rating">
+                                    <% for (let i = 1; i <= 5; i++) { %>
+                                        <i class="fas fa-star <%= i <= workout.rating ? 'active' : '' %>"></i>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-workouts-message">
+                            <p>No workout history available yet. Start tracking your workouts to see them here!</p>
+                        </div>
                     <% } %>
                 </div>
-            </div>
-        <% }); %>
-    <% } else { %>
-        <div class="no-workouts-message">
-            <p>No workout history available yet. Start tracking your workouts to see them here!</p>
-        </div>
-    <% } %>
-</div>
             </div>
         </div>
 
@@ -415,7 +406,6 @@
                         <li><a href="/blog">Blog</a></li>
                     </ul>
                 </div>
-
                 <div class="footer-column">
                     <h3>Resources</h3>
                     <ul>
@@ -425,7 +415,6 @@
                         <li><a href="/calculators">Calculators</a></li>
                     </ul>
                 </div>
-
                 <div class="footer-column">
                     <h3>Support</h3>
                     <ul>
@@ -435,7 +424,6 @@
                         <li><a href="/privacy_policy">Privacy Policy</a></li>
                     </ul>
                 </div>
-
                 <div class="footer-column">
                     <h3>Connect With Us</h3>
                     <ul>
@@ -454,32 +442,26 @@
     </div>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Ensure variables are defined with fallbacks
         const weeklyWorkoutData = <% if (typeof chartData !== 'undefined' && chartData.weeklyWorkouts) { %> 
             <%= JSON.stringify(chartData.weeklyWorkouts) %> 
         <% } else { %> 
             [0, 0, 0, 0] 
         <% } %>;
-        
         const weekLabels = <% if (typeof chartData !== 'undefined' && chartData.weekLabels) { %> 
             <%= JSON.stringify(chartData.weekLabels) %> 
         <% } else { %> 
             ['Week 1', 'Week 2', 'Week 3', 'Week 4'] 
         <% } %>;
-        
         const weightProgressData = <% if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData.weightProgress.length > 0) { %> 
             <%= JSON.stringify(chartData.weightProgress.map(entry => entry.weight)) %> 
         <% } else { %> 
             [0, 0, 0, 0] 
         <% } %>;
-        
         const weightLabels = <% if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData.weightProgress.length > 0) { %> 
             <%= JSON.stringify(chartData.weightProgress.map(entry => entry.week)) %> 
         <% } else { %> 
             ['Week 1', 'Week 2', 'Week 3', 'Week 4'] 
         <% } %>;
-        
-        // Initialize charts
         if (document.getElementById('workoutFrequencyChart')) {
             const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart').getContext('2d');
             new Chart(workoutFrequencyCtx, {
@@ -513,7 +495,6 @@
                 }
             });
         }
-
         if (document.getElementById('weightProgressChart')) {
             const weightProgressCtx = document.getElementById('weightProgressChart').getContext('2d');
             new Chart(weightProgressCtx, {
@@ -555,47 +536,37 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Mobile menu functionality
     const menuIcon = document.getElementById('menuIcon');
     const closeBtn = document.getElementById('closeBtn');
     const sideNavbar = document.getElementById('sideNavbar');
-
     if (menuIcon && closeBtn && sideNavbar) {
         menuIcon.addEventListener('click', function() {
             sideNavbar.style.width = '250px';
         });
-
         closeBtn.addEventListener('click', function() {
             sideNavbar.style.width = '0';
         });
     }
-
-    // Profile editing functionality
     const editProfileBtn = document.getElementById('editProfileBtn');
     const saveProfileBtn = document.getElementById('saveProfileBtn');
     const cancelEditBtn = document.getElementById('cancelEditBtn');
     const profileImgOverlay = document.getElementById('profileImgOverlay');
     const profilePictureInput = document.getElementById('profilePictureInput');
     const profileImage = document.getElementById('profileImage');
-
     if (editProfileBtn) {
         editProfileBtn.addEventListener('click', enableProfileEditing);
     }
-
     if (saveProfileBtn) {
         saveProfileBtn.addEventListener('click', saveProfileChanges);
     }
-
     if (cancelEditBtn) {
         cancelEditBtn.addEventListener('click', cancelProfileEditing);
     }
-
     if (profileImgOverlay) {
         profileImgOverlay.addEventListener('click', function() {
             profilePictureInput.click();
         });
     }
-
     if (profilePictureInput) {
         profilePictureInput.addEventListener('change', function(event) {
             const file = event.target.files[0];
@@ -608,82 +579,56 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
     function enableProfileEditing() {
-        // Show profile image overlay
         if (profileImgOverlay) {
             profileImgOverlay.classList.add('active');
         }
-
-        // Replace value elements with input fields
         const profileItems = document.querySelectorAll('.profile-item');
         profileItems.forEach(item => {
             const valueElement = item.querySelector('.profile-value');
             const inputElement = item.querySelector('.profile-edit-input');
-            
             if (valueElement && inputElement) {
                 valueElement.style.display = 'none';
                 inputElement.style.display = 'block';
             }
         });
-
-        // Show edit actions buttons
         const editActions = document.querySelector('.profile-edit-actions');
         if (editActions) {
             editActions.style.display = 'flex';
         }
-
-        // Hide the edit button
         editProfileBtn.style.display = 'none';
     }
-
     function saveProfileChanges() {
-        // Update profile values from inputs
         const profileItems = document.querySelectorAll('.profile-item');
         profileItems.forEach(item => {
             const valueElement = item.querySelector('.profile-value');
             const inputElement = item.querySelector('.profile-edit-input');
-            
             if (valueElement && inputElement) {
-                // Update the displayed value with the input value
                 if (inputElement.tagName.toLowerCase() === 'select') {
                     valueElement.textContent = inputElement.options[inputElement.selectedIndex].text;
                 } else {
                     valueElement.textContent = inputElement.value;
                 }
-                
-                // Hide input, show value
                 valueElement.style.display = 'block';
                 inputElement.style.display = 'none';
             }
         });
-
-        // Hide profile image overlay
         if (profileImgOverlay) {
             profileImgOverlay.classList.remove('active');
         }
-
-        // Hide edit actions buttons
         const editActions = document.querySelector('.profile-edit-actions');
         if (editActions) {
             editActions.style.display = 'none';
         }
-
-        // Show the edit button
         editProfileBtn.style.display = 'flex';
     }
-
     function cancelProfileEditing() {
-        // Hide the inputs without saving changes
         const profileItems = document.querySelectorAll('.profile-item');
         profileItems.forEach(item => {
             const valueElement = item.querySelector('.profile-value');
             const inputElement = item.querySelector('.profile-edit-input');
-            
             if (valueElement && inputElement) {
-                // Reset input value to match displayed value
                 if (inputElement.tagName.toLowerCase() === 'select') {
-                    // Find and select the option that matches the current value
                     for (let i = 0; i < inputElement.options.length; i++) {
                         if (inputElement.options[i].text === valueElement.textContent.trim()) {
                             inputElement.selectedIndex = i;
@@ -693,52 +638,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     inputElement.value = valueElement.textContent;
                 }
-                
-                // Hide input, show value
                 valueElement.style.display = 'block';
                 inputElement.style.display = 'none';
             }
         });
-
-        // Reset profile image if it was changed
-        // Note: We would need to store the original image URL to truly reset it
-
-        // Hide profile image overlay
         if (profileImgOverlay) {
             profileImgOverlay.classList.remove('active');
         }
-
-        // Hide edit actions buttons
         const editActions = document.querySelector('.profile-edit-actions');
         if (editActions) {
             editActions.style.display = 'none';
         }
-
-        // Show the edit button
         editProfileBtn.style.display = 'flex';
     }
-
-    // Chart.js setup for dynamic statistics charts
     setupCharts();
-
-    // Handle timeframe change for statistics
     const statsTimeframeSelect = document.getElementById('statsTimeframeSelect');
     if (statsTimeframeSelect) {
         statsTimeframeSelect.addEventListener('change', function() {
             updateStatistics(this.value);
         });
     }
-    
-    // Modal functionality
     setupModals();
-    
-    // Setup workout interactions - View All and Details buttons
     setupWorkoutInteractions();
 });
-
-// Chart configuration and setup
 function setupCharts() {
-    // Workout Frequency Chart
     const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart');
     if (workoutFrequencyCtx) {
         window.workoutFrequencyChart = new Chart(workoutFrequencyCtx, {
@@ -774,8 +697,6 @@ function setupCharts() {
             }
         });
     }
-
-    // Weight Progress Chart
     const weightProgressCtx = document.getElementById('weightProgressChart');
     if (weightProgressCtx) {
         window.weightProgressChart = new Chart(weightProgressCtx, {
@@ -814,37 +735,24 @@ function setupCharts() {
         });
     }
 }
-
-// Update statistics based on selected timeframe
 function updateStatistics(timeframe) {
-    // Update summary cards
     updateSummaryCards(timeframe);
-    
-    // Update charts
     if (window.workoutFrequencyChart) {
         window.workoutFrequencyChart.data = getWorkoutFrequencyData(timeframe);
         window.workoutFrequencyChart.update();
     }
-    
     if (window.weightProgressChart) {
         window.weightProgressChart.data = getWeightProgressData(timeframe);
         window.weightProgressChart.update();
     }
 }
-
-// Update summary cards with timeframe data
 function updateSummaryCards(timeframe) {
-    // Get data for the selected timeframe
     const summaryData = getSummaryData(timeframe);
-    
-    // Update the DOM elements
     document.getElementById('workoutCount').textContent = summaryData.workouts;
     document.getElementById('caloriesBurned').textContent = summaryData.calories;
     document.getElementById('hoursActive').textContent = summaryData.hours;
     document.getElementById('goalsAchieved').textContent = summaryData.goals;
 }
-
-// Get summary data for different timeframes
 function getSummaryData(timeframe) {
     const data = {
         month: {
@@ -872,14 +780,10 @@ function getSummaryData(timeframe) {
             goals: '65'
         }
     };
-    
     return data[timeframe] || data.month;
 }
-
-// Get workout frequency data for the chart
 function getWorkoutFrequencyData(timeframe) {
     let labels, data;
-    
     switch(timeframe) {
         case 'month':
             labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
@@ -901,7 +805,6 @@ function getWorkoutFrequencyData(timeframe) {
             labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
             data = [10, 12, 8, 12];
     }
-    
     return {
         labels: labels,
         datasets: [{
@@ -913,11 +816,8 @@ function getWorkoutFrequencyData(timeframe) {
         }]
     };
 }
-
-// Get weight progress data for the chart
 function getWeightProgressData(timeframe) {
     let labels, weightData;
-    
     switch(timeframe) {
         case 'month':
             labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
@@ -939,7 +839,6 @@ function getWeightProgressData(timeframe) {
             labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
             weightData = [77, 76.5, 75.8, 75];
     }
-    
     return {
         labels: labels,
         datasets: [{
@@ -953,106 +852,68 @@ function getWeightProgressData(timeframe) {
         }]
     };
 }
-
-// Setup modal functionality
 function setupModals() {
     const allModals = document.querySelectorAll('.modal');
     const closeButtons = document.querySelectorAll('.close-modal');
-    
-    // Close modal when clicking the close button
     closeButtons.forEach(button => {
         button.addEventListener('click', function() {
             const modal = this.closest('.modal');
             if (modal) {
                 modal.classList.remove('active');
-                // Allow body to scroll again
                 document.body.style.overflow = 'auto';
             }
         });
     });
-    
-    // Close modal when clicking outside the modal content
     allModals.forEach(modal => {
         modal.addEventListener('click', function(event) {
             if (event.target === this) {
                 modal.classList.remove('active');
-                // Allow body to scroll again
                 document.body.style.overflow = 'auto';
             }
         });
     });
-    
-    // Close modal with Escape key
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             allModals.forEach(modal => {
                 if (modal.classList.contains('active')) {
                     modal.classList.remove('active');
-                    // Allow body to scroll again
                     document.body.style.overflow = 'auto';
                 }
             });
         }
     });
 }
-
-// Setup workout interactions
 function setupWorkoutInteractions() {
-    // View All button functionality
     const viewAllBtn = document.querySelector('.view-all-btn');
     const allWorkoutsModal = document.getElementById('allWorkoutsModal');
-    
     if (viewAllBtn && allWorkoutsModal) {
         viewAllBtn.addEventListener('click', function() {
-            // Populate with all workouts
             populateAllWorkouts();
-            
-            // Show modal
             allWorkoutsModal.classList.add('active');
-            
-            // Prevent body scrolling when modal is open
             document.body.style.overflow = 'hidden';
         });
     }
-    
-    // Set up event delegation for workout detail buttons
     document.addEventListener('click', function(event) {
-        // Check if the clicked element is a details button or has a parent that is
         const detailsBtn = event.target.closest('.details-btn');
-        
         if (detailsBtn) {
-            // Get the workout item
             const workoutItem = detailsBtn.closest('.workout-item');
             if (workoutItem) {
-                // Get workout name
                 const workoutName = workoutItem.querySelector('.workout-name').textContent;
-                // Get workout date
                 const day = workoutItem.querySelector('.day').textContent;
                 const month = workoutItem.querySelector('.month').textContent;
-                
-                // Show workout details modal
                 showWorkoutDetails(workoutName, `${day} ${month}`);
             }
         }
     });
 }
-
-// Populate the All Workouts modal
 function populateAllWorkouts() {
     const allWorkoutsContainer = document.querySelector('.all-workouts');
-    
     if (allWorkoutsContainer) {
-        // Clear previous content
         allWorkoutsContainer.innerHTML = '';
-        
-        // Get workout data
         const workouts = getAllWorkoutsData();
-        
-        // Create workout items
         workouts.forEach(workout => {
             const workoutItem = document.createElement('div');
             workoutItem.className = 'workout-item';
-            
             workoutItem.innerHTML = `
                 <div class="workout-date">
                     <div class="date-circle">
@@ -1075,16 +936,12 @@ function populateAllWorkouts() {
                     <button class="details-btn">Details</button>
                 </div>
             `;
-            
             allWorkoutsContainer.appendChild(workoutItem);
         });
     }
 }
-
-// Generate stars HTML based on rating
 function getStarsHTML(rating) {
     let starsHTML = '';
-    
     for (let i = 1; i <= 5; i++) {
         if (i <= rating) {
             starsHTML += '<i class="fas fa-star"></i>';
@@ -1092,27 +949,16 @@ function getStarsHTML(rating) {
             starsHTML += '<i class="far fa-star"></i>';
         }
     }
-    
     return starsHTML;
 }
-
-// Show workout details in modal
 function showWorkoutDetails(workoutName, workoutDate) {
     const detailsModal = document.getElementById('workoutDetailsModal');
     const detailTitle = document.getElementById('workoutDetailTitle');
     const detailContent = document.getElementById('workoutDetailContent');
-    
     if (detailsModal && detailTitle && detailContent) {
-        // Set modal title
         detailTitle.textContent = `${workoutName} - ${workoutDate}`;
-        
-        // Get workout details
         const workoutDetail = getWorkoutDetails(workoutName);
-        
-        // Create content
         let contentHTML = '';
-        
-        // Add exercises
         workoutDetail.exercises.forEach(exercise => {
             contentHTML += `
                 <div class="exercise-item">
@@ -1139,8 +985,6 @@ function showWorkoutDetails(workoutName, workoutDate) {
                 </div>
             `;
         });
-        
-        // Add notes if available
         if (workoutDetail.notes) {
             contentHTML += `
                 <div class="workout-notes">
@@ -1149,21 +993,12 @@ function showWorkoutDetails(workoutName, workoutDate) {
                 </div>
             `;
         }
-        
-        // Set content
         detailContent.innerHTML = contentHTML;
-        
-        // Show modal
         detailsModal.classList.add('active');
-        
-        // Prevent body scrolling
         document.body.style.overflow = 'hidden';
     }
 }
-
-// Get all workouts data
 function getAllWorkoutsData() {
-    // This would typically come from an API, but for this example, we'll use hardcoded data
     return [
         {
             day: '16',
@@ -1257,10 +1092,7 @@ function getAllWorkoutsData() {
         }
     ];
 }
-
-// Get workout details based on workout name
 function getWorkoutDetails(workoutName) {
-    // This would typically come from an API, but for this example, we'll use hardcoded data
     const workoutDetails = {
         'HIIT Training': {
             exercises: [
@@ -1465,8 +1297,6 @@ function getWorkoutDetails(workoutName) {
             notes: 'Completed 3 full circuit rounds. Really pushed hard on the battle ropes and rowing machine. Felt exhausted but accomplished!'
         }
     };
-    
-    // Return the workout details or a default if not found
     return workoutDetails[workoutName] || {
         exercises: [
             {
@@ -1479,8 +1309,6 @@ function getWorkoutDetails(workoutName) {
         ],
         notes: 'Detailed information for this workout is not available.'
     };
-
-    
 }
 </script>
 </html>

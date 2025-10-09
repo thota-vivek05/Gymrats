@@ -1,49 +1,12 @@
-<div class="main-navbar">
-    <header>
-        <!-- Header Branding -->
-        <div class="brand-logo">
-            <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>" class="brand-name">GymRats</a>
-        </div>
-        
-        <div class="nav-menu">
-            <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>">Home</a>
-            <a href="/user_exercises" class="active">Exercises</a>
-            <a href="/user_nutrition">Nutrition</a>
-        </div>
-        
-        <div class="right-container">
-            <div class="search-container">
-                <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
-                <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-            </div>
-            
-            <div class="user-profile">
-                <a href="/userprofile">
-                    <% if (user && user.name) { %>
-                        <span><%= user.name %></span>
-                    <% } else { %>
-                        <span>User</span>
-                    <% } %>
-                </a>
-            </div>
-        </div>
-        <div class="mobile-menu-icon" id="menuIcon">
-            <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
-        </div>
-        <div class="mobile-sidebar" id="sideNavbar">
-            <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
-            <a href="<%= user && user.membership ? '/userdashboard_' + user.membership.charAt(0).toLowerCase() : '/dashboard' %>">Home</a>
-            <a href="/user_exercises" class="active">Exercises</a>
-            <a href="/user_nutrition">Nutrition</a>
-            <div class="sidebar-profile">
-                <a href="/userprofile">
-                    <% if (user && user.name) { %>
-                        <span><%= user.name %></span>
-                    <% } else { %>
-                        <span>User</span>
-                    <% } %>
-                </a>
-            </div>
-        </div>
-    </header>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index</title>
+</head>
+<body>
+
+    <a href="./views/home.ejs">home</a>
+</body>
+</html>

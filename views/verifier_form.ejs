@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymRats - Verifier Registration</title>
     <link rel="stylesheet" type="text/css" href="/verifier_form/verifier_form.css" />
 </head>
+
 <body>
     <div class="main-navbar">
         <header>
@@ -13,7 +15,7 @@
             <div class="brand-logo">
                 <a href="/home" class="brand-name">GymRats</a>
             </div>
-            
+
             <div class="nav-menu">
                 <a href="/home">Home</a>
                 <a href="/isolation">Exercises</a>
@@ -21,15 +23,15 @@
                 <a href="/about">About</a>
                 <a href="/contact">Contact</a>
             </div>
-            
+
             <div class="right-container">
                 <div class="search-container">
                     <img src="/verifier_form/icons8-search.svg" height="18px" alt="Search Icon" />
                     <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
                 </div>
-                
+
                 <div class="login-button">
-                    <a href="/login_signup">Login / Signup</a>
+                    <a href="/verifier/login">Login</a>
                 </div>
             </div>
 
@@ -41,7 +43,7 @@
 
     <!-- Mobile Side Navigation -->
     <div class="mobile-sidebar" id="sideNavbar">
-        <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+        <a href="javascript:void(0)" class="close-button" id="closeBtn">×</a>
         <a href="/home">Home</a>
         <a href="/isolation">Exercises</a>
         <a href="/nutrition">Nutrition</a>
@@ -54,7 +56,8 @@
     <section class="registration-section">
         <div class="section-header">
             <h2>Become a Trainer Verifier</h2>
-            <p>Help us maintain high-quality fitness training standards by verifying trainer credentials and qualifications.</p>
+            <p>Help us maintain high-quality fitness training standards by verifying trainer credentials and
+                qualifications.</p>
         </div>
 
         <div class="registration-container">
@@ -69,67 +72,31 @@
                     </ul>
                 </div>
 
-                <form id="verifierForm" class="registration-form">
+                <form id="verifierForm" class="registration-form" action="/verifier/register" method="POST">
                     <div class="form-group">
                         <label for="fullName">Full Name</label>
                         <input type="text" id="fullName" name="fullName" required>
                     </div>
-
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
                         <input type="tel" id="phone" name="phone" required>
                     </div>
-
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
                     <div class="form-group">
                         <label for="experienceYears">Years of Experience</label>
                         <input type="number" id="experienceYears" name="experienceYears" min="1" required>
                     </div>
-
-                    <div class="form-group">
-                        <label for="certifications">Professional Certifications</label>
-                        <textarea id="certifications" name="certifications" rows="3" required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="specialization">Area of Specialization</label>
-                        <select id="specialization" name="specialization" required>
-                            <option value="">Select Specialization</option>
-                            <option value="strength">Strength Training</option>
-                            <option value="cardio">Cardiovascular Fitness</option>
-                            <option value="nutrition">Nutrition</option>
-                            <option value="yoga">Yoga</option>
-                            <option value="rehab">Rehabilitation</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="cv">Upload CV/Resume</label>
-                        <input type="file" id="cv" name="cv" required>
-                        <span class="file-info">Accepted formats: PDF, DOC, DOCX (Max 5MB)</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="certProof">Upload Certification Proof</label>
-                        <input type="file" id="certProof" name="certProof" required>
-                        <span class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="motivation">Why do you want to be a verifier?</label>
-                        <textarea id="motivation" name="motivation" rows="4" required></textarea>
-                    </div>
-
                     <div class="form-group checkbox-group">
                         <input type="checkbox" id="termsConditions" name="termsConditions" required>
                         <label for="termsConditions">I agree to the <a href="/terms">Terms and Services</a></label>
                     </div>
-
                     <div class="form-group checkbox-group">
                         <input type="checkbox" id="privacyPolicy" name="privacyPolicy" required>
                         <label for="privacyPolicy">I have read the <a href="/privacy_policy">Privacy Policy</a></label>
@@ -183,7 +150,6 @@
                 <div class="social-icons">
                     <a href="#"><img src="/verifier_form/icons8-facebook.svg" alt="Facebook" height="24"></a>
                     <a href="#"><img src="/verifier_form/icons8-instagram.svg" alt="Instagram" height="24"></a>
-                    
                     <a href="#"><img src="/verifier_form/icons8-youtube.svg" alt="YouTube" height="24"></a>
                 </div>
             </div>
@@ -192,32 +158,23 @@
 
     <script>
         // Mobile menu functionality
-        document.getElementById('menuIcon').addEventListener('click', function() {
+        document.getElementById('menuIcon').addEventListener('click', function () {
             document.getElementById('sideNavbar').style.width = "250px";
         });
 
-        document.getElementById('closeBtn').addEventListener('click', function() {
+        document.getElementById('closeBtn').addEventListener('click', function () {
             document.getElementById('sideNavbar').style.width = "0";
         });
 
-        // Form validation
-        document.getElementById('verifierForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            // Basic form validation
-            const fullName = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
+        // Client-side form validation
+        document.getElementById('verifierForm').addEventListener('submit', function (event) {
             const experience = document.getElementById('experienceYears').value;
-            
             if (experience < 5) {
+                event.preventDefault();
                 alert('You need a minimum of 5 years of experience to be a verifier.');
-                return;
             }
-            
-            // If validation passes
-            alert('Thank you for your application! We will review your information and contact you soon.');
-            this.reset();
         });
     </script>
 </body>
+
 </html>
