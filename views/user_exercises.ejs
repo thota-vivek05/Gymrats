@@ -1,47 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymRats - Exercise Guide</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/isolation/isolation.css">
-</head>
-<body>
-    <!-- Navigation Bar -->
-    <div class="navbar">
-        <header>
-            <!-- Header Branding -->            
-            <a href="/home" class="badge">GymRats</a>
-            
-            <div class="menu">
-                <a href="/home">Home</a>
-                <a href="/isolation">Exercises</a>
-                <a href="/nutrition">Nutrition</a>
-                <a href="/about">About</a>
-                <a href="/contact">Contact</a>
-            </div>
-
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" id="header-search" placeholder="Search exercises...">
-            </div>
-
-            <div class="menu-icon" onclick="openNav()">
-                <i class="fas fa-bars"></i>
-            </div>
-        </header>
-    </div>
-
-    <!-- Side Navigation for Mobile -->
-    <div id="mySidenav" class="side-navbar">
-        <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
-        <a href="/home">Home</a>
-        <a href="/index">Exercises</a>
-        <a href="/nutrition">Nutrition</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
-    </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>GymRats - User Profile</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="/userexercises/userexercises.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+    </head>
+    <body>
+        <!-- Navigation Bar -->
+        <div class="main-navbar">
+            <header>
+                <!-- Header Branding -->
+                <div class="brand-logo">
+                    <a href="<%= user && user.membershipType ? '/userdashboard_' + user.membershipType.charAt(0).toLowerCase() : '/dashboard' %>" class="brand-name">GymRats</a>
+                </div>
+                
+                <div class="nav-menu">
+                    <a href="<%= user && user.membershipType ? '/userdashboard_' + user.membershipType.charAt(0).toLowerCase() : '/dashboard' %>">Home</a>
+                    <a href="/user_exercises">Exercises</a>
+                    <a href="/user_nutrition">Nutrition</a>
+                </div>
+                
+                <div class="right-container">
+                    <div class="search-container">
+                        <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
+                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                    </div>
+                    
+                    <div class="user-profile">
+                        <a href="/userprofile">
+                            <% if (user && user.name) { %>
+                                <span><%= user.name %></span>
+                            <% } else if (user && user.full_name) { %>
+                                <span><%= user.full_name %></span>
+                            <% } else { %>
+                                <span>User</span>
+                            <% } %>
+                        </a>
+                    </div>
+                </div>
+                <div class="mobile-menu-icon" id="menuIcon">
+                    <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
+                </div>
+                <div class="mobile-sidebar" id="sideNavbar">
+                    <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+                    <a href="<%= user && user.membershipType ? '/userdashboard_' + user.membershipType.charAt(0).toLowerCase() : '/dashboard' %>">Home</a>
+                    <a href="/user_exercises">Exercises</a>
+                    <a href="/user_nutrition">Nutrition</a>
+                    <div class="sidebar-profile">
+                        <a href="/userprofile">
+                            <% if (user && user.name) { %>
+                                <span><%= user.name %></span>
+                            <% } else if (user && user.full_name) { %>
+                                <span><%= user.full_name %></span>
+                            <% } else { %>
+                                <span>User</span>
+                            <% } %>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
 
     <!-- Welcome Banner -->
     <div class="welcome-banner">
@@ -64,12 +86,6 @@
             <div id="exercise-overview">
                 <div class="exercise-header">
                     <h2>All Exercises</h2>
-                </div>
-                <div class="exercise-search-container">
-                    <div class="search-bar" style="max-width: 100%;">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="exercise-search" placeholder="Search exercises...">
-                    </div>
                 </div>
                 <div class="exercise-list" id="exercise-list">
                     <!-- Exercises populated by JavaScript -->
@@ -184,6 +200,24 @@
             document.getElementById("mySidenav").style.width = "0";
         }
 
+        // Mobile menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuIcon = document.getElementById('menuIcon');
+        const closeBtn = document.getElementById('closeBtn');
+        const sideNavbar = document.getElementById('sideNavbar');
+        
+        if (menuIcon) {
+            menuIcon.addEventListener('click', function() {
+                sideNavbar.style.width = '250px';
+            });
+        }
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                sideNavbar.style.width = '0';
+            });
+        }
+    });
         // Exercise Data - This would typically come from a server
         const categories = [
             { id: 'chest', name: 'Chest' },

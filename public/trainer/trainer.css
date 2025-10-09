@@ -193,6 +193,11 @@ input:focus {
     flex: 0 0 300px;
     display: flex;
     flex-direction: column;
+    background-color: #111;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #8A2BE2;
+    box-shadow: 0 4px 8px rgba(138, 43, 226, 0.3);
 }
 
 .client-list-container h2 {
@@ -202,11 +207,6 @@ input:focus {
 }
 
 .client-list {
-    background-color: #111;
-    border-radius: 8px;
-    padding: 20px;
-    border: 1px solid #8A2BE2;
-    box-shadow: 0 4px 8px rgba(138, 43, 226, 0.3);
     flex-grow: 1;
     overflow-y: auto;
 }
@@ -255,6 +255,7 @@ input:focus {
 .top-row {
     display: flex;
     gap: 20px;
+    flex-wrap: wrap; /* Added for responsiveness */
 }
 
 .top-row > div {
@@ -292,7 +293,7 @@ input:focus {
 /* Client Profile */
 .profile-stats {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Updated for responsiveness */
     grid-gap: 15px;
     margin-bottom: 20px;
 }
@@ -301,6 +302,8 @@ input:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: 15px;
+    margin-bottom:5px ;
 }
 
 .stat-label {
@@ -326,7 +329,7 @@ input:focus {
 /* Current Stats - Updated with chart container */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Updated for responsiveness */
     grid-gap: 15px;
     margin-bottom: 20px;
 }
@@ -364,14 +367,14 @@ input:focus {
     margin-bottom: 15px;
 }
 
-.food-item {
+.foods-to-take p { /* Updated to match structure in trainer.ejs */
     display: flex;
     justify-content: space-between;
     padding: 10px 0;
     border-bottom: 1px solid #333;
 }
 
-.food-item:last-child {
+.foods-to-take p:last-child {
     border-bottom: none;
 }
 
@@ -407,6 +410,14 @@ input:focus {
 .btn:hover {
     background-color: transparent;
     color: #8A2BE2;
+}
+
+.btn.disabled {
+    background-color: #333; /* Adjusted to match theme */
+    border-color: #333;
+    color: #666;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .meet-button {
@@ -495,6 +506,101 @@ input:focus {
 .social-icons a:hover {
     background-color: #8A2BE2;
     transform: translateY(-3px);
+}
+
+/* Weekly Workout Schedule Styling */
+.workout-plan {
+    background-color: #111;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #8A2BE2;
+    box-shadow: 0 4px 8px rgba(138, 43, 226, 0.3);
+    color: #f1f1f1;
+}
+
+.workout-plan h2 {
+    font-size: 1.5rem;
+    color: #f1f1f1;
+    margin-bottom: 15px;
+    font-weight: 600;
+    border-bottom: 1px solid #8A2BE2;
+    padding-bottom: 10px;
+}
+
+.day-schedule h3 {
+    color: #f1f1f1;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    font-weight: 500;
+    border-left: 4px solid #8A2BE2;
+    padding-left: 10px;
+}
+
+.weekly-schedule {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.column-left, .column-right {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.day-schedule {
+    margin-bottom: 15px;
+}
+
+
+.exercises-list {
+    margin-left: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.exercise-item {
+    background-color: #f1f1f1;
+    padding: 8px;
+    border-radius: 5px;
+    color: #f1f1f1;
+    border: 1px solid #333;
+    transition: background-color 0.3s ease;
+}
+
+.exercise-item:hover {
+    background-color: #2a2a4d;
+}
+
+
+.exercise-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.exercise-details {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .weekly-schedule {
+        grid-template-columns: 1fr;
+    }
+
+    .day-schedule h3 {
+        font-size: 16px;
+    }
+
+    .exercise-item {
+        padding: 6px;
+    }
+
+    .exercise-details {
+        font-size: 12px;
+    }
 }
 
 /* Responsive Styles */

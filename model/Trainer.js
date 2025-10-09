@@ -29,34 +29,6 @@ const trainerSchema = new mongoose.Schema({
         type: String, 
         enum: ['Weight Loss', 'Muscle Gain', 'Flexibility', 'Cardiovascular', 'Strength Training', 'Post-Rehab', 'Sports Performance', 'Nutrition']
     }],
-    certifications: { 
-        type: String, 
-        required: true,
-        enum: ['NASM', 'ACE', 'ACSM', 'NSCA', 'ISSA', 'Other']
-    },
-    bio: { 
-        type: String 
-    },
-    location: { 
-        type: String 
-    },
-    hourlyRate: { 
-        type: Number, 
-        min: 0 
-    },
-    verificationStatus: { 
-        type: String, 
-        enum: ['Pending', 'In Progress', 'Approved', 'Rejected'],
-        default: 'Pending' 
-    },
-    verificationDocuments: [{
-        name: { type: String, required: true },
-        url: { type: String, required: true }
-    }],
-    verificationSubmittedDate: { 
-        type: Date, 
-        default: Date.now 
-    },
     verifierId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Verifier',
@@ -91,6 +63,32 @@ const trainerSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'NutritionPlan' 
     }],
+
+    // NEW: Add this subscription object after your existing fields
+    subscription: {
+        type: { 
+            type: String, 
+            enum: ['Free', 'Basic', 'Pro', 'Enterprise'],
+            default: 'Free'
+        },
+        months_remaining: { 
+            type: Number, 
+            default: 0,
+            min: 0 
+        },
+        start_date: { 
+            type: Date, 
+            default: Date.now 
+        },
+        end_date: { 
+            type: Date 
+        },
+        max_clients: { 
+            type: Number, 
+            default: 5 
+        }
+    },
+
     rating: { 
         type: Number,
         min: 0,
@@ -99,7 +97,7 @@ const trainerSchema = new mongoose.Schema({
     },
     status: { 
         type: String, 
-        enum: ['Active', 'Inactive', 'Suspended'],
+        enum: ['Active', 'Inactive', 'Suspended', 'Expired'],
         default: 'Active' 
     }
 }, { timestamps: true });

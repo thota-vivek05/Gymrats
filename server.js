@@ -7,12 +7,9 @@ const path = require('path');
 const methodOverride = require('method-override');
 const sqlite3 = require('sqlite3').verbose();
 
+
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Import routes
-const adminRoutes = require('./Routes/adminRoutes');
-const verifierRoutes = require('./Routes/verifierRoutes');
 
 // Initialize SQLite database
 const db = new sqlite3.Database(':memory:', (err) => {
@@ -36,12 +33,12 @@ db.serialize(() => {
     const adminUsers = [
         {
             email: 'admin1@gymrats.com',
-            password: 'admin123',
+            password: 'Password123',
             full_name: 'Admin One'
         },
         {
             email: 'admin2@gymrats.com',
-            password: 'admin456',
+            password: 'Password123',
             full_name: 'Admin Two'
         }
     ];
@@ -49,7 +46,7 @@ db.serialize(() => {
     adminUsers.forEach(async (admin) => {
         const hashedPassword = await bcrypt.hash(admin.password, 10);
         db.run(
-            `INSERT OR IGNORE INTO admins (email, password_hash, full_name) VALUES (?, ?, ?)`,
+            'INSERT OR IGNORE INTO admins (email, password_hash, full_name) VALUES (?, ?, ?)',
             [admin.email, hashedPassword, admin.full_name],
             (err) => {
                 if (err) {
@@ -60,11 +57,20 @@ db.serialize(() => {
     });
 });
 
+
+// Import routes
+const adminRoutes = require('./Routes/adminRoutes');
+const userRoutes = require('./Routes/userRoutes');
+const trainerRoutes = require('./Routes/trainerRoutes');
+const verifierRoutes = require('./Routes/verifierRoutes');
+
+
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method')); // For PUT/DELETE requests
+
 
 // Session setup
 app.use(
@@ -85,6 +91,7 @@ mongoose.connect('mongodb://localhost:27017/gymrats')
         console.error('MongoDB connection error:', err);
         process.exit(1);
     });
+
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
@@ -110,7 +117,11 @@ const isAuthenticated = (req, res, next) => {
 
 // Use MVC routes for admin pages
 app.use('/admin', adminRoutes);
+app.use('/', userRoutes);
+app.use('/', trainerRoutes);
 app.use('/verifier', verifierRoutes);
+
+
 
 // Redirect legacy admin URLs to the new MVC routes
 app.get('/admin_dashboard', (req, res) => res.redirect('/admin/dashboard'));
@@ -120,7 +131,7 @@ app.get('/admin_membership', (req, res) => res.redirect('/admin/memberships'));
 app.get('/admin_nutrition', (req, res) => res.redirect('/admin/nutrition-plans'));
 app.get('/admin_exercises', (req, res) => res.redirect('/admin/exercises'));
 app.get('/admin_workouts', (req, res) => res.redirect('/admin/workout-plans'));
-app.get('/admin_verifier', (req, res) => res.redirect('/admin/verifiers'));
+app.get('/admin_verifier', (req, res) => res.redirect('/admin/verifier'));
 app.get('/admin_settings', (req, res) => res.redirect('/admin/settings'));
 
 // Routes for static pages
@@ -129,7 +140,9 @@ const pages = [
     'login_signup', 'nutrition', 'privacy_policy', 'schedule', 'signup',
     'terms', 'testimonial', 'trainer_form', 'trainer', 'trainers',
     'verifier_form', 'verifier', 'workout_plans', 'userdashboard_b',
-    'userdashboard_g', 'userdashboard_p', 'trainer_login', 'edit_nutritional_plan', 'admin_login','pendingverifications'
+    'userdashboard_g', 'userdashboard_p','trainer_login','edit_nutritional_plan',
+    'admin_login','pendingverifications','verifier_login','user_nutrition',
+    'user_exercises', 'userprofile'
 ];
 
 pages.forEach(page => {
@@ -159,7 +172,7 @@ app.post('/admin/login', async (req, res) => {
 
         // Query SQLite database for admin
         db.get(
-            `SELECT * FROM admins WHERE email = ?`,
+            'SELECT * FROM admins WHERE email = ?',
             [email],
             async (err, admin) => {
                 if (err) {
@@ -203,7 +216,7 @@ app.post('/admin/login', async (req, res) => {
     }
 });
 
-// Login Route (Regular User)
+// Login Route
 app.post('/api/login', async (req, res) => {
     try {
         const { email, password, membershipPlan } = req.body;
@@ -384,4 +397,9 @@ app.get('/logout', (req, res) => {
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log(`http://localhost:${PORT}/home`);
+    console.log(`http://localhost:${PORT}/login_signup`);
+    console.log(`http://localhost:${PORT}/trainer_login`);
+    console.log(`http://localhost:${PORT}/verifier_login`);
+    console.log(`http://localhost:${PORT}/admin_login`);
 });

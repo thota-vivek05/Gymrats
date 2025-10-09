@@ -33,30 +33,36 @@ const userSchema = new mongoose.Schema({
         type: Date, 
         default: Date.now 
     },
-    weight_history: [{
-        weight: { 
-            type: Number, 
-            required: true,
-            min: 0 
-        },
-        date: { 
-            type: Date, 
-            default: Date.now 
-        }
-    }],
+    weight: { 
+        type: Number, 
+        required: true,
+        min: 0 
+    },
     height: { 
         type: Number, 
         min: 0,
-        default: null 
+        required: true
     },
     BMI: { 
         type: Number, 
         min: 0,
         default: null 
     },
+
+    // ✅ Added fields
+    bodyFat: { 
+        type: Number, 
+        min: 0, 
+        default: null 
+    },
+    goal: { 
+        type: String, 
+        default: null 
+    },
+
     status: { 
         type: String, 
-        enum: ['Active', 'Inactive', 'Suspended'],
+        enum: ['Active', 'Inactive', 'Suspended', 'Expired'],
         default: 'Active'
     },
     membershipType: { 
@@ -64,6 +70,30 @@ const userSchema = new mongoose.Schema({
         enum: ['Basic', 'Gold', 'Platinum'],
         default: 'Basic'
     },
+
+  // NEW: Membership Duration Fields
+    membershipDuration: {
+        months_remaining: { 
+            type: Number, 
+            default: 0,
+            min: 0 
+        },
+        start_date: { 
+            type: Date, 
+            default: Date.now 
+        },
+        end_date: { 
+            type: Date 
+        },
+        auto_renew: { 
+            type: Boolean, 
+            default: false 
+        },
+        last_renewal_date: { 
+            type: Date 
+        }
+    },
+
     fitness_goals: {
         calorie_goal: { 
             type: Number, 
@@ -81,98 +111,42 @@ const userSchema = new mongoose.Schema({
             default: null 
         }
     },
+
+    // ✅ Nutrition history structure (used in dashboards)           use this if the below one gives issues
+    // nutrition_history: [
+    //     {
+    //         date: { type: Date, default: Date.now },
+    //         name: { type: String },
+    //         calories: { type: Number, min: 0 },
+    //         protein: { type: Number, min: 0 },
+    //         macros: {
+    //             protein: { type: Number, default: 0 },
+    //             carbs: { type: Number, default: 0 },
+    //             fats: { type: Number, default: 0 }
+    //         }
+    //     }
+    // ],
+
+    // ✅ Link to workout history collection
+    // workout_history: [
+    //     {
+    //         type: mongoose.Schema.Types.ObjectId,
+    //         ref: 'WorkoutHistory'
+    //     }
+    // ],
+
     trainer: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Trainer',
         default: null 
     },
-    workout_history: [{
-        workoutPlanId: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'WorkoutPlan' 
-        },
-        date: { 
-            type: Date, 
-            default: Date.now 
-        },
-        exercises: [{
-            name: { 
-                type: String, 
-                required: true 
-            },
-            sets: { 
-                type: Number, 
-                min: 1 
-            },
-            reps: { 
-                type: Number, 
-                min: 1 
-            },
-            weight: { 
-                type: Number, 
-                min: 0 
-            },
-            duration: { 
-                type: Number, 
-                min: 0 
-            }, // For timed exercises (e.g., 30 seconds)
-            completed: { 
-                type: Boolean, 
-                default: false 
-            }
-        }],
-        progress: { 
-            type: Number, 
-            min: 0, 
-            max: 100 
-        }, // Percentage completed
-        completed: { 
-            type: Boolean, 
-            default: false 
-        }
-    }],
-    nutrition_history: [{
-        date: { 
-            type: Date, 
-            default: Date.now 
-        },
-        calories_consumed: { 
-            type: Number, 
-            min: 0 
-        },
-        protein_consumed: { 
-            type: Number, 
-            min: 0 
-        },
-        macros: {
-            protein: { 
-                type: Number, 
-                min: 0 
-            }, // Percentage
-            carbs: { 
-                type: Number, 
-                min: 0 
-            },
-            fats: { 
-                type: Number, 
-                min: 0 
-            }
-        },
-        foods: [{
-            name: { 
-                type: String, 
-                required: true 
-            },
-            protein: { 
-                type: Number, 
-                min: 0 
-            },
-            calories: { 
-                type: Number, 
-                min: 0 
-            }
-        }]
-    }],
+
+    // New Fields for relations
+    workout_history: [{ type: mongoose.Schema.Types.ObjectId, ref: 'WorkoutHistory' }],
+    nutrition_history: [{ type: mongoose.Schema.Types.ObjectId, ref: 'NutritionHistory' }],
+
+
+
     class_schedules: [{
         trainerId: { 
             type: mongoose.Schema.Types.ObjectId, 
@@ -181,7 +155,7 @@ const userSchema = new mongoose.Schema({
         name: { 
             type: String, 
             required: true 
-        }, // e.g., "HIIT Intensity"
+        },
         date: { 
             type: Date, 
             required: true 
@@ -189,14 +163,51 @@ const userSchema = new mongoose.Schema({
         time: { 
             type: String, 
             required: true 
-        }, // e.g., "6:00 PM"
+        },
         meetLink: { 
             type: String 
-        }, // e.g., "https://meet.google.com/abc-defg-hij"
+        },
         description: { 
             type: String 
-        } // e.g., "High-intensity interval training..."
+        }
     }]
 });
+
+// REYNA
+// Add these methods to your User.js schema (before module.exports)
+
+// Add a method to check if membership is active
+userSchema.methods.isMembershipActive = function() {
+    return this.status === 'Active' && 
+           this.membershipDuration.months_remaining > 0 &&
+           (!this.membershipDuration.end_date || this.membershipDuration.end_date > new Date());
+};
+
+// Add a method to extend membership
+userSchema.methods.extendMembership = function(additionalMonths) {
+    this.membershipDuration.months_remaining += additionalMonths;
+    this.membershipDuration.last_renewal_date = new Date();
+    
+    // Update end date
+    const newEndDate = new Date();
+    newEndDate.setMonth(newEndDate.getMonth() + this.membershipDuration.months_remaining);
+    this.membershipDuration.end_date = newEndDate;
+    
+    this.status = 'Active';
+    return this.save();
+};
+
+// Add a method to decrease membership by one month (for monthly cron job)
+userSchema.methods.decreaseMembershipMonth = function() {
+    if (this.membershipDuration.months_remaining > 0) {
+        this.membershipDuration.months_remaining -= 1;
+        
+        if (this.membershipDuration.months_remaining === 0) {
+            this.status = 'Expired';
+        }
+        return this.save();
+    }
+    return Promise.resolve(this);
+};
 
 module.exports = mongoose.model('User', userSchema);

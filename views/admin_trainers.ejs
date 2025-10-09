@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="/admin/admin_trainer.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
-    
 </head>
 <body>
     <div class="container">
@@ -19,7 +18,7 @@
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="/admin_dashboard" class="nav-link ">
+                    <a href="/admin_dashboard" class="nav-link">
                         <span>Dashboard</span>
                     </a>
                 </li>
@@ -81,7 +80,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Stats Cards -->
             <div class="stats-container">
                 <div class="stats-card">
@@ -90,7 +88,7 @@
                             <div class="stats-header">
                                 <h3>Total Trainers</h3>
                             </div>
-                            <div class="stats-number">157</div>
+                            <div class="stats-number"><%= stats.totalTrainers %></div>
                             <div class="stats-label">+9% from last month</div>
                         </div>
                     </div>
@@ -123,13 +121,12 @@
                             <div class="stats-header">
                                 <h3>Pending Approvals</h3>
                             </div>
-                            <div class="stats-number">23</div>
+                            <div class="stats-number"><%= stats.pendingApprovals %></div>
                             <div class="stats-label">+5 since yesterday</div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <!-- Search Bar -->
             <div class="search-container">
                 <div class="search-bar">
@@ -137,320 +134,250 @@
                 </div>
                 <button class="filter-btn" id="filterBtn">Filter Options</button>
             </div>
-
             <!-- Trainer Table -->
             <div class="section">
                 <div class="table-header">
                     <h3 class="section-title">Trainer List</h3>
-                    <button class="add-btn">+ Add New Trainer</button>
+                    <button class="add-btn" id="addTrainerBtn">+ Add New Trainer</button>
                 </div>
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
                                 <th>Trainer</th>
-                                <th>Specialty</th>
+                                <th>Specializations</th>
                                 <th>Experience</th>
-                                <th>Clients</th>
-                                <th>Rating</th>
                                 <th>Status</th>
-                                <th>Actions</th>
+                                <th>Email</th>
                             </tr>
                         </thead>
                         <tbody id="trainerTableBody">
+                            <% if (trainers && trainers.length > 0) { %>
+                            <% trainers.forEach(trainer => { %>
                             <tr>
                                 <td>
-                                    <div class="trainer-info">
-                                        <div class="trainer-image">
-                                            <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1470&auto=format&fit=crop" alt="Alex Turner">
-                                        </div>
-                                        <div>Alex Turner</div>
+                                    <div class="user-info">
+                                        <div class="avatar"><%= trainer.name.charAt(0) %></div>
+                                        <span><%= trainer.name %></span>
                                     </div>
                                 </td>
-                                <td>Strength Training</td>
-                                <td>8 years</td>
-                                <td>32</td>
-                                <td>4.8/5</td>
-                                <td><span class="status active">Active</span></td>
                                 <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
+                                    <div class="specialization-tags">
+                                        <% if (trainer.specializations && trainer.specializations.length > 0) { %>
+                                        <% trainer.specializations.slice(0, 3).forEach(spec => { %>
+                                        <span class="tag"><%= spec %></span>
+                                        <% }); %>
+                                        <% if (trainer.specializations.length > 3) { %>
+                                        <span class="tag">+<%= trainer.specializations.length - 3 %></span>
+                                        <% } %>
+                                        <% } else { %>
+                                        <span class="tag">No specializations</span>
+                                        <% } %>
+                                    </div>
                                 </td>
+                                <td><%= trainer.experience %> years</td>
+                                <td><span class="status <%= trainer.status.toLowerCase() %>"><%= trainer.status %></span></td>
+                                <td><%= trainer.email %></td>
                             </tr>
+                            <% }); %>
+                            <% } else { %>
                             <tr>
-                                <td>
-                                    <div class="trainer-info">
-                                        <div class="trainer-image">
-                                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1376&auto=format&fit=crop" alt="Jessica Moore">
-                                        </div>
-                                        <div>Jessica Moore</div>
-                                    </div>
-                                </td>
-                                <td>Yoga Instructor</td>
-                                <td>5 years</td>
-                                <td>28</td>
-                                <td>4.9/5</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
+                                <td colspan="5" class="no-data">No trainers found</td>
                             </tr>
-                            <tr>
-                                <td>
-                                    <div class="trainer-info">
-                                        <div class="trainer-image">
-                                            <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?q=80&w=1374&auto=format&fit=crop" alt="David Lee">
-                                        </div>
-                                        <div>David Lee</div>
-                                    </div>
-                                </td>
-                                <td>Bodybuilding</td>
-                                <td>12 years</td>
-                                <td>45</td>
-                                <td>4.7/5</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="trainer-info">
-                                        <div class="trainer-image">
-                                            <img src="https://images.unsplash.com/photo-1548690312-e3b507d8c110?q=80&w=1374&auto=format&fit=crop" alt="Sophia Garcia">
-                                        </div>
-                                        <div>Sophia Garcia</div>
-                                    </div>
-                                </td>
-                                <td>Nutrition Expert</td>
-                                <td>7 years</td>
-                                <td>38</td>
-                                <td>4.6/5</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="trainer-info">
-                                        <div class="trainer-image">
-                                            <img src="https://images.unsplash.com/photo-1534367507873-d2d7e24c797f?q=80&w=1470&auto=format&fit=crop" alt="Ryan Mitchell">
-                                        </div>
-                                        <div>Ryan Mitchell</div>
-                                    </div>
-                                </td>
-                                <td>CrossFit</td>
-                                <td>6 years</td>
-                                <td>25</td>
-                                <td>4.5/5</td>
-                                <td><span class="status pending">Pending</span></td>
-                                <td>
-                                    <button class="action-btn approve">Approve</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="trainer-info">
-                                        <div class="trainer-image">
-                                            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1470&auto=format&fit=crop" alt="Emily Wilson">
-                                        </div>
-                                        <div>Emily Wilson</div>
-                                    </div>
-                                </td>
-                                <td>Pilates</td>
-                                <td>4 years</td>
-                                <td>22</td>
-                                <td>4.7/5</td>
-                                <td><span class="status inactive">Inactive</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="trainer-info">
-                                        <div class="trainer-image">
-                                            <img src="https://images.unsplash.com/photo-1567013127542-490d757e51fc?q=80&w=1374&auto=format&fit=crop" alt="Michael Rodriguez">
-                                        </div>
-                                        <div>Michael Rodriguez</div>
-                                    </div>
-                                </td>
-                                <td>Cardio & HIIT</td>
-                                <td>9 years</td>
-                                <td>36</td>
-                                <td>4.8/5</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="trainer-info">
-                                        <div class="trainer-image">
-                                            <img src="https://images.unsplash.com/photo-1579758629938-03607ccdbaba?q=80&w=1470&auto=format&fit=crop" alt="Aisha Johnson">
-                                        </div>
-                                        <div>Aisha Johnson</div>
-                                    </div>
-                                </td>
-                                <td>Boxing</td>
-                                <td>6 years</td>
-                                <td>20</td>
-                                <td>4.9/5</td>
-                                <td><span class="status pending">Pending</span></td>
-                                <td>
-                                    <button class="action-btn approve">Approve</button>
-                                </td>
-                            </tr>
+                            <% } %>
                         </tbody>
                     </table>
-                </div>
-                
-                <!-- Pagination -->
-                <div class="pagination">
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <button class="page-btn">Next</button>
                 </div>
             </div>
         </main>
     </div>
-
     <script>
-       document.addEventListener('DOMContentLoaded', function() {
-    // Setup interactive elements
-    setupResponsiveFeatures();
-});
-
-function setupResponsiveFeatures() {
-    // Navigation buttons
-    try {
-        const navItems = document.querySelectorAll('.nav-link');
-        navItems.forEach(item => {
-            item.addEventListener('click', function(e) {
-                const href = this.getAttribute('href');
-                // Prevent default only for the current page to avoid redundant navigation
-                if (href === '/admin_trainers') {
-                    e.preventDefault();
-                    navItems.forEach(link => link.classList.remove('active'));
-                    this.classList.add('active');
-                    localStorage.setItem('activeNav', href);
-                }
-                // Allow navigation for all other hrefs
-            });
+        document.addEventListener('DOMContentLoaded', function () {
+            setupResponsiveFeatures();
+            setupDynamicLoading();
         });
 
-        // Set active nav item from localStorage
-        const activeNav = localStorage.getItem('activeNav');
-        if (activeNav) {
-            const activeItem = document.querySelector(`.nav-link[href="${activeNav}"]`);
-            if (activeItem) {
-                navItems.forEach(link => link.classList.remove('active'));
-                activeItem.classList.add('active');
+        function setupResponsiveFeatures() {
+            try {
+                const navItems = document.querySelectorAll('.nav-link');
+                navItems.forEach(item => {
+                    item.addEventListener('click', function (e) {
+                        const href = this.getAttribute('href');
+                        if (href === '/admin_trainers') {
+                            e.preventDefault();
+                            navItems.forEach(link => link.classList.remove('active'));
+                            this.classList.add('active');
+                            localStorage.setItem('activeNav', href);
+                        }
+                    });
+                });
+                const activeNav = localStorage.getItem('activeNav');
+                if (activeNav) {
+                    const activeItem = document.querySelector(`.nav-link[href="${activeNav}"]`);
+                    if (activeItem) {
+                        navItems.forEach(link => link.classList.remove('active'));
+                        activeItem.classList.add('active');
+                    }
+                }
+            } catch (error) {
+                console.error('Error setting up navigation:', error);
             }
-        }
-    } catch (error) {
-        console.error('Error setting up navigation:', error);
-    }
 
-    // Action buttons
-    try {
-        const actionButtons = document.querySelectorAll('.action-btn');
-        actionButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                this.classList.add('clicked');
-                
-                // Approve button specific logic
-                if (this.classList.contains('approve')) {
-                    const row = this.closest('tr');
-                    const statusCell = row.querySelector('.status');
-                    statusCell.classList.remove('pending');
-                    statusCell.classList.add('active');
-                    statusCell.textContent = 'Active';
-                    
-                    // Replace approve button with view and edit buttons
-                    this.textContent = 'View';
-                    this.classList.remove('approve');
-                    
-                    const editButton = document.createElement('button');
-                    editButton.className = 'action-btn';
-                    editButton.textContent = 'Edit';
-                    this.parentNode.appendChild(editButton);
-                    
-                    // Add event listener to new button
-                    editButton.addEventListener('click', function() {
+            try {
+                const actionButtons = document.querySelectorAll('.action-btn');
+                actionButtons.forEach(button => {
+                    button.addEventListener('click', function () {
                         this.classList.add('clicked');
+                        if (this.classList.contains('approve')) {
+                            const row = this.closest('tr');
+                            const statusCell = row.querySelector('.status');
+                            statusCell.classList.remove('pending');
+                            statusCell.classList.add('active');
+                            statusCell.textContent = 'Active';
+                            this.textContent = 'View';
+                            this.classList.remove('approve');
+                            const editButton = document.createElement('button');
+                            editButton.className = 'action-btn';
+                            editButton.textContent = 'Edit';
+                            this.parentNode.appendChild(editButton);
+                            editButton.addEventListener('click', function () {
+                                this.classList.add('clicked');
+                                setTimeout(() => {
+                                    this.classList.remove('clicked');
+                                }, 200);
+                            });
+                        }
                         setTimeout(() => {
                             this.classList.remove('clicked');
                         }, 200);
                     });
+                });
+            } catch (error) {
+                console.error('Error setting up action buttons:', error);
+            }
+
+            try {
+                const filterBtn = document.getElementById('filterBtn');
+                if (filterBtn) {
+                    filterBtn.addEventListener('click', function () {
+                        alert('Filter options would appear here');
+                    });
                 }
-                
-                setTimeout(() => {
-                    this.classList.remove('clicked');
-                }, 200);
-            });
-        });
-    } catch (error) {
-        console.error('Error setting up action buttons:', error);
-    }
+            } catch (error) {
+                console.error('Error setting up filter button:', error);
+            }
 
-    // Filter button
-    try {
-        const filterBtn = document.getElementById('filterBtn');
-        if (filterBtn) {
-            filterBtn.addEventListener('click', function() {
-                alert('Filter options would appear here');
-            });
+            try {
+                const pageButtons = document.querySelectorAll('.page-btn');
+                pageButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        pageButtons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+                    });
+                });
+            } catch (error) {
+                console.error('Error setting up pagination:', error);
+            }
         }
-    } catch (error) {
-        console.error('Error setting up filter button:', error);
-    }
 
-    // Pagination buttons
-    try {
-        const pageButtons = document.querySelectorAll('.page-btn');
-        pageButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                pageButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    } catch (error) {
-        console.error('Error setting up pagination:', error);
-    }
+        function setupDynamicLoading() {
+            const searchInput = document.getElementById('trainerSearchInput');
+            const trainerTableBody = document.getElementById('trainerTableBody');
+            const addTrainerBtn = document.getElementById('addTrainerBtn');
 
-    // Search functionality
-    try {
-        const searchInput = document.getElementById('trainerSearchInput');
-        if (searchInput) {
-            searchInput.addEventListener('keyup', function() {
-                const searchTerm = this.value.toLowerCase();
-                const rows = document.querySelectorAll('#trainerTableBody tr');
-                
-                rows.forEach(row => {
-                    const trainerName = row.querySelector('.trainer-info div:nth-child(2)').textContent.toLowerCase();
-                    const specialty = row.querySelectorAll('td')[1].textContent.toLowerCase();
-                    
-                    if (trainerName.includes(searchTerm) || specialty.includes(searchTerm)) {
-                        row.style.display = '';
+            async function fetchTrainers(searchTerm = '') {
+                try {
+                    const response = await fetch(`/admin/api/trainers${searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ''}`);
+                    const data = await response.json();
+                    if (data.success) {
+                        updateTrainerTable(data.trainers);
                     } else {
-                        row.style.display = 'none';
+                        console.error('Failed to fetch trainers:', data.message);
+                        trainerTableBody.innerHTML = '<tr><td colspan="5" class="no-data">Error loading trainers</td></tr>';
+                    }
+                } catch (error) {
+                    console.error('Error fetching trainers:', error);
+                    trainerTableBody.innerHTML = '<tr><td colspan="5" class="no-data">Error loading trainers</td></tr>';
+                }
+            }
+
+            function updateTrainerTable(trainers) {
+                if (trainers.length === 0) {
+                    trainerTableBody.innerHTML = '<tr><td colspan="5" class="no-data">No trainers found</td></tr>';
+                    return;
+                }
+                trainerTableBody.innerHTML = trainers.map(trainer => `
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <div class="avatar">${trainer.name.charAt(0)}</div>
+                                <span>${trainer.name}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="specialization-tags">
+                                ${trainer.specializations && trainer.specializations.length > 0 ?
+                                    trainer.specializations.slice(0, 3).map(spec => `<span class="tag">${spec}</span>`).join('') +
+                                    (trainer.specializations.length > 3 ? `<span class="tag">+${trainer.specializations.length - 3}</span>` : '') :
+                                    '<span class="tag">No specializations</span>'}
+                            </div>
+                        </td>
+                        <td>${trainer.experience} years</td>
+                        <td><span class="status ${trainer.status.toLowerCase()}">${trainer.status}</span></td>
+                        <td>${trainer.email}</td>
+                    </tr>
+                `).join('');
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    const searchTerm = this.value.trim();
+                    fetchTrainers(searchTerm);
+                });
+            }
+
+            if (addTrainerBtn) {
+                addTrainerBtn.addEventListener('click', async function () {
+                    const name = prompt('Enter trainer name:');
+                    const email = prompt('Enter trainer email:');
+                    const password = prompt('Enter trainer password:');
+                    const phone = prompt('Enter trainer phone:');
+                    const experience = prompt('Enter trainer experience (1-2, 3-5, 5-10, 10+):');
+                    const specializations = prompt('Enter specializations (comma-separated):')?.split(',').map(s => s.trim()) || [];
+
+                    if (name && email && password && phone && experience) {
+                        try {
+                            const response = await fetch('/admin/trainers', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    name,
+                                    email,
+                                    password,
+                                    phone,
+                                    experience,
+                                    specializations
+                                })
+                            });
+                            const result = await response.json();
+                            if (result.success) {
+                                alert('Trainer added successfully');
+                                fetchTrainers(); // Refresh the table
+                            } else {
+                                alert('Failed to add trainer: ' + result.message);
+                            }
+                        } catch (error) {
+                            console.error('Error adding trainer:', error);
+                            alert('Error adding trainer');
+                        }
+                    } else {
+                        alert('All fields are required');
                     }
                 });
-            });
+            }
         }
-    } catch (error) {
-        console.error('Error setting up search:', error);
-    }
-}
     </script>
 </body>
 </html>

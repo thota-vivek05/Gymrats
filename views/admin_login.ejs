@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - GymRats</title>
+    <link rel="stylesheet" href="/admin/admin_login.css">
+</head>
+
+<body>
+    <div class="main-navbar">
+        <header>
+            <!-- Header Branding -->
+            <div class="brand-logo">
+                <a href="/home" class="brand-name">GymRats</a>
+            </div>
+
+            <div class="mobile-menu-icon" id="menuIcon">
+                <img src="/home/menu.jpg" alt="Menu" height="25px" />
+            </div>
+
+            <div class="mobile-sidebar" id="sideNavbar">
+                <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+                <a href="/home">Home</a>
+                <a href="/isolation">Exercises</a>
+                <a href="/nutrition">Nutrition</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+                <a href="/login_signup">Login / Signup</a>
+            </div>
+        </header>
+    </div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Admin Login</h1>
+                <p>Access your admin dashboard to manage website content and users</p>
+            </div>
+
+            <% if (locals.errorMessage) { %>
+            <div class="error-message">
+                <%= errorMessage %>
+            </div>
+            <% } %>
+
+            <% if (locals.successMessage) { %>
+            <div class="success-message">
+                <%= successMessage %>
+            </div>
+            <% } %>
+
+            <form action="/admin/login" method="POST" id="adminLoginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required
+                        value="<%= locals.email || '' %>">
+                    <span class="error-text" id="emailError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-input-container">
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <span class="toggle-password" id="togglePassword">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-eye">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                    </div>
+                    <span class="error-text" id="passwordError"></span>
+                </div>
+                <input type="hidden" name="redirectUrl" value="/admin/dashboard">
+                <button type="submit" class="login-buttons" id="loginBtn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>GymRats</h3>
+                <ul>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/trainers">Our Trainers</a></li>
+                    <li><a href="/testimonial">Testimonials</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="/isolation">Exercise Guide</a></li>
+                    <li><a href="/nutrition">Nutrition Tips</a></li>
+                    <li><a href="/workout_plans">Workout Plans</a></li>
+                    <li><a href="/calculators">Calculators</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="/contact">Contact Us</a></li>
+                    <li><a href="/about">About us</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/privacy_policy">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Connect With Us</h3>
+                <ul>
+                    <li><a href="/trainer_form">Become a Trainer</a></li>
+                    <li><a href="/verifier_form">Become a Verifier</a></li>
+                </ul>
+                <div class="social-icons">
+                    <a href="#"><img src="/home/icons8-facebook.svg" alt="Facebook"></a>
+                    <a href="#"><img src="/home/icons8-instagram.svg" alt="Instagram"></a>
+                    <a href="#"><img src="/home/icons8-youtube.svg" alt="YouTube"></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 GymRats. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mobile menu functionality
+            const menuIcon = document.getElementById('menuIcon');
+            const sideNavbar = document.getElementById('sideNavbar');
+            const closeBtn = document.getElementById('closeBtn');
+
+            if (menuIcon) {
+                menuIcon.addEventListener('click', function () {
+                    sideNavbar.classList.add('active');
+                });
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function () {
+                    sideNavbar.classList.remove('active');
+                });
+            }
+
+            // Password visibility toggle
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function () {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    const eyeIcon = togglePassword.querySelector('svg');
+                    if (type === 'password') {
+                        eyeIcon.innerHTML = `
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                `;
+                    } else {
+                        eyeIcon.innerHTML = `
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                `;
+                    }
+                });
+            }
+
+            // Form validation and AJAX submission
+            const loginForm = document.getElementById('adminLoginForm');
+            const emailInput = document.getElementById('email');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function (event) {
+                    event.preventDefault();
+
+                    let isValid = true;
+
+                    // Reset error messages
+                    emailError.textContent = '';
+                    passwordError.textContent = '';
+
+                    // Validate email
+                    if (!emailInput.value.trim()) {
+                        emailError.textContent = 'Email is required';
+                        isValid = false;
+                    } else if (!isValidEmail(emailInput.value.trim())) {
+                        emailError.textContent = 'Please enter a valid email address';
+                        isValid = false;
+                    }
+
+                    // Validate password
+                    if (!passwordInput.value) {
+                        passwordError.textContent = 'Password is required';
+                        isValid = false;
+                    } else if (passwordInput.value.length < 6) {
+                        passwordError.textContent = 'Password must be at least 6 characters';
+                        isValid = false;
+                    }
+
+                    if (isValid) {
+                        // Show loading state
+                        loginBtn.innerHTML = 'Logging in...';
+                        loginBtn.disabled = true;
+
+                        try {
+                            const response = await fetch('/admin/login', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: new URLSearchParams(new FormData(loginForm)).toString(),
+                            });
+
+                            const result = await response.json();
+
+                            if (result.success) {
+                                window.location.href = result.redirectUrl || '/admin/dashboard';
+                            } else {
+                                emailError.textContent = result.message;
+                                loginBtn.innerHTML = 'Login';
+                                loginBtn.disabled = false;
+                            }
+                        } catch (error) {
+                            emailError.textContent = 'An error occurred. Please try again.';
+                            loginBtn.innerHTML = 'Login';
+                            loginBtn.disabled = false;
+                        }
+                    }
+                });
+
+                // Real-time validation for email
+                emailInput.addEventListener('input', function () {
+                    if (emailInput.value.trim() && !isValidEmail(emailInput.value.trim())) {
+                        emailError.textContent = 'Please enter a valid email address';
+                    } else {
+                        emailError.textContent = '';
+                    }
+                });
+
+                // Real-time validation for password
+                passwordInput.addEventListener('input', function () {
+                    if (passwordInput.value && passwordInput.value.length < 6) {
+                        passwordError.textContent = 'Password must be at least 6 characters';
+                    } else {
+                        passwordError.textContent = '';
+                    }
+                });
+            }
+
+            // Email validation helper
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+        });
+    </script>
+</body>
+
+</html>

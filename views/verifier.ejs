@@ -76,9 +76,6 @@
                         </a>
                     </li>
 
-
-
-
                 </ul>
             </div>
             <div class="sidebar-footer">
@@ -233,37 +230,7 @@
 
                 <!-- Calendar and Messages -->
                 <div class="split-section">
-                    <!-- Calendar -->
-                    <div class="calendar-container">
-                        <div class="section-header">
-                            <h2>Upcoming Verifications</h2>
-                            <a href="/calendar" class="view-all">View Calendar</a>
-                        </div>
-                        <div class="calendar-events">
-                            <% if (upcomingVerifications && upcomingVerifications.length > 0) { %>
-                            <% upcomingVerifications.forEach(app => { %>
-                            <div class="calendar-event">
-                                <div class="event-date">
-                                    <span class="event-day"><%= new Date(app.submittedDate).getDate() %></span>
-                                    <span
-                                        class="event-month"><%= new Date(app.submittedDate).toLocaleString('en-US', { month: 'short' }) %></span>
-                                </div>
-                                <div class="event-info">
-                                    <h4>Verification: <%= app.firstName %> <%= app.lastName %></h4>
-                                    <p><i class="fas fa-clock"></i> Review Pending</p>
-                                </div>
-                            </div>
-                            <% }); %>
-                            <% } else { %>
-                            <div class="calendar-event">
-                                <div class="event-info">
-                                    <p>No upcoming verifications.</p>
-                                </div>
-                            </div>
-                            <% } %>
-                        </div>
-                    </div>
-
+                   
                     <!-- Messages -->
                     <div class="messages-container">
                         <div class="section-header">
