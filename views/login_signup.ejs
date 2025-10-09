@@ -1,13 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymRats - Login/Sign Up</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/login_signup/login_signup.css">
+
 </head>
+
 <body>
+    <!-- Popup Modal -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header error">
+                <button class="close-modal">&times;</button>
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Error</h3>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage">An error occurred. Please try again.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header success">
+                <button class="close-modal">&times;</button>
+                <i class="fas fa-check-circle"></i>
+                <h3>Success</h3>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage">Operation completed successfully.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn" onclick="closeSuccessModal()">Continue</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation Bar -->
     <div class="navbar">
         <header>
@@ -28,7 +65,6 @@
             <div class="auth-header">
                 <h2>Welcome Back</h2>
                 <p>Sign in to access your account</p>
-                <!-- Error and success messages will be inserted here dynamically -->
             </div>
 
             <!-- Login Form -->
@@ -40,7 +76,8 @@
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                    <input type="password" class="form-control" id="password" placeholder="Enter your password"
+                        required>
                 </div>
 
                 <div class="form-group">
@@ -55,7 +92,8 @@
                 <button type="submit" class="btn">Login</button>
 
                 <div class="alternate-action">
-                    Don't have an account? <a href="/login_signup?form=signup" onclick="toggleForm('signup'); return false;">Sign Up</a>
+                    Don't have an account? <a href="/login_signup?form=signup"
+                        onclick="toggleForm('signup'); return false;">Sign Up</a>
                 </div>
             </form>
 
@@ -65,7 +103,8 @@
                     <h3>Personal Details</h3>
                     <div class="form-group">
                         <label for="userFullName">Full Name</label>
-                        <input type="text" class="form-control" id="userFullName" name="userFullName" placeholder="Enter your full name" required>
+                        <input type="text" class="form-control" id="userFullName" name="userFullName"
+                            placeholder="Enter your full name" required>
                     </div>
 
                     <div class="form-group">
@@ -75,18 +114,22 @@
 
                     <div class="form-group">
                         <label for="height">Height (cm)</label>
-                        <input type="number" class="form-control" id="height" name="height" placeholder="Enter your height in cm" min="50" max="250" required value="<%= locals.height || '' %>" onchange="calculateBMI()">
+                        <input type="number" class="form-control" id="height" name="height"
+                            placeholder="Enter your height in cm" min="50" max="250" required
+                            value="<%= locals.height || '' %>" onchange="calculateBMI()">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="weight">Weight (kg)</label>
-                        <input type="number" class="form-control" id="weight" name="weight" placeholder="Enter your weight in kg" min="20" max="300" required value="<%= locals.weight || '' %>" onchange="calculateBMI()">
+                        <input type="number" class="form-control" id="weight" name="weight"
+                            placeholder="Enter your weight in kg" min="20" max="300" required
+                            value="<%= locals.weight || '' %>" onchange="calculateBMI()">
                     </div>
                     <div class="form-group">
                         <label for="bmi">BMI</label>
                         <input type="number" class="form-control" id="bmi" name="bmi" readonly>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="gender">Gender</label>
                         <select class="form-control" id="gender" name="gender" required>
@@ -100,22 +143,26 @@
                     <h3>Contact Information</h3>
                     <div class="form-group">
                         <label for="userEmail">Email Address</label>
-                        <input type="email" class="form-control" id="userEmail" name="userEmail" placeholder="Enter your email" required>
+                        <input type="email" class="form-control" id="userEmail" name="userEmail"
+                            placeholder="Enter your email" required>
                     </div>
 
                     <div class="form-group">
                         <label for="phoneNumber">Phone Number</label>
-                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Enter your phone number" required>
+                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber"
+                            placeholder="Enter your phone number" required>
                     </div>
 
                     <div class="form-group">
                         <label for="userPassword">Password</label>
-                        <input type="password" class="form-control" id="userPassword" name="userPassword" placeholder="Create a password" required>
+                        <input type="password" class="form-control" id="userPassword" name="userPassword"
+                            placeholder="Create a password" required>
                     </div>
 
                     <div class="form-group">
                         <label for="userConfirmPassword">Confirm Password</label>
-                        <input type="password" class="form-control" id="userConfirmPassword" placeholder="Confirm your password" required>
+                        <input type="password" class="form-control" id="userConfirmPassword"
+                            placeholder="Confirm your password" required>
                     </div>
 
                     <h3>Membership Details</h3>
@@ -152,7 +199,8 @@
 
                     <div class="form-group">
                         <label for="cardNumber">Card Number</label>
-                        <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="Enter card number" required>
+                        <input type="text" class="form-control" id="cardNumber" name="cardNumber"
+                            placeholder="Enter 16-digit card number" required>
                     </div>
 
                     <div class="form-group">
@@ -175,63 +223,328 @@
                     <button type="submit" class="btn">Sign Up</button>
 
                     <div class="alternate-action">
-                        Already have an account? <a href="/login_signup?form=login" onclick="toggleForm('login'); return false;">Login</a>
+                        Already have an account? <a href="/login_signup?form=login"
+                            onclick="toggleForm('login'); return false;">Login</a>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="site-footer">
-        <div class="footer-content">
+        <div class="footer-container">
             <div class="footer-column">
-                <h3>GymRats</h3>
+                <h4>Trainer</h4>
                 <ul>
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="/trainers">Our Trainers</a></li>
-                    <li><a href="/testimonial">Testimonials</a></li>
-                    <li><a href="/blog">Blog</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column">
-                <h3>Resources</h3>
-                <ul>
-                    <li><a href="/isolation">Exercise Guide</a></li>
-                    <li><a href="/nutrition">Nutrition Tips</a></li>
-                    <li><a href="/workout_plans">Workout Plans</a></li>
-                    <li><a href="/calculators">Calculators</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column">
-                <h3>Support</h3>
-                <ul>
-                    <li><a href="/contact">Contact Us</a></li>
-                    <li><a href="/about">About us</a></li>
-                    <li><a href="/terms">Terms of Service</a></li>
-                    <li><a href="/privacy_policy">Privacy Policy</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column">
-                <h3>Connect With Us</h3>
-                <ul>
+                    <li><a href="/trainer_login">Trainer Login</a></li>
                     <li><a href="/trainer_form">Become a Trainer</a></li>
-                    <li><a href="/verifier_login">Become a Verifier</a></li>
                 </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Verifier</h4>
+                <ul>
+                    <li><a href="/verifier_login">Verifier Login</a></li>
+                    <li><a href="/verifier_form">Become a Verifier</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Connect</h4>
                 <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><img src="/home/icons8-facebook.svg" alt="Facebook"></a>
+                    <a href="#"><img src="/home/icons8-instagram.svg" alt="Instagram"></a>
+                    <a href="#"><img src="/home/icons8-youtube.svg" alt="YouTube"></a>
                 </div>
                 <p class="copyright">GymRats © 2025. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="/login_signup/login_signup.js">
+    <script>
+        // Modal Functions
+        function showErrorModal(message) {
+            const modal = document.getElementById('errorModal');
+            const modalMessage = document.getElementById('modalMessage');
+            modalMessage.textContent = message;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function showSuccessModal(message) {
+            const modal = document.getElementById('successModal');
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = message;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('errorModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            const errorModal = document.getElementById('errorModal');
+            const successModal = document.getElementById('successModal');
+
+            if (event.target === errorModal) {
+                closeModal();
+            }
+            if (event.target === successModal) {
+                closeSuccessModal();
+            }
+        }
+
+        // Close modal with close button
+        document.querySelectorAll('.close-modal').forEach(button => {
+            button.addEventListener('click', function () {
+                closeModal();
+                closeSuccessModal();
+            });
+        });
+
+        // Function to validate card number (exactly 16 digits)
+        function validateCardNumber(cardNumber) {
+            if (!cardNumber || typeof cardNumber !== 'string') {
+                return false;
+            }
+            const cleanedCardNumber = cardNumber.replace(/[\s-]/g, '');
+            return /^\d{16}$/.test(cleanedCardNumber);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check URL parameter to show the right form on page load
+            const params = new URLSearchParams(window.location.search);
+            const formType = params.get('form');
+            if (formType === 'signup') {
+                toggleForm('signup');
+            }
+
+            // Add card number input event listener for formatting
+            const cardNumberInput = document.getElementById('cardNumber');
+            if (cardNumberInput) {
+                cardNumberInput.addEventListener('input', function (e) {
+                    let value = e.target.value.replace(/\D/g, '');
+
+                    if (value.length > 16) {
+                        value = value.substring(0, 16);
+                    }
+
+                    let formattedValue = '';
+                    for (let i = 0; i < value.length; i++) {
+                        if (i > 0 && i % 4 === 0) {
+                            formattedValue += ' ';
+                        }
+                        formattedValue += value[i];
+                    }
+
+                    e.target.value = formattedValue;
+                });
+            }
+
+            // Handle login form submission
+            document.getElementById('loginForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const loginMembershipPlan = document.getElementById('loginMembershipPlan').value;
+
+                if (!email || !password || !loginMembershipPlan) {
+                    showErrorModal('Please fill in all fields');
+                    return;
+                }
+
+                fetch('/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email,
+                            password,
+                            loginMembershipPlan
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === 'Login successful') {
+                            showSuccessModal('Login successful! Redirecting...');
+                            setTimeout(() => {
+                                window.location.href = data.redirect;
+                            }, 1000);
+                            this.reset();
+                        } else {
+                            showErrorModal(data.error || 'Login failed. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showErrorModal('An error occurred. Please try again later.');
+                    });
+            });
+
+            // Validate phone number
+            function validatePhone(phone) {
+                return /^\+?[\d\s-]{10,}$/.test(phone);
+            }
+
+            // Validate matching passwords
+            function validatePasswords(password, confirmPassword) {
+                return password === confirmPassword;
+            }
+
+            // Handle signup form submission
+            document.getElementById('signupForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const userFullName = document.getElementById('userFullName').value;
+                const dateOfBirth = document.getElementById('dateOfBirth').value;
+                const gender = document.getElementById('gender').value;
+                const userEmail = document.getElementById('userEmail').value;
+                const phoneNumber = document.getElementById('phoneNumber').value;
+                const userPassword = document.getElementById('userPassword').value;
+                const userConfirmPassword = document.getElementById('userConfirmPassword').value;
+                const membershipPlan = document.getElementById('membershipPlan').value;
+                const membershipDuration = document.getElementById('membershipDuration').value;
+                const cardType = document.getElementById('cardType').value;
+                const cardNumber = document.getElementById('cardNumber').value;
+                const expirationDate = document.getElementById('expirationDate').value;
+                const cvv = document.getElementById('cvv').value;
+                const terms = document.getElementById('terms').checked;
+                const weight = document.getElementById('weight').value;
+                const height = document.getElementById('height').value;
+
+                // Validate form data
+                if (!userFullName || !dateOfBirth || !gender || !userEmail || !phoneNumber || !
+                    userPassword ||
+                    !userConfirmPassword || !membershipPlan || !membershipDuration || !cardType ||
+                    !cardNumber || !expirationDate || !cvv) {
+                    showErrorModal('Please fill in all fields');
+                    return;
+                }
+
+                if (!validatePhone(phoneNumber)) {
+                    showErrorModal(
+                        'Please enter a valid phone number (at least 10 digits, may include +, spaces, or hyphens)'
+                    );
+                    return;
+                }
+
+                if (!validatePasswords(userPassword, userConfirmPassword)) {
+                    showErrorModal(
+                        'Passwords do not match. Please enter the same password in both fields.');
+                    return;
+                }
+
+                if (!validateCardNumber(cardNumber)) {
+                    showErrorModal('Please enter a valid 16-digit card number');
+                    return;
+                }
+
+                if (!terms) {
+                    showErrorModal('You must agree to the terms and conditions');
+                    return;
+                }
+
+                if (isNaN(weight) || weight < 20 || weight > 300) {
+                    showErrorModal('Please enter a valid weight between 20 and 300 kg');
+                    return;
+                }
+
+                if (height && (isNaN(height) || height < 50 || height > 250)) {
+                    showErrorModal('Please enter a valid height between 50 and 250 cm');
+                    return;
+                }
+
+                fetch('/signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            userFullName,
+                            dateOfBirth,
+                            gender,
+                            userEmail,
+                            phoneNumber,
+                            userPassword,
+                            userConfirmPassword,
+                            membershipPlan,
+                            membershipDuration,
+                            cardType,
+                            cardNumber: cardNumber.replace(/[\s-]/g, ''),
+                            expirationDate,
+                            cvv,
+                            terms,
+                            weight,
+                            height
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === 'Signup successful') {
+                            showSuccessModal('Registration successful! Welcome to GymRats!');
+                            setTimeout(() => {
+                                window.location.href = data.redirect;
+                            }, 1000);
+                            this.reset();
+                        } else if (data.error && data.error.includes('email') || data.error && data
+                            .error.includes('already')) {
+                            showErrorModal(
+                                'This email is already registered. Please use a different email or try logging in.'
+                            );
+                        } else {
+                            showErrorModal(data.error || 'Registration failed. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showErrorModal('An error occurred. Please try again later.');
+                    });
+            });
+        });
+
+        // Function to toggle between login and signup forms
+        function toggleForm(type) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const header = document.querySelector('.auth-header h2');
+            const subheader = document.querySelector('.auth-header p');
+
+            if (type === 'signup') {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                header.textContent = 'Create Account';
+                subheader.textContent = 'Sign up to join our community';
+            } else {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                header.textContent = 'Welcome Back';
+                subheader.textContent = 'Sign in to access your account';
+            }
+        }
+
+        function calculateBMI() {
+            const height = parseFloat(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const bmiField = document.getElementById('bmi');
+
+            if (!height || !weight || height <= 0 || weight <= 0) {
+                bmiField.value = '';
+                return;
+            }
+
+            const heightInMeters = height / 100;
+            const bmi = weight / (heightInMeters * heightInMeters);
+            bmiField.value = bmi.toFixed(1);
+        }
     </script>
 </body>
+
 </html>
