@@ -213,6 +213,14 @@ const renderTrainerDashboard = async (req, res) => {
         const trainerId = req.session.trainer.id;
         console.log('Fetching Platinum users for trainer:', trainerId);
 
+        // Fetch trainer details            REYNA
+        
+        const trainer = await Trainer.findById(trainerId);
+        // Check trainer subscription
+        if (trainer.subscription.months_remaining === 0) {
+            return res.redirect('/trainer/subscription/renewal');
+        }
+        
         const users = await User.find({ 
             trainer: trainerId, 
             status: 'Active',
@@ -292,7 +300,14 @@ const renderTrainerDashboard = async (req, res) => {
             clients,
             selectedClient,
             workoutData,
-            nutritionData
+            nutritionData,
+            // added for subscription info            REYNA
+            subscriptionInfo: {
+                type: trainer.subscription.type,
+                months_remaining: trainer.subscription.months_remaining,
+                max_clients: trainer.subscription.max_clients,
+                end_date: trainer.subscription.end_date
+            }
         });
     } catch (error) {
         console.error('Error rendering trainer dashboard:', error);
@@ -439,6 +454,13 @@ const saveWorkoutPlan = async (req, res) => {
         }
         await currentWeekWorkout.save();
 
+        // Link workout to user if not already linked            REYNA
+        if (!user.workout_history.some(id => id.equals(currentWeekWorkout._id))) {
+            user.workout_history.push(currentWeekWorkout._id);
+            await user.save(); 
+        }
+
+
         const nextWeekStart = new Date(weekEnd);
         const nextWeekEnd = new Date(nextWeekStart);
         nextWeekEnd.setDate(nextWeekStart.getDate() + 7);
@@ -483,6 +505,13 @@ const saveWorkoutPlan = async (req, res) => {
             console.log('Added new workout history entry for next week:', clientId);
         }
         await nextWeekWorkout.save();
+
+        // link nxt week workout to user if not already linked          REYNA
+        if (!user.workout_history.some(id => id.equals(nextWeekWorkout._id))) {
+            user.workout_history.push(nextWeekWorkout._id);
+            await user.save();
+        }
+
 
         res.json({ message: 'Workout plan saved successfully', redirect: '/trainer' });
     } catch (error) {
@@ -611,6 +640,18 @@ const editNutritionPlan = async (req, res) => {
             console.log('Added new nutrition history entry for today:', userId);
         }
         await nutritionEntry.save();
+
+        // Link nutrition entry to user if not already linked              REYNA
+        if (!user.nutrition_history) user.nutrition_history = [];
+
+        const alreadyLinked = user.nutrition_history.some(id => id.equals(nutritionEntry._id));
+
+        if (!alreadyLinked) {
+            user.nutrition_history.push(nutritionEntry._id);
+            await user.save();
+        }
+
+
 
         user.fitness_goals.protein_goal = parseInt(proteinGoal);
         user.fitness_goals.calorie_goal = parseInt(calorieGoal);

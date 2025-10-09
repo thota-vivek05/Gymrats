@@ -4,6 +4,46 @@ const WorkoutPlan = require('../model/WorkoutPlan');
 const WorkoutHistory = require('../model/WorkoutHistory');
 const NutritionHistory = require('../model/NutritionHistory');
 
+// for membership management           REYNA
+const Trainer = require('../model/Trainer');
+
+const checkMembershipActive = async (req, res, next) => {
+    try {
+        if (!req.session.user) {
+            return next();
+        }
+
+        const user = await User.findById(req.session.user.id);
+        if (user && !user.isMembershipActive()) {
+            // Redirect to renewal page if membership expired
+            return res.redirect('/membership/renewal');
+        }
+
+        next();
+    } catch (error) {
+        console.error('Membership check error:', error);
+        next();
+    }
+};
+
+const checkTrainerSubscription = async (req, res, next) => {
+    try {
+        if (!req.session.trainer) {
+            return next();
+        }
+
+        const trainer = await Trainer.findById(req.session.trainer.id);
+        if (trainer && trainer.subscription.months_remaining === 0) {
+            return res.redirect('/trainer/subscription/renewal');
+        }
+
+        next();
+    } catch (error) {
+        console.error('Trainer subscription check error:', error);
+        next();
+    }
+};
+
 const getUserProfile = async (req, res) => {
     try {
         if (!req.session || !req.session.user) {
@@ -390,6 +430,13 @@ const signupUser = async (req, res) => {
         const password_hash = await bcrypt.hash(userPassword, saltRounds);
         console.log('Password hashed for:', userEmail);
 
+
+        // Calculate end date based on membership duration           REYNA
+        const startDate = new Date();
+        const endDate = new Date();
+        endDate.setMonth(endDate.getMonth() + parseInt(membershipDuration));
+
+
         const newUser = new User({
             full_name: userFullName,
             email: userEmail,
@@ -398,6 +445,16 @@ const signupUser = async (req, res) => {
             gender: gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase(),
             phone: phoneNumber,
             membershipType: membershipPlan.charAt(0).toUpperCase() + membershipPlan.slice(1).toLowerCase(),
+           
+            // NEW: Add membership duration data          REYNA
+            membershipDuration: {
+                months_remaining: parseInt(membershipDuration),
+                start_date: startDate,
+                end_date: endDate,
+                auto_renew: false,
+                last_renewal_date: startDate
+            },
+
             weight: Number(weight),
             height: height !== undefined ? Number(height) : null,
             BMI: calculatedBMI
@@ -452,6 +509,11 @@ const getUserDashboard = async (req, res, membershipCode) => {
         
         if (!user) {
             return res.status(404).render('error', { message: 'User not found' });
+        }
+
+         // Check if membership is active          REYNA
+        if (!user.isMembershipActive()) {
+            return res.redirect('/membership/renewal');
         }
         
         // Determine dashboard template based on membership code
@@ -589,6 +651,15 @@ const getUserDashboard = async (req, res, membershipCode) => {
                 { name: 'Squat', progress: 60, currentWeight: 90, goalWeight: 120 },
                 { name: 'Deadlift', progress: 85, currentWeight: 110, goalWeight: 130 }
             ],
+
+            // added new membership info       REYNA
+            membershipInfo: {
+                months_remaining: user.membershipDuration.months_remaining,
+                end_date: user.membershipDuration.end_date,
+                auto_renew: user.membershipDuration.auto_renew,
+                is_active: user.isMembershipActive()
+            },
+
             currentPage: 'dashboard'
         };
         
@@ -740,5 +811,7 @@ module.exports = {
     getUserDashboard,
     completeWorkout,
     getUserProfile,
-    markWorkoutCompleted
+    markWorkoutCompleted,
+    checkMembershipActive,
+    checkTrainerSubscription
 };

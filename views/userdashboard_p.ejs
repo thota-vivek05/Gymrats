@@ -63,6 +63,22 @@
             </div>
         </header>
     </div>
+
+    <!-- Membership Info Section            REYNA -->
+    <div class="membership-info">
+    <h3>Membership Status</h3>
+    <p>Plan: <%= user.membershipType %></p>
+    <p>Months Remaining: <%= membershipInfo.months_remaining %></p>
+    <p>Expires: <%= new Date(membershipInfo.end_date).toLocaleDateString() %></p>
+    <% if (membershipInfo.months_remaining < 2) { %>
+        <div class="renewal-warning">
+            <p>Your membership is expiring soon!</p>
+            <a href="/membership/renewal" class="renew-btn">Renew Now</a>
+        </div>
+    <% } %>
+    </div>
+
+    
     <!-- Dashboard Hero Section -->
     <section class="dashboard-hero">
         <div class="dashboard-hero-content">
@@ -612,81 +628,7 @@
                 timeframeSelect.addEventListener('change', updateCharts);
             });
         </script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                // Find the workout complete button
-                const workoutBtn = document.querySelector('.workout-btn');
-
-                if (workoutBtn) {
-                    workoutBtn.addEventListener('click', function () {
-                        const workoutId = this.getAttribute('data-workout-id');
-
-                        if (!workoutId) {
-                            alert('No workout selected');
-                            return;
-                        }
-
-                        // Disable button to prevent multiple clicks
-                        this.disabled = true;
-                        this.innerHTML = 'Completing...';
-
-                        // Send request to mark workout as completed
-                        fetch('/api/workout/complete', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    workoutId: workoutId
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    // Update button
-                                    this.innerHTML = 'Completed ✓';
-
-                                    // Mark all exercises as completed
-                                    document.querySelectorAll('.workout-list li').forEach(li => {
-                                        li.classList.add('completed');
-                                    });
-
-                                    // Update progress circle
-                                    const progressCircle = document.querySelector('.circle');
-                                    if (progressCircle) {
-                                        progressCircle.setAttribute('stroke-dasharray', '100, 100');
-                                    }
-
-                                    const percentageText = document.querySelector('.percentage');
-                                    if (percentageText) {
-                                        percentageText.textContent = '100%';
-                                    }
-
-                                    // Update completed count
-                                    const progressText = document.querySelector(
-                                        '.workout-progress p');
-                                    if (progressText) {
-                                        const totalExercises = document.querySelectorAll(
-                                            '.workout-list li').length;
-                                        progressText.textContent =
-                                            `${totalExercises} of ${totalExercises} exercises completed`;
-                                    }
-                                } else {
-                                    alert('Error completing workout');
-                                    this.disabled = false;
-                                    this.innerHTML = 'Complete Workout';
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert('Error completing workout');
-                                this.disabled = false;
-                                this.innerHTML = 'Complete Workout';
-                            });
-                    });
-                }
-            });
-        </script>
+        
 </body>
 
 </html>
