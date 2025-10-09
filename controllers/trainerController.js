@@ -216,10 +216,7 @@ const renderTrainerDashboard = async (req, res) => {
         // Fetch trainer details            REYNA
         
         const trainer = await Trainer.findById(trainerId);
-        // Check trainer subscription
-        if (trainer.subscription.months_remaining === 0) {
-            return res.redirect('/trainer/subscription/renewal');
-        }
+      
         
         const users = await User.find({ 
             trainer: trainerId, 
@@ -300,14 +297,7 @@ const renderTrainerDashboard = async (req, res) => {
             clients,
             selectedClient,
             workoutData,
-            nutritionData,
-            // added for subscription info            REYNA
-            subscriptionInfo: {
-                type: trainer.subscription.type,
-                months_remaining: trainer.subscription.months_remaining,
-                max_clients: trainer.subscription.max_clients,
-                end_date: trainer.subscription.end_date
-            }
+            nutritionData
         });
     } catch (error) {
         console.error('Error rendering trainer dashboard:', error);

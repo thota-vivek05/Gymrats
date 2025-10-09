@@ -64,31 +64,7 @@ const trainerSchema = new mongoose.Schema({
         ref: 'NutritionPlan' 
     }],
 
-    // NEW: Add this subscription object after your existing fields
-    subscription: {
-        type: { 
-            type: String, 
-            enum: ['Free', 'Basic', 'Pro', 'Enterprise'],
-            default: 'Free'
-        },
-        months_remaining: { 
-            type: Number, 
-            default: 0,
-            min: 0 
-        },
-        start_date: { 
-            type: Date, 
-            default: Date.now 
-        },
-        end_date: { 
-            type: Date 
-        },
-        max_clients: { 
-            type: Number, 
-            default: 5 
-        }
-    },
-
+    
     rating: { 
         type: Number,
         min: 0,
