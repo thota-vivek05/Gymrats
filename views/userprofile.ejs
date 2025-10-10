@@ -124,6 +124,11 @@
             <div class="profile-card user-info-card">
                 <div class="card-header">
                     <h2>Personal Information</h2>
+                    <!--brimstone-->
+                    <button class="edit-profile-btn" id="editProfileBtn">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <!--brimstone-->
                 </div>
                 <div class="profile-content">
                     <div class="profile-status-container">
@@ -132,304 +137,319 @@
                     <div class="profile-details">
                         <div class="profile-item">
                             <span class="profile-label">Name:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="nameValue">
                                 <% if (user && typeof user === 'object') { %>
                                 <%= user.full_name || user.name || 'Not provided' %>
                                 <% } else { %>
                                 Not provided
                                 <% } %>
                             </span>
-                            <input type="text" class="profile-edit-input"
+                            <input type="text" class="profile-edit-input" id="nameInput"
                                 value="<%= user && typeof user === 'object' ? (user.full_name || user.name || '') : '' %>"
                                 style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Email:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="emailValue">
                                 <% if (typeof user === 'object' && user !== null && user.email) { %>
                                 <%= user.email %>
                                 <% } else { %>
                                 Not provided
                                 <% } %>
                             </span>
-                            <input type="email" class="profile-edit-input"
+                            <input type="email" class="profile-edit-input" id="emailInput"
                                 value="<%= typeof user === 'object' && user !== null && user.email ? user.email : '' %>"
                                 style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Phone:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="phoneValue">
                                 <% if (typeof user === 'object' && user !== null && user.phone) { %>
                                 <%= user.phone %>
                                 <% } else { %>
                                 Not provided
                                 <% } %>
                             </span>
-                            <input type="tel" class="profile-edit-input"
+                            <input type="tel" class="profile-edit-input" id="phoneInput"
                                 value="<%= typeof user === 'object' && user !== null && user.phone ? user.phone : '' %>"
                                 style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Age:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="ageValue">
                                 <% if (typeof user === 'object' && user !== null && user.dob) { 
-                                    try {
-                                        const today = new Date();
-                                        const birthDate = new Date(user.dob);
-                                        let age = today.getFullYear() - birthDate.getFullYear();
-                                        const m = today.getMonth() - birthDate.getMonth();
-                                        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                                            age--;
-                                        }
-                                        %>
+                try {
+                    const today = new Date();
+                    const birthDate = new Date(user.dob);
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const m = today.getMonth() - birthDate.getMonth();
+                    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+                    %>
                                 <%= age %> years
                                 <% } catch(e) { %>
                                 Not provided
                                 <% }
-                                } else { %>
+            } else { %>
                                 Not provided
                                 <% } %>
                             </span>
-                            <input type="number" class="profile-edit-input" value="" style="display: none;">
+                            <input type="date" class="profile-edit-input" id="dobInput"
+                                value="<%= user && user.dob ? new Date(user.dob).toISOString().split('T')[0] : '' %>"
+                                style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Height:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="heightValue">
                                 <% if (typeof user === 'object' && user !== null && user.height) { %>
                                 <%= user.height %> cm
                                 <% } else { %>
                                 Not provided
                                 <% } %>
                             </span>
-                            <input type="number" class="profile-edit-input"
+                            <input type="number" class="profile-edit-input" id="heightInput"
                                 value="<%= typeof user === 'object' && user !== null && user.height ? user.height : '' %>"
-                                style="display: none;">
+                                placeholder="Height in cm" style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Weight:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="weightValue">
                                 <% if (typeof user === 'object' && user !== null && user.weight) { %>
                                 <%= user.weight %> kg
                                 <% } else { %>
                                 Not provided
                                 <% } %>
                             </span>
-                            <input type="number" class="profile-edit-input"
+                            <input type="number" class="profile-edit-input" id="weightInput"
                                 value="<%= typeof user === 'object' && user !== null && user.weight ? user.weight : '' %>"
-                                style="display: none;">
+                                placeholder="Weight in kg" style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">BMI:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="bmiValue">
                                 <% if (typeof user === 'object' && user !== null && user.BMI) { %>
                                 <%= user.BMI %>
                                 <% } else { %>
                                 Not provided
                                 <% } %>
                             </span>
+                            <input type="number" class="profile-edit-input" id="bmiInput" readonly
+                                value="<%= typeof user === 'object' && user !== null && user.BMI ? user.BMI : '' %>"
+                                style="display: none;">
                         </div>
                     </div>
-                    <div class="profile-edit-actions" style="display: none;">
+
+                    <!-- Add Save/Cancel Buttons -->
+                    <div class="profile-edit-actions" id="editActions" style="display: none;">
                         <button class="save-btn" id="saveProfileBtn">Save Changes</button>
                         <button class="cancel-btn" id="cancelEditBtn">Cancel</button>
                     </div>
-                </div>
-            </div>
 
-            <!-- Membership Card -->
-            <div class="profile-card membership-card">
-                <div class="card-header">
-                    <h2>Membership Details</h2>
-                </div>
-                <div class="profile-content">
-                    <div class="membership-status">
-                        <div class="membership-badge premium">
-                            <%= user && user.membershipType ? user.membershipType : 'Basic' %> Member
-                        </div>
-                        <p class="membership-since">Member since:
-                            <% if (user && user.created_at) { %>
-                            <%= new Date(user.created_at).toLocaleDateString() %>
-                            <% } else { %>
-                            March 15, 2023
-                            <% } %>
-                        </p>
-                    </div>
-                    <div class="membership-details">
-                        <div class="membership-item">
-                            <span class="membership-label">Plan:</span>
-                            <span class="membership-value">
-                                <%= user && user.membershipType ? user.membershipType : 'Basic' %>
-                            </span>
-                        </div>
-                        
-                        <div class="membership-item">
-                            <span class="membership-label">Status:</span>
-                            <span class="membership-value active">
-                                <%= user && user.status ? user.status : 'Active' %>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="membership-features">
-                        <h3>Features Included:</h3>
-                        <ul class="features-list">
-                            <% if (user.membershipType === 'Platinum') { %>
-                            <!-- Platinum Features -->
-                            <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
-                            <li><i class="fas fa-check"></i> Basic Workout Plans</li>
-                            <li><i class="fas fa-check"></i> Nutritional Tips</li>
-                            <li><i class="fas fa-check"></i> Current Stats Tracking</li>
-                            <li><i class="fas fa-check"></i> Online Classes</li>
-                            <li><i class="fas fa-check"></i> Personal Training Sessions</li>
-                            <% } else if (user.membershipType === 'Gold') { %>
-                            <!-- Gold Features -->
-                            <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
-                            <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
-                            <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
-                            <li><i class="fas fa-check"></i> Current Stats Tracking</li>
-                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Online Classes</li>
-                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Personal Training Sessions</li>
-                            <% } else { %>
-                            <!-- Basic Features -->
-                            <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
-                            <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
-                            <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
-                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Current Stats Tracking</li>
-                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Online Classes</li>
-                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Personal Training Sessions</li>
-                            <% } %>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- brim stone -->
-        <!-- Membership Extension Section -->
-        <div class="profile-card membership-extension-card">
-            <div class="card-header">
-                <h2>Extend Membership</h2>
-            </div>
-            <div class="profile-content">
-                <div class="membership-status-info">
-                    <div class="status-item">
-                        <span class="label">Current Status:</span>
-                        <span class="value status-<%= user.status.toLowerCase() %>">
-                            <%= user.status %>
-                        </span>
-                    </div>
-                    <div class="status-item">
-                        <span class="label">Months Remaining:</span>
-                        <span class="value">
-                            <% if (user && user.membershipDuration) { %>
-                            <%= user.membershipDuration.months_remaining || 0 %>
-                            <% } else { %>
-                            0
-                            <% } %>
-                        </span>
-                    </div>
-                    <div class="status-item">
-                        <span class="label">End Date:</span>
-                        <span class="value">
-                            <% if (user && user.membershipDuration && user.membershipDuration.end_date) { %>
-                            <%= new Date(user.membershipDuration.end_date).toLocaleDateString() %>
-                            <% } else { %>
-                            Not set
-                            <% } %>
-                        </span>
-                    </div>
-                </div>
 
-                <div class="extension-cta">
-                    <p>Extend your membership to continue enjoying all premium features!</p>
-                    <button class="extend-membership-btn" onclick="redirectToRenewal()">
-                        <i class="fas fa-credit-card"></i>
-                        Extend Membership
-                    </button>
-                </div>
-            </div>
-        </div>
+                    <!-- Membership Card -->
+                    <div class="profile-card membership-card">
+                        <div class="card-header">
+                            <h2>Membership Details</h2>
+                        </div>
+                        <div class="profile-content">
+                            <div class="membership-status">
+                                <div class="membership-badge premium">
+                                    <%= user && user.membershipType ? user.membershipType : 'Basic' %> Member
+                                </div>
+                                <p class="membership-since">Member since:
+                                    <% if (user && user.created_at) { %>
+                                    <%= new Date(user.created_at).toLocaleDateString() %>
+                                    <% } else { %>
+                                    March 15, 2023
+                                    <% } %>
+                                </p>
+                            </div>
+                            <div class="membership-details">
+                                <div class="membership-item">
+                                    <span class="membership-label">Plan:</span>
+                                    <span class="membership-value">
+                                        <%= user && user.membershipType ? user.membershipType : 'Basic' %>
+                                    </span>
+                                </div>
 
-        <!-- Statistics Card -->
-        <div class="profile-wide-card">
-            <div class="card-header">
-                <h2>My Fitness Statistics</h2>
-            </div>
-            <div class="stats-content">
-                <div class="stats-summary">
-                    <div class="stat-box">
-                        <div class="stat-icon">
-                            <i class="fas fa-dumbbell"></i>
+                                <div class="membership-item">
+                                    <span class="membership-label">Status:</span>
+                                    <span class="membership-value active">
+                                        <%= user && user.status ? user.status : 'Active' %>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="membership-features">
+                                <h3>Features Included:</h3>
+                                <ul class="features-list">
+                                    <% if (user.membershipType === 'Platinum') { %>
+                                    <!-- Platinum Features -->
+                                    <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                                    <li><i class="fas fa-check"></i> Basic Workout Plans</li>
+                                    <li><i class="fas fa-check"></i> Nutritional Tips</li>
+                                    <li><i class="fas fa-check"></i> Current Stats Tracking</li>
+                                    <li><i class="fas fa-check"></i> Online Classes</li>
+                                    <li><i class="fas fa-check"></i> Personal Training Sessions</li>
+                                    <% } else if (user.membershipType === 'Gold') { %>
+                                    <!-- Gold Features -->
+                                    <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                                    <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
+                                    <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
+                                    <li><i class="fas fa-check"></i> Current Stats Tracking</li>
+                                    <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Online Classes</li>
+                                    <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Personal Training Sessions
+                                    </li>
+                                    <% } else { %>
+                                    <!-- Basic Features -->
+                                    <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                                    <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
+                                    <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
+                                    <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Current Stats Tracking</li>
+                                    <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Online Classes</li>
+                                    <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Personal Training Sessions
+                                    </li>
+                                    <% } %>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="stat-value">
-                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.workoutsCompleted !== undefined) { %>
-                            <%= fitnessStats.workoutsCompleted %>
-                            <% } else { %>
-                            0
-                            <% } %>
-                        </div>
-                        <div class="stat-label">Workouts</div>
                     </div>
-                    <div class="stat-box">
-                        <div class="stat-icon">
-                            <i class="fas fa-fire"></i>
-                        </div>
-                        <div class="stat-value">
-                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.caloriesBurned !== undefined) { %>
-                            <%= fitnessStats.caloriesBurned.toLocaleString() %>
-                            <% } else { %>
-                            0
-                            <% } %>
-                        </div>
-                        <div class="stat-label">Calories Burned</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-value">
-                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.hoursActive !== undefined) { %>
-                            <%= fitnessStats.hoursActive %>
-                            <% } else { %>
-                            0
-                            <% } %>
-                        </div>
-                        <div class="stat-label">Hours Active</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-icon">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <div class="stat-value">
-                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.goalsAchieved !== undefined) { %>
-                            <%= fitnessStats.goalsAchieved %>
-                            <% } else { %>
-                            0
-                            <% } %>
-                        </div>
-                        <div class="stat-label">Goals Achieved</div>
-                    </div>
-                </div>
-                <div class="stats-charts">
-                    <div class="chart-container">
-                        <h3>Workout Frequency</h3>
-                        <canvas id="workoutFrequencyChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h3>Weight Progress</h3>
-                        <canvas id="weightProgressChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Workout History Card -->
-        <div class="profile-wide-card">
-            <div class="card-header">
-                <h2>Recent Workouts</h2>
-            </div>
-            <div class="profile-content">
-                <div class="workout-history">
-                    <% 
+
+                    <!-- brim stone -->
+                    <!-- Membership Extension Section -->
+                    <div class="profile-card membership-extension-card">
+                        <div class="card-header">
+                            <h2>Extend Membership</h2>
+                        </div>
+                        <div class="profile-content">
+                            <div class="membership-status-info">
+                                <div class="status-item">
+                                    <span class="label">Current Status:</span>
+                                    <span class="value status-<%= user.status.toLowerCase() %>">
+                                        <%= user.status %>
+                                    </span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">Months Remaining:</span>
+                                    <span class="value">
+                                        <% if (user && user.membershipDuration) { %>
+                                        <%= user.membershipDuration.months_remaining || 0 %>
+                                        <% } else { %>
+                                        0
+                                        <% } %>
+                                    </span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">End Date:</span>
+                                    <span class="value">
+                                        <% if (user && user.membershipDuration && user.membershipDuration.end_date) { %>
+                                        <%= new Date(user.membershipDuration.end_date).toLocaleDateString() %>
+                                        <% } else { %>
+                                        Not set
+                                        <% } %>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="extension-cta">
+                                <p>Extend your membership to continue enjoying all premium features!</p>
+                                <button class="extend-membership-btn" onclick="redirectToRenewal()">
+                                    <i class="fas fa-credit-card"></i>
+                                    Extend Membership
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Card -->
+                    <div class="profile-wide-card">
+                        <div class="card-header">
+                            <h2>My Fitness Statistics</h2>
+                        </div>
+                        <div class="stats-content">
+                            <div class="stats-summary">
+                                <div class="stat-box">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-dumbbell"></i>
+                                    </div>
+                                    <div class="stat-value">
+                                        <% if (typeof fitnessStats !== 'undefined' && fitnessStats.workoutsCompleted !== undefined) { %>
+                                        <%= fitnessStats.workoutsCompleted %>
+                                        <% } else { %>
+                                        0
+                                        <% } %>
+                                    </div>
+                                    <div class="stat-label">Workouts</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-fire"></i>
+                                    </div>
+                                    <div class="stat-value">
+                                        <% if (typeof fitnessStats !== 'undefined' && fitnessStats.caloriesBurned !== undefined) { %>
+                                        <%= fitnessStats.caloriesBurned.toLocaleString() %>
+                                        <% } else { %>
+                                        0
+                                        <% } %>
+                                    </div>
+                                    <div class="stat-label">Calories Burned</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="stat-value">
+                                        <% if (typeof fitnessStats !== 'undefined' && fitnessStats.hoursActive !== undefined) { %>
+                                        <%= fitnessStats.hoursActive %>
+                                        <% } else { %>
+                                        0
+                                        <% } %>
+                                    </div>
+                                    <div class="stat-label">Hours Active</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-trophy"></i>
+                                    </div>
+                                    <div class="stat-value">
+                                        <% if (typeof fitnessStats !== 'undefined' && fitnessStats.goalsAchieved !== undefined) { %>
+                                        <%= fitnessStats.goalsAchieved %>
+                                        <% } else { %>
+                                        0
+                                        <% } %>
+                                    </div>
+                                    <div class="stat-label">Goals Achieved</div>
+                                </div>
+                            </div>
+                            <div class="stats-charts">
+                                <div class="chart-container">
+                                    <h3>Workout Frequency</h3>
+                                    <canvas id="workoutFrequencyChart"></canvas>
+                                </div>
+                                <div class="chart-container">
+                                    <h3>Weight Progress</h3>
+                                    <canvas id="weightProgressChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Workout History Card -->
+                    <div class="profile-wide-card">
+                        <div class="card-header">
+                            <h2>Recent Workouts</h2>
+                        </div>
+                        <div class="profile-content">
+                            <div class="workout-history">
+                                <% 
                     const mockWorkouts = [
                         { day: '16', month: 'MAR', name: 'HIIT Training', duration: '45 min', calories: '450', exercises: '4', rating: 4 },
                         { day: '14', month: 'MAR', name: 'Strength Training', duration: '60 min', calories: '380', exercises: '6', rating: 5 },
@@ -442,38 +462,40 @@
                         recentWorkouts = [];
                     }
                     %>
-                    <% if (recentWorkouts.length > 0) { %>
-                    <% recentWorkouts.forEach(workout => { %>
-                    <div class="workout-item" data-workout-id="<%= workout.id || '' %>">
-                        <div class="workout-date">
-                            <span class="workout-day"><%= workout.day %></span>
-                            <span class="workout-month"><%= workout.month %></span>
-                        </div>
-                        <div class="workout-info">
-                            <h3 class="workout-name"><%= workout.name %></h3>
-                            <div class="workout-stats">
-                                <span><i class="fas fa-clock"></i> <%= workout.duration %></span>
-                                <span><i class="fas fa-fire-alt"></i> <%= workout.calories %> cal</span>
-                                <span><i class="fas fa-dumbbell"></i> <%= workout.exercises %> exercises</span>
+                                <% if (recentWorkouts.length > 0) { %>
+                                <% recentWorkouts.forEach(workout => { %>
+                                <div class="workout-item" data-workout-id="<%= workout.id || '' %>">
+                                    <div class="workout-date">
+                                        <span class="workout-day"><%= workout.day %></span>
+                                        <span class="workout-month"><%= workout.month %></span>
+                                    </div>
+                                    <div class="workout-info">
+                                        <h3 class="workout-name"><%= workout.name %></h3>
+                                        <div class="workout-stats">
+                                            <span><i class="fas fa-clock"></i> <%= workout.duration %></span>
+                                            <span><i class="fas fa-fire-alt"></i> <%= workout.calories %> cal</span>
+                                            <span><i class="fas fa-dumbbell"></i> <%= workout.exercises %>
+                                                exercises</span>
+                                        </div>
+                                    </div>
+                                    <div class="workout-rating">
+                                        <% for (let i = 1; i <= 5; i++) { %>
+                                        <i class="fas fa-star <%= i <= workout.rating ? 'active' : '' %>"></i>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <% }); %>
+                                <% } else { %>
+                                <div class="no-workouts-message">
+                                    <p>No workout history available yet. Start tracking your workouts to see them here!
+                                    </p>
+                                </div>
+                                <% } %>
                             </div>
                         </div>
-                        <div class="workout-rating">
-                            <% for (let i = 1; i <= 5; i++) { %>
-                            <i class="fas fa-star <%= i <= workout.rating ? 'active' : '' %>"></i>
-                            <% } %>
-                        </div>
                     </div>
-                    <% }); %>
-                    <% } else { %>
-                    <div class="no-workouts-message">
-                        <p>No workout history available yet. Start tracking your workouts to see them here!</p>
-                    </div>
-                    <% } %>
-                </div>
-            </div>
-        </div>
 
-        <!-- Footer
+                    <!-- Footer
         <footer class="site-footer">
             <div class="footer-content">
                 <div class="footer-column">
@@ -518,143 +540,148 @@
                 </div>
             </div>
         </footer> -->
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const weeklyWorkoutData = < %
-                if (typeof chartData !== 'undefined' && chartData.weeklyWorkouts) {
-                    %
-                    >
-                    <
-                    %= JSON.stringify(chartData.weeklyWorkouts) % >
-                        <
-                        %
-                } else {
-                    %
-                    >
-                    [0, 0, 0, 0] <
-                    %
-                } % > ;
-            const weekLabels = < %
-                if (typeof chartData !== 'undefined' && chartData.weekLabels) {
-                    %
-                    >
-                    <
-                    %= JSON.stringify(chartData.weekLabels) % >
-                        <
-                        %
-                } else {
-                    %
-                    >
-                    ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
-                    %
-                } % > ;
-            const weightProgressData = < %
-                if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData.weightProgress
-                    .length > 0) {
-                    %
-                    >
-                    <
-                    %= JSON.stringify(chartData.weightProgress.map(entry => entry.weight)) % >
-                        <
-                        %
-                } else {
-                    %
-                    >
-                    [0, 0, 0, 0] <
-                    %
-                } % > ;
-            const weightLabels = < %
-                if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData.weightProgress
-                    .length > 0) {
-                    %
-                    >
-                    <
-                    %= JSON.stringify(chartData.weightProgress.map(entry => entry.week)) % >
-                        <
-                        %
-                } else {
-                    %
-                    >
-                    ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
-                    %
-                } % > ;
-            if (document.getElementById('workoutFrequencyChart')) {
-                const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart').getContext('2d');
-                new Chart(workoutFrequencyCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: weekLabels,
-                        datasets: [{
-                            label: 'Workouts',
-                            data: weeklyWorkoutData,
-                            backgroundColor: '#8A2BE2',
-                            borderColor: '#8A2BE2',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    precision: 0
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const weeklyWorkoutData = < %
+                            if (typeof chartData !== 'undefined' && chartData.weeklyWorkouts) {
+                                %
+                                >
+                                <
+                                %= JSON.stringify(chartData.weeklyWorkouts) % >
+                                    <
+                                    %
+                            } else {
+                                %
+                                >
+                                [0, 0, 0, 0] <
+                                %
+                            } % > ;
+                        const weekLabels = < %
+                            if (typeof chartData !== 'undefined' && chartData.weekLabels) {
+                                %
+                                >
+                                <
+                                %= JSON.stringify(chartData.weekLabels) % >
+                                    <
+                                    %
+                            } else {
+                                %
+                                >
+                                ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
+                                %
+                            } % > ;
+                        const weightProgressData = < %
+                            if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData
+                                .weightProgress
+                                .length > 0) {
+                                %
+                                >
+                                <
+                                %= JSON.stringify(chartData.weightProgress.map(entry => entry.weight)) % >
+                                    <
+                                    %
+                            } else {
+                                %
+                                >
+                                [0, 0, 0, 0] <
+                                %
+                            } % > ;
+                        const weightLabels = < %
+                            if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData
+                                .weightProgress
+                                .length > 0) {
+                                %
+                                >
+                                <
+                                %= JSON.stringify(chartData.weightProgress.map(entry => entry.week)) % >
+                                    <
+                                    %
+                            } else {
+                                %
+                                >
+                                ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
+                                %
+                            } % > ;
+                        if (document.getElementById('workoutFrequencyChart')) {
+                            const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart')
+                                .getContext(
+                                    '2d');
+                            new Chart(workoutFrequencyCtx, {
+                                type: 'bar',
+                                data: {
+                                    labels: weekLabels,
+                                    datasets: [{
+                                        label: 'Workouts',
+                                        data: weeklyWorkoutData,
+                                        backgroundColor: '#8A2BE2',
+                                        borderColor: '#8A2BE2',
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            ticks: {
+                                                precision: 0
+                                            }
+                                        }
+                                    },
+                                    plugins: {
+                                        legend: {
+                                            display: false
+                                        }
+                                    }
                                 }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
+                            });
                         }
-                    }
-                });
-            }
-            if (document.getElementById('weightProgressChart')) {
-                const weightProgressCtx = document.getElementById('weightProgressChart').getContext('2d');
-                new Chart(weightProgressCtx, {
-                    type: 'line',
-                    data: {
-                        labels: weightLabels,
-                        datasets: [{
-                            label: 'Weight (kg)',
-                            data: weightProgressData,
-                            backgroundColor: 'rgba(46, 204, 113, 0.2)',
-                            borderColor: '#2ecc71',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            pointBackgroundColor: '#2ecc71',
-                            pointRadius: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: false,
-                                suggestedMin: Math.min(...weightProgressData) - 1,
-                                suggestedMax: Math.max(...weightProgressData) + 1
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
+                        if (document.getElementById('weightProgressChart')) {
+                            const weightProgressCtx = document.getElementById('weightProgressChart').getContext(
+                                '2d');
+                            new Chart(weightProgressCtx, {
+                                type: 'line',
+                                data: {
+                                    labels: weightLabels,
+                                    datasets: [{
+                                        label: 'Weight (kg)',
+                                        data: weightProgressData,
+                                        backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                                        borderColor: '#2ecc71',
+                                        borderWidth: 2,
+                                        tension: 0.4,
+                                        pointBackgroundColor: '#2ecc71',
+                                        pointRadius: 4
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: false,
+                                            suggestedMin: Math.min(...weightProgressData) - 1,
+                                            suggestedMax: Math.max(...weightProgressData) + 1
+                                        }
+                                    },
+                                    plugins: {
+                                        legend: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            });
                         }
+                    });
+                </script>
+                <!-- brimstone-->
+                <script>
+                    function redirectToRenewal() {
+                        window.location.href = '/membership_renewal';
                     }
-                });
-            }
-        });
-    </script>
-    <!-- brimstone-->
-    <script>
-        function redirectToRenewal() {
-            window.location.href = '/membership_renewal';
-        }
-    </script>
+                </script>
 </body>
 
 <script>
@@ -1648,6 +1675,196 @@
             notes: 'Detailed information for this workout is not available.'
         };
     }
+    // Add this to your existing JavaScript section
+    document.addEventListener('DOMContentLoaded', function () {
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const editActions = document.getElementById('editActions');
+
+        let originalValues = {};
+
+        // Edit button click handler
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', enableProfileEditing);
+        }
+
+        // Save button click handler
+        if (saveProfileBtn) {
+            saveProfileBtn.addEventListener('click', saveProfileChanges);
+        }
+
+        // Cancel button click handler
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', cancelProfileEditing);
+        }
+
+        // BMI calculation when height or weight changes
+        const heightInput = document.getElementById('heightInput');
+        const weightInput = document.getElementById('weightInput');
+        const bmiInput = document.getElementById('bmiInput');
+
+        if (heightInput && weightInput && bmiInput) {
+            heightInput.addEventListener('input', calculateBMI);
+            weightInput.addEventListener('input', calculateBMI);
+        }
+
+        function enableProfileEditing() {
+            // Store original values
+            originalValues = {
+                name: document.getElementById('nameInput').value,
+                email: document.getElementById('emailInput').value,
+                phone: document.getElementById('phoneInput').value,
+                dob: document.getElementById('dobInput').value,
+                height: document.getElementById('heightInput').value,
+                weight: document.getElementById('weightInput').value,
+                bmi: document.getElementById('bmiInput').value
+            };
+
+            // Hide all values and show inputs
+            document.querySelectorAll('.profile-value').forEach(value => {
+                value.style.display = 'none';
+            });
+
+            document.querySelectorAll('.profile-edit-input').forEach(input => {
+                input.style.display = 'block';
+            });
+
+            // Show save/cancel buttons
+            editActions.style.display = 'flex';
+
+            // Hide edit button
+            editProfileBtn.style.display = 'none';
+
+            // Calculate BMI with current values
+            calculateBMI();
+        }
+
+        function calculateBMI() {
+            const height = parseFloat(heightInput.value);
+            const weight = parseFloat(weightInput.value);
+
+            if (height && weight && height > 0) {
+                const heightInMeters = height / 100;
+                const bmi = weight / (heightInMeters * heightInMeters);
+                bmiInput.value = bmi.toFixed(1);
+            } else {
+                bmiInput.value = '';
+            }
+        }
+
+        function saveProfileChanges() {
+            const updatedData = {
+                full_name: document.getElementById('nameInput').value,
+                email: document.getElementById('emailInput').value,
+                phone: document.getElementById('phoneInput').value,
+                dob: document.getElementById('dobInput').value,
+                height: parseFloat(document.getElementById('heightInput').value),
+                weight: parseFloat(document.getElementById('weightInput').value),
+                BMI: parseFloat(document.getElementById('bmiInput').value) || null
+            };
+
+            // Validate required fields
+            if (!updatedData.full_name || !updatedData.email || !updatedData.phone) {
+                alert('Please fill in all required fields: Name, Email, and Phone');
+                return;
+            }
+
+            // Validate email format
+            const emailRegex = /^\S+@\S+\.\S+$/;
+            if (!emailRegex.test(updatedData.email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            // Validate phone format
+            const phoneRegex = /^\+?[\d\s-]{10,}$/;
+            if (!phoneRegex.test(updatedData.phone)) {
+                alert('Please enter a valid phone number');
+                return;
+            }
+
+            // Show loading state
+            saveProfileBtn.textContent = 'Saving...';
+            saveProfileBtn.disabled = true;
+
+            // Send update request
+            fetch('/user/profile/update', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update displayed values
+                        document.getElementById('nameValue').textContent = updatedData.full_name;
+                        document.getElementById('emailValue').textContent = updatedData.email;
+                        document.getElementById('phoneValue').textContent = updatedData.phone;
+                        document.getElementById('heightValue').textContent = updatedData.height ?
+                            updatedData.height + ' cm' : 'Not provided';
+                        document.getElementById('weightValue').textContent = updatedData.weight ?
+                            updatedData.weight + ' kg' : 'Not provided';
+                        document.getElementById('bmiValue').textContent = updatedData.BMI || 'Not provided';
+
+                        // Update age display
+                        if (updatedData.dob) {
+                            const today = new Date();
+                            const birthDate = new Date(updatedData.dob);
+                            let age = today.getFullYear() - birthDate.getFullYear();
+                            const m = today.getMonth() - birthDate.getMonth();
+                            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                                age--;
+                            }
+                            document.getElementById('ageValue').textContent = age + ' years';
+                        }
+
+                        // Exit edit mode
+                        cancelProfileEditing();
+
+                        alert('Profile updated successfully!');
+                    } else {
+                        throw new Error(data.message || 'Failed to update profile');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating profile:', error);
+                    alert('Error updating profile: ' + error.message);
+                })
+                .finally(() => {
+                    saveProfileBtn.textContent = 'Save Changes';
+                    saveProfileBtn.disabled = false;
+                });
+        }
+
+        function cancelProfileEditing() {
+            // Restore original values to inputs
+            document.getElementById('nameInput').value = originalValues.name;
+            document.getElementById('emailInput').value = originalValues.email;
+            document.getElementById('phoneInput').value = originalValues.phone;
+            document.getElementById('dobInput').value = originalValues.dob;
+            document.getElementById('heightInput').value = originalValues.height;
+            document.getElementById('weightInput').value = originalValues.weight;
+            document.getElementById('bmiInput').value = originalValues.bmi;
+
+            // Show all values and hide inputs
+            document.querySelectorAll('.profile-value').forEach(value => {
+                value.style.display = 'block';
+            });
+
+            document.querySelectorAll('.profile-edit-input').forEach(input => {
+                input.style.display = 'none';
+            });
+
+            // Hide save/cancel buttons
+            editActions.style.display = 'none';
+
+            // Show edit button
+            editProfileBtn.style.display = 'block';
+        }
+    });
 </script>
 
 </html>

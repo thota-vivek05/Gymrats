@@ -523,9 +523,150 @@ const signupUser = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+// brimstone
+// Add this function to userController.js
+const updateUserProfile = async (req, res) => {
+    try {
+        if (!req.session || !req.session.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authentication required'
+            });
+        }
 
+        const userId = req.session.user.id;
+        const { full_name, email, phone, dob, height, weight } = req.body;
+
+        console.log('Updating profile for user:', userId, 'Data:', req.body);
+
+        // Validate required fields
+        if (!full_name || !email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Name and email are required fields'
+            });
+        }
+
+        // Validate email format
+        const emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please enter a valid email address'
+            });
+        }
+
+        // Validate phone format
+        const phoneRegex = /^\+?[\d\s-]{10,}$/;
+        if (phone && !phoneRegex.test(phone)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please enter a valid phone number'
+            });
+        }
+
+        // Calculate BMI if height and weight are provided
+        let BMI = null;
+        if (height && weight && height > 0) {
+            const heightInMeters = height / 100;
+            BMI = (weight / (heightInMeters * heightInMeters)).toFixed(1);
+        }
+
+        // Prepare update data
+        const updateData = {
+            full_name,
+            email,
+            phone,
+            height: height ? Number(height) : null,
+            weight: weight ? Number(weight) : null,
+            BMI: BMI ? Number(BMI) : null
+        };
+
+        // Only add dob if provided and valid
+        if (dob) {
+            const dobDate = new Date(dob);
+            if (!isNaN(dobDate.getTime())) {
+                updateData.dob = dobDate;
+            }
+        }
+
+        // Remove undefined/null fields
+        Object.keys(updateData).forEach(key => {
+            if (updateData[key] === undefined || updateData[key] === null) {
+                delete updateData[key];
+            }
+        });
+
+        console.log('Update data:', updateData);
+
+        // Update user in database
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: updateData },
+            { 
+                new: true, // Return updated document
+                runValidators: true // Run schema validators
+            }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Update session data
+        req.session.user = {
+            ...req.session.user,
+            full_name: updatedUser.full_name,
+            email: updatedUser.email,
+            phone: updatedUser.phone,
+            dob: updatedUser.dob,
+            height: updatedUser.height,
+            weight: updatedUser.weight,
+            BMI: updatedUser.BMI
+        };
+
+        console.log('Profile updated successfully for user:', userId);
+
+        res.json({
+            success: true,
+            message: 'Profile updated successfully',
+            user: updatedUser,
+            BMI: BMI
+        });
+
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        
+        // Handle duplicate email error
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email already exists'
+            });
+        }
+
+        // Handle validation errors
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: errors
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
 // Update the getUserDashboard function in userController.js to fetch nutrition data:
-
+// brimstone
 // Get user dashboard based on membership type
 const getUserDashboard = async (req, res, membershipCode) => {
     try {
@@ -842,5 +983,6 @@ module.exports = {
     getUserProfile,
     markWorkoutCompleted,
     checkMembershipActive,
-    checkTrainerSubscription
+    checkTrainerSubscription,
+    updateUserProfile
 };
