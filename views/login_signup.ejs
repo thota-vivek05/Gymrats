@@ -129,6 +129,23 @@
                         <label for="bmi">BMI</label>
                         <input type="number" class="form-control" id="bmi" name="bmi" readonly>
                     </div>
+                    <!--Brimstone-->
+                    <!-- Add this after the BMI section and before "Contact Information" -->
+                    <h3>Fitness Goals</h3>
+                    <div class="form-group">
+                        <label for="workoutType">Preferred Workout Type</label>
+                        <select class="form-control" id="workoutType" name="workoutType" required>
+                            <option value="">Select your preferred workout type</option>
+                            <option value="Calisthenics">Calisthenics</option>
+                            <option value="Weight Loss">Weight Loss</option>
+                            <option value="HIIT">HIIT</option>
+                            <option value="Competitive">Competitive</option>
+                            <option value="Strength Training">Strength Training</option>
+                            <option value="Cardio">Cardio</option>
+                            <option value="Flexibility">Flexibility & Mobility</option>
+                            <option value="Bodybuilding">Bodybuilding</option>
+                        </select>
+                    </div>
 
                     <!-- REYNA -->
 
@@ -149,6 +166,12 @@
 
                     <!-- END REYNA -->
 
+                    <div class="form-group">
+                        <label for="weightGoal">Weight Goal (kg)</label>
+                        <input type="number" class="form-control" id="weightGoal" name="weightGoal"
+                            placeholder="Enter your target weight" min="20" max="300" required>
+                    </div>
+                    <!--Brimstone-->
                     <div class="form-group">
                         <label for="gender">Gender</label>
                         <select class="form-control" id="gender" name="gender" required>
@@ -438,7 +461,10 @@
                 const terms = document.getElementById('terms').checked;
                 const weight = document.getElementById('weight').value;
                 const height = document.getElementById('height').value;
-
+                // Brimstone
+                const workoutType = document.getElementById('workoutType').value;
+                const weightGoal = document.getElementById('weightGoal').value;
+                // Brimstone
                 // Validate form data
                 if (!userFullName || !dateOfBirth || !gender || !userEmail || !phoneNumber || !
                     userPassword ||
@@ -454,7 +480,24 @@
                     );
                     return;
                 }
+                // Brimstone
+                if (!workoutType) {
+                    showErrorModal('Please select your preferred workout type');
+                    return;
+                }
+                const validWorkoutTypes = ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive',
+                    'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding'
+                ];
+                if (!validWorkoutTypes.includes(workoutType)) {
+                    showErrorModal('Please select a valid workout type');
+                    return;
+                }
 
+                if (isNaN(weightGoal) || weightGoal < 20 || weightGoal > 300) {
+                    showErrorModal('Please enter a valid weight goal between 20 and 300 kg');
+                    return;
+                }
+                // Brimstone
                 if (!validatePasswords(userPassword, userConfirmPassword)) {
                     showErrorModal(
                         'Passwords do not match. Please enter the same password in both fields.');
@@ -502,7 +545,11 @@
                             cvv,
                             terms,
                             weight,
-                            height
+                            height,
+                            // Brimstone
+                            workoutType, // ADD THIS
+                            weightGoal
+                            // Brimstone
                         })
                     })
                     .then(response => response.json())
