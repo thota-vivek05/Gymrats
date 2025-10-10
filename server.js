@@ -84,15 +84,24 @@ app.use(
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/gymrats')
-    .then(() => {
+    .then(async () => {
         console.log('Connected to MongoDB database');
+        
+        // Register models explicitly to ensure collections are created
+        mongoose.model('WorkoutHistory');
+        
+        // You could even check if the collection exists and create it if needed
+        const collections = await mongoose.connection.db.listCollections().toArray();
+        const collectionNames = collections.map(c => c.name);
+        
+        if (!collectionNames.includes('workouthistories')) {
+            console.log('WorkoutHistory collection does not exist yet - it will be created when first document is inserted');
+        }
     })
     .catch(err => {
         console.error('MongoDB connection error:', err);
         process.exit(1);
     });
-
-
 // Multer setup for file uploads
 const storage = multer.diskStorage({
     destination: 'uploads/',
@@ -115,6 +124,12 @@ const isAuthenticated = (req, res, next) => {
     }
 };
 
+// Add this middleware after initializing the session middleware
+app.use((req, res, next) => {
+    res.locals.currentPage = ''; // Default value
+    next();
+});
+
 // Use MVC routes for admin pages
 app.use('/admin', adminRoutes);
 app.use('/', userRoutes);
@@ -133,6 +148,48 @@ app.get('/admin_exercises', (req, res) => res.redirect('/admin/exercises'));
 app.get('/admin_workouts', (req, res) => res.redirect('/admin/workout-plans'));
 app.get('/admin_verifier', (req, res) => res.redirect('/admin/verifier'));
 app.get('/admin_settings', (req, res) => res.redirect('/admin/settings'));
+
+// Add this to your routes section
+app.get('/debug/create-workout-history', async (req, res) => {
+    try {
+        // Find a user to associate with the workout history
+        const User = require('./model/User');
+        const user = await User.findOne();
+        
+        if (!user) {
+            return res.status(404).json({ error: 'No users found in database' });
+        }
+        
+        // Create a simple workout history
+        const workoutHistory = new WorkoutHistory({
+            userId: user._id,
+            date: new Date(),
+            exercises: [
+                {
+                    day: 'Monday',
+                    name: 'Bench Press',
+                    sets: 3,
+                    reps: 10,
+                    weight: 60,
+                    duration: 0,
+                    completed: false
+                }
+            ],
+            progress: 0,
+            completed: false
+        });
+        
+        const saved = await workoutHistory.save();
+        res.json({ 
+            success: true, 
+            message: 'WorkoutHistory created successfully', 
+            data: saved 
+        });
+    } catch (error) {
+        console.error('Error creating workout history:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
 
 // Routes for static pages
 const pages = [

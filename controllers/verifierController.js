@@ -124,19 +124,21 @@ exports.getDashboard = async (req, res) => {
     const verifier = await Verifier.findById(req.session.verifierId);
     if (!verifier) return res.redirect('/verifier/login');
 
-    // Fetch verification stats
-    const pendingCount = await TrainerApplication.countDocuments({ status: 'Pending' });
+    // FIX: Update pendingCount to include both statuses
+    const pendingCount = await TrainerApplication.countDocuments({ 
+      status: { $in: ['Pending', 'In Progress'] }  // ← CHANGED THIS LINE
+    });
     const completedCount = await TrainerApplication.countDocuments({ status: 'Approved' });
 
     // Fetch recent verification requests (limit to 4 for display)
     const recentApplications = await TrainerApplication.find({
       status: { $in: ['Pending', 'In Progress'] }
     })
-      .sort({ createdAt: -1 }) // Changed submittedDate to createdAt to match your schema
+      .sort({ createdAt: -1 })
       .limit(4)
-      .select('firstName lastName email specializations createdAt status _id'); // Added _id for the approve/reject links
-    
+      .select('firstName lastName email specializations createdAt status _id');
 
+    // ... rest of the function remains the same
     // Mock earnings and rating (since not in schema)
     const totalEarnings = 1250; // Rs 1,250 (mocked)
     const rating = 4.8; // 4.8/5 (mocked)
@@ -145,7 +147,7 @@ exports.getDashboard = async (req, res) => {
     const upcomingVerifications = await TrainerApplication.find({
       status: { $in: ['Pending', 'In Progress'] }
     })
-      .sort({ createdAt: 1 }) // Changed submittedDate to createdAt
+      .sort({ createdAt: 1 })
       .limit(3)
       .select('firstName lastName createdAt');
 
@@ -183,7 +185,7 @@ exports.getDashboard = async (req, res) => {
         email: verifier.email
       },
       stats: {
-        pendingCount,
+        pendingCount,  // ← Now this will match what's actually shown
         completedCount,
         totalEarnings,
         rating
@@ -251,37 +253,46 @@ exports.registerVerifier = async (req, res) => {
 
 exports.showPendingVerifications = async (req, res) => {
   try {
+    console.log("=== showPendingVerifications START ===");
+    
     // Verify the user is logged in
     const verifierId = req.session.verifierId;
-    console.log("verifierId:", verifierId);
+    console.log("Session verifierId:", verifierId);
     
     const verifier = await Verifier.findById(verifierId);
-    console.log("verifier found:", verifier ? true : false);
+    console.log("Verifier found:", verifier ? verifier.name : "NO VERIFIER");
     
     if (!verifier) {
       console.log("No verifier found, redirecting to login");
       return res.redirect('/verifier/login');
     }
     
-    // Get pending applications
-    console.log("Searching for pending applications...");
-    const applications = await TrainerApplication.find({ status: 'Pending' })
-                                .sort({ createdAt: -1 });
+    // Get pending AND in-progress applications
+    console.log("Searching for applications with status: ['Pending', 'In Progress']");
+    const applications = await TrainerApplication.find({ 
+      status: { $in: ['Pending', 'In Progress'] }
+    }).sort({ createdAt: -1 });
     
     console.log("Found applications:", applications.length);
-    console.log("Applications data:", JSON.stringify(applications, null, 2));
     
-    // Get counts for stats
-    const pendingCount = await TrainerApplication.countDocuments({ status: 'Pending' });
-    const completedCount = await TrainerApplication.countDocuments({ 
-      status: { $in: ['Approved', 'Rejected'] },
-      verifierId: verifierId
+    // Log each application found
+    applications.forEach((app, index) => {
+      console.log(`App ${index + 1}:`, {
+        id: app._id,
+        name: `${app.firstName} ${app.lastName}`,
+        email: app.email,
+        status: app.status,
+        createdAt: app.createdAt
+      });
     });
     
-    console.log("pendingCount:", pendingCount);
-    console.log("completedCount:", completedCount);
+    const pendingCount = await TrainerApplication.countDocuments({ 
+      status: { $in: ['Pending', 'In Progress'] }
+    });
     
-    console.log("Rendering pendingverifications.ejs");
+    console.log("Total pending count:", pendingCount);
+    console.log("=== showPendingVerifications END ===");
+    
     return res.render('pendingverifications', { 
       applications: applications || [],
       verifier: {
@@ -291,8 +302,11 @@ exports.showPendingVerifications = async (req, res) => {
       },
       stats: {
         pendingCount,
-        completedCount,
-        rating: 4.8 // Default rating
+        completedCount: await TrainerApplication.countDocuments({ 
+          status: { $in: ['Approved', 'Rejected'] },
+          verifierId: verifierId
+        }),
+        rating: 4.8
       }
     });
   } catch (err) {
