@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - GymRats</title>
-    <link rel="stylesheet" href="/admin/admin_login.css">
+    <title>Trainer Login - GymRats</title>
+    <link rel="stylesheet" href="/trainer_login/trainer_login.css">
 </head>
 
 <body>
@@ -15,6 +15,8 @@
             <div class="brand-logo">
                 <a href="/home" class="brand-name">GymRats</a>
             </div>
+
+
 
             <div class="mobile-menu-icon" id="menuIcon">
                 <img src="/home/menu.jpg" alt="Menu" height="25px" />
@@ -29,14 +31,15 @@
                 <a href="/contact">Contact</a>
                 <a href="/login_signup">Login / Signup</a>
             </div>
+
         </header>
     </div>
 
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <h1>Admin Login</h1>
-                <p>Access your admin dashboard to manage website content and users</p>
+                <h1>Trainer Login</h1>
+                <p>Access your trainer dashboard to manage clients and programs</p>
             </div>
 
             <% if (locals.errorMessage) { %>
@@ -51,7 +54,7 @@
             </div>
             <% } %>
 
-            <form action="/admin/login" method="POST" id="adminLoginForm">
+            <form action="/trainer/login" method="POST" id="trainerLoginForm">
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input type="email" id="email" name="email" placeholder="Enter your email" required
@@ -74,9 +77,14 @@
                     </div>
                     <span class="error-text" id="passwordError"></span>
                 </div>
-                <input type="hidden" name="redirectUrl" value="/admin/dashboard">
+
                 <button type="submit" class="login-buttons" id="loginBtn">Login</button>
             </form>
+
+            <div class="login-footer">
+                <p>Not registered as a trainer yet? <a href="/trainer_form">Become a Trainer</a></p>
+                <p>Are you a gym member? <a href="/login_signup">Member Login</a></p>
+            </div>
         </div>
     </div>
 
@@ -156,8 +164,12 @@
 
             if (togglePassword && passwordInput) {
                 togglePassword.addEventListener('click', function () {
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    // Toggle the type attribute
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' :
+                        'password';
                     passwordInput.setAttribute('type', type);
+
+                    // Toggle the eye / eye-slash icon
                     const eyeIcon = togglePassword.querySelector('svg');
                     if (type === 'password') {
                         eyeIcon.innerHTML = `
@@ -173,17 +185,15 @@
                 });
             }
 
-            // Form validation and AJAX submission
-            const loginForm = document.getElementById('adminLoginForm');
+            // Form validation
+            const loginForm = document.getElementById('trainerLoginForm');
             const emailInput = document.getElementById('email');
             const emailError = document.getElementById('emailError');
             const passwordError = document.getElementById('passwordError');
             const loginBtn = document.getElementById('loginBtn');
 
             if (loginForm) {
-                loginForm.addEventListener('submit', async function (event) {
-                    event.preventDefault();
-
+                loginForm.addEventListener('submit', function (event) {
                     let isValid = true;
 
                     // Reset error messages
@@ -208,34 +218,13 @@
                         isValid = false;
                     }
 
-                    if (isValid) {
-                        // Show loading state
+                    if (!isValid) {
+                        event.preventDefault();
+                    } else {
+                        // Show loading state on button
                         loginBtn.innerHTML = 'Logging in...';
                         loginBtn.disabled = true;
-
-                        try {
-                            const response = await fetch('/admin/login', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                body: new URLSearchParams(new FormData(loginForm)).toString(),
-                            });
-
-                            const result = await response.json();
-
-                            if (result.success) {
-                                window.location.href = result.redirectUrl || '/admin/dashboard';
-                            } else {
-                                emailError.textContent = result.message;
-                                loginBtn.innerHTML = 'Login';
-                                loginBtn.disabled = false;
-                            }
-                        } catch (error) {
-                            emailError.textContent = 'An error occurred. Please try again.';
-                            loginBtn.innerHTML = 'Login';
-                            loginBtn.disabled = false;
-                        }
+                        // Form will submit normally
                     }
                 });
 

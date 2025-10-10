@@ -1,24 +1,84 @@
 const mongoose = require('mongoose');
 
 const trainerSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    specialty: { type: String, required: true },
-    experience: { type: String, required: true },
-    clients: { type: Number, default: 0 },
+    name: { 
+        type: String, 
+        required: true 
+    },
+    email: { 
+        type: String, 
+        required: true,
+        unique: true,
+        match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address']
+    },
+    password_hash: { 
+        type: String, 
+        required: true 
+    },
+    phone: { 
+        type: String, 
+        required: true,
+        match: [/^\+?[\d\s-]{10,}$/, 'Please enter a valid phone number']
+    },
+    experience: { 
+        type: String, 
+        required: true,
+        enum: ['1-2', '3-5', '5-10', '10+']
+    },
+   // REYNA
+    // In Trainer.js schema, update the specializations field:
+    specializations: [{ 
+    type: String, 
+    enum: ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding', 'Nutrition']
+    }],
+    
+    verifierId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Verifier',
+        default: null 
+    },
+    clients: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User' 
+    }],
+    sessions: [{
+        clientId: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'User' 
+        },
+        date: { 
+            type: Date, 
+            required: true 
+        },
+        time: { 
+            type: String, 
+            required: true 
+        },
+        meetLink: { 
+            type: String 
+        }
+    }],
+    workoutPlans: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'WorkoutPlan' 
+    }],
+    nutritionPlans: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'NutritionPlan' 
+    }],
+
+    
     rating: { 
         type: Number,
         min: 0,
         max: 5,
-        default: 0
+        default: 0 
     },
     status: { 
         type: String, 
-        enum: ['Active', 'Inactive', 'Pending'],
-        default: 'Active'
-    },
-    image: { type: String },
-    email: { type: String },
-    phone: { type: String }
+        enum: ['Active', 'Inactive', 'Suspended', 'Expired'],
+        default: 'Active' 
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Trainer', trainerSchema);

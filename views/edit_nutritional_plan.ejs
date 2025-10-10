@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Nutrition Plan - GymRats</title>
+    <link rel="stylesheet" type="text/css" href="/edit_nutritional_plan/edit_nutritional_plan.css" />
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div class="main-navbar">
+        <header>
+            <div class="brand-logo">
+                <a href="/home" class="brand-name">GymRats</a>
+            </div>
+            <div class="mobile-menu-icon" id="menuIcon">
+                <img src="/home/menu.jpg" alt="Menu" height="25px" />
+            </div>
+            <div class="mobile-sidebar" id="sideNavbar">
+                <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+                <a href="/home">Home</a>
+                <a href="/isolation">Exercises</a>
+                <a href="/nutrition">Nutrition</a>
+                <a href="/about">About</a>
+                <a href="/contact">Contact</a>
+                <a href="/trainer_login">Logout</a>
+            </div>
+        </header>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="header">
+            <h1>Edit Nutrition Plan</h1>
+            <p>Customize the nutrition plan for <span id="clientName"><%= client.name %></span></p>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- Left Section: Available Foods -->
+            <div class="available-foods-section">
+                <div class="section-header">
+                    <h2>Available Foods</h2>
+                    <div class="search-bar">
+                        <input type="text" id="foodSearch" placeholder="Search foods...">
+                    </div>
+                    <div class="category-filter">
+                        <select id="categoryFilter">
+                            <option value="all">All Categories</option>
+                            <option value="protein">Protein</option>
+                            <option value="carbs">Carbohydrates</option>
+                            <option value="fats">Healthy Fats</option>
+                            <option value="fruits">Fruits</option>
+                            <option value="vegetables">Vegetables</option>
+                            <option value="dairy">Dairy</option>
+                            <option value="supplements">Supplements</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="food-list" id="availableFoodsList">
+                    <!-- Protein Sources -->
+                    <div class="food-item" data-category="protein">
+                        <div class="food-info">
+                            <h3>Chicken Breast</h3>
+                            <p>31g protein per 100g</p>
+                            <p>165 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle protein"><span>P</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <div class="food-item" data-category="protein">
+                        <div class="food-info">
+                            <h3>Tofu (BBQ)</h3>
+                            <p>15g protein per 100g</p>
+                            <p>145 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle protein"><span>P</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <div class="food-item" data-category="protein">
+                        <div class="food-info">
+                            <h3>Whey Protein</h3>
+                            <p>24g protein per scoop</p>
+                            <p>120 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle protein"><span>P</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <div class="food-item" data-category="protein">
+                        <div class="food-info">
+                            <h3>Egg Whites</h3>
+                            <p>11g protein per 100g</p>
+                            <p>52 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle protein"><span>P</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <div class="food-item" data-category="protein">
+                        <div class="food-info">
+                            <h3>Greek Yogurt</h3>
+                            <p>10g protein per 100g</p>
+                            <p>59 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle protein"><span>P</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <div class="food-item" data-category="protein">
+                        <div class="food-info">
+                            <h3>Soy Beans</h3>
+                            <p>20g protein per 100g</p>
+                            <p>172 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle protein"><span>P</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <!-- Carbohydrates -->
+                    <div class="food-item" data-category="carbs">
+                        <div class="food-info">
+                            <h3>Brown Rice</h3>
+                            <p>45g carbs per 100g</p>
+                            <p>112 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle carbs"><span>C</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <div class="food-item" data-category="carbs">
+                        <div class="food-info">
+                            <h3>Sweet Potato</h3>
+                            <p>20g carbs per 100g</p>
+                            <p>86 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle carbs"><span>C</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <div class="food-item" data-category="carbs">
+                        <div class="food-info">
+                            <h3>Oatmeal</h3>
+                            <p>66g carbs per 100g</p>
+                            <p>389 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle carbs"><span>C</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <!-- Healthy Fats -->
+                    <div class="food-item" data-category="fats">
+                        <div class="food-info">
+                            <h3>Avocado</h3>
+                            <p>15g fat per 100g</p>
+                            <p>160 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle fats"><span>F</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <div class="food-item" data-category="fats">
+                        <div class="food-info">
+                            <h3>Almonds</h3>
+                            <p>50g fat per 100g</p>
+                            <p>579 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle fats"><span>F</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <!-- Fruits -->
+                    <div class="food-item" data-category="fruits">
+                        <div class="food-info">
+                            <h3>Banana</h3>
+                            <p>23g carbs per 100g</p>
+                            <p>89 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle carbs"><span>C</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <div class="food-item" data-category="fruits">
+                        <div class="food-info">
+                            <h3>Berries Mix</h3>
+                            <p>14g carbs per 100g</p>
+                            <p>57 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle carbs"><span>C</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <!-- Vegetables -->
+                    <div class="food-item" data-category="vegetables">
+                        <div class="food-info">
+                            <h3>Broccoli</h3>
+                            <p>7g carbs per 100g</p>
+                            <p>34 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle carbs"><span>C</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                    <div class="food-item" data-category="vegetables">
+                        <div class="food-info">
+                            <h3>Spinach</h3>
+                            <p>3.6g carbs per 100g</p>
+                            <p>23 calories</p>
+                        </div>
+                        <div class="food-macro">
+                            <div class="macro-circle carbs"><span>C</span></div>
+                        </div>
+                        <button class="add-btn">Add</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Section: Client's Nutrition Plan -->
+            <div class="nutrition-plan-section">
+                <div class="section-header">
+                    <h2>Client's Nutrition Plan</h2>
+                </div>
+
+                <form id="nutritionPlanForm">
+                    <input type="hidden" name="userId" value="<%= client.id %>">
+                    <div class="nutrition-goals">
+                        <div class="goal-input">
+                            <label for="proteinGoal">Daily Protein Goal (g):</label>
+                            <input type="number" id="proteinGoal" name="proteinGoal" value="<%= client.proteinGoal %>" min="0">
+                        </div>
+                        <div class="goal-input">
+                            <label for="calorieGoal">Daily Calorie Goal:</label>
+                            <input type="number" id="calorieGoal" name="calorieGoal" value="<%= client.calorieGoal %>" min="0">
+                        </div>
+                    </div>
+
+                    <div class="nutrition-summary">
+                        <div class="macro-summary">
+                            <div class="macro-item">
+                                <span class="macro-label">Protein:</span>
+                                <span class="macro-value" id="totalProtein">0g</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Carbs:</span>
+                                <span class="macro-value" id="totalCarbs">0g</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Fats:</span>
+                                <span class="macro-value" id="totalFats">0g</span>
+                            </div>
+                            <div class="macro-item">
+                                <span class="macro-label">Calories:</span>
+                                <span class="macro-value" id="totalCalories">0</span>
+                            </div>
+                        </div>
+                        <div class="progress-container">
+                            <label>Protein Goal Progress:</label>
+                            <div class="progress-bar">
+                                <div class="progress" id="proteinProgress" style="width: 0%"></div>
+                            </div>
+                            <span id="proteinPercentage">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="selected-foods">
+                        <h3>Selected Foods</h3>
+                        <div class="selected-food-list" id="selectedFoodsList">
+                            <% if (client.foods.length === 0) { %>
+                                <div class="empty-state">
+                                    <p>No foods selected yet. Add foods from the list on the left.</p>
+                                </div>
+                            <% } else { %>
+                                <% client.foods.forEach(food => { %>
+                                    <div class="selected-food-item" data-protein="<%= food.protein %>" data-calories="<%= food.calories %>">
+                                        <div class="food-info">
+                                            <h4><%= food.name %></h4>
+                                            <p>Protein: <%= food.protein %>g | Carbs: 0g | Fats: 0g</p>
+                                            <p>Calories: <%= food.calories %></p>
+                                        </div>
+                                        <button class="remove-btn">Remove</button>
+                                    </div>
+                                <% }) %>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="submit" class="save-btn" id="saveNutritionPlan">Save Nutrition Plan</button>
+                        <button type="button" class="cancel-btn" id="cancelEdit">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>GymRats</h3>
+                <ul>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/trainers">Our Trainers</a></li>
+                    <li><a href="/testimonial">Testimonials</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="/isolation">Exercise Guide</a></li>
+                    <li><a href="/nutrition">Nutrition Tips</a></li>
+                    <li><a href="/workout_plans">Workout Plans</a></li>
+                    <li><a href="/calculators">Calculators</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="/contact">Contact Us</a></li>
+                    <li><a href="/about">About us</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/privacy_policy">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Connect With Us</h3>
+                <ul>
+                    <li><a href="/trainer_form">Become a Trainer</a></li>
+                    <li><a href="/verifier_form">Become a Verifier</a></li>
+                </ul>
+                <div class="social-icons">
+                    <a href="#"><img src="/home/icons8-facebook.svg" alt="Facebook"></a>
+                    <a href="#"><img src="/home/icons8-instagram.svg" alt="Instagram"></a>
+                    <a href="#"><img src="/home/icons8-youtube.svg" alt="YouTube"></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 GymRats. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mobile navigation
+            const menuIcon = document.getElementById('menuIcon');
+            const closeBtn = document.getElementById('closeBtn');
+            const sideNavbar = document.getElementById('sideNavbar');
+
+            menuIcon.addEventListener('click', function () {
+                sideNavbar.classList.add('open');
+            });
+
+            closeBtn.addEventListener('click', function () {
+                sideNavbar.classList.remove('open');
+            });
+
+            // Food filtering functionality
+            const foodSearch = document.getElementById('foodSearch');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const foodItems = document.querySelectorAll('.food-item');
+
+            function filterFoods() {
+                const searchTerm = foodSearch.value.toLowerCase();
+                const category = categoryFilter.value;
+
+                foodItems.forEach(item => {
+                    const foodName = item.querySelector('h3').textContent.toLowerCase();
+                    const foodCategory = item.dataset.category;
+
+                    const matchesSearch = foodName.includes(searchTerm);
+                    const matchesCategory = category === 'all' || foodCategory === category;
+
+                    item.style.display = matchesSearch && matchesCategory ? 'flex' : 'none';
+                });
+            }
+
+            foodSearch.addEventListener('input', filterFoods);
+            categoryFilter.addEventListener('change', filterFoods);
+
+            // Nutrition plan functionality
+            const addButtons = document.querySelectorAll('.add-btn');
+            const selectedFoodsList = document.getElementById('selectedFoodsList');
+            const emptyState = document.querySelector('.empty-state');
+            const proteinGoalInput = document.getElementById('proteinGoal');
+            const calorieGoalInput = document.getElementById('calorieGoal');
+            const form = document.getElementById('nutritionPlanForm');
+
+            const totalProtein = document.getElementById('totalProtein');
+            const totalCarbs = document.getElementById('totalCarbs');
+            const totalFats = document.getElementById('totalFats');
+            const totalCalories = document.getElementById('totalCalories');
+            const proteinProgress = document.getElementById('proteinProgress');
+            const proteinPercentage = document.getElementById('proteinPercentage');
+
+            let nutritionTotals = {
+                protein: <%= client.foods.reduce((sum, food) => sum + (food.protein || 0), 0) %>,
+                carbs: 0,
+                fats: 0,
+                calories: <%= client.foods.reduce((sum, food) => sum + (food.calories || 0), 0) %>
+            };
+
+            function updateNutritionSummary() {
+                totalProtein.textContent = nutritionTotals.protein + 'g';
+                totalCarbs.textContent = nutritionTotals.carbs + 'g';
+                totalFats.textContent = nutritionTotals.fats + 'g';
+                totalCalories.textContent = nutritionTotals.calories;
+
+                const proteinGoal = parseInt(proteinGoalInput.value) || 0;
+                const proteinPercentValue = proteinGoal > 0 ? (nutritionTotals.protein / proteinGoal) * 100 : 0;
+                const cappedPercentage = Math.min(proteinPercentValue, 100);
+
+                proteinProgress.style.width = cappedPercentage + '%';
+                proteinPercentage.textContent = Math.round(proteinPercentValue) + '%';
+
+                emptyState.style.display = selectedFoodsList.querySelectorAll('.selected-food-item').length > 0 ? 'none' : 'block';
+            }
+
+            function extractNutritionInfo(foodItem) {
+                const foodInfo = foodItem.querySelector('.food-info');
+                const foodName = foodInfo.querySelector('h3').textContent;
+
+                const proteinText = foodInfo.querySelectorAll('p')[0].textContent;
+                const proteinMatch = proteinText.match(/(\d+)g protein/) || [null, 0];
+                const protein = parseInt(proteinMatch[1]) || 0;
+
+                const caloriesText = foodInfo.querySelectorAll('p')[1].textContent;
+                const caloriesMatch = caloriesText.match(/(\d+) calories/) || [null, 0];
+                const calories = parseInt(caloriesMatch[1]) || 0;
+
+                const macroCircle = foodItem.querySelector('.macro-circle');
+                const macroType = macroCircle.classList.contains('protein') ? 'protein' :
+                    macroCircle.classList.contains('carbs') ? 'carbs' : 'fats';
+
+                let carbs = 0;
+                let fats = 0;
+
+                if (macroType === 'protein') {
+                    carbs = Math.round(calories * 0.15 / 4);
+                    fats = Math.round((calories - (protein * 4) - (carbs * 4)) / 9);
+                } else if (macroType === 'carbs') {
+                    carbs = Math.round(calories * 0.7 / 4);
+                    protein = Math.round(calories * 0.15 / 4);
+                    fats = Math.round(calories * 0.15 / 9);
+                } else if (macroType === 'fats') {
+                    fats = Math.round(calories * 0.7 / 9);
+                    protein = Math.round(calories * 0.15 / 4);
+                    carbs = Math.round(calories * 0.15 / 4);
+                }
+
+                return { name: foodName, protein, carbs, fats, calories, macroType };
+            }
+
+            addButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const foodItem = this.closest('.food-item');
+                    const foodInfo = extractNutritionInfo(foodItem);
+
+                    const selectedFoodItem = document.createElement('div');
+                    selectedFoodItem.className = 'selected-food-item';
+                    selectedFoodItem.dataset.protein = foodInfo.protein;
+                    selectedFoodItem.dataset.carbs = foodInfo.carbs;
+                    selectedFoodItem.dataset.fats = foodInfo.fats;
+                    selectedFoodItem.dataset.calories = foodInfo.calories;
+                    selectedFoodItem.innerHTML = `
+                        <div class="food-info">
+                            <h4>${foodInfo.name}</h4>
+                            <p>Protein: ${foodInfo.protein}g | Carbs: ${foodInfo.carbs}g | Fats: ${foodInfo.fats}g</p>
+                            <p>Calories: ${foodInfo.calories}</p>
+                        </div>
+                        <button class="remove-btn">Remove</button>
+                    `;
+
+                    selectedFoodsList.appendChild(selectedFoodItem);
+
+                    nutritionTotals.protein += foodInfo.protein;
+                    nutritionTotals.carbs += foodInfo.carbs;
+                    nutritionTotals.fats += foodInfo.fats;
+                    nutritionTotals.calories += foodInfo.calories;
+
+                    updateNutritionSummary();
+
+                    const removeBtn = selectedFoodItem.querySelector('.remove-btn');
+                    removeBtn.addEventListener('click', function () {
+                        nutritionTotals.protein -= foodInfo.protein;
+                        nutritionTotals.carbs -= foodInfo.carbs;
+                        nutritionTotals.fats -= foodInfo.fats;
+                        nutritionTotals.calories -= foodInfo.calories;
+
+                        selectedFoodItem.remove();
+                        updateNutritionSummary();
+                    });
+                });
+            });
+
+            document.querySelectorAll('.selected-food-item .remove-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const item = this.closest('.selected-food-item');
+                    nutritionTotals.protein -= parseInt(item.dataset.protein) || 0;
+                    nutritionTotals.carbs -= parseInt(item.dataset.carbs) || 0;
+                    nutritionTotals.fats -= parseInt(item.dataset.fats) || 0;
+                    nutritionTotals.calories -= parseInt(item.dataset.calories) || 0;
+
+                    item.remove();
+                    updateNutritionSummary();
+                });
+            });
+
+            proteinGoalInput.addEventListener('input', updateNutritionSummary);
+            calorieGoalInput.addEventListener('input', updateNutritionSummary);
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const selectedFoods = Array.from(selectedFoodsList.querySelectorAll('.selected-food-item')).map(item => ({
+                    name: item.querySelector('h4').textContent,
+                    protein: parseInt(item.dataset.protein) || 0,
+                    carbs: parseInt(item.dataset.carbs) || 0,
+                    fats: parseInt(item.dataset.fats) || 0,
+                    calories: parseInt(item.dataset.calories) || 0
+                }));
+
+                fetch('/edit_nutritional_plan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: formData.get('userId'),
+                        proteinGoal: formData.get('proteinGoal'),
+                        calorieGoal: formData.get('calorieGoal'),
+                        foods: selectedFoods
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                    } else {
+                        alert(data.message);
+                        window.location.href = data.redirect;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving nutrition plan:', error);
+                    alert('Failed to save nutrition plan.');
+                });
+            });
+
+            document.getElementById('cancelEdit').addEventListener('click', function () {
+                if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+                    window.location.href = '/trainer';
+                }
+            });
+
+            updateNutritionSummary();
+        });
+    </script>
+</body>
+</html>

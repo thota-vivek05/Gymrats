@@ -8,14 +8,12 @@
     <link rel="stylesheet" type="text/css" href="/trainer/trainer.css" />
 </head>
 <body>
-    <!-- Navigation - Updated to match home.html -->
+    <!-- Navigation -->
     <div class="main-navbar">
         <header>
-            <!-- Header Branding -->
             <div class="brand-logo">
                 <a href="/home" class="brand-name">GymRats</a>
             </div>
-            
             <div class="nav-menu">
                 <a href="/home">Home</a>
                 <a href="/isolation">Exercises</a>
@@ -23,18 +21,15 @@
                 <a href="/about">About</a>
                 <a href="/contact">Contact</a>
             </div>
-            
             <div class="right-container">
                 <div class="search-container">
                     <img src="/trainer/icons8-search.svg" height="18px" alt="Search Icon" />
                     <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
                 </div>
-                
                 <div class="login-button">
-                    <a href="/login_signup">Login / Signup</a>
+                    <a href="/trainer_login">Logout</a>
                 </div>
             </div>
-
             <div class="mobile-menu-icon" id="menuIcon">
                 <img src="/trainer/menu.jpg" alt="Menu" height="25px" />
             </div>
@@ -43,195 +38,185 @@
 
     <!-- Mobile Side Navigation -->
     <div class="mobile-sidebar" id="sideNavbar">
-        <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+        <a href="javascript:void(0)" class="close-button" id="closeBtn">×</a>
         <a href="/home">Home</a>
         <a href="/isolation">Exercises</a>
         <a href="/nutrition">Nutrition</a>
         <a href="/about">About</a>
         <a href="/contact">Contact</a>
-        <a href="/login_signup">Login / Signup</a>
+        <a href="/trainer_login">Logout</a>
     </div>
 
     <!-- Welcome Banner -->
     <div class="welcome-banner">
-        <h1>Welcome, Trainer</h1>
+        <h1>Welcome, <%= trainer.name %></h1>
         <p>Manage your clients and track their progress</p>
     </div>
 
     <!-- Main Content Area -->
     <div class="main-content">
-        <!-- Client List - Extended to full height -->
+        <!-- Client List -->
         <div class="client-list-container">
             <h2>Client List</h2>
             <div class="client-list">
-                <div class="client-item active" data-client="client1">
-                    <div class="client-name">Anvesh</div>
-                    <div class="client-stats">
-                        <span>Progress: 75%</span>
-                        <span>Next Session: Today</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client2">
-                    <div class="client-name">vivek</div>
-                    <div class="client-stats">
-                        <span>Progress: 60%</span>
-                        <span>Next Session: Tomorrow</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client3">
-                    <div class="client-name">jay</div>
-                    <div class="client-stats">
-                        <span>Progress: 45%</span>
-                        <span>Next Session: Mar 18</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client4">
-                    <div class="client-name">Rahul</div>
-                    <div class="client-stats">
-                        <span>Progress: 82%</span>
-                        <span>Next Session: Mar 19</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client5">
-                    <div class="client-name">manoj</div>
-                    <div class="client-stats">
-                        <span>Progress: 30%</span>
-                        <span>Next Session: Mar 20</span>
-                    </div>
-                </div>
-                <!-- Added more clients to fill the extended space -->
-                <div class="client-item" data-client="client6">
-                    <div class="client-name">nikhil</div>
-                    <div class="client-stats">
-                        <span>Progress: 55%</span>
-                        <span>Next Session: Mar 21</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client7">
-                    <div class="client-name">tharun</div>
-                    <div class="client-stats">
-                        <span>Progress: 68%</span>
-                        <span>Next Session: Mar 22</span>
-                    </div>
-                </div>
-                <div class="client-item" data-client="client8">
-                    <div class="client-name">ganesh</div>
-                    <div class="client-stats">
-                        <span>Progress: 40%</span>
-                        <span>Next Session: Mar 23</span>
-                    </div>
-                </div>
+                <% if (clients.length === 0) { %>
+                    <p>No clients assigned yet.</p>
+                <% } else { %>
+                    <% clients.forEach((client, index) => { %>
+                        <div class="client-item <%= index === 0 ? 'active' : '' %>" data-client="<%= client.id %>">
+                            <div class="client-name"><%= client.name %></div>
+                            <div class="client-stats">
+                                <span>Progress: <span class="progress-value"><%= client.progress %></span>%</span>
+                                <span>Next Session: <%= client.nextSession %></span>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } %>
             </div>
         </div>
 
-        <!-- Client Details Container with new layout -->
+        <!-- Client Details Container -->
         <div class="client-details-container">
-            <!-- Top row with client profile and workout plan side by side -->
+            <!-- Top row -->
             <div class="top-row">
                 <!-- Client Profile -->
                 <div class="client-profile">
-                    <h2>Client Profile: <span id="clientNameDisplay">Anvesh</span></h2>
-                    <div class="profile-stats">
+                    <h2>Client Profile: <span id="clientNameDisplay">
+                        <%= selectedClient ? selectedClient.name : 'Select a client' %>
+                    </span></h2>
+                    <div class="profile-stats" id="clientProfileStats">
                         <div class="stat-item">
                             <span class="stat-label">Age:</span>
-                            <span class="stat-value">28</span>
+                            <span class="stat-value" id="clientAge"><%= selectedClient ? (selectedClient.age || 'N/A') : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Weight:</span>
-                            <span class="stat-value">75 kg</span>
+                            <span class="stat-value" id="clientWeight"><%= selectedClient ? (selectedClient.weight || 'N/A') : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Height:</span>
-                            <span class="stat-value">178 cm</span>
+                            <span class="stat-value" id="clientHeight"><%= selectedClient ? (selectedClient.height || 'N/A') : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Body Fat:</span>
-                            <span class="stat-value">18%</span>
+                            <span class="stat-value" id="clientBodyFat"><%= selectedClient ? (selectedClient.bodyFat || 'N/A') : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Goal:</span>
-                            <span class="stat-value">Strength & Muscle Gain</span>
+                            <span class="stat-value" id="clientGoal"><%= selectedClient ? (selectedClient.goal || 'N/A') : 'N/A' %></span>
                         </div>
                     </div>
-                    <button class="btn meet-button" onclick="window.open('https://meet.google.com/xyz-abcd-123', '_blank')">Join Google Meet</button>
+                    <% if (selectedClient) { %>
+                        <button class="btn meet-button" onclick="window.open('https://meet.google.com/xyz-abcd-123', '_blank')">Join Google Meet</button>
+                    <% } else { %>
+                        <button class="btn meet-button" disabled>Join Google Meet</button>
+                    <% } %>
                 </div>
 
-                <!-- Workout Plan -->
+                <!-- Weekly Workout Schedule -->
                 <div class="workout-plan">
-                    <h2>Today's Workout: HIIT</h2>
-                    <div class="exercises-list">
-                        <div class="exercise-item">
-                            <span class="exercise-name">1. Burpees</span>
-                            <span class="exercise-details">4 sets x 15 reps</span>
-                        </div>
-                        <div class="exercise-item">
-                            <span class="exercise-name">2. Squat/Lunges</span>
-                            <span class="exercise-details">3 sets x 20 reps</span>
-                        </div>
-                        <div class="exercise-item">
-                            <span class="exercise-name">3. Mountain Climbers</span>
-                            <span class="exercise-details">4 sets x 30 seconds</span>
-                        </div>
-                        <div class="exercise-item">
-                            <span class="exercise-name">4. Jumping Jacks</span>
-                            <span class="exercise-details">3 sets x 45 seconds</span>
-                        </div>
+                    <h2>Weekly Workout Schedule</h2>
+                    <div class="weekly-schedule" id="weeklySchedule">
+                        <% if (!selectedClient) { %>
+                            <p>Select a client to view their weekly workout schedule.</p>
+                        <% } else if (workoutData && workoutData.weeklySchedule) { %>
+                            <% const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; %>
+                            <% days.forEach(day => { %>
+                                <div class="day-schedule">
+                                    <h3><%= day %></h3>
+                                    <% if (workoutData.weeklySchedule[day].length === 0) { %>
+                                        <p>No exercises scheduled.</p>
+                                    <% } else { %>
+                                        <div class="exercises-list">
+                                            <% workoutData.weeklySchedule[day].forEach((exercise, index) => { %>
+                                                <div class="exercise-item">
+                                                    <span class="exercise-name"><%= index + 1 %>. <%= exercise.name %></span>
+                                                    <span class="exercise-details">
+                                                        <% let details = ''; %>
+                                                        <% if (exercise.sets && exercise.reps) { %>
+                                                            <%= `${exercise.sets} sets x ${exercise.reps} reps` %>
+                                                            <% details = `${exercise.sets} sets x ${exercise.reps} reps`; %>
+                                                        <% } else if (exercise.duration) { %>
+                                                            <%= `${exercise.duration} seconds` %>
+                                                            <% details = `${exercise.duration} seconds`; %>
+                                                        <% } %>
+                                                        <% if (exercise.weight) { %>
+                                                            <%= details ? `, ${exercise.weight} kg` : `${exercise.weight} kg` %>
+                                                            <% details += details ? `, ${exercise.weight} kg` : `${exercise.weight} kg`; %>
+                                                        <% } %>
+                                                    </span>
+                                                </div>
+                                            <% }) %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <p>No workout plan for this week.</p>
+                        <% } %>
                     </div>
-                    <button class="btn">Edit Workout Plan</button>
+                    <a id="editWorkoutPlanLink" href="<%= selectedClient ? `/edit_workout_plan/${selectedClient.id}` : '#' %>" class="btn <%= !selectedClient ? 'disabled' : '' %>">Edit Workout Plan</a>
                 </div>
             </div>
 
-            <!-- Current Stats - Stacked below -->
+            <!-- Current Stats -->
             <div class="current-stats">
                 <h2>Current Stats</h2>
-                <div class="stats-grid">
+                <div class="stats-grid" id="statsGrid">
                     <div class="stat-box">
-                        <h3>Bicep Curls</h3>
-                        <p class="stat-value">10 kg</p>
+                        <h3>Total Workouts Completed</h3>
+                        <p class="stat-value" id="workoutsCompletedStat">0</p>
                     </div>
                     <div class="stat-box">
-                        <h3>Deadlift</h3>
-                        <p class="stat-value">100 kg</p>
+                        <h3>Average Calories Consumed</h3>
+                        <p class="stat-value" id="avgCaloriesStat">0 kcal</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Protein Intake vs Goal</h3>
+                        <p class="stat-value" id="proteinVsGoalStat">0g / 0g</p>
                     </div>
                 </div>
-
                 <h3>Exercise Progress Timeline</h3>
                 <div class="chart-container">
                     <canvas id="exerciseChart"></canvas>
                 </div>
             </div>
 
-            <!-- Nutrition Plan - Stacked below current stats -->
+            <!-- Nutrition Plan -->
             <div class="nutrition-plan">
                 <h2>Food Intake</h2>
-                <div class="nutrition-goal">
-                    <p>Today's protein goal: 90g</p>
-                    <p>Calories: 2000</p>
-                </div>
-                <h3>Foods to Take:</h3>
-                <div class="foods-to-take">
-                    <div class="food-item">
-                        <span class="food-name">1. "No" chicken (BBQ tofu)</span>
-                        <span class="food-protein">35g protein</span>
+                <% if (selectedClient) { %>
+                    <div class="nutrition-goal">
+                        <p>Today's protein goal: <span id="proteinGoal"><%= nutritionData ? (nutritionData.nutrition.protein_goal || 'N/A') : 'N/A' %></span></p>
+                        <p>Calories: <span id="calorieGoal"><%= nutritionData ? (nutritionData.nutrition.calorie_goal || 'N/A') : 'N/A' %></span></p>
                     </div>
-                    <div class="food-item">
-                        <span class="food-name">2. Soy BEANS</span>
-                        <span class="food-protein">20g protein</span>
+                    <h3>Foods to Take:</h3>
+                    <div class="foods-to-take" id="foodsList">
+                        <% if (nutritionData && nutritionData.nutrition.foods && nutritionData.nutrition.foods.length > 0) { %>
+                            <% nutritionData.nutrition.foods.forEach(food => { %>
+                                <p><%= food.name %> (<%= food.protein %>g protein, <%= food.calories %> kcal)</p>
+                            <% }) %>
+                        <% } else { %>
+                            <p>No foods assigned yet.</p>
+                        <% } %>
                     </div>
-                </div>
-                <div class="goals-reached">
-                    <p>Food goals reached ✓</p>
-                </div>
-                <h3>Nutritional Breakdown</h3>
-                <div class="pie-chart-container">
-                    <canvas id="nutritionChart"></canvas>
-                </div>
-                <button class="btn">Edit Nutrition Plan</button>
+                    <div class="goals-reached">
+                        <p>Food goals not set.</p>
+                    </div>
+                    <h3>Nutritional Breakdown</h3>
+                    <div class="pie-chart-container">
+                        <canvas id="nutritionChart"></canvas>
+                    </div>
+                    <a id="editNutritionPlanLink" href="/edit_nutritional_plan/<%= selectedClient ? selectedClient.id : '' %>" class="btn <%= !selectedClient ? 'disabled' : '' %>">Edit Nutrition Plan</a>
+                <% } else { %>
+                    <p>Select a client to view or edit their nutrition plan.</p>
+                    <a id="editNutritionPlanLink" href="#" class="btn disabled">Edit Nutrition Plan</a>
+                <% } %>
             </div>
         </div>
     </div>
 
-    <!-- Footer - Updated to match home -->
+    <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-content">
             <div class="footer-column">
@@ -243,7 +228,6 @@
                     <li><a href="/blog">Blog</a></li>
                 </ul>
             </div>
-
             <div class="footer-column">
                 <h3>Resources</h3>
                 <ul>
@@ -253,7 +237,6 @@
                     <li><a href="/calculators">Calculators</a></li>
                 </ul>
             </div>
-
             <div class="footer-column">
                 <h3>Support</h3>
                 <ul>
@@ -263,7 +246,6 @@
                     <li><a href="/privacy_policy">Privacy Policy</a></li>
                 </ul>
             </div>
-
             <div class="footer-column">
                 <h3>Connect With Us</h3>
                 <ul>
@@ -273,7 +255,6 @@
                 <div class="social-icons">
                     <a href="#"><img src="/trainer/icons8-facebook.svg" alt="Facebook" height="24"></a>
                     <a href="#"><img src="/trainer/icons8-instagram.svg" alt="Instagram" height="24"></a>
-                    
                     <a href="#"><img src="/trainer/icons8-youtube.svg" alt="YouTube" height="24"></a>
                 </div>
             </div>
@@ -282,117 +263,301 @@
 
     <script>
         // Mobile menu functionality
-        document.getElementById('menuIcon').addEventListener('click', function() {
-            document.getElementById('sideNavbar').style.width = "250px";
-        });
+document.getElementById('menuIcon').addEventListener('click', function () {
+    document.getElementById('sideNavbar').style.width = "250px";
+});
 
-        document.getElementById('closeBtn').addEventListener('click', function() {
-            document.getElementById('sideNavbar').style.width = "0";
-        });
+document.getElementById('closeBtn').addEventListener('click', function () {
+    document.getElementById('sideNavbar').style.width = "0";
+});
 
-        // Client selection functionality
-        document.querySelectorAll('.client-item').forEach(item => {
-            item.addEventListener('click', function() {
-                // Remove active class from all items
-                document.querySelectorAll('.client-item').forEach(client => {
-                    client.classList.remove('active');
+// Chart.js initialization
+let exerciseChart, nutritionChart;
+
+const exerciseCtx = document.getElementById('exerciseChart').getContext('2d');
+exerciseChart = new Chart(exerciseCtx, {
+    type: 'line',
+    data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+        datasets: [
+            {
+                label: 'Bicep Curls (kg)',
+                data: [0, 0, 0, 0, 0, 0],
+                borderColor: '#8A2BE2',
+                backgroundColor: 'rgba(138, 43, 226, 0.1)',
+                tension: 0.3
+            },
+            {
+                label: 'Deadlift (kg)',
+                data: [0, 0, 0, 0, 0, 0],
+                borderColor: '#20B2AA',
+                backgroundColor: 'rgba(32, 178, 170, 0.1)',
+                tension: 0.3
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'top', labels: { color: '#333' } }
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#333' } },
+            x: { grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#333' } }
+        }
+    }
+});
+
+const nutritionCtx = document.getElementById('nutritionChart').getContext('2d');
+nutritionChart = new Chart(nutritionCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Protein', 'Carbs', 'Fats'],
+        datasets: [{
+            data: [<%= nutritionData && nutritionData.nutrition.macros ? nutritionData.nutrition.macros.protein || 0 : 0 %>, <%= nutritionData && nutritionData.nutrition.macros ? nutritionData.nutrition.macros.carbs || 0 : 0 %>, <%= nutritionData && nutritionData.nutrition.macros ? nutritionData.nutrition.macros.fats || 0 : 0 %>],
+            backgroundColor: ['#8A2BE2', '#20B2AA', '#FF6347'],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom', labels: { color: '#333', padding: 10 } }
+        }
+    }
+});
+
+// Client selection
+document.querySelectorAll('.client-item').forEach(item => {
+    item.addEventListener('click', async function () {
+        document.querySelectorAll('.client-item').forEach(client => {
+            client.classList.remove('active');
+        });
+        this.classList.add('active');
+        const clientId = this.dataset.client;
+        console.log("Selected client: " + clientId);
+
+        // Update edit buttons
+        const editWorkoutPlanLink = document.getElementById('editWorkoutPlanLink');
+        const editNutritionPlanLink = document.getElementById('editNutritionPlanLink');
+        const meetButton = document.querySelector('.meet-button');
+        editWorkoutPlanLink.href = `/edit_workout_plan/${clientId}`;
+        editWorkoutPlanLink.classList.remove('disabled');
+        editNutritionPlanLink.href = `/edit_nutritional_plan/${clientId}`;
+        editNutritionPlanLink.classList.remove('disabled');
+        meetButton.disabled = false;
+
+        // Show loading state
+        document.getElementById('clientNameDisplay').textContent = 'Loading...';
+        document.getElementById('clientAge').textContent = 'Loading...';
+        document.getElementById('clientWeight').textContent = 'Loading...';
+        document.getElementById('clientHeight').textContent = 'Loading...';
+        document.getElementById('clientBodyFat').textContent = 'Loading...';
+        document.getElementById('clientGoal').textContent = 'Loading...';
+        document.getElementById('weeklySchedule').innerHTML = '<p>Loading weekly schedule...</p>';
+        document.getElementById('workoutsCompletedStat').textContent = 'Loading...';
+        document.getElementById('avgCaloriesStat').textContent = 'Loading...';
+        document.getElementById('proteinVsGoalStat').textContent = 'Loading...';
+
+        try {
+            // Fetch client profile data
+            const clientResponse = await fetch(`/client/${clientId}`);
+            const clientData = await clientResponse.json();
+            if (clientData.error) throw new Error(clientData.error);
+
+            // Update client profile
+            document.getElementById('clientNameDisplay').textContent = clientData.name || 'N/A';
+            document.getElementById('clientAge').textContent = clientData.age || 'N/A';
+            document.getElementById('clientWeight').textContent = clientData.weight || 'N/A';
+            document.getElementById('clientHeight').textContent = clientData.height || 'N/A';
+            document.getElementById('clientBodyFat').textContent = clientData.bodyFat || 'N/A';
+            document.getElementById('clientGoal').textContent = clientData.goal || 'N/A';
+
+            // Fetch weekly workout schedule
+            const workoutResponse = await fetch(`/workout/${clientId}`);
+            const workoutData = await workoutResponse.json();
+            const weeklyScheduleDiv = document.getElementById('weeklySchedule');
+            weeklyScheduleDiv.innerHTML = '';
+            if (workoutData.error || !workoutData.weeklySchedule) {
+                weeklyScheduleDiv.innerHTML = '<p>No workout plan for this week.</p>';
+            } else {
+                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                days.forEach(day => {
+                    const dayExercises = workoutData.weeklySchedule[day];
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'day-schedule';
+                    dayDiv.innerHTML = `<h3>${day}</h3>`;
+                    if (dayExercises.length === 0) {
+                        dayDiv.innerHTML += '<p>No exercises scheduled.</p>';
+                    } else {
+                        const exercisesList = document.createElement('div');
+                        exercisesList.className = 'exercises-list';
+                        dayExercises.forEach((exercise, index) => {
+                            const exerciseItem = document.createElement('div');
+                            exerciseItem.className = 'exercise-item';
+                            let details = '';
+                            if (exercise.sets && exercise.reps) {
+                                details = `${exercise.sets} sets x ${exercise.reps} reps`;
+                            } else if (exercise.duration) {
+                                details = `${exercise.duration} seconds`;
+                            }
+                            if (exercise.weight) {
+                                details += `, ${exercise.weight} kg`;
+                            }
+                            exerciseItem.innerHTML = `
+                                <span class="exercise-name">${index + 1}. ${exercise.name}</span>
+                                <span class="exercise-details">${details}</span>
+                            `;
+                            exercisesList.appendChild(exerciseItem);
+                        });
+                        dayDiv.appendChild(exercisesList);
+                    }
+                    weeklyScheduleDiv.appendChild(dayDiv);
                 });
-                
-                // Add active class to clicked item
-                this.classList.add('active');
-                
-                // Update client name display
-                document.getElementById('clientNameDisplay').textContent = this.querySelector('.client-name').textContent;
-                
-                // You could load client data here based on client ID
-                // For now we'll just show an alert
-                console.log("Selected client: " + this.dataset.client);
+            }
+
+            // Fetch nutrition data
+            const nutritionResponse = await fetch(`/nutrition/${clientId}`);
+            const nutritionData = await nutritionResponse.json();
+            const proteinGoal = document.getElementById('proteinGoal');
+            const calorieGoal = document.getElementById('calorieGoal');
+            const foodsList = document.getElementById('foodsList');
+            if (nutritionData.error || !nutritionData.nutrition) {
+                proteinGoal.textContent = 'N/A';
+                calorieGoal.textContent = 'N/A';
+                foodsList.innerHTML = '<p>No foods assigned yet.</p>';
+                nutritionChart.data.datasets[0].data = [0, 0, 0];
+            } else {
+                proteinGoal.textContent = nutritionData.nutrition.protein_goal || 'N/A';
+                calorieGoal.textContent = nutritionData.nutrition.calorie_goal || 'N/A';
+                foodsList.innerHTML = '';
+                if (nutritionData.nutrition.foods && nutritionData.nutrition.foods.length > 0) {
+                    nutritionData.nutrition.foods.forEach(food => {
+                        const foodItem = document.createElement('p');
+                        foodItem.textContent = `${food.name} (${food.protein}g protein, ${food.calories} kcal)`;
+                        foodsList.appendChild(foodItem);
+                    });
+                } else {
+                    foodsList.innerHTML = '<p>No foods assigned yet.</p>';
+                }
+                // Update nutrition chart
+                nutritionChart.data.datasets[0].data = [
+                    nutritionData.nutrition.macros.protein || 0,
+                    nutritionData.nutrition.macros.carbs || 0,
+                    nutritionData.nutrition.macros.fats || 0
+                ];
+                nutritionChart.update();
+            }
+
+            // Calculate stats for the Current Stats section
+            // 1. Total Workouts Completed
+            let totalWorkoutsCompleted = 0;
+            if (workoutData.weeklySchedule) {
+                for (const day in workoutData.weeklySchedule) {
+                    const exercises = workoutData.weeklySchedule[day];
+                    totalWorkoutsCompleted += exercises.filter(ex => ex.completed).length;
+                }
+            }
+            document.getElementById('workoutsCompletedStat').textContent = totalWorkoutsCompleted;
+
+            // 2. Average Calories Consumed (assuming nutritionData.foods is for one day)
+            let totalCalories = 0;
+            if (nutritionData.nutrition && nutritionData.nutrition.foods && nutritionData.nutrition.foods.length > 0) {
+                totalCalories = nutritionData.nutrition.foods.reduce((sum, food) => sum + (food.calories || 0), 0);
+            }
+            document.getElementById('avgCaloriesStat').textContent = `${Math.round(totalCalories)} kcal`;
+
+            // 3. Protein Intake vs Goal
+            let totalProtein = 0;
+            if (nutritionData.nutrition && nutritionData.nutrition.foods && nutritionData.nutrition.foods.length > 0) {
+                totalProtein = nutritionData.nutrition.foods.reduce((sum, food) => sum + (food.protein || 0), 0);
+            }
+            const proteinGoalValue = nutritionData.nutrition && nutritionData.nutrition.protein_goal && !isNaN(nutritionData.nutrition.protein_goal)
+                ? parseInt(nutritionData.nutrition.protein_goal)
+                : 0;
+            document.getElementById('proteinVsGoalStat').textContent = `${Math.round(totalProtein)}g / ${proteinGoalValue}g`;
+
+            // Fetch workout history for the exercise chart
+            const exercisesToTrack = ['Bicep Curls', 'Deadlift'];
+            const historyPromises = exercisesToTrack.map(async (exerciseName) => {
+                const response = await fetch(`/workout/${clientId}`);
+                const data = await response.json();
+                const history = [];
+                let currentWeight = 0;
+                if (data.weeklySchedule) {
+                    for (const day in data.weeklySchedule) {
+                        const exercise = data.weeklySchedule[day].find(ex => ex.name === exerciseName);
+                        if (exercise && exercise.weight) {
+                            currentWeight = exercise.weight;
+                            history.push({ week: 'Current', weight: exercise.weight, date: new Date() });
+                            break;
+                        }
+                    }
+                }
+                while (history.length < 6) {
+                    history.unshift({
+                        week: `Week ${history.length + 1}`,
+                        weight: 0,
+                        date: new Date(Date.now() - (6 - history.length) * 24 * 60 * 60 * 1000)
+                    });
+                }
+                return { exerciseName, currentWeight, history };
             });
-        });
 
-        // Chart.js implementation for exercise progress
-        const exerciseCtx = document.getElementById('exerciseChart').getContext('2d');
-        const exerciseChart = new Chart(exerciseCtx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-                datasets: [{
-                    label: 'Bicep Curls (kg)',
-                    data: [5, 6, 8, 9, 10],
-                    borderColor: '#8A2BE2',
-                    backgroundColor: 'rgba(138, 43, 226, 0.1)',
-                    tension: 0.3
-                }, {
-                    label: 'Deadlift (kg)',
-                    data: [60, 70, 80, 90, 100],
-                    borderColor: '#20B2AA',
-                    backgroundColor: 'rgba(32, 178, 170, 0.1)',
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            color: '#f1f1f1'
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: '#f1f1f1'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: '#f1f1f1'
-                        }
-                    }
+            const exerciseHistories = await Promise.all(historyPromises);
+
+            // Update exercise chart
+            const bicepData = exerciseHistories.find(h => h.exerciseName === 'Bicep Curls');
+            const deadliftData = exerciseHistories.find(h => h.exerciseName === 'Deadlift');
+            exerciseChart.data.datasets[0].data = bicepData.history.map(h => h.weight);
+            exerciseChart.data.datasets[1].data = deadliftData.history.map(h => h.weight);
+            exerciseChart.update();
+
+            // Update progress in client list
+            const progressSpan = this.querySelector('.progress-value');
+            let completedExercises = 0;
+            let totalExercises = 0;
+            if (workoutData.weeklySchedule) {
+                for (const day in workoutData.weeklySchedule) {
+                    const exercises = workoutData.weeklySchedule[day];
+                    totalExercises += exercises.length;
+                    completedExercises += exercises.filter(ex => ex.completed).length;
                 }
             }
-        });
+            const progress = totalExercises > 0 ? Math.round((completedExercises / totalExercises) * 100) : 0;
+            progressSpan.textContent = progress;
+        } catch (error) {
+            console.error('Error fetching client data:', error);
+            document.getElementById('clientNameDisplay').textContent = 'Error loading client';
+            document.getElementById('clientAge').textContent = 'N/A';
+            document.getElementById('clientWeight').textContent = 'N/A';
+            document.getElementById('clientHeight').textContent = 'N/A';
+            document.getElementById('clientBodyFat').textContent = 'N/A';
+            document.getElementById('clientGoal').textContent = 'N/A';
+            document.getElementById('weeklySchedule').innerHTML = '<p>Error loading weekly schedule.</p>';
+            document.getElementById('workoutsCompletedStat').textContent = '0';
+            document.getElementById('avgCaloriesStat').textContent = '0 kcal';
+            document.getElementById('proteinVsGoalStat').textContent = '0g / 0g';
+            document.getElementById('proteinGoal').textContent = 'N/A';
+            document.getElementById('calorieGoal').textContent = 'N/A';
+            document.getElementById('foodsList').innerHTML = '<p>Error loading nutrition plan.</p>';
+            exerciseChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0];
+            exerciseChart.data.datasets[1].data = [0, 0, 0, 0, 0, 0];
+            exerciseChart.update();
+            nutritionChart.data.datasets[0].data = [0, 0, 0];
+            nutritionChart.update();
+        }
+    });
+});
 
-        // Chart.js implementation for nutrition
-        const nutritionCtx = document.getElementById('nutritionChart').getContext('2d');
-        const nutritionChart = new Chart(nutritionCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Protein', 'Carbs', 'Fats'],
-                datasets: [{
-                    data: [35, 45, 20],
-                    backgroundColor: [
-                        '#8A2BE2',
-                        '#20B2AA',
-                        '#FF6347'
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: '#f1f1f1',
-                            padding: 10
-                        }
-                    }
-                }
-            }
-        });
+// Trigger click on the first client if one exists
+const firstClient = document.querySelector('.client-item');
+if (firstClient) {
+    firstClient.click();
+}
     </script>
+    
 </body>
 </html>

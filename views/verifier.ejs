@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/home/home.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <!-- Header/Navbar -->
     <div class="main-navbar">
@@ -16,7 +18,7 @@
             <div class="brand-logo">
                 <a href="/home" class="brand-name">GymRats</a>
             </div>
-            
+
             <div class="nav-menu">
                 <a href="/home">Home</a>
                 <a href="/isolation">Exercises</a>
@@ -24,13 +26,13 @@
                 <a href="/about">About</a>
                 <a href="/contact">Contact</a>
             </div>
-            
+
             <div class="right-container">
                 <div class="search-container">
                     <img src="/home/icons8-search.svg" height="18px" alt="Search Icon" />
                     <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
                 </div>
-                
+
                 <div class="login-button">
                     <a href="/verifier">My Dashboard</a>
                 </div>
@@ -49,7 +51,6 @@
                 <a href="/contact">Contact</a>
                 <a href="/verifier">My Dashboard</a>
             </div>
-            
         </header>
     </div>
 
@@ -69,42 +70,12 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/pending_verifications">
+                        <a href="/verifier/pendingverifications">
                             <i class="fas fa-clipboard-list"></i>
                             <span>Pending Verifications</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="/completed_verifications">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Completed</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/trainer_directory">
-                            <i class="fas fa-users"></i>
-                            <span>Trainer Directory</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/calendar">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Calendar</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/messages">
-                            <i class="fas fa-envelope"></i>
-                            <span>Messages</span>
-                            <span class="badge">3</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/settings">
-                            <i class="fas fa-cog"></i>
-                            <span>Settings</span>
-                        </a>
-                    </li>
+
                 </ul>
             </div>
             <div class="sidebar-footer">
@@ -122,27 +93,19 @@
                 <div class="toggle-menu">
                     <i class="fas fa-bars"></i>
                 </div>
-                <div class="search-container">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search..." />
-                </div>
+                
                 <div class="navbar-right">
-                    <div class="notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-count">5</span>
-                    </div>
-                    <div class="user-profile">
-                        <span>Anvesh</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                </div>
+    <div class="user-profile">
+        <span><%= verifier.name %></span>
+    </div>
+</div>
             </div>
 
             <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <div class="page-header">
                     <h1>Verifier Dashboard</h1>
-                    <p>Welcome back, Anvesh! Here's your verification overview.</p>
+                    <p>Welcome back, <%= verifier.name %>! Here's your verification overview.</p>
                 </div>
 
                 <!-- Stats Cards -->
@@ -153,7 +116,7 @@
                         </div>
                         <div class="stat-details">
                             <h3>Pending Verifications</h3>
-                            <p class="stat-count">12</p>
+                            <p class="stat-count"><%= stats.pendingCount %></p>
                             <p class="stat-trend up">
                                 <i class="fas fa-arrow-up"></i> 8% from last week
                             </p>
@@ -166,25 +129,14 @@
                         </div>
                         <div class="stat-details">
                             <h3>Completed Verifications</h3>
-                            <p class="stat-count">47</p>
+                            <p class="stat-count"><%= stats.completedCount %></p>
                             <p class="stat-trend up">
                                 <i class="fas fa-arrow-up"></i> 12% from last month
                             </p>
                         </div>
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-icon earnings">
-                            <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <div class="stat-details">
-                            <h3>Total Earnings</h3>
-                            <p class="stat-count">Rs 1,250</p>
-                            <p class="stat-trend up">
-                                <i class="fas fa-arrow-up"></i> 15% from last month
-                            </p>
-                        </div>
-                    </div>
+
 
                     <div class="stat-card">
                         <div class="stat-icon rating">
@@ -192,7 +144,7 @@
                         </div>
                         <div class="stat-details">
                             <h3>Rating</h3>
-                            <p class="stat-count">4.8/5</p>
+                            <p class="stat-count"><%= stats.rating %>/5</p>
                             <p class="stat-trend same">
                                 <i class="fas fa-minus"></i> Same as last month
                             </p>
@@ -204,7 +156,7 @@
                 <div class="section-container">
                     <div class="section-header">
                         <h2>Recent Verification Requests</h2>
-                        <a href="/pending_verifications" class="view-all">View All</a>
+                        <a href="/pendingverifications" class="view-all">View All</a>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -218,74 +170,51 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <% if (recentApplications && recentApplications.length > 0) { %>
+                                <% recentApplications.forEach(app => { %>
                                 <tr>
                                     <td>
                                         <div class="user-info">
-                                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=40&h=40&fit=crop&auto=format" alt="Sarah Johnson" />
+                                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=40&h=40&fit=crop&auto=format"
+                                                alt="<%= app.firstName %> <%= app.lastName %>" />
                                             <div>
-                                                <p class="user-name">Sarah </p>
-                                                <p class="user-email">sarah.j@example.com</p>
+                                                <p class="user-name"><%= app.firstName %> <%= app.lastName %></p>
+                                                <p class="user-email"><%= app.email %></p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td>Weight Loss, Nutrition</td>
-                                    <td>Mar 15, 2025</td>
-                                    <td><span class="status pending">Pending</span></td>
-                                    <td>
-                                        <button class="btn-review">Review</button>
+                                    <td><%= app.specializations.join(', ') %></td>
+                                    <td><%= app.createdAt ? new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown' %>
                                     </td>
-                                </tr>
-                                <tr>
+                                    <td><span
+                                            class="status <%= app.status.toLowerCase().replace(' ', '-') %>"><%= app.status %></span>
+                                    </td>
                                     <td>
-                                        <div class="user-info">
-                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&auto=format" alt="Michael Brown" />
-                                            <div>
-                                                <p class="user-name">jayanth</p>
-                                                <p class="user-email">jayanth.c@example.com</p>
-                                            </div>
+                                        <% if (app.status === 'Pending') { %>
+                                        <div class="action-buttons">
+                                            <a href="/verifier/approve/<%= app._id %>" class="btn-approve"
+                                                onclick="return confirm('Are you sure you want to approve this trainer?')">Approve</a>
+                                            <a href="/verifier/reject/<%= app._id %>" class="btn-reject"
+                                                onclick="return confirm('Are you sure you want to reject this trainer?')">Reject</a>
                                         </div>
-                                    </td>
-                                    <td>Strength Training, Muscle Gain</td>
-                                    <td>Mar 14, 2025</td>
-                                    <td><span class="status pending">Pending</span></td>
-                                    <td>
-                                        <button class="btn-review">Review</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="user-info">
-                                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=40&h=40&fit=crop&auto=format" alt="Jessica Lee" />
-                                            <div>
-                                                <p class="user-name">varshi</p>
-                                                <p class="user-email">varshi.m@example.com</p>
-                                            </div>
+                                        <% } else if (app.status === 'In Progress') { %>
+                                        <div class="action-buttons">
+                                            <a href="/verifier/approve/<%= app._id %>" class="btn-approve"
+                                                onclick="return confirm('Are you sure you want to approve this trainer?')">Approve</a>
+                                            <a href="/verifier/reject/<%= app._id %>" class="btn-reject"
+                                                onclick="return confirm('Are you sure you want to reject this trainer?')">Reject</a>
                                         </div>
-                                    </td>
-                                    <td>Yoga, Flexibility</td>
-                                    <td>Mar 12, 2025</td>
-                                    <td><span class="status in-progress">In Progress</span></td>
-                                    <td>
-                                        <button class="btn-continue">Continue</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="user-info">
-                                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&auto=format" alt="Robert Smith" />
-                                            <div>
-                                                <p class="user-name">Rohith</p>
-                                                <p class="user-email">Rohith@example.com</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Sports Performance, Cardio</td>
-                                    <td>Mar 10, 2025</td>
-                                    <td><span class="status completed">Completed</span></td>
-                                    <td>
+                                        <% } else { %>
                                         <button class="btn-view">View Details</button>
+                                        <% } %>
                                     </td>
                                 </tr>
+                                <% }); %>
+                                <% } else { %>
+                                <tr>
+                                    <td colspan="5">No recent verification requests.</td>
+                                </tr>
+                                <% } %>
                             </tbody>
                         </table>
                     </div>
@@ -293,46 +222,7 @@
 
                 <!-- Calendar and Messages -->
                 <div class="split-section">
-                    <!-- Calendar -->
-                    <div class="calendar-container">
-                        <div class="section-header">
-                            <h2>Upcoming Verifications</h2>
-                            <a href="/calendar" class="view-all">View Calendar</a>
-                        </div>
-                        <div class="calendar-events">
-                            <div class="calendar-event">
-                                <div class="event-date">
-                                    <span class="event-day">18</span>
-                                    <span class="event-month">Mar</span>
-                                </div>
-                                <div class="event-info">
-                                    <h4>Video Interview: Jay</h4>
-                                    <p><i class="fas fa-clock"></i> 10:00 AM - 11:00 AM</p>
-                                </div>
-                            </div>
-                            <div class="calendar-event">
-                                <div class="event-date">
-                                    <span class="event-day">19</span>
-                                    <span class="event-month">Mar</span>
-                                </div>
-                                <div class="event-info">
-                                    <h4>Documentation Review: Akhil</h4>
-                                    <p><i class="fas fa-clock"></i> 2:30 PM - 3:30 PM</p>
-                                </div>
-                            </div>
-                            <div class="calendar-event">
-                                <div class="event-date">
-                                    <span class="event-day">21</span>
-                                    <span class="event-month">Mar</span>
-                                </div>
-                                <div class="event-info">
-                                    <h4>Skill Assessment: Rishikesh</h4>
-                                    <p><i class="fas fa-clock"></i> 1:00 PM - 2:30 PM</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                   
                     <!-- Messages -->
                     <div class="messages-container">
                         <div class="section-header">
@@ -340,42 +230,28 @@
                             <a href="/messages" class="view-all">View All</a>
                         </div>
                         <div class="message-list">
-                            <div class="message-item unread">
+                            <% if (recentMessages && recentMessages.length > 0) { %>
+                            <% recentMessages.forEach(msg => { %>
+                            <div class="message-item <%= msg.unread ? 'unread' : '' %>">
                                 <div class="message-avatar">
-                                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=40&h=40&fit=crop&auto=format" alt="Jessica Lee" />
+                                    <img src="<%= msg.avatar %>" alt="<%= msg.name %>" />
                                 </div>
                                 <div class="message-content">
                                     <div class="message-header">
-                                        <h4> Varshi</h4>
-                                        <span class="message-time">2 hours ago</span>
+                                        <h4><%= msg.name %></h4>
+                                        <span class="message-time"><%= msg.time %></span>
                                     </div>
-                                    <p class="message-text">I've uploaded the additional documentation you requested for my verification.</p>
+                                    <p class="message-text"><%= msg.text %></p>
                                 </div>
                             </div>
-                            <div class="message-item unread">
-                                <div class="message-avatar">
-                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&auto=format" alt="Michael Brown" />
-                                </div>
-                                <div class="message-content">
-                                    <div class="message-header">
-                                        <h4>jayanth</h4>
-                                        <span class="message-time">5 hours ago</span>
-                                    </div>
-                                    <p class="message-text">Can we reschedule the video interview to tomorrow morning?</p>
-                                </div>
-                            </div>
+                            <% }); %>
+                            <% } else { %>
                             <div class="message-item">
-                                <div class="message-avatar">
-                                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&auto=format" alt="Admin Team" />
-                                </div>
                                 <div class="message-content">
-                                    <div class="message-header">
-                                        <h4>Admin Team</h4>
-                                        <span class="message-time">Yesterday</span>
-                                    </div>
-                                    <p class="message-text">New verification standards have been updated. Please review the latest guidelines.</p>
+                                    <p>No recent messages.</p>
                                 </div>
                             </div>
+                            <% } %>
                         </div>
                     </div>
                 </div>
@@ -385,7 +261,7 @@
 
     <script>
         // Toggle sidebar menu
-        document.querySelector('.toggle-menu').addEventListener('click', function() {
+        document.querySelector('.toggle-menu').addEventListener('click', function () {
             document.querySelector('.dashboard-container').classList.toggle('sidebar-collapsed');
         });
     </script>
@@ -440,15 +316,16 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('menuIcon').addEventListener('click', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('menuIcon').addEventListener('click', function () {
                 document.getElementById('sideNavbar').classList.add('open');
             });
 
-            document.getElementById('closeBtn').addEventListener('click', function() {
+            document.getElementById('closeBtn').addEventListener('click', function () {
                 document.getElementById('sideNavbar').classList.remove('open');
             });
         });
     </script>
 </body>
+
 </html>

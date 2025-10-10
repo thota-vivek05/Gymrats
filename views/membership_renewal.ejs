@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Membership Renewal</title>
+</head>
+<body>
+    <div class="renewal-container">
+        <h1>Membership Expired</h1>
+        <p>Your membership has expired. Please renew to continue accessing premium features.</p>
+        
+        <div class="renewal-options">
+            <div class="option" data-months="1">
+                <h3>1 Month</h3>
+                <p class="price">$19.99</p>
+                <button class="renew-btn">Renew</button>
+            </div>
+            <div class="option" data-months="3">
+                <h3>3 Months</h3>
+                <p class="price">$49.99</p>
+                <p class="save">Save 15%</p>
+                <button class="renew-btn">Renew</button>
+            </div>
+            <div class="option" data-months="6">
+                <h3>6 Months</h3>
+                <p class="price">$89.99</p>
+                <p class="save">Save 25%</p>
+                <button class="renew-btn">Renew</button>
+            </div>
+        </div>
+
+        <div class="auto-renew">
+            <label>
+                <input type="checkbox" id="autoRenew"> Enable auto-renewal
+            </label>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.renew-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const months = this.closest('.option').dataset.months;
+                const autoRenew = document.getElementById('autoRenew').checked;
+                
+                fetch('/membership/extend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        additionalMonths: parseInt(months),
+                        autoRenew: autoRenew
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert('Membership renewed successfully!');
+                        window.location.href = '/userdashboard_p';
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

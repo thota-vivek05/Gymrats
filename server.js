@@ -5,18 +5,72 @@ const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const path = require('path');
 const methodOverride = require('method-override');
+const sqlite3 = require('sqlite3').verbose();
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Initialize SQLite database
+const db = new sqlite3.Database(':memory:', (err) => {
+    if (err) {
+        console.error('Error initializing SQLite database:', err);
+        process.exit(1);
+    }
+    console.log('Connected to SQLite database');
+});
+
+// Create admins table and insert static admin data
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS admins (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        full_name TEXT NOT NULL
+    )`);
+
+    // Insert static admin users (passwords are hashed)
+    const adminUsers = [
+        {
+            email: 'admin1@gymrats.com',
+            password: 'Password123',
+            full_name: 'Admin One'
+        },
+        {
+            email: 'admin2@gymrats.com',
+            password: 'Password123',
+            full_name: 'Admin Two'
+        }
+    ];
+
+    adminUsers.forEach(async (admin) => {
+        const hashedPassword = await bcrypt.hash(admin.password, 10);
+        db.run(
+            'INSERT OR IGNORE INTO admins (email, password_hash, full_name) VALUES (?, ?, ?)',
+            [admin.email, hashedPassword, admin.full_name],
+            (err) => {
+                if (err) {
+                    console.error('Error inserting admin:', err);
+                }
+            }
+        );
+    });
+});
+
+
 // Import routes
 const adminRoutes = require('./Routes/adminRoutes');
+const userRoutes = require('./Routes/userRoutes');
+const trainerRoutes = require('./Routes/trainerRoutes');
+const verifierRoutes = require('./Routes/verifierRoutes');
+
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method')); // For PUT/DELETE requests
+
 
 // Session setup
 app.use(
@@ -30,14 +84,24 @@ app.use(
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/gymrats')
-    .then(() => {
+    .then(async () => {
         console.log('Connected to MongoDB database');
+        
+        // Register models explicitly to ensure collections are created
+        mongoose.model('WorkoutHistory');
+        
+        // You could even check if the collection exists and create it if needed
+        const collections = await mongoose.connection.db.listCollections().toArray();
+        const collectionNames = collections.map(c => c.name);
+        
+        if (!collectionNames.includes('workouthistories')) {
+            console.log('WorkoutHistory collection does not exist yet - it will be created when first document is inserted');
+        }
     })
     .catch(err => {
         console.error('MongoDB connection error:', err);
         process.exit(1);
     });
-
 // Multer setup for file uploads
 const storage = multer.diskStorage({
     destination: 'uploads/',
@@ -60,8 +124,19 @@ const isAuthenticated = (req, res, next) => {
     }
 };
 
+// Add this middleware after initializing the session middleware
+app.use((req, res, next) => {
+    res.locals.currentPage = ''; // Default value
+    next();
+});
+
 // Use MVC routes for admin pages
 app.use('/admin', adminRoutes);
+app.use('/', userRoutes);
+app.use('/', trainerRoutes);
+app.use('/verifier', verifierRoutes);
+
+
 
 // Redirect legacy admin URLs to the new MVC routes
 app.get('/admin_dashboard', (req, res) => res.redirect('/admin/dashboard'));
@@ -71,21 +146,131 @@ app.get('/admin_membership', (req, res) => res.redirect('/admin/memberships'));
 app.get('/admin_nutrition', (req, res) => res.redirect('/admin/nutrition-plans'));
 app.get('/admin_exercises', (req, res) => res.redirect('/admin/exercises'));
 app.get('/admin_workouts', (req, res) => res.redirect('/admin/workout-plans'));
-app.get('/admin_verifier', (req, res) => res.redirect('/admin/verifiers'));
+app.get('/admin_verifier', (req, res) => res.redirect('/admin/verifier'));
 app.get('/admin_settings', (req, res) => res.redirect('/admin/settings'));
+
+// Add this to your routes section
+app.get('/debug/create-workout-history', async (req, res) => {
+    try {
+        // Find a user to associate with the workout history
+        const User = require('./model/User');
+        const user = await User.findOne();
+        
+        if (!user) {
+            return res.status(404).json({ error: 'No users found in database' });
+        }
+        
+        // Create a simple workout history
+        const workoutHistory = new WorkoutHistory({
+            userId: user._id,
+            date: new Date(),
+            exercises: [
+                {
+                    day: 'Monday',
+                    name: 'Bench Press',
+                    sets: 3,
+                    reps: 10,
+                    weight: 60,
+                    duration: 0,
+                    completed: false
+                }
+            ],
+            progress: 0,
+            completed: false
+        });
+        
+        const saved = await workoutHistory.save();
+        res.json({ 
+            success: true, 
+            message: 'WorkoutHistory created successfully', 
+            data: saved 
+        });
+    } catch (error) {
+        console.error('Error creating workout history:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Routes for static pages
 const pages = [
     'about', 'blog', 'calculators', 'contact', 'home', 'isolation',
     'login_signup', 'nutrition', 'privacy_policy', 'schedule', 'signup',
     'terms', 'testimonial', 'trainer_form', 'trainer', 'trainers',
     'verifier_form', 'verifier', 'workout_plans', 'userdashboard_b',
-    'userdashboard_g', 'userdashboard_p','verifier_login','admin_login'
+    'userdashboard_g', 'userdashboard_p','trainer_login','edit_nutritional_plan',
+    'admin_login','pendingverifications','verifier_login','user_nutrition',
+    'user_exercises', 'userprofile'
 ];
 
 pages.forEach(page => {
     app.get(`/${page}`, (req, res) => {
         res.render(page, { user: req.session.user || null });
     });
+});
+
+// Admin Login Route (GET)
+app.get('/admin/login', (req, res) => {
+    res.render('admin_login', {
+        pageTitle: 'Admin Login',
+        errorMessage: null,
+        successMessage: null,
+        email: ''
+    });
+});
+
+// Admin Login Route (POST)
+app.post('/admin/login', async (req, res) => {
+    try {
+        const { email, password, redirectUrl } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: 'Email and password are required' });
+        }
+
+        // Query SQLite database for admin
+        db.get(
+            'SELECT * FROM admins WHERE email = ?',
+            [email],
+            async (err, admin) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ success: false, message: 'Internal server error' });
+                }
+
+                if (!admin) {
+                    return res.status(401).json({ success: false, message: 'Invalid email or password' });
+                }
+
+                // Compare password
+                const passwordMatch = await bcrypt.compare(password, admin.password_hash);
+
+                if (!passwordMatch) {
+                    return res.status(401).json({ success: false, message: 'Invalid email or password' });
+                }
+
+                // Store admin in session
+                req.session.userId = admin.id;
+                req.session.email = admin.email;
+                req.session.fullName = admin.full_name;
+                req.session.user = {
+                    id: admin.id,
+                    name: admin.full_name,
+                    email: admin.email,
+                    role: 'admin'
+                };
+
+                // Return success with redirect URL
+                return res.json({ 
+                    success: true, 
+                    message: 'Admin login successful', 
+                    redirectUrl: redirectUrl || '/admin/dashboard'
+                });
+            }
+        );
+    } catch (err) {
+        console.error('Admin login error:', err);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 });
 
 // Login Route
@@ -269,4 +454,9 @@ app.get('/logout', (req, res) => {
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log(`http://localhost:${PORT}/home`);
+    console.log(`http://localhost:${PORT}/login_signup`);
+    console.log(`http://localhost:${PORT}/trainer_login`);
+    console.log(`http://localhost:${PORT}/verifier_login`);
+    console.log(`http://localhost:${PORT}/admin_login`);
 });

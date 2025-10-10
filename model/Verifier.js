@@ -1,24 +1,29 @@
 const mongoose = require('mongoose');
 
 const verifierSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    expertise: { type: String, required: true },
-    contentReviewed: { type: Number, default: 0 },
-    accuracy: { 
-        type: Number,
-        min: 0,
-        max: 100,
-        default: 0 
+    name: { 
+        type: String, 
+        required: true 
     },
-    joinDate: { type: Date, default: Date.now },
-    status: { 
+    email: { 
         type: String,
-        enum: ['Active', 'Inactive', 'Pending'],
-        default: 'Active'
+        required: true,
+        unique: true,
+        match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address']
     },
-    image: { type: String },
-    email: { type: String },
-    phone: { type: String }
+    phone: { 
+        type: String,
+        match: [/^\+?[\d\s-]{10,}$/, 'Please enter a valid phone number']
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    experienceYears: {
+        type: Number,
+        required: true,
+        min: 1
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Verifier', verifierSchema);
