@@ -71,6 +71,15 @@ const userSchema = new mongoose.Schema({
         default: 'Basic'
     },
 
+    // REYNA
+    // In User.js schema, add this field after the BMI field:
+    workout_type: {
+    type: String,
+    enum: ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding'],
+    default: null
+    },
+
+
   // NEW: Membership Duration Fields
     membershipDuration: {
         months_remaining: { 

@@ -354,7 +354,9 @@ const signupUser = async (req, res) => {
             cvv,
             terms,
             weight,
-            height
+            height,
+            // REYNA
+            workoutType
         } = req.body;
 
         console.log('Signup request received:', {
@@ -420,6 +422,14 @@ const signupUser = async (req, res) => {
             }
         }
 
+        // REYNA
+        // Add validation for workoutType
+        if (!workoutType) {
+            console.log('Validation failed: Workout type is required');
+            return res.status(400).json({ error: 'Please select your preferred workout type' });
+        }
+        // end REYNA
+
         const existingUser = await User.findOne({ email: userEmail });
         if (existingUser) {
             console.log('Validation failed: Email already registered:', userEmail);
@@ -457,7 +467,9 @@ const signupUser = async (req, res) => {
 
             weight: Number(weight),
             height: height !== undefined ? Number(height) : null,
-            BMI: calculatedBMI
+            BMI: calculatedBMI,
+            //REYNA
+            workout_type: workoutType 
         });
         console.log('New user object created:', newUser);
 
