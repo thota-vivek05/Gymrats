@@ -25,10 +25,13 @@ const trainerSchema = new mongoose.Schema({
         required: true,
         enum: ['1-2', '3-5', '5-10', '10+']
     },
+   // REYNA
+    // In Trainer.js schema, update the specializations field:
     specializations: [{ 
-        type: String, 
-        enum: ['Weight Loss', 'Muscle Gain', 'Flexibility', 'Cardiovascular', 'Strength Training', 'Post-Rehab', 'Sports Performance', 'Nutrition']
+    type: String, 
+    enum: ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding', 'Nutrition']
     }],
+    
     verifierId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Verifier',
@@ -64,31 +67,7 @@ const trainerSchema = new mongoose.Schema({
         ref: 'NutritionPlan' 
     }],
 
-    // NEW: Add this subscription object after your existing fields
-    subscription: {
-        type: { 
-            type: String, 
-            enum: ['Free', 'Basic', 'Pro', 'Enterprise'],
-            default: 'Free'
-        },
-        months_remaining: { 
-            type: Number, 
-            default: 0,
-            min: 0 
-        },
-        start_date: { 
-            type: Date, 
-            default: Date.now 
-        },
-        end_date: { 
-            type: Date 
-        },
-        max_clients: { 
-            type: Number, 
-            default: 5 
-        }
-    },
-
+    
     rating: { 
         type: Number,
         min: 0,

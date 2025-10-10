@@ -70,7 +70,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="/pendingverifications">
+                        <a href="/verifier/pendingverifications">
                             <i class="fas fa-clipboard-list"></i>
                             <span>Pending Verifications</span>
                         </a>
@@ -93,20 +93,12 @@
                 <div class="toggle-menu">
                     <i class="fas fa-bars"></i>
                 </div>
-                <div class="search-container">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search..." />
-                </div>
+                
                 <div class="navbar-right">
-                    <div class="notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-count"><% stats.pendingCount || 0 %></span>
-                    </div>
-                    <div class="user-profile">
-                        <span><%= verifier.name %></span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                </div>
+    <div class="user-profile">
+        <span><%= verifier.name %></span>
+    </div>
+</div>
             </div>
 
             <!-- Dashboard Content -->
