@@ -220,3 +220,29 @@ userSchema.methods.decreaseMembershipMonth = function() {
 };
 
 module.exports = mongoose.model('User', userSchema);
+// brimstone
+// Add a method to extend membership
+userSchema.methods.extendMembership = function(additionalMonths) {
+    console.log('Before extension - months_remaining:', this.membershipDuration.months_remaining);
+    console.log('Adding months:', additionalMonths);
+    
+    // ✅ FIX: Initialize months_remaining if it doesn't exist
+    if (!this.membershipDuration.months_remaining) {
+        this.membershipDuration.months_remaining = 0;
+    }
+    
+    this.membershipDuration.months_remaining += additionalMonths;
+    this.membershipDuration.last_renewal_date = new Date();
+    
+    // Update end date
+    const newEndDate = new Date();
+    newEndDate.setMonth(newEndDate.getMonth() + this.membershipDuration.months_remaining);
+    this.membershipDuration.end_date = newEndDate;
+    
+    this.status = 'Active';
+    
+    console.log('After extension - months_remaining:', this.membershipDuration.months_remaining);
+    console.log('New end date:', this.membershipDuration.end_date);
+    
+    return this.save();
+};
