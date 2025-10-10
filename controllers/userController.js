@@ -62,6 +62,11 @@ const getUserProfile = async (req, res) => {
             console.log('User not found:', userId);
             return res.status(404).json({ error: 'User not found' });
         }
+        req.session.user.membershipDuration = {
+            months_remaining: user.membershipDuration.months_remaining,
+            end_date: user.membershipDuration.end_date,
+            auto_renew: user.membershipDuration.auto_renew
+        };
         
         // Fetch workout history and populate workoutPlanId
         const workoutHistoryData = await WorkoutHistory.find({ userId })
@@ -305,6 +310,12 @@ const loginUser = async (req, res) => {
             BMI: user.BMI,
             status: user.status,
             created_at: user.created_at,
+            // ADD THIS:
+    membershipDuration: {
+        months_remaining: user.membershipDuration.months_remaining,
+        end_date: user.membershipDuration.end_date,
+        auto_renew: user.membershipDuration.auto_renew
+    },
             fitness_goals: {
                 calorie_goal: user.fitness_goals?.calorie_goal || 2200,
                 protein_goal: user.fitness_goals?.protein_goal || 90,

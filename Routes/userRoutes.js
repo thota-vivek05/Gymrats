@@ -35,8 +35,10 @@ router.post('/membership/extend', membershipController.extendMembership);
 router.get('/membership/status', membershipController.getMembershipStatus);
 router.post('/membership/auto-renew', membershipController.toggleAutoRenew);
 
-router.get('/membership/renewal', (req, res) => {
-    res.render('membership_renewal');
+router.get('/membership_renewal', isAuthenticated, (req, res) => {
+    res.render('membership_renewal', { 
+        user: req.session.user 
+    });
 });
 
 // For nutrition page
