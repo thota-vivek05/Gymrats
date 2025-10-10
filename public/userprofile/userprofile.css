@@ -190,7 +190,105 @@ input:focus {
     border-radius: 50%;
     object-fit: cover;
 }
+ /* brimstone  */
+ /* Membership Extension Card Styles */
+.membership-extension-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
 
+.membership-status-info {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-item:last-child {
+    border-bottom: none;
+}
+
+.status-item .label {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.status-item .value {
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.status-active {
+    color: #4CAF50 !important;
+}
+
+.status-expired {
+    color: #f44336 !important;
+}
+
+.status-inactive {
+    color: #ff9800 !important;
+}
+
+.extension-cta {
+    text-align: center;
+    padding: 20px;
+}
+
+.extension-cta p {
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.extend-membership-btn {
+    background: linear-gradient(45deg, #FFD700, #FFA000);
+    color: #333;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.extend-membership-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+    background: linear-gradient(45deg, #FFA000, #FFD700);
+}
+
+.extend-membership-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .status-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .extend-membership-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
 /* Profile Hero Section */
 .profile-hero {
     background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1534367610401-9f5ed68180aa?q=80&w=2070&auto=format&fit=crop');

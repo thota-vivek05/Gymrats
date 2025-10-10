@@ -62,6 +62,11 @@ const getUserProfile = async (req, res) => {
             console.log('User not found:', userId);
             return res.status(404).json({ error: 'User not found' });
         }
+        req.session.user.membershipDuration = {
+            months_remaining: user.membershipDuration.months_remaining,
+            end_date: user.membershipDuration.end_date,
+            auto_renew: user.membershipDuration.auto_renew
+        };
         
         // Fetch workout history and populate workoutPlanId
         const workoutHistoryData = await WorkoutHistory.find({ userId })
@@ -305,6 +310,12 @@ const loginUser = async (req, res) => {
             BMI: user.BMI,
             status: user.status,
             created_at: user.created_at,
+            // ADD THIS:
+    membershipDuration: {
+        months_remaining: user.membershipDuration.months_remaining,
+        end_date: user.membershipDuration.end_date,
+        auto_renew: user.membershipDuration.auto_renew
+    },
             fitness_goals: {
                 calorie_goal: user.fitness_goals?.calorie_goal || 2200,
                 protein_goal: user.fitness_goals?.protein_goal || 90,
@@ -355,14 +366,14 @@ const signupUser = async (req, res) => {
             terms,
             weight,
             height,
-            // REYNA
-            workoutType
+            workoutType,        // ADD THIS
+            weightGoal
         } = req.body;
 
         console.log('Signup request received:', {
             userFullName, dateOfBirth, gender, userEmail, phoneNumber,
             membershipPlan, membershipDuration, cardType, cardNumber,
-            expirationDate, cvv, terms, weight, height
+            expirationDate, cvv, terms, weight, height,workoutType, weightGoal
         });
 
         if (
@@ -380,7 +391,9 @@ const signupUser = async (req, res) => {
             !expirationDate ||
             !cvv ||
             !terms ||
-            weight === undefined
+            weight === undefined||
+            !workoutType ||        // ADD THIS VALIDATION
+            weightGoal === undefined
         ) {
             console.log('Validation failed: Missing fields');
             return res.status(400).json({ error: 'All fields are required, including weight' });
@@ -407,7 +420,16 @@ const signupUser = async (req, res) => {
             console.log('Validation failed: Invalid weight:', weight);
             return res.status(400).json({ error: 'Weight must be a non-negative number' });
         }
+        const validWorkoutTypes = ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding'];
+        if (!validWorkoutTypes.includes(workoutType)) {
+            console.log('Validation failed: Invalid workout type:', workoutType);
+            return res.status(400).json({ error: 'Please select a valid workout type' });
+        }
 
+        if (isNaN(weightGoal) || weightGoal < 20 || weightGoal > 300) {
+            console.log('Validation failed: Invalid weight goal:', weightGoal);
+            return res.status(400).json({ error: 'Weight goal must be between 20 and 300 kg' });
+        }
         let calculatedBMI = null;
         if (height !== undefined) {
             if (isNaN(height) || height < 0) {
@@ -455,7 +477,12 @@ const signupUser = async (req, res) => {
             gender: gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase(),
             phone: phoneNumber,
             membershipType: membershipPlan.charAt(0).toUpperCase() + membershipPlan.slice(1).toLowerCase(),
-           
+            workout_type: workoutType,
+            fitness_goals: {
+                calorie_goal: 2200,  // default value
+                protein_goal: 90,    // default value
+                weight_goal: Number(weightGoal)  // user's input
+            },
             // NEW: Add membership duration data          REYNA
             membershipDuration: {
                 months_remaining: parseInt(membershipDuration),
@@ -469,7 +496,7 @@ const signupUser = async (req, res) => {
             height: height !== undefined ? Number(height) : null,
             BMI: calculatedBMI,
             //REYNA
-            workout_type: workoutType 
+            // workout_type: workoutType 
         });
         console.log('New user object created:', newUser);
 
@@ -665,10 +692,10 @@ const getUserDashboard = async (req, res, membershipCode) => {
         };
 
         if (currentWeekWorkout && currentWeekWorkout.exercises) {
-            //const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            // const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             // const todayDayName = dayNames[today.getDay()];
             
-            // Filter exercises for today
+            // // Filter exercises for today
             // todayExercises = currentWeekWorkout.exercises.filter(exercise => 
             //     exercise.day === todayDayName
             // );
@@ -729,7 +756,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
         // Add this debug section after the currentWeekWorkout query:
 console.log('=== DEBUG WORKOUT DATA ===');
 console.log('Today:', today);
-//console.log('Today Day Name:', dayNames[today.getDay()]);
+// console.log('Today Day Name:', dayNames[today.getDay()]);
 console.log('Week Start:', weekStart);
 console.log('Week End:', weekEnd);
 console.log('Current Week Workout Found:', !!currentWeekWorkout);
