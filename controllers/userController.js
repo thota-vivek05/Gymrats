@@ -257,6 +257,152 @@ const getUserProfile = async (req, res) => {
     }
 };
 
+// REYNA
+
+// Add this function before module.exports
+const updateUserProfile = async (req, res) => {
+    try {
+        if (!req.session || !req.session.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authentication required'
+            });
+        }
+
+        const userId = req.session.user.id;
+        const { full_name, email, phone, dob, height, weight } = req.body;
+
+        console.log('Updating profile for user:', userId, 'Data:', req.body);
+
+        // Validate required fields
+        if (!full_name || !email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Name and email are required fields'
+            });
+        }
+
+        // Validate email format
+        const emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please enter a valid email address'
+            });
+        }
+
+        // Validate phone format
+        const phoneRegex = /^\+?[\d\s-]{10,}$/;
+        if (phone && !phoneRegex.test(phone)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please enter a valid phone number'
+            });
+        }
+
+        // Calculate BMI if height and weight are provided
+        let BMI = null;
+        if (height && weight && height > 0) {
+            const heightInMeters = height / 100;
+            BMI = (weight / (heightInMeters * heightInMeters)).toFixed(1);
+        }
+
+        // Prepare update data
+        const updateData = {
+            full_name,
+            email,
+            phone,
+            height: height ? Number(height) : null,
+            weight: weight ? Number(weight) : null,
+            BMI: BMI ? Number(BMI) : null
+        };
+
+        // Only add dob if provided and valid
+        if (dob) {
+            const dobDate = new Date(dob);
+            if (!isNaN(dobDate.getTime())) {
+                updateData.dob = dobDate;
+            }
+        }
+
+        // Remove undefined/null fields
+        Object.keys(updateData).forEach(key => {
+            if (updateData[key] === undefined || updateData[key] === null) {
+                delete updateData[key];
+            }
+        });
+
+        console.log('Update data:', updateData);
+
+        // Update user in database
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: updateData },
+            { 
+                new: true, // Return updated document
+                runValidators: true // Run schema validators
+            }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Update session data
+        req.session.user = {
+            ...req.session.user,
+            full_name: updatedUser.full_name,
+            email: updatedUser.email,
+            phone: updatedUser.phone,
+            dob: updatedUser.dob,
+            height: updatedUser.height,
+            weight: updatedUser.weight,
+            BMI: updatedUser.BMI
+        };
+
+        console.log('Profile updated successfully for user:', userId);
+
+        res.json({
+            success: true,
+            message: 'Profile updated successfully',
+            user: updatedUser,
+            BMI: BMI
+        });
+
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        
+        // Handle duplicate email error
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email already exists'
+            });
+        }
+
+        // Handle validation errors
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: errors
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
+
+//END REYNA
+
 const loginUser = async (req, res) => {
     try {
         const { email, password, loginMembershipPlan } = req.body;
@@ -305,6 +451,14 @@ const loginUser = async (req, res) => {
             BMI: user.BMI,
             status: user.status,
             created_at: user.created_at,
+
+            // REYNA
+            workout_type: user.workout_type,
+            membershipDuration: {
+                months_remaining: user.membershipDuration.months_remaining,
+                end_date: user.membershipDuration.end_date,
+                auto_renew: user.membershipDuration.auto_renew
+            },
             fitness_goals: {
                 calorie_goal: user.fitness_goals?.calorie_goal || 2200,
                 protein_goal: user.fitness_goals?.protein_goal || 90,
@@ -356,7 +510,8 @@ const signupUser = async (req, res) => {
             weight,
             height,
             // REYNA
-            workoutType
+            workoutType,
+            weightGoal
         } = req.body;
 
         console.log('Signup request received:', {
@@ -424,11 +579,21 @@ const signupUser = async (req, res) => {
 
         // REYNA
         // Add validation for workoutType
-        // if (!workoutType) {
-        //     console.log('Validation failed: Workout type is required');
-        //     return res.status(400).json({ error: 'Please select your preferred workout type' });
-        // }
-        // // end REYNA
+        if (!workoutType) {
+            console.log('Validation failed: Workout type is required');
+            return res.status(400).json({ error: 'Please select your preferred workout type' });
+        }
+
+        if (weightGoal === undefined) {
+            console.log('Validation failed: Weight goal is required');
+            return res.status(400).json({ error: 'Weight goal is required' });
+        }
+
+        if (isNaN(weightGoal) || weightGoal < 20 || weightGoal > 300) {
+            console.log('Validation failed: Invalid weight goal:', weightGoal);
+            return res.status(400).json({ error: 'Weight goal must be between 20 and 300 kg' });
+        }
+        // end REYNA
 
         const existingUser = await User.findOne({ email: userEmail });
         if (existingUser) {
@@ -456,6 +621,15 @@ const signupUser = async (req, res) => {
             phone: phoneNumber,
             membershipType: membershipPlan.charAt(0).toUpperCase() + membershipPlan.slice(1).toLowerCase(),
            
+            // REYNA
+            workout_type: workoutType,
+            // ADD FITNESS GOALS WITH WEIGHT GOAL:
+            fitness_goals: {
+                calorie_goal: 2200,
+                protein_goal: 90,
+                weight_goal: Number(weightGoal)  // ADD THIS
+            },
+
             // NEW: Add membership duration data          REYNA
             membershipDuration: {
                 months_remaining: parseInt(membershipDuration),
@@ -912,5 +1086,6 @@ module.exports = {
     getUserProfile,
     markWorkoutCompleted,
     checkMembershipActive,
-    checkTrainerSubscription
+    checkTrainerSubscription,
+    updateUserProfile
 };

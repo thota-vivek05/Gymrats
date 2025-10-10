@@ -121,28 +121,7 @@ const userSchema = new mongoose.Schema({
         }
     },
 
-    // ✅ Nutrition history structure (used in dashboards)           use this if the below one gives issues
-    // nutrition_history: [
-    //     {
-    //         date: { type: Date, default: Date.now },
-    //         name: { type: String },
-    //         calories: { type: Number, min: 0 },
-    //         protein: { type: Number, min: 0 },
-    //         macros: {
-    //             protein: { type: Number, default: 0 },
-    //             carbs: { type: Number, default: 0 },
-    //             fats: { type: Number, default: 0 }
-    //         }
-    //     }
-    // ],
 
-    // ✅ Link to workout history collection
-    // workout_history: [
-    //     {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: 'WorkoutHistory'
-    //     }
-    // ],
 
     trainer: { 
         type: mongoose.Schema.Types.ObjectId, 
