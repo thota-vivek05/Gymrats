@@ -10,7 +10,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
     <style>
+        /* Additional styles for better layout */
+        .profile-grid-2col {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
 
+        @media (max-width: 992px) {
+            .profile-grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -118,17 +130,16 @@
                 </div>
             </div>
         </div>
-        <!-- Profile Overview -->
-        <div class="profile-grid">
+
+        <!-- Profile Overview - Side by Side Layout -->
+        <div class="profile-grid-2col">
             <!-- User Information Card -->
             <div class="profile-card user-info-card">
                 <div class="card-header">
                     <h2>Personal Information</h2>
-                    <!--brimstone-->
                     <button class="edit-profile-btn" id="editProfileBtn">
                         <i class="fas fa-edit"></i> Edit
                     </button>
-                    <!--brimstone-->
                 </div>
                 <div class="profile-content">
                     <div class="profile-status-container">
@@ -181,20 +192,20 @@
                             <span class="profile-label">Age:</span>
                             <span class="profile-value" id="ageValue">
                                 <% if (typeof user === 'object' && user !== null && user.dob) { 
-                try {
-                    const today = new Date();
-                    const birthDate = new Date(user.dob);
-                    let age = today.getFullYear() - birthDate.getFullYear();
-                    const m = today.getMonth() - birthDate.getMonth();
-                    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                        age--;
-                    }
-                    %>
+                                    try {
+                                        const today = new Date();
+                                        const birthDate = new Date(user.dob);
+                                        let age = today.getFullYear() - birthDate.getFullYear();
+                                        const m = today.getMonth() - birthDate.getMonth();
+                                        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                                            age--;
+                                        }
+                                        %>
                                 <%= age %> years
                                 <% } catch(e) { %>
                                 Not provided
                                 <% }
-            } else { %>
+                                } else { %>
                                 Not provided
                                 <% } %>
                             </span>
@@ -251,205 +262,202 @@
                         <button class="save-btn" id="saveProfileBtn">Save Changes</button>
                         <button class="cancel-btn" id="cancelEditBtn">Cancel</button>
                     </div>
+                </div>
+            </div>
 
-
-
-                    <!-- Membership Card -->
-                    <div class="profile-card membership-card">
-                        <div class="card-header">
-                            <h2>Membership Details</h2>
+            <!-- Membership Card -->
+            <div class="profile-card membership-card">
+                <div class="card-header">
+                    <h2>Membership Details</h2>
+                </div>
+                <div class="profile-content">
+                    <div class="membership-status">
+                        <div class="membership-badge premium">
+                            <%= user && user.membershipType ? user.membershipType : 'Basic' %> Member
                         </div>
-                        <div class="profile-content">
-                            <div class="membership-status">
-                                <div class="membership-badge premium">
-                                    <%= user && user.membershipType ? user.membershipType : 'Basic' %> Member
-                                </div>
-                                <p class="membership-since">Member since:
-                                    <% if (user && user.created_at) { %>
-                                    <%= new Date(user.created_at).toLocaleDateString() %>
-                                    <% } else { %>
-                                    March 15, 2023
-                                    <% } %>
-                                </p>
-                            </div>
-                            <div class="membership-details">
-                                <div class="membership-item">
-                                    <span class="membership-label">Plan:</span>
-                                    <span class="membership-value">
-                                        <%= user && user.membershipType ? user.membershipType : 'Basic' %>
-                                    </span>
-                                </div>
+                        <p class="membership-since">Member since:
+                            <% if (user && user.created_at) { %>
+                            <%= new Date(user.created_at).toLocaleDateString() %>
+                            <% } else { %>
+                            March 15, 2023
+                            <% } %>
+                        </p>
+                    </div>
+                    <div class="membership-details">
+                        <div class="membership-item">
+                            <span class="membership-label">Plan:</span>
+                            <span class="membership-value">
+                                <%= user && user.membershipType ? user.membershipType : 'Basic' %>
+                            </span>
+                        </div>
 
-                                <div class="membership-item">
-                                    <span class="membership-label">Status:</span>
-                                    <span class="membership-value active">
-                                        <%= user && user.status ? user.status : 'Active' %>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="membership-features">
-                                <h3>Features Included:</h3>
-                                <ul class="features-list">
-                                    <% if (user.membershipType === 'Platinum') { %>
-                                    <!-- Platinum Features -->
-                                    <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
-                                    <li><i class="fas fa-check"></i> Basic Workout Plans</li>
-                                    <li><i class="fas fa-check"></i> Nutritional Tips</li>
-                                    <li><i class="fas fa-check"></i> Current Stats Tracking</li>
-                                    <li><i class="fas fa-check"></i> Online Classes</li>
-                                    <li><i class="fas fa-check"></i> Personal Training Sessions</li>
-                                    <% } else if (user.membershipType === 'Gold') { %>
-                                    <!-- Gold Features -->
-                                    <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
-                                    <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
-                                    <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
-                                    <li><i class="fas fa-check"></i> Current Stats Tracking</li>
-                                    <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Online Classes</li>
-                                    <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Personal Training Sessions
-                                    </li>
-                                    <% } else { %>
-                                    <!-- Basic Features -->
-                                    <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
-                                    <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
-                                    <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
-                                    <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Current Stats Tracking</li>
-                                    <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Online Classes</li>
-                                    <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Personal Training Sessions
-                                    </li>
-                                    <% } %>
-                                </ul>
-                            </div>
+                        <div class="membership-item">
+                            <span class="membership-label">Status:</span>
+                            <span class="membership-value active">
+                                <%= user && user.status ? user.status : 'Active' %>
+                            </span>
                         </div>
                     </div>
-
-
-                    <!-- brim stone -->
-                    <!-- Membership Extension Section -->
-                    <div class="profile-card membership-extension-card">
-                        <div class="card-header">
-                            <h2>Extend Membership</h2>
-                        </div>
-                        <div class="profile-content">
-                            <div class="membership-status-info">
-                                <div class="status-item">
-                                    <span class="label">Current Status:</span>
-                                    <span class="value status-<%= user.status.toLowerCase() %>">
-                                        <%= user.status %>
-                                    </span>
-                                </div>
-                                <div class="status-item">
-                                    <span class="label">Months Remaining:</span>
-                                    <span class="value">
-                                        <% if (user && user.membershipDuration) { %>
-                                        <%= user.membershipDuration.months_remaining || 0 %>
-                                        <% } else { %>
-                                        0
-                                        <% } %>
-                                    </span>
-                                </div>
-                                <div class="status-item">
-                                    <span class="label">End Date:</span>
-                                    <span class="value">
-                                        <% if (user && user.membershipDuration && user.membershipDuration.end_date) { %>
-                                        <%= new Date(user.membershipDuration.end_date).toLocaleDateString() %>
-                                        <% } else { %>
-                                        Not set
-                                        <% } %>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="extension-cta">
-                                <p>Extend your membership to continue enjoying all premium features!</p>
-                                <button class="extend-membership-btn" onclick="redirectToRenewal()">
-                                    <i class="fas fa-credit-card"></i>
-                                    Extend Membership
-                                </button>
-                            </div>
-                        </div>
+                    <div class="membership-features">
+                        <h3>Features Included:</h3>
+                        <ul class="features-list">
+                            <% if (user.membershipType === 'Platinum') { %>
+                            <!-- Platinum Features -->
+                            <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                            <li><i class="fas fa-check"></i> Basic Workout Plans</li>
+                            <li><i class="fas fa-check"></i> Nutritional Tips</li>
+                            <li><i class="fas fa-check"></i> Current Stats Tracking</li>
+                            <li><i class="fas fa-check"></i> Online Classes</li>
+                            <li><i class="fas fa-check"></i> Personal Training Sessions</li>
+                            <% } else if (user.membershipType === 'Gold') { %>
+                            <!-- Gold Features -->
+                            <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                            <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
+                            <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
+                            <li><i class="fas fa-check"></i> Current Stats Tracking</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Online Classes</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Personal Training Sessions</li>
+                            <% } else { %>
+                            <!-- Basic Features -->
+                            <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                            <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
+                            <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Current Stats Tracking</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Online Classes</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Personal Training Sessions</li>
+                            <% } %>
+                        </ul>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Statistics Card -->
-                    <div class="profile-wide-card">
-                        <div class="card-header">
-                            <h2>My Fitness Statistics</h2>
-                        </div>
-                        <div class="stats-content">
-                            <div class="stats-summary">
-                                <div class="stat-box">
-                                    <div class="stat-icon">
-                                        <i class="fas fa-dumbbell"></i>
-                                    </div>
-                                    <div class="stat-value">
-                                        <% if (typeof fitnessStats !== 'undefined' && fitnessStats.workoutsCompleted !== undefined) { %>
-                                        <%= fitnessStats.workoutsCompleted %>
-                                        <% } else { %>
-                                        0
-                                        <% } %>
-                                    </div>
-                                    <div class="stat-label">Workouts</div>
-                                </div>
-                                <div class="stat-box">
-                                    <div class="stat-icon">
-                                        <i class="fas fa-fire"></i>
-                                    </div>
-                                    <div class="stat-value">
-                                        <% if (typeof fitnessStats !== 'undefined' && fitnessStats.caloriesBurned !== undefined) { %>
-                                        <%= fitnessStats.caloriesBurned.toLocaleString() %>
-                                        <% } else { %>
-                                        0
-                                        <% } %>
-                                    </div>
-                                    <div class="stat-label">Calories Burned</div>
-                                </div>
-                                <div class="stat-box">
-                                    <div class="stat-icon">
-                                        <i class="fas fa-clock"></i>
-                                    </div>
-                                    <div class="stat-value">
-                                        <% if (typeof fitnessStats !== 'undefined' && fitnessStats.hoursActive !== undefined) { %>
-                                        <%= fitnessStats.hoursActive %>
-                                        <% } else { %>
-                                        0
-                                        <% } %>
-                                    </div>
-                                    <div class="stat-label">Hours Active</div>
-                                </div>
-                                <div class="stat-box">
-                                    <div class="stat-icon">
-                                        <i class="fas fa-trophy"></i>
-                                    </div>
-                                    <div class="stat-value">
-                                        <% if (typeof fitnessStats !== 'undefined' && fitnessStats.goalsAchieved !== undefined) { %>
-                                        <%= fitnessStats.goalsAchieved %>
-                                        <% } else { %>
-                                        0
-                                        <% } %>
-                                    </div>
-                                    <div class="stat-label">Goals Achieved</div>
-                                </div>
-                            </div>
-                            <div class="stats-charts">
-                                <div class="chart-container">
-                                    <h3>Workout Frequency</h3>
-                                    <canvas id="workoutFrequencyChart"></canvas>
-                                </div>
-                                <div class="chart-container">
-                                    <h3>Weight Progress</h3>
-                                    <canvas id="weightProgressChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
+        <!-- Membership Extension Section - Below the two cards -->
+        <div class="profile-card membership-extension-card">
+            <div class="card-header">
+                <h2>Extend Membership</h2>
+            </div>
+            <div class="profile-content">
+                <div class="membership-status-info">
+                    <div class="status-item">
+                        <span class="label">Current Status:</span>
+                        <span class="value status-<%= user.status.toLowerCase() %>">
+                            <%= user.status %>
+                        </span>
                     </div>
+                    <div class="status-item">
+                        <span class="label">Months Remaining:</span>
+                        <span class="value">
+                            <% if (user && user.membershipDuration) { %>
+                            <%= user.membershipDuration.months_remaining || 0 %>
+                            <% } else { %>
+                            0
+                            <% } %>
+                        </span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">End Date:</span>
+                        <span class="value">
+                            <% if (user && user.membershipDuration && user.membershipDuration.end_date) { %>
+                            <%= new Date(user.membershipDuration.end_date).toLocaleDateString() %>
+                            <% } else { %>
+                            Not set
+                            <% } %>
+                        </span>
+                    </div>
+                </div>
 
-                    <!-- Workout History Card -->
-                    <div class="profile-wide-card">
-                        <div class="card-header">
-                            <h2>Recent Workouts</h2>
+                <div class="extension-cta">
+                    <p>Extend your membership to continue enjoying all premium features!</p>
+                    <button class="extend-membership-btn" onclick="redirectToRenewal()">
+                        <i class="fas fa-credit-card"></i>
+                        Extend Membership
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Card -->
+        <div class="profile-wide-card">
+            <div class="card-header">
+                <h2>My Fitness Statistics</h2>
+            </div>
+            <div class="stats-content">
+                <div class="stats-summary">
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="fas fa-dumbbell"></i>
                         </div>
-                        <div class="profile-content">
-                            <div class="workout-history">
-                                <% 
+                        <div class="stat-value">
+                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.workoutsCompleted !== undefined) { %>
+                            <%= fitnessStats.workoutsCompleted %>
+                            <% } else { %>
+                            0
+                            <% } %>
+                        </div>
+                        <div class="stat-label">Workouts</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="stat-value">
+                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.caloriesBurned !== undefined) { %>
+                            <%= fitnessStats.caloriesBurned.toLocaleString() %>
+                            <% } else { %>
+                            0
+                            <% } %>
+                        </div>
+                        <div class="stat-label">Calories Burned</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-value">
+                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.hoursActive !== undefined) { %>
+                            <%= fitnessStats.hoursActive %>
+                            <% } else { %>
+                            0
+                            <% } %>
+                        </div>
+                        <div class="stat-label">Hours Active</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-value">
+                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.goalsAchieved !== undefined) { %>
+                            <%= fitnessStats.goalsAchieved %>
+                            <% } else { %>
+                            0
+                            <% } %>
+                        </div>
+                        <div class="stat-label">Goals Achieved</div>
+                    </div>
+                </div>
+                <div class="stats-charts">
+                    <div class="chart-container">
+                        <h3>Workout Frequency</h3>
+                        <canvas id="workoutFrequencyChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Weight Progress</h3>
+                        <canvas id="weightProgressChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout History Card -->
+        <div class="profile-wide-card">
+            <div class="card-header">
+                <h2>Recent Workouts</h2>
+            </div>
+            <div class="profile-content">
+                <div class="workout-history">
+                    <% 
                     const mockWorkouts = [
                         { day: '16', month: 'MAR', name: 'HIIT Training', duration: '45 min', calories: '450', exercises: '4', rating: 4 },
                         { day: '14', month: 'MAR', name: 'Strength Training', duration: '60 min', calories: '380', exercises: '6', rating: 5 },
@@ -462,40 +470,39 @@
                         recentWorkouts = [];
                     }
                     %>
-                                <% if (recentWorkouts.length > 0) { %>
-                                <% recentWorkouts.forEach(workout => { %>
-                                <div class="workout-item" data-workout-id="<%= workout.id || '' %>">
-                                    <div class="workout-date">
-                                        <span class="workout-day"><%= workout.day %></span>
-                                        <span class="workout-month"><%= workout.month %></span>
-                                    </div>
-                                    <div class="workout-info">
-                                        <h3 class="workout-name"><%= workout.name %></h3>
-                                        <div class="workout-stats">
-                                            <span><i class="fas fa-clock"></i> <%= workout.duration %></span>
-                                            <span><i class="fas fa-fire-alt"></i> <%= workout.calories %> cal</span>
-                                            <span><i class="fas fa-dumbbell"></i> <%= workout.exercises %>
-                                                exercises</span>
-                                        </div>
-                                    </div>
-                                    <div class="workout-rating">
-                                        <% for (let i = 1; i <= 5; i++) { %>
-                                        <i class="fas fa-star <%= i <= workout.rating ? 'active' : '' %>"></i>
-                                        <% } %>
-                                    </div>
-                                </div>
-                                <% }); %>
-                                <% } else { %>
-                                <div class="no-workouts-message">
-                                    <p>No workout history available yet. Start tracking your workouts to see them here!
-                                    </p>
-                                </div>
-                                <% } %>
+                    <% if (recentWorkouts.length > 0) { %>
+                    <% recentWorkouts.forEach(workout => { %>
+                    <div class="workout-item" data-workout-id="<%= workout.id || '' %>">
+                        <div class="workout-date">
+                            <span class="workout-day"><%= workout.day %></span>
+                            <span class="workout-month"><%= workout.month %></span>
+                        </div>
+                        <div class="workout-info">
+                            <h3 class="workout-name"><%= workout.name %></h3>
+                            <div class="workout-stats">
+                                <span><i class="fas fa-clock"></i> <%= workout.duration %></span>
+                                <span><i class="fas fa-fire-alt"></i> <%= workout.calories %> cal</span>
+                                <span><i class="fas fa-dumbbell"></i> <%= workout.exercises %> exercises</span>
                             </div>
                         </div>
+                        <div class="workout-rating">
+                            <% for (let i = 1; i <= 5; i++) { %>
+                            <i class="fas fa-star <%= i <= workout.rating ? 'active' : '' %>"></i>
+                            <% } %>
+                        </div>
                     </div>
+                    <% }); %>
+                    <% } else { %>
+                    <div class="no-workouts-message">
+                        <p>No workout history available yet. Start tracking your workouts to see them here!</p>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <!-- Footer
+    <!-- Footer
         <footer class="site-footer">
             <div class="footer-content">
                 <div class="footer-column">
@@ -540,148 +547,148 @@
                 </div>
             </div>
         </footer> -->
-                </div>
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        const weeklyWorkoutData = < %
-                            if (typeof chartData !== 'undefined' && chartData.weeklyWorkouts) {
-                                %
-                                >
-                                <
-                                %= JSON.stringify(chartData.weeklyWorkouts) % >
-                                    <
-                                    %
-                            } else {
-                                %
-                                >
-                                [0, 0, 0, 0] <
-                                %
-                            } % > ;
-                        const weekLabels = < %
-                            if (typeof chartData !== 'undefined' && chartData.weekLabels) {
-                                %
-                                >
-                                <
-                                %= JSON.stringify(chartData.weekLabels) % >
-                                    <
-                                    %
-                            } else {
-                                %
-                                >
-                                ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
-                                %
-                            } % > ;
-                        const weightProgressData = < %
-                            if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData
-                                .weightProgress
-                                .length > 0) {
-                                %
-                                >
-                                <
-                                %= JSON.stringify(chartData.weightProgress.map(entry => entry.weight)) % >
-                                    <
-                                    %
-                            } else {
-                                %
-                                >
-                                [0, 0, 0, 0] <
-                                %
-                            } % > ;
-                        const weightLabels = < %
-                            if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData
-                                .weightProgress
-                                .length > 0) {
-                                %
-                                >
-                                <
-                                %= JSON.stringify(chartData.weightProgress.map(entry => entry.week)) % >
-                                    <
-                                    %
-                            } else {
-                                %
-                                >
-                                ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
-                                %
-                            } % > ;
-                        if (document.getElementById('workoutFrequencyChart')) {
-                            const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart')
-                                .getContext(
-                                    '2d');
-                            new Chart(workoutFrequencyCtx, {
-                                type: 'bar',
-                                data: {
-                                    labels: weekLabels,
-                                    datasets: [{
-                                        label: 'Workouts',
-                                        data: weeklyWorkoutData,
-                                        backgroundColor: '#8A2BE2',
-                                        borderColor: '#8A2BE2',
-                                        borderWidth: 1
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true,
-                                            ticks: {
-                                                precision: 0
-                                            }
-                                        }
-                                    },
-                                    plugins: {
-                                        legend: {
-                                            display: false
-                                        }
-                                    }
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const weeklyWorkoutData = < %
+                if (typeof chartData !== 'undefined' && chartData.weeklyWorkouts) {
+                    %
+                    >
+                    <
+                    %= JSON.stringify(chartData.weeklyWorkouts) % >
+                        <
+                        %
+                } else {
+                    %
+                    >
+                    [0, 0, 0, 0] <
+                    %
+                } % > ;
+            const weekLabels = < %
+                if (typeof chartData !== 'undefined' && chartData.weekLabels) {
+                    %
+                    >
+                    <
+                    %= JSON.stringify(chartData.weekLabels) % >
+                        <
+                        %
+                } else {
+                    %
+                    >
+                    ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
+                    %
+                } % > ;
+            const weightProgressData = < %
+                if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData
+                    .weightProgress
+                    .length > 0) {
+                    %
+                    >
+                    <
+                    %= JSON.stringify(chartData.weightProgress.map(entry => entry.weight)) % >
+                        <
+                        %
+                } else {
+                    %
+                    >
+                    [0, 0, 0, 0] <
+                    %
+                } % > ;
+            const weightLabels = < %
+                if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData
+                    .weightProgress
+                    .length > 0) {
+                    %
+                    >
+                    <
+                    %= JSON.stringify(chartData.weightProgress.map(entry => entry.week)) % >
+                        <
+                        %
+                } else {
+                    %
+                    >
+                    ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
+                    %
+                } % > ;
+            if (document.getElementById('workoutFrequencyChart')) {
+                const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart')
+                    .getContext(
+                        '2d');
+                new Chart(workoutFrequencyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: weekLabels,
+                        datasets: [{
+                            label: 'Workouts',
+                            data: weeklyWorkoutData,
+                            backgroundColor: '#8A2BE2',
+                            borderColor: '#8A2BE2',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
                                 }
-                            });
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
                         }
-                        if (document.getElementById('weightProgressChart')) {
-                            const weightProgressCtx = document.getElementById('weightProgressChart').getContext(
-                                '2d');
-                            new Chart(weightProgressCtx, {
-                                type: 'line',
-                                data: {
-                                    labels: weightLabels,
-                                    datasets: [{
-                                        label: 'Weight (kg)',
-                                        data: weightProgressData,
-                                        backgroundColor: 'rgba(46, 204, 113, 0.2)',
-                                        borderColor: '#2ecc71',
-                                        borderWidth: 2,
-                                        tension: 0.4,
-                                        pointBackgroundColor: '#2ecc71',
-                                        pointRadius: 4
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    scales: {
-                                        y: {
-                                            beginAtZero: false,
-                                            suggestedMin: Math.min(...weightProgressData) - 1,
-                                            suggestedMax: Math.max(...weightProgressData) + 1
-                                        }
-                                    },
-                                    plugins: {
-                                        legend: {
-                                            display: false
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    });
-                </script>
-                <!-- brimstone-->
-                <script>
-                    function redirectToRenewal() {
-                        window.location.href = '/membership_renewal';
                     }
-                </script>
+                });
+            }
+            if (document.getElementById('weightProgressChart')) {
+                const weightProgressCtx = document.getElementById('weightProgressChart').getContext(
+                    '2d');
+                new Chart(weightProgressCtx, {
+                    type: 'line',
+                    data: {
+                        labels: weightLabels,
+                        datasets: [{
+                            label: 'Weight (kg)',
+                            data: weightProgressData,
+                            backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                            borderColor: '#2ecc71',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointBackgroundColor: '#2ecc71',
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                suggestedMin: Math.min(...weightProgressData) - 1,
+                                suggestedMax: Math.max(...weightProgressData) + 1
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+    <!-- brimstone-->
+    <script>
+        function redirectToRenewal() {
+            window.location.href = '/membership_renewal';
+        }
+    </script>
 </body>
 
 <script>
