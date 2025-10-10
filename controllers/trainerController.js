@@ -380,6 +380,12 @@ const saveWorkoutPlan = async (req, res) => {
         const trainerId = req.session.trainer.id;
 
         console.log('Saving workout plan for Platinum user:', clientId);
+        
+        // ADD THESE DEBUG LOGS:
+        console.log('=== DEBUG: Received currentWeek data ===');
+        console.log(JSON.stringify(currentWeek, null, 2));
+        console.log('=== DEBUG: Received nextWeek data ===');
+        console.log(JSON.stringify(nextWeek, null, 2));
 
         if (!clientId || !currentWeek || !nextWeek) {
             console.log('Validation failed: Missing required fields');
@@ -405,9 +411,16 @@ const saveWorkoutPlan = async (req, res) => {
 
         const currentWeekExercises = [];
         for (const [day, exercises] of Object.entries(currentWeek)) {
+            // ADD DEBUG LOGS FOR EACH EXERCISE:
+            console.log(`=== DEBUG: Processing ${day} ===`);
             exercises.forEach(ex => {
+                console.log('Exercise data:', ex);
+                console.log('sets:', ex.sets, 'type:', typeof ex.sets);
+                console.log('reps:', ex.reps, 'type:', typeof ex.reps);
+                console.log('weight:', ex.weight, 'type:', typeof ex.weight);
+                
                 if (ex.name) {
-                    currentWeekExercises.push({
+                    const processedExercise = {
                         day,
                         name: ex.name,
                         sets: ex.sets ? parseInt(ex.sets) : null,
@@ -415,7 +428,9 @@ const saveWorkoutPlan = async (req, res) => {
                         weight: ex.weight ? parseFloat(ex.weight) : null,
                         duration: ex.duration ? parseInt(ex.duration) : null,
                         completed: false
-                    });
+                    };
+                    console.log('Processed exercise:', processedExercise);
+                    currentWeekExercises.push(processedExercise);
                 }
             });
         }
