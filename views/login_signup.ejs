@@ -79,16 +79,16 @@
                     <input type="password" class="form-control" id="password" placeholder="Enter your password"
                         required>
                 </div>
-
-                <div class="form-group">
+                <!-- Brimstone 2 -->
+                <!-- <div class="form-group">
                     <label for="loginMembershipPlan">Membership Plan</label>
                     <select class="form-control" id="loginMembershipPlan" name="loginMembershipPlan">
                         <option value="basic">Basic Plan</option>
                         <option value="gold">Gold Plan</option>
                         <option value="platinum">Platinum Plan</option>
                     </select>
-                </div>
-
+                </div> -->
+                <!-- Brimstone 2 -->
                 <button type="submit" class="btn">Login</button>
 
                 <div class="alternate-action">
@@ -376,9 +376,10 @@
 
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
-                const loginMembershipPlan = document.getElementById('loginMembershipPlan').value;
-
-                if (!email || !password || !loginMembershipPlan) {
+                //brimstone 3
+                // const loginMembershipPlan = document.getElementById('loginMembershipPlan').value;
+                // brimstone 3
+                if (!email || !password ) {
                     showErrorModal('Please fill in all fields');
                     return;
                 }
@@ -390,8 +391,8 @@
                         },
                         body: JSON.stringify({
                             email,
-                            password,
-                            loginMembershipPlan
+                            password
+                            
                         }),
                     })
                     .then(response => response.json())

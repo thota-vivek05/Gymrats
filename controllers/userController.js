@@ -264,11 +264,11 @@ const getUserProfile = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const { email, password, loginMembershipPlan } = req.body;
+        const { email, password } = req.body;
 
-        console.log('Login request received:', { email, loginMembershipPlan });
+        console.log('Login request received:', { email});
 
-        if (!email || !password || !loginMembershipPlan) {
+        if (!email || !password) {
             console.log('Validation failed: Missing fields');
             return res.status(400).json({ error: 'All fields are required' });
         }
@@ -284,12 +284,12 @@ const loginUser = async (req, res) => {
             console.log('Password mismatch for:', email);
             return res.status(401).json({ error: 'Invalid email or password' });
         }
-
-        if (user.membershipType.toLowerCase() !== loginMembershipPlan.toLowerCase()) {
-            console.log('Membership plan mismatch:', { user: user.membershipType, input: loginMembershipPlan });
-            return res.status(400).json({ error: 'Selected membership plan does not match user membership' });
-        }
-
+        //brimstone 1
+        // if (user.membershipType.toLowerCase() !== loginMembershipPlan.toLowerCase()) {
+        //     console.log('Membership plan mismatch:', { user: user.membershipType, input: loginMembershipPlan });
+        //     return res.status(400).json({ error: 'Selected membership plan does not match user membership' });
+        // }
+        // brimstone
         if (!req.session) {
             console.error('Session middleware not initialized');
             return res.status(500).json({ error: 'Session not available. Please try again later.' });
