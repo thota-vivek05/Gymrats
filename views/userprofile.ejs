@@ -261,10 +261,7 @@
                                 <%= user && user.membershipType ? user.membershipType : 'Basic' %>
                             </span>
                         </div>
-                        <div class="membership-item">
-                            <span class="membership-label">Renewal Date:</span>
-                            <span class="membership-value">March 15, 2024</span>
-                        </div>
+                        
                         <div class="membership-item">
                             <span class="membership-label">Status:</span>
                             <span class="membership-value active">
@@ -275,10 +272,31 @@
                     <div class="membership-features">
                         <h3>Features Included:</h3>
                         <ul class="features-list">
-                            <li><i class="fas fa-check"></i> Unlimited workout plans</li>
-                            <li><i class="fas fa-check"></i> Personal trainer consultations</li>
-                            <li><i class="fas fa-check"></i> Nutrition planning</li>
-                            <li><i class="fas fa-check"></i> Advanced progress tracking</li>
+                            <% if (user.membershipType === 'Platinum') { %>
+                            <!-- Platinum Features -->
+                            <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                            <li><i class="fas fa-check"></i> Basic Workout Plans</li>
+                            <li><i class="fas fa-check"></i> Nutritional Tips</li>
+                            <li><i class="fas fa-check"></i> Current Stats Tracking</li>
+                            <li><i class="fas fa-check"></i> Online Classes</li>
+                            <li><i class="fas fa-check"></i> Personal Training Sessions</li>
+                            <% } else if (user.membershipType === 'Gold') { %>
+                            <!-- Gold Features -->
+                            <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                            <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
+                            <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
+                            <li><i class="fas fa-check"></i> Current Stats Tracking</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Online Classes</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Personal Training Sessions</li>
+                            <% } else { %>
+                            <!-- Basic Features -->
+                            <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                            <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
+                            <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Current Stats Tracking</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Online Classes</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Personal Training Sessions</li>
+                            <% } %>
                         </ul>
                     </div>
                 </div>
@@ -455,7 +473,7 @@
             </div>
         </div>
 
-        <!-- Footer -->
+        <!-- Footer
         <footer class="site-footer">
             <div class="footer-content">
                 <div class="footer-column">
@@ -499,7 +517,7 @@
                     <p class="copyright">GymRats © 2025. All rights reserved.</p>
                 </div>
             </div>
-        </footer>
+        </footer> -->
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -513,7 +531,8 @@
                         %
                 } else {
                     %
-                    > [0, 0, 0, 0] <
+                    >
+                    [0, 0, 0, 0] <
                     %
                 } % > ;
             const weekLabels = < %
@@ -526,7 +545,8 @@
                         %
                 } else {
                     %
-                    > ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
+                    >
+                    ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
                     %
                 } % > ;
             const weightProgressData = < %
@@ -540,7 +560,8 @@
                         %
                 } else {
                     %
-                    > [0, 0, 0, 0] <
+                    >
+                    [0, 0, 0, 0] <
                     %
                 } % > ;
             const weightLabels = < %
@@ -554,7 +575,8 @@
                         %
                 } else {
                     %
-                    > ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
+                    >
+                    ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
                     %
                 } % > ;
             if (document.getElementById('workoutFrequencyChart')) {

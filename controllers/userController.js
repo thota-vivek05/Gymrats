@@ -365,13 +365,15 @@ const signupUser = async (req, res) => {
             cvv,
             terms,
             weight,
-            height
+            height,
+            workoutType,        // ADD THIS
+            weightGoal
         } = req.body;
 
         console.log('Signup request received:', {
             userFullName, dateOfBirth, gender, userEmail, phoneNumber,
             membershipPlan, membershipDuration, cardType, cardNumber,
-            expirationDate, cvv, terms, weight, height
+            expirationDate, cvv, terms, weight, height,workoutType, weightGoal
         });
 
         if (
@@ -389,7 +391,9 @@ const signupUser = async (req, res) => {
             !expirationDate ||
             !cvv ||
             !terms ||
-            weight === undefined
+            weight === undefined||
+            !workoutType ||        // ADD THIS VALIDATION
+            weightGoal === undefined
         ) {
             console.log('Validation failed: Missing fields');
             return res.status(400).json({ error: 'All fields are required, including weight' });
@@ -416,7 +420,16 @@ const signupUser = async (req, res) => {
             console.log('Validation failed: Invalid weight:', weight);
             return res.status(400).json({ error: 'Weight must be a non-negative number' });
         }
+        const validWorkoutTypes = ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding'];
+        if (!validWorkoutTypes.includes(workoutType)) {
+            console.log('Validation failed: Invalid workout type:', workoutType);
+            return res.status(400).json({ error: 'Please select a valid workout type' });
+        }
 
+        if (isNaN(weightGoal) || weightGoal < 20 || weightGoal > 300) {
+            console.log('Validation failed: Invalid weight goal:', weightGoal);
+            return res.status(400).json({ error: 'Weight goal must be between 20 and 300 kg' });
+        }
         let calculatedBMI = null;
         if (height !== undefined) {
             if (isNaN(height) || height < 0) {
@@ -456,7 +469,12 @@ const signupUser = async (req, res) => {
             gender: gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase(),
             phone: phoneNumber,
             membershipType: membershipPlan.charAt(0).toUpperCase() + membershipPlan.slice(1).toLowerCase(),
-           
+            workout_type: workoutType,
+            fitness_goals: {
+                calorie_goal: 2200,  // default value
+                protein_goal: 90,    // default value
+                weight_goal: Number(weightGoal)  // user's input
+            },
             // NEW: Add membership duration data          REYNA
             membershipDuration: {
                 months_remaining: parseInt(membershipDuration),

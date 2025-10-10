@@ -315,25 +315,49 @@
         </div>
 
         <!-- Renewal Options -->
-        <div class="renewal-options">
-            <div class="option" data-months="1">
-                <h3>1 Month</h3>
-                <p class="price">$19.99</p>
-                <button class="renew-btn">Select</button>
-            </div>
-            <div class="option" data-months="3">
-                <h3>3 Months</h3>
-                <p class="price">$49.99</p>
-                <p class="save">Save 15%</p>
-                <button class="renew-btn">Select</button>
-            </div>
-            <div class="option" data-months="6">
-                <h3>6 Months</h3>
-                <p class="price">$89.99</p>
-                <p class="save">Save 25%</p>
-                <button class="renew-btn">Select</button>
-            </div>
-        </div>
+<div class="renewal-options">
+    <div class="option" data-months="1">
+        <h3>1 Month</h3>
+        <p class="price" id="price-1">
+            <% if (user && user.membershipType === 'Platinum') { %>
+                ₹999
+            <% } else if (user && user.membershipType === 'Gold') { %>
+                ₹599
+            <% } else { %>
+                ₹299
+            <% } %>
+        </p>
+        <button class="renew-btn">Select</button>
+    </div>
+    <div class="option" data-months="3">
+        <h3>3 Months</h3>
+        <p class="price" id="price-3">
+            <% if (user && user.membershipType === 'Platinum') { %>
+                ₹2500
+            <% } else if (user && user.membershipType === 'Gold') { %>
+                ₹1550
+            <% } else { %>
+                ₹750
+            <% } %>
+        </p>
+        <p class="save">Save 15%</p>
+        <button class="renew-btn">Select</button>
+    </div>
+    <div class="option" data-months="6">
+        <h3>6 Months</h3>
+        <p class="price" id="price-6">
+            <% if (user && user.membershipType === 'Platinum') { %>
+                ₹4500
+            <% } else if (user && user.membershipType === 'Gold') { %>
+                ₹2700
+            <% } else { %>
+                ₹1350
+            <% } %>
+        </p>
+        <p class="save">Save 25%</p>
+        <button class="renew-btn">Select</button>
+    </div>
+</div>
 
         <!-- Payment Form -->
         <div class="payment-section">

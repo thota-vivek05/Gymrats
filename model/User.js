@@ -48,6 +48,12 @@ const userSchema = new mongoose.Schema({
         min: 0,
         default: null 
     },
+    // brimstone
+    workout_type: {
+    type: String,
+    enum: ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding'],
+    default: null
+},
 
     // ✅ Added fields
     bodyFat: { 
@@ -105,35 +111,15 @@ const userSchema = new mongoose.Schema({
             default: 90,
             min: 0 
         },
-        weight_goal: { 
-            type: Number, 
-            min: 0,
-            default: null 
-        }
+        // Brimstone
+        weight_goal: {
+        type: Number,
+        required: true,
+        min: 20,
+        max: 300
     },
-
-    // ✅ Nutrition history structure (used in dashboards)           use this if the below one gives issues
-    // nutrition_history: [
-    //     {
-    //         date: { type: Date, default: Date.now },
-    //         name: { type: String },
-    //         calories: { type: Number, min: 0 },
-    //         protein: { type: Number, min: 0 },
-    //         macros: {
-    //             protein: { type: Number, default: 0 },
-    //             carbs: { type: Number, default: 0 },
-    //             fats: { type: Number, default: 0 }
-    //         }
-    //     }
-    // ],
-
-    // ✅ Link to workout history collection
-    // workout_history: [
-    //     {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: 'WorkoutHistory'
-    //     }
-    // ],
+    // Brimstone
+    },
 
     trainer: { 
         type: mongoose.Schema.Types.ObjectId, 
