@@ -67,391 +67,559 @@
     <!-- Personalized Welcome Banner -->
     <div class="welcome-banner">
         <h1>Welcome, <%= user && user.name ? user.name : 'Athlete' %>!</h1>
-        <p>Your Personalized Evidence-Based Nutrition Guide</p>
-        <% if (user && user.fitness_goal) { %>
-            <div class="goal-badge">
-                <i class="fas fa-bullseye"></i>
-                Current Goal: <%= user.fitness_goal %>
-            </div>
-        <% } %>
+        <p>Nutrition Plan Optimized for Your Training Style</p>
+        <div class="user-badges">
+            <% if (user && user.workout_type) { %>
+                <div class="goal-badge">
+                    <i class="fas fa-dumbbell"></i>
+                    Training: <%= user.workout_type %>
+                </div>
+            <% } %>
+            <% if (user && user.fitness_goal) { %>
+                <div class="goal-badge">
+                    <i class="fas fa-bullseye"></i>
+                    Goal: <%= user.fitness_goal %>
+                </div>
+            <% } %>
+        </div>
     </div>
 
     <!-- Main Content -->
     <div class="container">
-        <!-- Personalized Nutrition Overview -->
+        <!-- Quick Nutrition Overview -->
         <div class="section">
-            <h2>Your Nutrition Dashboard</h2>
-            <div class="user-metrics-grid">
-                <div class="metric-card">
-                    <h3>Recommended Daily Intake</h3>
-                    <div class="metric-content">
-                        <% 
-                        // Calculate personalized macros based on user data
-                        let proteinRec = '1.6-2.2g/kg';
-                        let carbRec = '3-5g/kg';
-                        let fatRec = '0.8-1.2g/kg';
-                        let calorieRec = 'Maintenance';
+            <h2>Your Nutrition Blueprint</h2>
+            <div class="quick-stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Energy Focus</h3>
+                        <p>
+                            <% if (user && user.workout_type) { 
+                                switch(user.workout_type.toLowerCase()) {
+                                    case 'weight loss':
+                                    case 'hiit':
+                                        %>Calorie Deficit & Fat Burning<%;
+                                        break;
+                                    case 'bodybuilding':
+                                        %>Muscle Growth & Recovery<%;
+                                        break;
+                                    case 'strength':
+                                        %>Power Output & CNS Recovery<%;
+                                        break;
+                                    case 'cardio':
+                                        %>Endurance & Glycogen Storage<%;
+                                        break;
+                                    case 'calisthenics':
+                                        %>Strength-to-Weight Ratio<%;
+                                        break;
+                                    default:
+                                        %>Balanced Energy & Performance<%;
+                                }
+                            } else { %>
+                                Balanced Energy & Performance
+                            <% } %>
+                        </p>
+                    </div>
+                </div>
 
-                        if (user && user.fitness_goal) {
-                            switch(user.fitness_goal.toLowerCase()) {
-                                case 'weight loss':
-                                    proteinRec = '2.0-2.4g/kg';
-                                    carbRec = '2-4g/kg';
-                                    fatRec = '0.8-1.2g/kg';
-                                    calorieRec = 'Deficit (-300-500 kcal)';
-                                    break;
-                                case 'muscle gain':
-                                    proteinRec = '1.6-2.2g/kg';
-                                    carbRec = '4-7g/kg';
-                                    fatRec = '0.5-1.5g/kg';
-                                    calorieRec = 'Surplus (+200-500 kcal)';
-                                    break;
-                                case 'strength':
-                                    proteinRec = '1.6-2.0g/kg';
-                                    carbRec = '3-5g/kg';
-                                    fatRec = '0.8-1.5g/kg';
-                                    calorieRec = 'Maintenance';
-                                    break;
-                            }
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-apple-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Macro Priority</h3>
+                        <p>
+                            <% if (user && user.workout_type) { 
+                                switch(user.workout_type.toLowerCase()) {
+                                    case 'weight loss':
+                                    case 'hiit':
+                                        %>High Protein, Moderate Carbs<%;
+                                        break;
+                                    case 'bodybuilding':
+                                        %>High Protein & Carbs<%;
+                                        break;
+                                    case 'strength':
+                                        %>Balanced Macros, Timing Focus<%;
+                                        break;
+                                    case 'cardio':
+                                        %>High Carbs, Moderate Protein<%;
+                                        break;
+                                    case 'calisthenics':
+                                        %>Lean Protein, Smart Carbs<%;
+                                        break;
+                                    default:
+                                        %>Balanced Macronutrients<%;
+                                }
+                            } else { %>
+                                Balanced Macronutrients
+                            <% } %>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Meal Timing</h3>
+                        <p>
+                            <% if (user && user.workout_type) { 
+                                switch(user.workout_type.toLowerCase()) {
+                                    case 'weight loss':
+                                    case 'hiit':
+                                        %>Intermittent Fasting Friendly<%;
+                                        break;
+                                    case 'bodybuilding':
+                                        %>Frequent Meals (5-6x daily)<%;
+                                        break;
+                                    case 'strength':
+                                        %>Pre/Post Workout Focus<%;
+                                        break;
+                                    case 'cardio':
+                                        %>Carb Timing Around Sessions<%;
+                                        break;
+                                    default:
+                                        %>Regular Meal Pattern<%;
+                                }
+                            } else { %>
+                                Regular Meal Pattern
+                            <% } %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout-Specific Nutrition Guide -->
+        <div class="section">
+            <h2>Nutrition for <%= user && user.workout_type ? user.workout_type : 'Your Training' %></h2>
+            
+            <div class="workout-nutrition-grid">
+                <!-- HIIT & Weight Loss -->
+                <% if (!user || !user.workout_type || ['weight loss', 'hiit'].includes(user.workout_type.toLowerCase())) { %>
+                <div class="workout-plan-card">
+                    <div class="workout-header hiit">
+                        <h3><i class="fas fa-fire"></i> HIIT & Weight Loss</h3>
+                        <span class="intensity-tag">High Intensity</span>
+                    </div>
+                    <div class="nutrition-focus">
+                        <h4>Nutrition Focus</h4>
+                        <ul>
+                            <li>Calorie deficit (300-500kcal below maintenance)</li>
+                            <li>High protein intake (2.0-2.4g/kg)</li>
+                            <li>Strategic carb timing around workouts</li>
+                            <li>Emphasis on fiber and volume eating</li>
+                        </ul>
+                    </div>
+                    <div class="food-examples">
+                        <h4>Optimal Foods</h4>
+                        <div class="food-grid">
+                            <span class="food-item">Chicken Breast</span>
+                            <span class="food-item">Greek Yogurt</span>
+                            <span class="food-item">Leafy Greens</span>
+                            <span class="food-item">Berries</span>
+                            <span class="food-item">Egg Whites</span>
+                            <span class="food-item">Sweet Potato</span>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Bodybuilding -->
+                <% if (user && user.workout_type && ['bodybuilding', 'muscle gain'].includes(user.workout_type.toLowerCase())) { %>
+                <div class="workout-plan-card">
+                    <div class="workout-header bodybuilding">
+                        <h3><i class="fas fa-weight-hanging"></i> Bodybuilding</h3>
+                        <span class="intensity-tag">Mass Building</span>
+                    </div>
+                    <div class="nutrition-focus">
+                        <h4>Nutrition Focus</h4>
+                        <ul>
+                            <li>Calorie surplus (300-500kcal above maintenance)</li>
+                            <li>High protein (1.8-2.4g/kg) for muscle repair</li>
+                            <li>Consistent carb intake throughout day</li>
+                            <li>Post-workout nutrition critical</li>
+                        </ul>
+                    </div>
+                    <div class="food-examples">
+                        <h4>Optimal Foods</h4>
+                        <div class="food-grid">
+                            <span class="food-item">Lean Beef</span>
+                            <span class="food-item">Brown Rice</span>
+                            <span class="food-item">Cottage Cheese</span>
+                            <span class="food-item">Oats</span>
+                            <span class="food-item">Salmon</span>
+                            <span class="food-item">Quinoa</span>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Strength Training -->
+                <% if (user && user.workout_type && ['strength', 'powerlifting'].includes(user.workout_type.toLowerCase())) { %>
+                <div class="workout-plan-card">
+                    <div class="workout-header strength">
+                        <h3><i class="fas fa-bolt"></i> Strength Training</h3>
+                        <span class="intensity-tag">Power Focus</span>
+                    </div>
+                    <div class="nutrition-focus">
+                        <h4>Nutrition Focus</h4>
+                        <ul>
+                            <li>Maintenance calories or slight surplus</li>
+                            <li>Moderate-high protein (1.6-2.2g/kg)</li>
+                            <li>Carb-focused pre-workout meals</li>
+                            <li>Adequate fats for hormone production</li>
+                        </ul>
+                    </div>
+                    <div class="food-examples">
+                        <h4>Optimal Foods</h4>
+                        <div class="food-grid">
+                            <span class="food-item">Steak</span>
+                            <span class="food-item">Potatoes</span>
+                            <span class="food-item">Whole Eggs</span>
+                            <span class="food-item">Avocado</span>
+                            <span class="food-item">Whole Wheat Pasta</span>
+                            <span class="food-item">Nuts</span>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Cardio & Endurance -->
+                <% if (user && user.workout_type && ['cardio', 'endurance'].includes(user.workout_type.toLowerCase())) { %>
+                <div class="workout-plan-card">
+                    <div class="workout-header cardio">
+                        <h3><i class="fas fa-running"></i> Cardio & Endurance</h3>
+                        <span class="intensity-tag">Stamina Focus</span>
+                    </div>
+                    <div class="nutrition-focus">
+                        <h4>Nutrition Focus</h4>
+                        <ul>
+                            <li>Higher carbohydrate intake (5-8g/kg)</li>
+                            <li>Moderate protein (1.4-1.8g/kg)</li>
+                            <li>Emphasis on glycogen replenishment</li>
+                            <li>Electrolyte and hydration management</li>
+                        </ul>
+                    </div>
+                    <div class="food-examples">
+                        <h4>Optimal Foods</h4>
+                        <div class="food-grid">
+                            <span class="food-item">Bananas</span>
+                            <span class="food-item">Oatmeal</span>
+                            <span class="food-item">Chicken</span>
+                            <span class="food-item">Energy Gels</span>
+                            <span class="food-item">Sports Drinks</span>
+                            <span class="food-item">Whole Grain Bread</span>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Calisthenics -->
+                <% if (user && user.workout_type && ['calisthenics'].includes(user.workout_type.toLowerCase())) { %>
+                <div class="workout-plan-card">
+                    <div class="workout-header calisthenics">
+                        <h3><i class="fas fa-user"></i> Calisthenics</h3>
+                        <span class="intensity-tag">Body Control</span>
+                    </div>
+                    <div class="nutrition-focus">
+                        <h4>Nutrition Focus</h4>
+                        <ul>
+                            <li>Maintenance calories for optimal strength-to-weight</li>
+                            <li>Moderate protein (1.6-2.0g/kg)</li>
+                            <li>Complex carbs for sustained energy</li>
+                            <li>Anti-inflammatory foods for joint health</li>
+                        </ul>
+                    </div>
+                    <div class="food-examples">
+                        <h4>Optimal Foods</h4>
+                        <div class="food-grid">
+                            <span class="food-item">Fish</span>
+                            <span class="food-item">Brown Rice</span>
+                            <span class="food-item">Nuts & Seeds</span>
+                            <span class="food-item">Berries</span>
+                            <span class="food-item">Leafy Greens</span>
+                            <span class="food-item">Sweet Potatoes</span>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- General Training (Fallback) -->
+                <% if (!user || !user.workout_type) { %>
+                <div class="workout-plan-card">
+                    <div class="workout-header general">
+                        <h3><i class="fas fa-dumbbell"></i> General Fitness</h3>
+                        <span class="intensity-tag">Balanced Approach</span>
+                    </div>
+                    <div class="nutrition-focus">
+                        <h4>Nutrition Focus</h4>
+                        <ul>
+                            <li>Maintenance calories</li>
+                            <li>Balanced macronutrients</li>
+                            <li>Protein: 1.6-2.0g/kg bodyweight</li>
+                            <li>Emphasis on whole foods and variety</li>
+                        </ul>
+                    </div>
+                    <div class="food-examples">
+                        <h4>Optimal Foods</h4>
+                        <div class="food-grid">
+                            <span class="food-item">Chicken</span>
+                            <span class="food-item">Rice</span>
+                            <span class="food-item">Vegetables</span>
+                            <span class="food-item">Fruits</span>
+                            <span class="food-item">Eggs</span>
+                            <span class="food-item">Whole Grains</span>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Macronutrient Calculator -->
+        <div class="section">
+            <h2>Your Macronutrient Targets</h2>
+            <div class="macro-calculator">
+                <div class="macro-results">
+                    <% 
+                    let weight = user && user.weight ? user.weight : 70;
+                    let protein, carbs, fat, calories;
+                    
+                    if (user && user.workout_type) {
+                        switch(user.workout_type.toLowerCase()) {
+                            case 'weight loss':
+                            case 'hiit':
+                                protein = Math.round(weight * 2.2);
+                                carbs = Math.round(weight * 3);
+                                fat = Math.round(weight * 0.8);
+                                break;
+                            case 'bodybuilding':
+                                protein = Math.round(weight * 2.2);
+                                carbs = Math.round(weight * 5);
+                                fat = Math.round(weight * 1.0);
+                                break;
+                            case 'strength':
+                                protein = Math.round(weight * 1.8);
+                                carbs = Math.round(weight * 4);
+                                fat = Math.round(weight * 1.2);
+                                break;
+                            case 'cardio':
+                                protein = Math.round(weight * 1.6);
+                                carbs = Math.round(weight * 6);
+                                fat = Math.round(weight * 1.2);
+                                break;
+                            case 'calisthenics':
+                                protein = Math.round(weight * 1.8);
+                                carbs = Math.round(weight * 4);
+                                fat = Math.round(weight * 1.0);
+                                break;
+                            default:
+                                protein = Math.round(weight * 1.8);
+                                carbs = Math.round(weight * 4);
+                                fat = Math.round(weight * 1.0);
                         }
-                        %>
-                        <div class="macro-item">
-                            <span class="macro-label">Protein:</span>
-                            <span class="macro-value"><%= proteinRec %></span>
+                    } else {
+                        protein = Math.round(weight * 1.8);
+                        carbs = Math.round(weight * 4);
+                        fat = Math.round(weight * 1.0);
+                    }
+                    
+                    calories = (protein * 4) + (carbs * 4) + (fat * 9);
+                    %>
+                    
+                    <div class="macro-card protein">
+                        <div class="macro-icon">
+                            <i class="fas fa-drumstick-bite"></i>
                         </div>
-                        <div class="macro-item">
-                            <span class="macro-label">Carbs:</span>
-                            <span class="macro-value"><%= carbRec %></span>
+                        <div class="macro-info">
+                            <h3>Protein</h3>
+                            <div class="macro-amount"><%= protein %>g</div>
+                            <div class="macro-percentage"><%= Math.round((protein * 4) / calories * 100) %>% of calories</div>
                         </div>
-                        <div class="macro-item">
-                            <span class="macro-label">Fats:</span>
-                            <span class="macro-value"><%= fatRec %></span>
+                    </div>
+
+                    <div class="macro-card carbs">
+                        <div class="macro-icon">
+                            <i class="fas fa-bread-slice"></i>
                         </div>
-                        <div class="macro-item highlight">
-                            <span class="macro-label">Calories:</span>
-                            <span class="macro-value"><%= calorieRec %></span>
+                        <div class="macro-info">
+                            <h3>Carbohydrates</h3>
+                            <div class="macro-amount"><%= carbs %>g</div>
+                            <div class="macro-percentage"><%= Math.round((carbs * 4) / calories * 100) %>% of calories</div>
+                        </div>
+                    </div>
+
+                    <div class="macro-card fat">
+                        <div class="macro-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <div class="macro-info">
+                            <h3>Fat</h3>
+                            <div class="macro-amount"><%= fat %>g</div>
+                            <div class="macro-percentage"><%= Math.round((fat * 9) / calories * 100) %>% of calories</div>
+                        </div>
+                    </div>
+
+                    <div class="macro-card total">
+                        <div class="macro-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="macro-info">
+                            <h3>Total Calories</h3>
+                            <div class="macro-amount"><%= calories %> kcal</div>
+                            <div class="macro-note">Daily Target</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="macro-note">
+                    <p><i class="fas fa-info-circle"></i> Based on your <%= user && user.workout_type ? user.workout_type.toLowerCase() : 'general' %> training style and estimated weight of <%= weight %>kg</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Supplement Guide -->
+        <div class="section">
+            <h2>Training-Specific Supplements</h2>
+            <div class="supplements-grid">
+                <div class="supplement-category">
+                    <h3>Essential for All</h3>
+                    <div class="supplement-list">
+                        <div class="supplement-item">
+                            <strong>Whey Protein</strong>
+                            <span>Muscle recovery and daily protein goals</span>
+                        </div>
+                        <div class="supplement-item">
+                            <strong>Creatine Monohydrate</strong>
+                            <span>Strength and power output (3-5g daily)</span>
+                        </div>
+                        <div class="supplement-item">
+                            <strong>Multivitamin</strong>
+                            <span>General health and nutrient insurance</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="metric-card">
-                    <h3>Your Training Focus</h3>
-                    <div class="metric-content">
-                        <% 
-                        let trainingFocus = 'General Fitness';
-                        let nutritionFocus = 'Balanced Nutrition';
-                        
-                        if (user && user.fitness_goal) {
-                            switch(user.fitness_goal.toLowerCase()) {
+                <div class="supplement-category">
+                    <h3>For Your Training Style</h3>
+                    <div class="supplement-list">
+                        <% if (user && user.workout_type) { 
+                            switch(user.workout_type.toLowerCase()) {
                                 case 'weight loss':
-                                    trainingFocus = 'Fat Loss & Conditioning';
-                                    nutritionFocus = 'Calorie Deficit & Protein Priority';
-                                    break;
-                                case 'muscle gain':
-                                    trainingFocus = 'Hypertrophy & Volume';
-                                    nutritionFocus = 'Calorie Surplus & Recovery';
-                                    break;
-                                case 'strength':
-                                    trainingFocus = 'Strength & Power';
-                                    nutritionFocus = 'Performance Fueling';
-                                    break;
-                            }
-                        }
-                        %>
-                        <div class="focus-item">
-                            <i class="fas fa-dumbbell"></i>
-                            <span><%= trainingFocus %></span>
-                        </div>
-                        <div class="focus-item">
-                            <i class="fas fa-apple-alt"></i>
-                            <span><%= nutritionFocus %></span>
-                        </div>
-                        <% if (user && user.experience_level) { %>
-                        <div class="focus-item">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Level: <%= user.experience_level %></span>
-                        </div>
+                                case 'hiit': %>
+                                    <div class="supplement-item">
+                                        <strong>Caffeine</strong>
+                                        <span>Pre-workout energy and fat burning</span>
+                                    </div>
+                                    <div class="supplement-item">
+                                        <strong>Green Tea Extract</strong>
+                                        <span>Metabolic support and antioxidant</span>
+                                    </div>
+                                    <%; break;
+                                case 'bodybuilding': %>
+                                    <div class="supplement-item">
+                                        <strong>Beta-Alanine</strong>
+                                        <span>Muscle endurance during volume training</span>
+                                    </div>
+                                    <div class="supplement-item">
+                                        <strong>BCAAs</strong>
+                                        <span>Intra-workout muscle preservation</span>
+                                    </div>
+                                    <%; break;
+                                case 'strength': %>
+                                    <div class="supplement-item">
+                                        <strong>Beta-Alanine</strong>
+                                        <span>High-intensity performance support</span>
+                                    </div>
+                                    <div class="supplement-item">
+                                        <strong>Citrulline Malate</strong>
+                                        <span>Blood flow and power output</span>
+                                    </div>
+                                    <%; break;
+                                case 'cardio': %>
+                                    <div class="supplement-item">
+                                        <strong>Electrolytes</strong>
+                                        <span>Hydration during long sessions</span>
+                                    </div>
+                                    <div class="supplement-item">
+                                        <strong>BCAAs</strong>
+                                        <span>Muscle preservation during endurance</span>
+                                    </div>
+                                    <%; break;
+                                case 'calisthenics': %>
+                                    <div class="supplement-item">
+                                        <strong>Omega-3 Fish Oil</strong>
+                                        <span>Joint health and inflammation</span>
+                                    </div>
+                                    <div class="supplement-item">
+                                        <strong>Vitamin D</strong>
+                                        <span>Bone strength and immune function</span>
+                                    </div>
+                                    <%; break;
+                                default: %>
+                                    <div class="supplement-item">
+                                        <strong>Vitamin D</strong>
+                                        <span>Overall health and performance</span>
+                                    </div>
+                                    <div class="supplement-item">
+                                        <strong>Omega-3</strong>
+                                        <span>Recovery and inflammation control</span>
+                                    </div>
+                            <% }
+                        } else { %>
+                            <div class="supplement-item">
+                                <strong>Vitamin D</strong>
+                                <span>Overall health and performance</span>
+                            </div>
+                            <div class="supplement-item">
+                                <strong>Omega-3</strong>
+                                <span>Recovery and inflammation control</span>
+                            </div>
                         <% } %>
                     </div>
                 </div>
-
-                <div class="metric-card">
-                    <h3>Daily Hydration Target</h3>
-                    <div class="metric-content">
-                        <div class="hydration-target">
-                            <i class="fas fa-tint"></i>
-                            <span>3-4 Liters</span>
-                        </div>
-                        <p class="hydration-note">Adjust based on training intensity and environment</p>
-                        <div class="hydration-tips">
-                            <h4>Hydration Tips:</h4>
-                            <ul>
-                                <li>500ml upon waking</li>
-                                <li>250ml every 2 hours</li>
-                                <li>Extra 500ml per hour of training</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
-        <!-- Goal-Specific Nutrition Strategies -->
+        <!-- Quick Tips Section -->
         <div class="section">
-            <h2>Nutrition Strategy for <%= user && user.fitness_goal ? user.fitness_goal : 'Your Goals' %></h2>
-            
-            <div class="nutrition-grid">
-                <% if (!user || !user.fitness_goal || user.fitness_goal.toLowerCase() === 'muscle gain') { %>
-                <!-- Muscle Gain Focus -->
-                <div class="nutrition-card strategy-card">
-                    <h3><i class="fas fa-weight-hanging"></i> Hypertrophy Nutrition</h3>
-                    <div class="strategy-highlights">
-                        <div class="highlight-item">
-                            <strong>Caloric Surplus:</strong> +200-500 kcal daily
-                        </div>
-                        <div class="highlight-item">
-                            <strong>Protein Priority:</strong> 1.6-2.2g/kg bodyweight
-                        </div>
-                        <div class="highlight-item">
-                            <strong>Carb Timing:</strong> Higher around workouts
-                        </div>
+            <h2>Quick Nutrition Tips</h2>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-hourglass-half"></i>
                     </div>
-                    <div class="meal-timing">
-                        <h4>Optimal Meal Timing:</h4>
-                        <ul>
-                            <li>Pre-workout: 30-60g carbs + 20-30g protein (1-2 hours before)</li>
-                            <li>Post-workout: 40-80g carbs + 25-40g protein (within 2 hours)</li>
-                            <li>Evenly distribute remaining protein across 3-4 meals</li>
-                        </ul>
-                    </div>
-                </div>
-                <% } %>
-
-                <% if (user && user.fitness_goal && user.fitness_goal.toLowerCase() === 'weight loss') { %>
-                <!-- Weight Loss Focus -->
-                <div class="nutrition-card strategy-card">
-                    <h3><i class="fas fa-fire"></i> Fat Loss Nutrition</h3>
-                    <div class="strategy-highlights">
-                        <div class="highlight-item">
-                            <strong>Caloric Deficit:</strong> -300-500 kcal daily
-                        </div>
-                        <div class="highlight-item">
-                            <strong>High Protein:</strong> 2.0-2.4g/kg to preserve muscle
-                        </div>
-                        <div class="highlight-item">
-                            <strong>Fiber Focus:</strong> 30-40g daily for satiety
-                        </div>
-                    </div>
-                    <div class="meal-timing">
-                        <h4>Strategic Eating Pattern:</h4>
-                        <ul>
-                            <li>Protein with every meal (30-40g)</li>
-                            <li>Larger meals before and after training</li>
-                            <li>Consider time-restricted eating (14-16 hour fasts)</li>
-                            <li>Focus on nutrient-dense, low-calorie foods</li>
-                        </ul>
-                    </div>
-                </div>
-                <% } %>
-
-                <% if (user && user.fitness_goal && user.fitness_goal.toLowerCase() === 'strength') { %>
-                <!-- Strength Focus -->
-                <div class="nutrition-card strategy-card">
-                    <h3><i class="fas fa-bolt"></i> Strength Performance Nutrition</h3>
-                    <div class="strategy-highlights">
-                        <div class="highlight-item">
-                            <strong>Maintenance Calories:</strong> Focus on performance
-                        </div>
-                        <div class="highlight-item">
-                            <strong>Adequate Protein:</strong> 1.6-2.0g/kg for recovery
-                        </div>
-                        <div class="highlight-item">
-                            <strong>Strategic Carbs:</strong> Around training sessions
-                        </div>
-                    </div>
-                    <div class="meal-timing">
-                        <h4>Training Day Nutrition:</h4>
-                        <ul>
-                            <li>Pre-workout: Focus on easily digestible carbs</li>
-                            <li>Intra-workout: BCAAs or electrolytes if needed</li>
-                            <li>Post-workout: Rapidly digestible protein + carbs</li>
-                            <li>Emphasize recovery nutrition between sessions</li>
-                        </ul>
-                    </div>
-                </div>
-                <% } %>
-
-                <!-- Supplement Recommendations -->
-                <div class="nutrition-card supplement-recs">
-                    <h3><i class="fas fa-capsules"></i> Recommended Supplements</h3>
-                    <div class="supplement-list">
-                        <div class="supplement-item essential">
-                            <h4>Essential</h4>
-                            <ul>
-                                <li>
-                                    <strong>Creatine Monohydrate:</strong> 3-5g daily
-                                    <span class="benefit">Strength & power output</span>
-                                </li>
-                                <li>
-                                    <strong>Whey Protein:</strong> As needed for protein targets
-                                    <span class="benefit">Muscle recovery</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="supplement-item conditional">
-                            <h4>Conditional</h4>
-                            <ul>
-                                <% if (user && user.fitness_goal && user.fitness_goal.toLowerCase() === 'weight loss') { %>
-                                <li>
-                                    <strong>Caffeine:</strong> Pre-workout
-                                    <span class="benefit">Performance & fat oxidation</span>
-                                </li>
-                                <% } %>
-                                <li>
-                                    <strong>Vitamin D:</strong> 1000-2000 IU daily
-                                    <span class="benefit">Immune function & bone health</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Science-Based Nutrition Section -->
-        <div class="section">
-            <h2>Evidence-Based Nutrition Principles</h2>
-            
-            <div class="nutrition-grid">
-                <div class="nutrition-card research-card">
-                    <h3>Protein Distribution</h3>
-                    <p>Research shows distributing protein intake evenly throughout the day (20-40g per meal) maximizes muscle protein synthesis.</p>
-                    <div class="research-link">
-                        <i class="fas fa-file-alt"></i>
-                        <a href="https://pubmed.ncbi.nlm.nih.gov/24257722/" target="_blank">Mamerow et al. (2014)</a>
-                    </div>
-                    <div class="personal-application">
-                        <strong>Your Application:</strong> Aim for 4-6 protein-rich meals spaced 3-4 hours apart
-                    </div>
+                    <h3>Timing Matters</h3>
+                    <p>Eat protein-rich meal within 2 hours after training for optimal recovery</p>
                 </div>
 
-                <div class="nutrition-card research-card">
-                    <h3>Carbohydrate Timing</h3>
-                    <p>Strategic carb intake around training sessions optimizes performance and recovery while maintaining metabolic flexibility.</p>
-                    <div class="research-link">
-                        <i class="fas fa-file-alt"></i>
-                        <a href="https://pubmed.ncbi.nlm.nih.gov/29453741/" target="_blank">Impey et al. (2018)</a>
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-tint"></i>
                     </div>
-                    <div class="personal-application">
-                        <strong>Your Application:</strong> Consume majority of daily carbs before and after training
-                    </div>
+                    <h3>Stay Hydrated</h3>
+                    <p>Drink 3-4 liters of water daily, more if you're training intensely</p>
                 </div>
 
-                <div class="nutrition-card research-card">
-                    <h3>Hydration & Performance</h3>
-                    <p>Even mild dehydration (2% body weight) can significantly impair strength, power, and endurance performance.</p>
-                    <div class="research-link">
-                        <i class="fas fa-file-alt"></i>
-                        <a href="https://pubmed.ncbi.nlm.nih.gov/28935558/" target="_blank">Judge et al. (2016)</a>
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-utensils"></i>
                     </div>
-                    <div class="personal-application">
-                        <strong>Your Application:</strong> Monitor urine color and drink consistently throughout day
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Member-Exclusive Resources -->
-        <div class="section membership-section <%= user && user.membership ? user.membership.toLowerCase() : 'basic' %>-tier">
-            <h2>
-                <i class="fas fa-crown"></i>
-                <%= user && user.membership ? user.membership : 'Basic' %> Member Resources
-            </h2>
-            
-            <div class="nutrition-grid">
-                <% if (user && user.membership && user.membership.toLowerCase() !== 'basic') { %>
-                <!-- Premium Content -->
-                <div class="nutrition-card premium-feature">
-                    <h3>Personalized Macro Calculator</h3>
-                    <p>Your custom macro breakdown based on your body composition and training schedule.</p>
-                    <div class="premium-content">
-                        <% 
-                        // Sample personalized calculation
-                        let weight = user.weight || 70; // default weight
-                        let calculatedProtein = Math.round(weight * 1.8);
-                        let calculatedCarbs = Math.round(weight * 4);
-                        let calculatedFat = Math.round(weight * 0.9);
-                        let calculatedCalories = calculatedProtein * 4 + calculatedCarbs * 4 + calculatedFat * 9;
-                        %>
-                        <div class="macro-breakdown">
-                            <div class="macro-detail">
-                                <span>Protein: <%= calculatedProtein %>g</span>
-                                <span><%= Math.round(calculatedProtein * 4 / calculatedCalories * 100) %>%</span>
-                            </div>
-                            <div class="macro-detail">
-                                <span>Carbs: <%= calculatedCarbs %>g</span>
-                                <span><%= Math.round(calculatedCarbs * 4 / calculatedCalories * 100) %>%</span>
-                            </div>
-                            <div class="macro-detail">
-                                <span>Fat: <%= calculatedFat %>g</span>
-                                <span><%= Math.round(calculatedFat * 9 / calculatedCalories * 100) %>%</span>
-                            </div>
-                            <div class="total-calories">
-                                Total: <%= calculatedCalories %> kcal
-                            </div>
-                        </div>
-                    </div>
+                    <h3>Whole Foods First</h3>
+                    <p>Focus on unprocessed foods - they provide better nutrition and satiety</p>
                 </div>
 
-                <div class="nutrition-card premium-feature">
-                    <h3>Advanced Meal Timing</h3>
-                    <p>Optimize your meal schedule based on your training times and personal preferences.</p>
-                    <div class="premium-content">
-                        <div class="meal-schedule">
-                            <div class="meal-time">
-                                <strong>7:00 AM</strong> - Pre-workout meal (if training AM)
-                            </div>
-                            <div class="meal-time">
-                                <strong>8:00 AM</strong> - Training session
-                            </div>
-                            <div class="meal-time">
-                                <strong>9:30 AM</strong> - Post-workout nutrition
-                            </div>
-                            <div class="meal-time">
-                                <strong>12:30 PM</strong> - Lunch
-                            </div>
-                            <div class="meal-time">
-                                <strong>4:00 PM</strong> - Afternoon snack
-                            </div>
-                            <div class="meal-time">
-                                <strong>7:00 PM</strong> - Dinner
-                            </div>
-                        </div>
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-balance-scale"></i>
                     </div>
-                </div>
-                <% } else { %>
-                <!-- Basic Member Content -->
-                <div class="nutrition-card">
-                    <h3>Upgrade for Personalized Plans</h3>
-                    <p>Unlock custom macro calculations, advanced meal timing, and personalized supplement stacks.</p>
-                    <div class="upgrade-cta">
-                        <a href="/membership" class="upgrade-button">
-                            <i class="fas fa-crown"></i>
-                            Upgrade Membership
-                        </a>
-                    </div>
-                </div>
-                <% } %>
-
-                <div class="nutrition-card">
-                    <h3>Weekly Nutrition Challenge</h3>
-                    <p>This week's focus: Increase vegetable intake to 5+ servings daily</p>
-                    <div class="challenge-tracker">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 30%;"></div>
-                        </div>
-                        <span class="progress-text">3/5 days completed</span>
-                    </div>
+                    <h3>Consistency Over Perfection</h3>
+                    <p>Stick to your plan 80% of the time for sustainable results</p>
                 </div>
             </div>
         </div>
@@ -517,23 +685,14 @@
                 document.getElementById('sideNavbar').classList.remove('open');
             });
 
-            // Progress tracking for weekly challenge
-            const challengeDays = document.querySelectorAll('.challenge-day');
-            challengeDays.forEach(day => {
-                day.addEventListener('click', function() {
-                    this.classList.toggle('completed');
-                    updateProgress();
+            // Simple macro calculator interaction
+            const macroCards = document.querySelectorAll('.macro-card');
+            macroCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    macroCards.forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
                 });
             });
-
-            function updateProgress() {
-                const completed = document.querySelectorAll('.challenge-day.completed').length;
-                const total = challengeDays.length;
-                const progress = (completed / total) * 100;
-                
-                document.querySelector('.progress-fill').style.width = `${progress}%`;
-                document.querySelector('.progress-text').textContent = `${completed}/${total} days completed`;
-            }
         });
     </script>
 </body>
