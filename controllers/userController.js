@@ -495,8 +495,6 @@ const signupUser = async (req, res) => {
     }
 };
 
-// Update the getUserDashboard function in userController.js to fetch nutrition data:
-
 // Get user dashboard based on membership type
 const getUserDashboard = async (req, res, membershipCode) => {
     try {
@@ -528,6 +526,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
             default:
                 dashboardTemplate = 'userdashboard_b';
         }
+        
         
         // Get last 5 workouts
         const recentWorkouts = await WorkoutHistory.find({ userId: userId })
@@ -625,6 +624,107 @@ const getUserDashboard = async (req, res, membershipCode) => {
                 };
             }
         }
+
+        // FIXED: Get today's workout from weekly schedule
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
+
+        const currentWeekWorkout = await WorkoutHistory.findOne({
+            userId: userId,
+            date: { $gte: weekStart, $lt: weekEnd }
+        }).lean();
+
+
+        
+
+        // Extract today's exercises from weekly schedule
+        let todayExercises = [];
+        let todayWorkoutData = {
+            name: 'No Workout Scheduled',
+            exercises: [],
+            progress: 0,
+            completed: false,
+            completedExercises: 0,
+            totalExercises: 0,
+            duration: 0,
+            workoutPlanId: null
+        };
+
+        if (currentWeekWorkout && currentWeekWorkout.exercises) {
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const todayDayName = dayNames[today.getDay()];
+            
+            // Filter exercises for today
+            todayExercises = currentWeekWorkout.exercises.filter(exercise => 
+                exercise.day === todayDayName
+            );
+            
+            if (todayExercises.length > 0) {
+                const completedExercises = todayExercises.filter(ex => ex.completed).length;
+                const progress = todayExercises.length > 0 ? Math.round((completedExercises / todayExercises.length) * 100) : 0;
+                
+                todayWorkoutData = {
+                    name: `${todayDayName} Workout`,
+                    exercises: todayExercises,
+                    progress: progress,
+                    completed: completedExercises === todayExercises.length,
+                    completedExercises: completedExercises,
+                    totalExercises: todayExercises.length,
+                    duration: todayExercises.reduce((total, ex) => total + (ex.duration || 45), 0),
+                    workoutPlanId: currentWeekWorkout._id
+                };
+            }
+        }
+
+        // FIXED: Update exercise progress with actual workout data
+        let exerciseProgress = [
+            { name: 'Bench Press', progress: 75, currentWeight: 80, goalWeight: 100 },
+            { name: 'Squat', progress: 60, currentWeight: 90, goalWeight: 120 },
+            { name: 'Deadlift', progress: 85, currentWeight: 110, goalWeight: 130 }
+        ];
+
+        // Use actual workout data if available
+        if (currentWeekWorkout && currentWeekWorkout.exercises) {
+            const exercises = currentWeekWorkout.exercises;
+            
+            // Update Bench Press progress
+            const benchPressExercises = exercises.filter(ex => ex.name && ex.name.toLowerCase().includes('bench'));
+            if (benchPressExercises.length > 0) {
+                const maxBench = Math.max(...benchPressExercises.map(ex => ex.weight || 0));
+                exerciseProgress[0].currentWeight = maxBench;
+                exerciseProgress[0].progress = Math.round((maxBench / 100) * 100);
+            }
+            
+            // Update Squat progress
+            const squatExercises = exercises.filter(ex => ex.name && ex.name.toLowerCase().includes('squat'));
+            if (squatExercises.length > 0) {
+                const maxSquat = Math.max(...squatExercises.map(ex => ex.weight || 0));
+                exerciseProgress[1].currentWeight = maxSquat;
+                exerciseProgress[1].progress = Math.round((maxSquat / 120) * 100);
+            }
+            
+            // Update Deadlift progress
+            const deadliftExercises = exercises.filter(ex => ex.name && ex.name.toLowerCase().includes('deadlift'));
+            if (deadliftExercises.length > 0) {
+                const maxDeadlift = Math.max(...deadliftExercises.map(ex => ex.weight || 0));
+                exerciseProgress[2].currentWeight = maxDeadlift;
+                exerciseProgress[2].progress = Math.round((maxDeadlift / 130) * 100);
+            }
+        }
+
+        // Add this debug section after the currentWeekWorkout query:
+console.log('=== DEBUG WORKOUT DATA ===');
+console.log('Today:', today);
+console.log('Today Day Name:', dayNames[today.getDay()]);
+console.log('Week Start:', weekStart);
+console.log('Week End:', weekEnd);
+console.log('Current Week Workout Found:', !!currentWeekWorkout);
+if (currentWeekWorkout) {
+    console.log('Workout Exercises:', currentWeekWorkout.exercises);
+    console.log('Today Exercises:', todayExercises);
+}
         
         // Common data for all membership types
         const commonData = {
@@ -635,22 +735,8 @@ const getUserDashboard = async (req, res, membershipCode) => {
                 completed: recentWorkouts.filter(w => w.completed).length,
                 total: recentWorkouts.length
             },
-            todayWorkout: recentWorkouts.length > 0 
-                ? {
-                    exercises: recentWorkouts[0].exercises || [],
-                    progress: recentWorkouts[0].progress || 0,
-                    completed: recentWorkouts[0].completed || false,
-                    completedExercises: recentWorkouts[0].exercises ? recentWorkouts[0].exercises.filter(e => e.completed).length : 0,
-                    totalExercises: recentWorkouts[0].exercises ? recentWorkouts[0].exercises.length : 0,
-                    duration: recentWorkouts[0].exercises ? recentWorkouts[0].exercises.reduce((total, ex) => total + (ex.duration || 0), 45) : 45,
-                    workoutPlanId: recentWorkouts[0]._id
-                } 
-                : { exercises: [], progress: 0, completedExercises: 0, totalExercises: 0, duration: 0 },
-            exerciseProgress: [
-                { name: 'Bench Press', progress: 75, currentWeight: 80, goalWeight: 100 },
-                { name: 'Squat', progress: 60, currentWeight: 90, goalWeight: 120 },
-                { name: 'Deadlift', progress: 85, currentWeight: 110, goalWeight: 130 }
-            ],
+            todayWorkout: todayWorkoutData, // Use the fixed todayWorkoutData
+            exerciseProgress: exerciseProgress, // Use the updated exercise progress
 
             // added new membership info       REYNA
             membershipInfo: {
