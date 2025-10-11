@@ -319,7 +319,9 @@
                 <div class="membership-status-info">
                     <div class="status-item">
                         <span class="label">Current Status:</span>
-                        <span class="value status-<%= user.status.toLowerCase() %>">
+                        <span class="value status-<%= user && user.status ? user.status.toLowerCase() : 'active' %>">
+                            <%= user && user.status ? user.status : 'Active' %>
+                        </span>
                             <%= user.status %>
                         </span>
                     </div>

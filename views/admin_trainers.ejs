@@ -157,7 +157,7 @@
                             <tr>
                                 <td>
                                     <div class="user-info">
-                                        <div class="avatar"><%= trainer.name.charAt(0) %></div>
+                                        <div class="avatar"><%= trainer.name ? trainer.name.charAt(0) : "?" %></div>
                                         <span><%= trainer.name %></span>
                                     </div>
                                 </td>
