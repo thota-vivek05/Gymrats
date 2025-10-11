@@ -459,3 +459,68 @@ div .menu a {
                 transform: translateY(0);
             }
         }
+       /* Price Display Styles */
+.price-display {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 15px;
+    text-align: center;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    
+}
+
+.price-display:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #8A2BE2;
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.2);
+}
+
+.price-amount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #8A2BE2;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+}
+
+.save-info {
+    font-size: 0.9rem;
+    margin: 5px 0 0 0;
+    color: #4ecdc4;
+    font-weight: 600;
+}
+
+/* Style for when there's no selection */
+.price-display:not(.has-price) .price-amount {
+    color: #cccccc;
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+/* Animation for price updates */
+@keyframes priceUpdate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.price-update {
+    animation: priceUpdate 0.3s ease;
+}
+
+/* Responsive design for price display */
+@media (max-width: 768px) {
+    .price-display {
+        padding: 12px;
+    }
+    
+    .price-amount {
+        font-size: 1.3rem;
+    }
+    
+    .save-info {
+        font-size: 0.8rem;
+    }
+}

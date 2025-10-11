@@ -3,7 +3,9 @@ const User = require('../model/User');
 const WorkoutPlan = require('../model/WorkoutPlan');
 const WorkoutHistory = require('../model/WorkoutHistory');
 const NutritionHistory = require('../model/NutritionHistory');
-
+//brimstone
+const Membership = require('../model/Membership'); // Add this line
+//brimstone
 // for membership management           REYNA
 const Trainer = require('../model/Trainer');
 
@@ -62,6 +64,11 @@ const getUserProfile = async (req, res) => {
             console.log('User not found:', userId);
             return res.status(404).json({ error: 'User not found' });
         }
+        req.session.user.membershipDuration = {
+            months_remaining: user.membershipDuration.months_remaining,
+            end_date: user.membershipDuration.end_date,
+            auto_renew: user.membershipDuration.auto_renew
+        };
         
         // Fetch workout history and populate workoutPlanId
         const workoutHistoryData = await WorkoutHistory.find({ userId })
@@ -257,9 +264,434 @@ const getUserProfile = async (req, res) => {
     }
 };
 
-// REYNA
 
-// Add this function before module.exports
+const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        console.log('Login request received:', { email});
+
+        if (!email || !password) {
+            console.log('Validation failed: Missing fields');
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            console.log('User not found:', email);
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+        if (!isMatch) {
+            console.log('Password mismatch for:', email);
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+        //brimstone 1
+        // if (user.membershipType.toLowerCase() !== loginMembershipPlan.toLowerCase()) {
+        //     console.log('Membership plan mismatch:', { user: user.membershipType, input: loginMembershipPlan });
+        //     return res.status(400).json({ error: 'Selected membership plan does not match user membership' });
+        // }
+        // brimstone
+        if (!req.session) {
+            console.error('Session middleware not initialized');
+            return res.status(500).json({ error: 'Session not available. Please try again later.' });
+        }
+
+        req.session.user = {
+            id: user._id,
+            email: user.email,
+            full_name: user.full_name,
+            name: user.full_name,
+            membershipType: user.membershipType,
+            membership: user.membershipType.toLowerCase(),
+            phone: user.phone,
+            dob: user.dob,
+            gender: user.gender,
+            weight: user.weight,
+            height: user.height,
+            BMI: user.BMI,
+            status: user.status,
+            created_at: user.created_at,
+
+            // REYNA
+            workout_type: user.workout_type,
+            membershipDuration: {
+                months_remaining: user.membershipDuration.months_remaining,
+                end_date: user.membershipDuration.end_date,
+                auto_renew: user.membershipDuration.auto_renew
+            },
+            fitness_goals: {
+                calorie_goal: user.fitness_goals?.calorie_goal || 2200,
+                protein_goal: user.fitness_goals?.protein_goal || 90,
+                weight_goal: user.fitness_goals?.weight_goal || null
+            }
+        };
+
+        let redirectUrl;
+        switch (user.membershipType.toLowerCase()) {
+            case 'basic':
+                redirectUrl = '/userdashboard_b';
+                break;
+            case 'gold':
+                redirectUrl = '/userdashboard_g';
+                break;
+            case 'platinum':
+                redirectUrl = '/userdashboard_p';
+                break;
+            default:
+                console.log('Unknown membership type:', user.membershipType);
+                redirectUrl = '/userdashboard_b'; // Default to basic dashboard
+        }
+        console.log('Redirecting to:', redirectUrl);
+
+        res.status(200).json({ message: 'Login successful', redirect: redirectUrl });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+const signupUser = async (req, res) => {
+    try {
+        const {
+            userFullName,
+            dateOfBirth,
+            gender,
+            userEmail,
+            phoneNumber,
+            userPassword,
+            userConfirmPassword,
+            membershipPlan,
+            membershipDuration,
+            cardType,
+            cardNumber,
+            expirationDate,
+            cvv,
+            terms,
+            weight,
+            height,
+            // REYNA
+            workoutType,
+            weightGoal
+        } = req.body;
+
+        console.log('Signup request received:', {
+            userFullName, dateOfBirth, gender, userEmail, phoneNumber,
+            membershipPlan, membershipDuration, cardType, cardNumber,
+            expirationDate, cvv, terms, weight, height,workoutType, weightGoal
+        });
+
+        if (
+            !userFullName ||
+            !dateOfBirth ||
+            !gender ||
+            !userEmail ||
+            !phoneNumber ||
+            !userPassword ||
+            !userConfirmPassword ||
+            !membershipPlan ||
+            !membershipDuration ||
+            !cardType ||
+            !cardNumber ||
+            !expirationDate ||
+            !cvv ||
+            !terms ||
+            weight === undefined||
+            !workoutType ||        // ADD THIS VALIDATION
+            weightGoal === undefined
+        ) {
+            console.log('Validation failed: Missing fields');
+            return res.status(400).json({ error: 'All fields are required, including weight' });
+        }
+
+        if (userPassword !== userConfirmPassword) {
+            console.log('Validation failed: Passwords do not match');
+            return res.status(400).json({ error: 'Passwords do not match' });
+        }
+
+        const emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(userEmail)) {
+            console.log('Validation failed: Invalid email:', userEmail);
+            return res.status(400).json({ error: 'Invalid email address' });
+        }
+
+        const phoneRegex = /^\+?[\d\s-]{10,}$/;
+        if (!phoneRegex.test(phoneNumber)) {
+            console.log('Validation failed: Invalid phone number:', phoneNumber);
+            return res.status(400).json({ error: 'Invalid phone number' });
+        }
+
+        if (isNaN(weight) || weight < 0) {
+            console.log('Validation failed: Invalid weight:', weight);
+            return res.status(400).json({ error: 'Weight must be a non-negative number' });
+        }
+        const validWorkoutTypes = ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding'];
+        if (!validWorkoutTypes.includes(workoutType)) {
+            console.log('Validation failed: Invalid workout type:', workoutType);
+            return res.status(400).json({ error: 'Please select a valid workout type' });
+        }
+
+        if (isNaN(weightGoal) || weightGoal < 20 || weightGoal > 300) {
+            console.log('Validation failed: Invalid weight goal:', weightGoal);
+            return res.status(400).json({ error: 'Weight goal must be between 20 and 300 kg' });
+        }
+        let calculatedBMI = null;
+        if (height !== undefined) {
+            if (isNaN(height) || height < 0) {
+                console.log('Validation failed: Invalid height:', height);
+                return res.status(400).json({ error: 'Height must be a non-negative number' });
+            }
+            const heightInMeters = Number(height) / 100;
+            if (heightInMeters > 0) {
+                calculatedBMI = Number(weight) / (heightInMeters * heightInMeters);
+                calculatedBMI = Math.round(calculatedBMI * 10) / 10;
+                console.log('Calculated BMI:', calculatedBMI);
+            }
+        }
+
+        // REYNA
+        // Add validation for workoutType
+        if (!workoutType) {
+            console.log('Validation failed: Workout type is required');
+            return res.status(400).json({ error: 'Please select your preferred workout type' });
+        }
+
+        if (weightGoal === undefined) {
+            console.log('Validation failed: Weight goal is required');
+            return res.status(400).json({ error: 'Weight goal is required' });
+        }
+
+        if (isNaN(weightGoal) || weightGoal < 20 || weightGoal > 300) {
+            console.log('Validation failed: Invalid weight goal:', weightGoal);
+            return res.status(400).json({ error: 'Weight goal must be between 20 and 300 kg' });
+        }
+        // end REYNA
+
+        const existingUser = await User.findOne({ email: userEmail });
+        if (existingUser) {
+            console.log('Validation failed: Email already registered:', userEmail);
+            return res.status(400).json({ error: 'Email already registered' });
+        }
+
+        const saltRounds = 10;
+        const password_hash = await bcrypt.hash(userPassword, saltRounds);
+        console.log('Password hashed for:', userEmail);
+
+
+        // Calculate end date based on membership duration           REYNA
+        const startDate = new Date();
+        const endDate = new Date();
+        endDate.setMonth(endDate.getMonth() + parseInt(membershipDuration));
+
+
+        const newUser = new User({
+            full_name: userFullName,
+            email: userEmail,
+            password_hash,
+            dob: new Date(dateOfBirth),
+            gender: gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase(),
+            phone: phoneNumber,
+            membershipType: membershipPlan.charAt(0).toUpperCase() + membershipPlan.slice(1).toLowerCase(),
+           
+            // REYNA
+            workout_type: workoutType,
+            // ADD FITNESS GOALS WITH WEIGHT GOAL:
+            fitness_goals: {
+                calorie_goal: 2200,
+                protein_goal: 90,
+                weight_goal: Number(weightGoal)  // ADD THIS
+            },
+
+            // NEW: Add membership duration data          REYNA
+            membershipDuration: {
+                months_remaining: parseInt(membershipDuration),
+                start_date: startDate,
+                end_date: endDate,
+                auto_renew: false,
+                last_renewal_date: startDate
+            },
+
+            weight: Number(weight),
+            height: height !== undefined ? Number(height) : null,
+            BMI: calculatedBMI,
+            //REYNA
+            workout_type: workoutType 
+        });
+        console.log('New user object created:', newUser);
+
+        await newUser.save();
+        console.log('User saved to MongoDB:', userEmail);
+
+        if (!req.session) {
+            console.error('Session middleware not initialized');
+            console.log('Proceeding without session for user:', userEmail);
+        } else {
+            req.session.user = {
+                id: newUser._id,
+                email: newUser.email,
+                full_name: newUser.full_name,
+                name: newUser.full_name,
+                membershipType: newUser.membershipType,
+                membership: newUser.membershipType.toLowerCase()
+            };
+            console.log('Session set for user:', userEmail);
+        }
+
+        res.status(201).json({ message: 'Signup successful', redirect: '/login_signup' });
+    } catch (error) {
+        console.error('Signup error:', error);
+        if (error.code === 11000) {
+            console.log('MongoDB error: Duplicate email:', userEmail);
+            return res.status(400).json({ error: 'Email already registered' });
+        }
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message);
+            console.log('MongoDB validation errors:', messages);
+            return res.status(400).json({ error: messages.join(', ') });
+        }
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+//brimstone
+// Add this function to userController.js
+const changeMembership = async (req, res) => {
+    try {
+        if (!req.session || !req.session.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authentication required'
+            });
+        }
+
+        const userId = req.session.user.id;
+        const { newMembershipType, duration, amount, cardLastFour } = req.body;
+
+        console.log('Changing membership for user:', userId, 'Data:', req.body);
+
+        // Validate input
+        if (!newMembershipType || !duration || !amount) {
+            return res.status(400).json({
+                success: false,
+                message: 'All fields are required'
+            });
+        }
+
+        // Validate membership type
+        const validMembershipTypes = ['Basic', 'Gold', 'Platinum'];
+        if (!validMembershipTypes.includes(newMembershipType)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid membership type'
+            });
+        }
+
+        // Validate duration
+        const validDurations = [1, 3, 6];
+        if (!validDurations.includes(duration)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid duration'
+            });
+        }
+
+        // Find user
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+
+        // Calculate new membership duration
+        const newMonthsRemaining = duration;
+
+        // Update user membership - PRESERVE EXISTING FITNESS GOALS
+        user.membershipType = newMembershipType;
+        user.membershipDuration.months_remaining = newMonthsRemaining;
+        user.membershipDuration.last_renewal_date = new Date();
+        
+        // Update end date
+        const newEndDate = new Date();
+        newEndDate.setMonth(newEndDate.getMonth() + newMonthsRemaining);
+        user.membershipDuration.end_date = newEndDate;
+        
+        user.status = 'Active';
+
+        // Ensure fitness_goals are preserved and not set to null
+        if (!user.fitness_goals) {
+            user.fitness_goals = {
+                calorie_goal: 2200,
+                protein_goal: 90,
+                weight_goal: user.weight || 70 // Use current weight as default if no goal exists
+            };
+        } else if (user.fitness_goals.weight_goal === null || user.fitness_goals.weight_goal === undefined) {
+            // Set a default weight goal if it's null/undefined
+            user.fitness_goals.weight_goal = user.weight || 70;
+        }
+
+        // Create membership record
+        const membershipRecord = new Membership({
+            user_id: userId,
+            plan: newMembershipType.toLowerCase(),
+            duration: duration,
+            start_date: new Date(),
+            end_date: newEndDate,
+            price: amount,
+            payment_method: 'credit_card',
+            card_last_four: cardLastFour,
+            status: 'Active'
+        });
+
+        // Save both user and membership record
+        await Promise.all([
+            user.save(),
+            membershipRecord.save()
+        ]);
+
+        // Update session
+        req.session.user.membershipType = newMembershipType;
+        req.session.user.membership = newMembershipType.toLowerCase();
+        req.session.user.membershipDuration = {
+            months_remaining: newMonthsRemaining,
+            end_date: newEndDate,
+            auto_renew: user.membershipDuration.auto_renew
+        };
+
+        console.log('Membership changed successfully for user:', userId);
+
+        res.json({
+            success: true,
+            message: 'Membership changed successfully',
+            newMembershipType: newMembershipType,
+            monthsRemaining: newMonthsRemaining,
+            redirect: `/userdashboard_${newMembershipType.charAt(0).toLowerCase()}`
+        });
+
+    } catch (error) {
+        console.error('Error changing membership:', error);
+        
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: errors
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
+//brimstone
+// brimstone
+// Add this function to userController.js
 const updateUserProfile = async (req, res) => {
     try {
         if (!req.session || !req.session.user) {
@@ -400,287 +832,8 @@ const updateUserProfile = async (req, res) => {
         });
     }
 };
-
-//END REYNA
-
-const loginUser = async (req, res) => {
-    try {
-        const { email, password, loginMembershipPlan } = req.body;
-
-        console.log('Login request received:', { email, loginMembershipPlan });
-
-        if (!email || !password || !loginMembershipPlan) {
-            console.log('Validation failed: Missing fields');
-            return res.status(400).json({ error: 'All fields are required' });
-        }
-
-        const user = await User.findOne({ email });
-        if (!user) {
-            console.log('User not found:', email);
-            return res.status(401).json({ error: 'Invalid email or password' });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password_hash);
-        if (!isMatch) {
-            console.log('Password mismatch for:', email);
-            return res.status(401).json({ error: 'Invalid email or password' });
-        }
-
-        if (user.membershipType.toLowerCase() !== loginMembershipPlan.toLowerCase()) {
-            console.log('Membership plan mismatch:', { user: user.membershipType, input: loginMembershipPlan });
-            return res.status(400).json({ error: 'Selected membership plan does not match user membership' });
-        }
-
-        if (!req.session) {
-            console.error('Session middleware not initialized');
-            return res.status(500).json({ error: 'Session not available. Please try again later.' });
-        }
-
-        req.session.user = {
-            id: user._id,
-            email: user.email,
-            full_name: user.full_name,
-            name: user.full_name,
-            membershipType: user.membershipType,
-            membership: user.membershipType.toLowerCase(),
-            phone: user.phone,
-            dob: user.dob,
-            gender: user.gender,
-            weight: user.weight,
-            height: user.height,
-            BMI: user.BMI,
-            status: user.status,
-            created_at: user.created_at,
-
-            // REYNA
-            workout_type: user.workout_type,
-            membershipDuration: {
-                months_remaining: user.membershipDuration.months_remaining,
-                end_date: user.membershipDuration.end_date,
-                auto_renew: user.membershipDuration.auto_renew
-            },
-            fitness_goals: {
-                calorie_goal: user.fitness_goals?.calorie_goal || 2200,
-                protein_goal: user.fitness_goals?.protein_goal || 90,
-                weight_goal: user.fitness_goals?.weight_goal || null
-            }
-        };
-
-        let redirectUrl;
-        switch (user.membershipType.toLowerCase()) {
-            case 'basic':
-                redirectUrl = '/userdashboard_b';
-                break;
-            case 'gold':
-                redirectUrl = '/userdashboard_g';
-                break;
-            case 'platinum':
-                redirectUrl = '/userdashboard_p';
-                break;
-            default:
-                console.log('Unknown membership type:', user.membershipType);
-                redirectUrl = '/userdashboard_b'; // Default to basic dashboard
-        }
-        console.log('Redirecting to:', redirectUrl);
-
-        res.status(200).json({ message: 'Login successful', redirect: redirectUrl });
-    } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ error: 'Server error' });
-    }
-};
-
-const signupUser = async (req, res) => {
-    try {
-        const {
-            userFullName,
-            dateOfBirth,
-            gender,
-            userEmail,
-            phoneNumber,
-            userPassword,
-            userConfirmPassword,
-            membershipPlan,
-            membershipDuration,
-            cardType,
-            cardNumber,
-            expirationDate,
-            cvv,
-            terms,
-            weight,
-            height,
-            // REYNA
-            workoutType,
-            weightGoal
-        } = req.body;
-
-        console.log('Signup request received:', {
-            userFullName, dateOfBirth, gender, userEmail, phoneNumber,
-            membershipPlan, membershipDuration, cardType, cardNumber,
-            expirationDate, cvv, terms, weight, height
-        });
-
-        if (
-            !userFullName ||
-            !dateOfBirth ||
-            !gender ||
-            !userEmail ||
-            !phoneNumber ||
-            !userPassword ||
-            !userConfirmPassword ||
-            !membershipPlan ||
-            !membershipDuration ||
-            !cardType ||
-            !cardNumber ||
-            !expirationDate ||
-            !cvv ||
-            !terms ||
-            weight === undefined
-        ) {
-            console.log('Validation failed: Missing fields');
-            return res.status(400).json({ error: 'All fields are required, including weight' });
-        }
-
-        if (userPassword !== userConfirmPassword) {
-            console.log('Validation failed: Passwords do not match');
-            return res.status(400).json({ error: 'Passwords do not match' });
-        }
-
-        const emailRegex = /^\S+@\S+\.\S+$/;
-        if (!emailRegex.test(userEmail)) {
-            console.log('Validation failed: Invalid email:', userEmail);
-            return res.status(400).json({ error: 'Invalid email address' });
-        }
-
-        const phoneRegex = /^\+?[\d\s-]{10,}$/;
-        if (!phoneRegex.test(phoneNumber)) {
-            console.log('Validation failed: Invalid phone number:', phoneNumber);
-            return res.status(400).json({ error: 'Invalid phone number' });
-        }
-
-        if (isNaN(weight) || weight < 0) {
-            console.log('Validation failed: Invalid weight:', weight);
-            return res.status(400).json({ error: 'Weight must be a non-negative number' });
-        }
-
-        let calculatedBMI = null;
-        if (height !== undefined) {
-            if (isNaN(height) || height < 0) {
-                console.log('Validation failed: Invalid height:', height);
-                return res.status(400).json({ error: 'Height must be a non-negative number' });
-            }
-            const heightInMeters = Number(height) / 100;
-            if (heightInMeters > 0) {
-                calculatedBMI = Number(weight) / (heightInMeters * heightInMeters);
-                calculatedBMI = Math.round(calculatedBMI * 10) / 10;
-                console.log('Calculated BMI:', calculatedBMI);
-            }
-        }
-
-        // REYNA
-        // Add validation for workoutType
-        if (!workoutType) {
-            console.log('Validation failed: Workout type is required');
-            return res.status(400).json({ error: 'Please select your preferred workout type' });
-        }
-
-        if (weightGoal === undefined) {
-            console.log('Validation failed: Weight goal is required');
-            return res.status(400).json({ error: 'Weight goal is required' });
-        }
-
-        if (isNaN(weightGoal) || weightGoal < 20 || weightGoal > 300) {
-            console.log('Validation failed: Invalid weight goal:', weightGoal);
-            return res.status(400).json({ error: 'Weight goal must be between 20 and 300 kg' });
-        }
-        // end REYNA
-
-        const existingUser = await User.findOne({ email: userEmail });
-        if (existingUser) {
-            console.log('Validation failed: Email already registered:', userEmail);
-            return res.status(400).json({ error: 'Email already registered' });
-        }
-
-        const saltRounds = 10;
-        const password_hash = await bcrypt.hash(userPassword, saltRounds);
-        console.log('Password hashed for:', userEmail);
-
-
-        // Calculate end date based on membership duration           REYNA
-        const startDate = new Date();
-        const endDate = new Date();
-        endDate.setMonth(endDate.getMonth() + parseInt(membershipDuration));
-
-
-        const newUser = new User({
-            full_name: userFullName,
-            email: userEmail,
-            password_hash,
-            dob: new Date(dateOfBirth),
-            gender: gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase(),
-            phone: phoneNumber,
-            membershipType: membershipPlan.charAt(0).toUpperCase() + membershipPlan.slice(1).toLowerCase(),
-           
-            // REYNA
-            workout_type: workoutType,
-            // ADD FITNESS GOALS WITH WEIGHT GOAL:
-            fitness_goals: {
-                calorie_goal: 2200,
-                protein_goal: 90,
-                weight_goal: Number(weightGoal)  // ADD THIS
-            },
-
-            // NEW: Add membership duration data          REYNA
-            membershipDuration: {
-                months_remaining: parseInt(membershipDuration),
-                start_date: startDate,
-                end_date: endDate,
-                auto_renew: false,
-                last_renewal_date: startDate
-            },
-
-            weight: Number(weight),
-            height: height !== undefined ? Number(height) : null,
-            BMI: calculatedBMI,
-            //REYNA
-            workout_type: workoutType 
-        });
-        console.log('New user object created:', newUser);
-
-        await newUser.save();
-        console.log('User saved to MongoDB:', userEmail);
-
-        if (!req.session) {
-            console.error('Session middleware not initialized');
-            console.log('Proceeding without session for user:', userEmail);
-        } else {
-            req.session.user = {
-                id: newUser._id,
-                email: newUser.email,
-                full_name: newUser.full_name,
-                name: newUser.full_name,
-                membershipType: newUser.membershipType,
-                membership: newUser.membershipType.toLowerCase()
-            };
-            console.log('Session set for user:', userEmail);
-        }
-
-        res.status(201).json({ message: 'Signup successful', redirect: '/login_signup' });
-    } catch (error) {
-        console.error('Signup error:', error);
-        if (error.code === 11000) {
-            console.log('MongoDB error: Duplicate email:', userEmail);
-            return res.status(400).json({ error: 'Email already registered' });
-        }
-        if (error.name === 'ValidationError') {
-            const messages = Object.values(error.errors).map(err => err.message);
-            console.log('MongoDB validation errors:', messages);
-            return res.status(400).json({ error: messages.join(', ') });
-        }
-        res.status(500).json({ error: 'Server error' });
-    }
-};
-
+// Update the getUserDashboard function in userController.js to fetch nutrition data:
+// brimstone
 // Get user dashboard based on membership type
 const getUserDashboard = async (req, res, membershipCode) => {
     try {
@@ -713,7 +866,6 @@ const getUserDashboard = async (req, res, membershipCode) => {
             default:
                 dashboardTemplate = 'userdashboard_b';
         }
-        
         
         // Get last 5 workouts
         const recentWorkouts = await WorkoutHistory.find({ userId: userId })
@@ -923,7 +1075,8 @@ if (currentWeekWorkout) {
                 total: recentWorkouts.length
             },
             todayWorkout: todayWorkoutData, // Use the fixed todayWorkoutData
-            exerciseProgress: exerciseProgress, // Use the updated exercise progress
+            exerciseProgress: exerciseProgress, // Use the updated exercise progress 
+           
 
             // added new membership info       REYNA
             membershipInfo: {
@@ -1087,5 +1240,6 @@ module.exports = {
     markWorkoutCompleted,
     checkMembershipActive,
     checkTrainerSubscription,
-    updateUserProfile
+    updateUserProfile,
+    changeMembership
 };

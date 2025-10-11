@@ -150,3 +150,13 @@
 .status-indicator.offline {
     background-color: #888888;
 }
+.search-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.search-bar {
+    width: 100%;
+    max-width: 400px;
+}
