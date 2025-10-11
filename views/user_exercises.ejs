@@ -1,104 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>GymRats - User Profile</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="/userexercises/userexercises.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
-    </head>
-    <body>
-        <!-- Navigation Bar -->
-        <div class="main-navbar">
-            <header>
-                <!-- Header Branding -->
-                <div class="brand-logo">
-                    <a href="<%= user && user.membershipType ? '/userdashboard_' + user.membershipType.charAt(0).toLowerCase() : '/dashboard' %>" class="brand-name">GymRats</a>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymRats - Exercise Library</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/userexercises/userexercises.css">
+    <style>
+        /* Rating Stars Styles */
+        .rating-stars {
+            display: flex;
+            gap: 2px;
+            margin: 10px 0;
+        }
+
+        .star {
+            cursor: pointer;
+            color: #ddd;
+            font-size: 18px;
+            transition: color 0.2s;
+        }
+
+        .star.active {
+            color: #ffc107;
+        }
+
+        .star:hover {
+            color: #ffc107;
+        }
+
+        .user-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .rating-badge {
+            background: #8A2BE2;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Recommendations Section */
+        .recommendations-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .recommendation-reason {
+            color: #8A2BE2;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        /* Exercise Card Enhancements */
+        .exercise-card {
+            position: relative;
+        }
+
+        .exercise-rating {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .exercise-category {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(138, 43, 226, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #8A2BE2;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #8A2BE2;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Workout Type Filter */
+        .workout-type-filter {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .filter-label {
+            font-weight: bold;
+            margin-right: 10px;
+            color: #8A2BE2;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="main-navbar">
+        <header>
+            <!-- Header Branding -->
+            <div class="brand-logo">
+                <a href="<%= user && user.membershipType ? '/userdashboard_' + user.membershipType.charAt(0).toLowerCase() : '/dashboard' %>" class="brand-name">GymRats</a>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="<%= user && user.membershipType ? '/userdashboard_' + user.membershipType.charAt(0).toLowerCase() : '/dashboard' %>">Home</a>
+                <a href="/user_exercises" class="active">Exercises</a>
+                <a href="/user_nutrition">Nutrition</a>
+            </div>
+            
+            <div class="right-container">
+                <div class="search-container">
+                    <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
+                    <input type="text" id="header-search" placeholder="Search exercises..." size="20" style="font-size: 14px;" />
                 </div>
                 
-                <div class="nav-menu">
-                    <a href="<%= user && user.membershipType ? '/userdashboard_' + user.membershipType.charAt(0).toLowerCase() : '/dashboard' %>">Home</a>
-                    <a href="/user_exercises">Exercises</a>
-                    <a href="/user_nutrition">Nutrition</a>
+                <div class="user-profile">
+                    <a href="/userprofile">
+                        <% if (user && user.name) { %>
+                            <span><%= user.name %></span>
+                        <% } else if (user && user.full_name) { %>
+                            <span><%= user.full_name %></span>
+                        <% } else { %>
+                            <span>User</span>
+                        <% } %>
+                    </a>
                 </div>
-                
-                <div class="right-container">
-                    <div class="search-container">
-                        <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
-                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-                    </div>
-                    
-                    <div class="user-profile">
-                        <a href="/userprofile">
-                            <% if (user && user.name) { %>
-                                <span><%= user.name %></span>
-                            <% } else if (user && user.full_name) { %>
-                                <span><%= user.full_name %></span>
-                            <% } else { %>
-                                <span>User</span>
-                            <% } %>
-                        </a>
-                    </div>
+            </div>
+            <div class="mobile-menu-icon" id="menuIcon">
+                <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
+            </div>
+            <div class="mobile-sidebar" id="sideNavbar">
+                <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+                <a href="<%= user && user.membershipType ? '/userdashboard_' + user.membershipType.charAt(0).toLowerCase() : '/dashboard' %>">Home</a>
+                <a href="/user_exercises" class="active">Exercises</a>
+                <a href="/user_nutrition">Nutrition</a>
+                <div class="sidebar-profile">
+                    <a href="/userprofile">
+                        <% if (user && user.name) { %>
+                            <span><%= user.name %></span>
+                        <% } else if (user && user.full_name) { %>
+                            <span><%= user.full_name %></span>
+                        <% } else { %>
+                            <span>User</span>
+                        <% } %>
+                    </a>
                 </div>
-                <div class="mobile-menu-icon" id="menuIcon">
-                    <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
-                </div>
-                <div class="mobile-sidebar" id="sideNavbar">
-                    <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
-                    <a href="<%= user && user.membershipType ? '/userdashboard_' + user.membershipType.charAt(0).toLowerCase() : '/dashboard' %>">Home</a>
-                    <a href="/user_exercises">Exercises</a>
-                    <a href="/user_nutrition">Nutrition</a>
-                    <div class="sidebar-profile">
-                        <a href="/userprofile">
-                            <% if (user && user.name) { %>
-                                <span><%= user.name %></span>
-                            <% } else if (user && user.full_name) { %>
-                                <span><%= user.full_name %></span>
-                            <% } else { %>
-                                <span>User</span>
-                            <% } %>
-                        </a>
-                    </div>
-                </div>
-            </header>
-        </div>
+            </div>
+        </header>
+    </div>
 
     <!-- Welcome Banner -->
     <div class="welcome-banner">
         <h1>Complete Exercise Guide</h1>
         <p>Discover detailed instructions, illustrations, and videos for exercises targeting every muscle group.</p>
+        <% if (user && user.workout_type) { %>
+            <div class="workout-type-filter">
+                <span class="filter-label">Your Workout Type:</span>
+                <span class="workout-type-badge"><%= user.workout_type %></span>
+            </div>
+        <% } %>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <!-- Category List -->
-        <div class="category-list-container">
-            <h2>Muscle Groups</h2>
-            <div class="category-list" id="category-list">
-                <!-- Categories populated by JavaScript -->
-            </div>
-        </div>
+        <!-- Replace the current category list with this -->
+<div class="category-list-container">
+    <h2>Muscle Groups</h2>
+    <div class="category-list" id="category-list">
+        <div class="category-item active" data-category="all">All Exercises</div>
+        <div class="category-item" data-category="Chest">Chest</div>
+        <div class="category-item" data-category="Back">Back</div>
+        <div class="category-item" data-category="Legs">Legs</div>
+        <div class="category-item" data-category="Shoulders">Shoulders</div>
+        <div class="category-item" data-category="Arms">Arms</div>
+        <div class="category-item" data-category="Core">Core</div>
+        <div class="category-item" data-category="Full Body">Full Body</div>
+        <div class="category-item" data-category="Cardio">Cardio</div>
+    </div>
+</div>
 
         <!-- Exercise List Container -->
         <div class="exercise-list-container">
             <div id="exercise-overview">
                 <div class="exercise-header">
-                    <h2>All Exercises</h2>
+                    <h2 id="exercises-title">All Exercises</h2>
+                    <div class="search-container">
+                        <input type="text" id="exercise-search" placeholder="Search exercises..." />
+                    </div>
                 </div>
+
+                <!-- Recommended Exercises -->
+                <div class="recommendations-section" id="recommendations-section" style="display: none;">
+                    <h3>Recommended For You</h3>
+                    <p class="recommendation-reason" id="recommendation-reason"></p>
+                    <div class="recommendations-grid" id="recommendations-grid">
+                        <!-- Recommended exercises will be populated here -->
+                    </div>
+                </div>
+
+                <!-- All Exercises -->
                 <div class="exercise-list" id="exercise-list">
-                    <!-- Exercises populated by JavaScript -->
-                    <div class="loader" id="loader"></div>
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>Loading exercises...</p>
+                    </div>
                 </div>
             </div>
 
             <!-- Exercise Detail View -->
-            <div id="exercise-detail" class="exercise-detail">
+            <div id="exercise-detail" class="exercise-detail" style="display: none;">
                 <div class="exercise-header">
                     <h2 id="exercise-title">Exercise Title</h2>
                     <button class="back-button" id="back-button">
-                        <i class="fas fa-arrow-left"></i> Back
+                        <i class="fas fa-arrow-left"></i> Back to Exercises
                     </button>
                 </div>
                 <div class="exercise-info">
@@ -106,8 +262,30 @@
                         <div class="exercise-image" id="exercise-image"></div>
                     </div>
                     <div class="exercise-description">
+                        <div class="exercise-meta">
+                            <span class="category-badge" id="exercise-category"></span>
+                            <span class="difficulty-badge" id="exercise-difficulty"></span>
+                        </div>
+
                         <h3>Description</h3>
                         <p id="exercise-description">Exercise description goes here.</p>
+
+                        <!-- Rating Section -->
+                        <div class="rating-section">
+                            <h3>Your Rating</h3>
+                            <div class="rating-stars" id="rating-stars">
+                                <span class="star" data-rating="1">★</span>
+                                <span class="star" data-rating="2">★</span>
+                                <span class="star" data-rating="3">★</span>
+                                <span class="star" data-rating="4">★</span>
+                                <span class="star" data-rating="5">★</span>
+                            </div>
+                            <div class="user-rating" id="user-rating-display" style="display: none;">
+                                <span>Your rating:</span>
+                                <span class="rating-badge" id="user-rating-value"></span>
+                                <button class="edit-rating" id="edit-rating">Edit</button>
+                            </div>
+                        </div>
 
                         <div id="exercise-muscles">
                             <h3>Muscles Worked</h3>
@@ -123,10 +301,25 @@
                             </ol>
                         </div>
 
+                        <div class="exercise-equipment">
+                            <h3>Equipment Needed</h3>
+                            <div id="equipment-list">
+                                <!-- Equipment tags will be inserted here -->
+                            </div>
+                        </div>
+
                         <div class="mind-muscle">
                             <h3>Mind-Muscle Connection</h3>
                             <p id="mind-muscle-tip">Mind-muscle connection tip goes here.</p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Similar Exercises -->
+                <div class="similar-exercises" id="similar-exercises" style="display: none;">
+                    <h3>Similar Exercises</h3>
+                    <div class="similar-exercises-grid" id="similar-exercises-grid">
+                        <!-- Similar exercises will be populated here -->
                     </div>
                 </div>
 
@@ -140,430 +333,56 @@
         </div>
     </div>
 
-<!-- Replace the existing footer with this -->
-
-<footer class="site-footer">
-    <div class="footer-content">
-        <div class="footer-column">
-            <h3>GymRats</h3>
-            <ul>
-                <li><a href="/about">About Us</a></li>
-                <li><a href="/trainers">Our Trainers</a></li>
-                <li><a href="/testimonial">Testimonials</a></li>
-                <li><a href="/blog">Blog</a></li>
-            </ul>
-        </div>
-
-        <div class="footer-column">
-            <h3>Resources</h3>
-            <ul>
-                <li><a href="/isolation">Exercise Guide</a></li>
-                <li><a href="/nutrition">Nutrition Tips</a></li>
-                <li><a href="/workout_plans">Workout Plans</a></li>
-                <li><a href="/calculators">Calculators</a></li>
-            </ul>
-        </div>
-
-        <div class="footer-column">
-            <h3>Support</h3>
-            <ul>
-                <li><a href="/contact">Contact Us</a></li>
-                <li><a href="/about">About us</a></li>
-                <li><a href="/terms">Terms of Service</a></li>
-                <li><a href="/privacy_policy">Privacy Policy</a></li>
-            </ul>
-        </div>
-
-        <div class="footer-column">
-            <h3>Connect With Us</h3>
-            <ul>
-                <li><a href="/trainer_form">Become a Trainer</a></li>
-                <li><a href="/verifier_form">Become a Verifier</a></li>
-            </ul>
-            <div class="social-icons">
-                <a href="#"><img src="/home/icons8-facebook.svg" alt="Facebook"></a>
-                <a href="#"><img src="/home/icons8-instagram.svg" alt="Instagram"></a>
-                <a href="#"><img src="/home/icons8-youtube.svg" alt="YouTube"></a>
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>GymRats</h3>
+                <ul>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/trainers">Our Trainers</a></li>
+                    <li><a href="/testimonial">Testimonials</a></li>
+                    <li><a href="/blog">Blog</a></li>
+                </ul>
             </div>
-            <p class="copyright">GymRats © 2025. All rights reserved.</p>
+
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="/isolation">Exercise Guide</a></li>
+                    <li><a href="/nutrition">Nutrition Tips</a></li>
+                    <li><a href="/workout_plans">Workout Plans</a></li>
+                    <li><a href="/calculators">Calculators</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="/contact">Contact Us</a></li>
+                    <li><a href="/about">About us</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/privacy_policy">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Connect With Us</h3>
+                <ul>
+                    <li><a href="/trainer_form">Become a Trainer</a></li>
+                    <li><a href="/verifier_form">Become a Verifier</a></li>
+                </ul>
+                <div class="social-icons">
+                    <a href="#"><img src="/home/icons8-facebook.svg" alt="Facebook"></a>
+                    <a href="#"><img src="/home/icons8-instagram.svg" alt="Instagram"></a>
+                    <a href="#"><img src="/home/icons8-youtube.svg" alt="YouTube"></a>
+                </div>
+                <p class="copyright">GymRats © 2025. All rights reserved.</p>
+            </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
     <script>
-        // Navigation - Mobile Menu
-        function openNav() {
-            document.getElementById("mySidenav").style.width = "250px";
-        }
-
-        function closeNav() {
-            document.getElementById("mySidenav").style.width = "0";
-        }
-
-        // Mobile menu functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const menuIcon = document.getElementById('menuIcon');
-        const closeBtn = document.getElementById('closeBtn');
-        const sideNavbar = document.getElementById('sideNavbar');
-        
-        if (menuIcon) {
-            menuIcon.addEventListener('click', function() {
-                sideNavbar.style.width = '250px';
-            });
-        }
-        
-        if (closeBtn) {
-            closeBtn.addEventListener('click', function() {
-                sideNavbar.style.width = '0';
-            });
-        }
-    });
-        // Exercise Data - This would typically come from a server
-        const categories = [
-            { id: 'chest', name: 'Chest' },
-            { id: 'back', name: 'Back' },
-            { id: 'legs', name: 'Legs' },
-            { id: 'shoulders', name: 'Shoulders' },
-            { id: 'arms', name: 'Arms' },
-            { id: 'abs', name: 'Abs' }
-        ];
-
-        const exercises = [
-            // Chest Exercises
-            {
-                id: 'chest-1',
-                name: 'Bench Press',
-                category: 'chest',
-                description: 'The bench press is a compound exercise that primarily targets the pectoralis major, anterior deltoids, and triceps. It is a staple in any strength training program.',
-                image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1740&auto=format&fit=crop',
-                muscles: ['Pectoralis Major', 'Anterior Deltoids', 'Triceps'],
-                steps: [
-                    'Lie on a flat bench with your feet flat on the floor.',
-                    'Grip the bar slightly wider than shoulder-width apart.',
-                    'Unrack the bar and lower it to your mid-chest while keeping your elbows at about a 45-degree angle from your body.',
-                    'Press the bar back up to the starting position, extending your arms without locking your elbows.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Focus on squeezing your chest muscles throughout the movement. Imagine pushing yourself away from the bar rather than pushing the bar away from you.',
-                videoUrl: 'https://www.youtube.com/embed/rT7DgCr-3pg'
-            },
-            {
-                id: 'chest-2',
-                name: 'Incline Dumbbell Press',
-                category: 'chest',
-                description: 'The incline dumbbell press targets the upper portion of the pectoralis major and anterior deltoids, providing a comprehensive chest workout with greater range of motion than a barbell.',
-                image: 'https://images.unsplash.com/photo-1530822847156-e092cb0bcad2?q=80&w=1740&auto=format&fit=crop',
-                muscles: ['Upper Pectoralis Major', 'Anterior Deltoids', 'Triceps'],
-                steps: [
-                    'Set an adjustable bench to a 30-45 degree incline.',
-                    'Sit on the bench with a dumbbell in each hand, resting them on your thighs.',
-                    'Kick the weights up one at a time as you lean back and position the dumbbells at shoulder width.',
-                    'Press the dumbbells upward until your arms are extended, without locking your elbows.',
-                    'Lower the weights slowly until your elbows form slightly less than a 90-degree angle.',
-                    'Press back up to the starting position and repeat.'
-                ],
-                mindMuscle: 'Focus on leading with your chest rather than your shoulders. Keep your shoulder blades retracted and pressed into the bench throughout the movement.',
-                videoUrl: 'https://www.youtube.com/embed/8iPEnn-ltC8'
-            },
-            {
-                id: 'chest-3',
-                name: 'Dumbbell Flyes',
-                category: 'chest',
-                description: 'Dumbbell flyes isolate the chest muscles by removing much of the triceps involvement. This exercise stretches the pectorals and provides a full range of motion for comprehensive chest development.',
-                image: 'https://images.unsplash.com/photo-1584466977773-e625c37cdd50?q=80&w=1587&auto=format&fit=crop',
-                muscles: ['Pectoralis Major', 'Pectoralis Minor', 'Anterior Deltoid'],
-                steps: [
-                    'Lie on a flat bench with a dumbbell in each hand and your feet on the floor.',
-                    'Extend your arms above your chest with a slight bend in your elbows, palms facing each other.',
-                    'Lower the weights in a wide arc until you feel a stretch in your chest.',
-                    'Maintain the same slight bend in your elbows throughout the movement.',
-                    'Squeeze your chest muscles to bring the weights back up in the same arc motion.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Imagine hugging a barrel while keeping tension in your pecs throughout the movement. Maintain the same elbow angle from start to finish.',
-                videoUrl: 'https://www.youtube.com/embed/eozdVDA78K0'
-            },
-            {
-                id: 'chest-4',
-                name: 'Push-ups',
-                category: 'chest',
-                description: 'Push-ups are a classic bodyweight exercise that engages multiple muscle groups simultaneously, with a primary focus on the chest, shoulders, and triceps.',
-                image: 'https://images.unsplash.com/photo-1598971639058-a11ad498d6b8?q=80&w=1636&auto=format&fit=crop',
-                muscles: ['Pectoralis Major', 'Anterior Deltoids', 'Triceps', 'Core'],
-                steps: [
-                    'Start in a plank position with your hands slightly wider than shoulder-width apart, arms extended.',
-                    'Your body should form a straight line from head to heels.',
-                    'Engage your core and glutes to maintain this alignment throughout the exercise.',
-                    'Lower your body by bending your elbows until your chest nearly touches the floor.',
-                    'Push yourself back up to the starting position by extending your arms.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Focus on keeping your core tight throughout the movement. Think about pushing the floor away from you rather than lifting your body up.',
-                videoUrl: 'https://www.youtube.com/embed/IODxDxX7oi4'
-            },
-            {
-                id: 'chest-5',
-                name: 'Cable Crossover',
-                category: 'chest',
-                description: 'The cable crossover is an isolation exercise that targets the chest muscles from a different angle, providing constant tension throughout the movement.',
-                image: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=1738&auto=format&fit=crop',
-                muscles: ['Pectoralis Major', 'Pectoralis Minor', 'Anterior Deltoid', 'Serratus Anterior'],
-                steps: [
-                    'Set the pulleys on a cable machine to slightly above shoulder height.',
-                    'Grab one handle in each hand and step forward, staggering your stance for stability.',
-                    'With a slight bend in your elbows, bring your hands together in front of you in a controlled arcing motion.',
-                    'Squeeze your chest at the point of maximum contraction.',
-                    'Slowly return to the starting position with control.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Focus on bringing your hands together rather than down. Imagine hugging a large tree, keeping tension in the chest throughout the entire movement.',
-                videoUrl: 'https://www.youtube.com/embed/taI4XduLpTk'
-            },
-            {
-                id: 'chest-6',
-                name: 'Decline Push-ups',
-                category: 'chest',
-                description: 'Decline push-ups shift the focus to the lower chest muscles by elevating your feet above your hands, increasing the difficulty of the standard push-up.',
-                image: 'https://images.unsplash.com/photo-1627483297886-49230263008f?q=80&w=1470&auto=format&fit=crop',
-                muscles: ['Lower Pectoralis Major', 'Anterior Deltoids', 'Triceps', 'Core'],
-                steps: [
-                    'Place your feet on an elevated surface like a bench, step, or stability ball.',
-                    'Position your hands on the floor slightly wider than shoulder-width apart.',
-                    'Keep your body in a straight line from head to heels.',
-                    'Lower your chest toward the floor by bending your elbows.',
-                    'Push back up to the starting position by extending your arms.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Focus on the contraction in your lower chest during each repetition. Keep your core tight to maintain proper alignment throughout the movement.',
-                videoUrl: 'https://www.youtube.com/embed/SKPab1YGo5w'
-            },
-
-            // Back Exercises
-            {
-                id: 'back-1',
-                name: 'Pull-ups',
-                category: 'back',
-                description: 'Pull-ups are a challenging compound exercise that primarily targets the latissimus dorsi, rhomboids, and biceps, while also engaging your core for stability.',
-                image: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?q=80&w=1587&auto=format&fit=crop',
-                muscles: ['Latissimus Dorsi', 'Rhomboids', 'Biceps', 'Rear Deltoids', 'Core'],
-                steps: [
-                    'Grab a pull-up bar with your palms facing away from you, hands slightly wider than shoulder-width apart.',
-                    'Hang with your arms fully extended and your shoulders engaged (not relaxed).',
-                    'Pull yourself up by driving your elbows down and back until your chin clears the bar.',
-                    'Lower yourself with control back to the starting position.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Imagine squeezing a pencil between your shoulder blades at the top of the movement. Focus on pulling with your back muscles rather than your arms.',
-                videoUrl: 'https://www.youtube.com/embed/eGo4IYlbE5g'
-            },
-            {
-                id: 'back-2',
-                name: 'Bent-Over Barbell Row',
-                category: 'back',
-                description: 'The bent-over barbell row is a compound exercise that targets the latissimus dorsi, rhomboids, rear deltoids, and biceps, helping to build a stronger, more defined back.',
-                image: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?q=80&w=1587&auto=format&fit=crop',
-                muscles: ['Latissimus Dorsi', 'Rhomboids', 'Trapezius', 'Rear Deltoids', 'Biceps', 'Erector Spinae'],
-                steps: [
-                    'Stand with your feet shoulder-width apart, knees slightly bent.',
-                    'Bend at the hips, keeping your back straight until your torso is nearly parallel to the floor.',
-                    'Grip the barbell with hands slightly wider than shoulder-width apart, palms facing down.',
-                    'Pull the barbell toward your lower ribcage, keeping your elbows close to your body.',
-                    'Squeeze your shoulder blades together at the top of the movement.',
-                    'Lower the barbell back to the starting position with control.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Focus on driving your elbows up and back rather than just lifting the weight. Imagine trying to touch your elbows to the ceiling to maximize lat engagement.',
-                videoUrl: 'https://www.youtube.com/embed/FWJR5-0GrZQ'
-            },
-            {
-                id: 'back-3',
-                name: 'Seated Cable Row',
-                category: 'back',
-                description: 'The seated cable row targets the middle back muscles while providing constant tension throughout the movement, making it an effective exercise for back development.',
-                image: 'https://images.unsplash.com/photo-1581009137042-c552e485697a?q=80&w=1470&auto=format&fit=crop',
-                muscles: ['Latissimus Dorsi', 'Rhomboids', 'Trapezius', 'Rear Deltoids', 'Biceps'],
-                steps: [
-                    'Sit at a cable row station with your feet on the platform and knees slightly bent.',
-                    'Grab the handle with both hands, arms extended and back straight.',
-                    'Pull the handle toward your lower abdomen, driving your elbows back.',
-                    'Squeeze your shoulder blades together at the end of the movement.',
-                    'Slowly extend your arms to return to the starting position.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Focus on pulling with your back rather than your arms. Keep your chest up and spine neutral, avoiding the tendency to round forward at the end range.',
-                videoUrl: 'https://www.youtube.com/embed/GZbfZ033f74'
-            },
-            {
-                id: 'back-4',
-                name: 'Lat Pulldown',
-                category: 'back',
-                description: 'The lat pulldown is a machine exercise that targets the latissimus dorsi muscles, providing similar benefits to pull-ups but with adjustable resistance levels.',
-                image: 'https://images.unsplash.com/photo-1597452485677-d661670d9640?q=80&w=1588&auto=format&fit=crop',
-                muscles: ['Latissimus Dorsi', 'Rhomboids', 'Rear Deltoids', 'Biceps'],
-                steps: [
-                    'Sit at a lat pulldown machine with your thighs secured under the pads.',
-                    'Reach up and grasp the bar with a grip wider than shoulder-width, palms facing away.',
-                    'Pull the bar down toward your upper chest while keeping your back straight and chest up.',
-                    'Slowly return the bar to the starting position, fully extending your arms without letting the weight stack touch down.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Focus on initiating the movement by depressing your shoulder blades and leading with your elbows. Imagine pulling your elbows to your hips rather than just pulling the bar down.',
-                videoUrl: 'https://www.youtube.com/embed/CAwf7n6Luuc'
-            },
-            {
-                id: 'back-5',
-                name: 'Dumbbell Single-Arm Row',
-                category: 'back',
-                description: 'The dumbbell single-arm row isolates one side of the back at a time, allowing you to focus on proper form and identify strength imbalances between sides.',
-                image: 'https://images.unsplash.com/photo-1534368959876-26d41024509b?q=80&w=1470&auto=format&fit=crop',
-                muscles: ['Latissimus Dorsi', 'Trapezius', 'Rhomboids', 'Rear Deltoids', 'Biceps'],
-                steps: [
-                    'Place your right knee and right hand on a flat bench, with your left foot on the floor.',
-                    'Hold a dumbbell in your left hand with your arm fully extended, palm facing the bench.',
-                    'Keep your back flat and parallel to the floor.',
-                    'Pull the dumbbell up toward your hip, keeping your elbow close to your body.',
-                    'Squeeze your back muscles at the top of the movement.',
-                    'Lower the dumbbell with control back to the starting position.',
-                    'Complete all repetitions on one side before switching to the other.'
-                ],
-                mindMuscle: 'Think about pulling your elbow to the ceiling rather than just lifting the weight. Keep your core engaged and avoid rotating your torso during the movement.',
-                videoUrl: 'https://www.youtube.com/embed/pYcpY20QaE8'
-            },
-            {
-                id: 'back-6',
-                name: 'Deadlift',
-                category: 'back',
-                description: 'The deadlift is a fundamental compound exercise that engages nearly every muscle in the posterior chain, with a primary focus on the lower back, glutes, and hamstrings.',
-                image: 'https://images.unsplash.com/photo-1600677396360-5ed77eb30db8?q=80&w=1470&auto=format&fit=crop',
-                muscles: ['Erector Spinae', 'Latissimus Dorsi', 'Glutes', 'Hamstrings', 'Trapezius', 'Core'],
-                steps: [
-                    'Stand with your feet hip-width apart, toes under the barbell.',
-                    'Bend at the hips and knees, keeping your back straight and chest up.',
-                    'Grip the barbell with hands just outside your legs, using an overhand or mixed grip.',
-                    'Lift the bar by extending your hips and knees, keeping the bar close to your body.',
-                    'Stand fully erect with shoulders back and knees locked.',
-                    'Return the weight to the floor by hinging at the hips and bending the knees.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Think of the movement as pushing the floor away rather than lifting the weight. Keep your core tight and spine neutral throughout the entire movement.',
-                videoUrl: 'https://www.youtube.com/embed/ytGaGIn3SjE'
-            },
-
-            // Leg Exercises
-            {
-                id: 'legs-1',
-                name: 'Squats',
-                category: 'legs',
-                description: 'Squats are a fundamental compound exercise that primarily targets the quadriceps, hamstrings, and glutes while also engaging the core and lower back for stability.',
-                image: 'https://images.unsplash.com/photo-1544033527-b192daee1f5b?q=80&w=1470&auto=format&fit=crop',
-                muscles: ['Quadriceps', 'Hamstrings', 'Glutes', 'Adductors', 'Calves', 'Core'],
-                steps: [
-                    'Stand with feet shoulder-width apart, toes pointed slightly outward.',
-                    'Rest a barbell across your upper back (not on your neck).',
-                    'Brace your core and maintain a neutral spine.',
-                    'Bend at the knees and hips to lower your body, keeping your chest up.',
-                    'Lower until your thighs are at least parallel to the ground, or as low as you can with proper form.',
-                    'Drive through your heels to return to the starting position.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Focus on sitting back into the squat rather than forward. Imagine spreading the floor apart with your feet to engage your glutes more effectively.',
-                videoUrl: 'https://www.youtube.com/embed/bEv6CCg2BC8'
-            },
-            {
-                id: 'legs-2',
-                name: 'Lunges',
-                category: 'legs',
-                description: 'Lunges are a unilateral exercise that targets the quadriceps, hamstrings, and glutes while also improving balance, coordination, and functional strength.',
-                image: 'https://images.unsplash.com/photo-1616803689943-5601631c7fec?q=80&w=1470&auto=format&fit=crop',
-                muscles: ['Quadriceps', 'Hamstrings', 'Glutes', 'Calves', 'Core'],
-                steps: [
-                    'Start standing with feet hip-width apart.',
-                    'Take a step forward with your right foot, landing heel first.',
-                    'Lower your body until both knees are bent at about 90 degrees.',
-                    'Your back knee should hover just above the ground.',
-                    'Push through your right heel to return to the starting position.',
-                    'Repeat with the left leg, alternating legs for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Focus on keeping your upper body straight and your core engaged. Drive through the heel of your front foot to emphasize glute activation on the way up.',
-                videoUrl: 'https://www.youtube.com/embed/QOVaHwm-Q6U'
-            },
-            {
-                id: 'legs-3',
-                name: 'Leg Press',
-                category: 'legs',
-                description: 'The leg press is a machine-based compound exercise that targets the quadriceps, hamstrings, and glutes while reducing stress on the lower back compared to squats.',
-                image: 'https://images.unsplash.com/photo-1532384555668-bc0c32a17ffd?q=80&w=1470&auto=format&fit=crop',
-                muscles: ['Quadriceps', 'Hamstrings', 'Glutes', 'Calves'],
-                steps: [
-                    'Sit in the leg press machine with your back against the padded support.',
-                    'Place your feet on the platform, hip-width or slightly wider apart.',
-                    'Release the safety catches and lower the platform by bending your knees.',
-                    'Lower the weight until your knees form approximately 90-degree angles.',
-                    'Push through your heels to extend your legs back to the starting position, without locking your knees.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Focus on pushing through your heels and mid-foot, not your toes. Avoid lifting your hips off the seat as you push the weight back up.',
-                videoUrl: 'https://www.youtube.com/embed/IZxyjW7MPJQ'
-            },
-            {
-                id: 'legs-4',
-                name: 'Romanian Deadlift',
-                category: 'legs',
-                description: 'The Romanian deadlift primarily targets the hamstrings and glutes while also engaging the lower back, making it an excellent exercise for posterior chain development.',
-                image: 'https://images.unsplash.com/photo-1517963628607-235ccdd5476c?q=80&w=1470&auto=format&fit=crop',
-                muscles: ['Hamstrings', 'Glutes', 'Erector Spinae', 'Adductors', 'Trapezius'],
-                steps: [
-                    'Stand with feet hip-width apart, holding a barbell in front of your thighs.',
-                    'Keep a slight bend in your knees throughout the movement.',
-                    'Hinge at the hips, pushing your butt back while keeping your back flat.',
-                    'Lower the barbell by extending it down your legs, keeping it close to your body.',
-                    'Lower until you feel a stretch in your hamstrings, typically when the barbell reaches mid-shin.',
-                    'Drive your hips forward to stand up straight again, squeezing your glutes at the top.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Think of the movement as pushing your hips back and then forward, rather than just bending over. Maintain tension in your hamstrings throughout the entire exercise.',
-                videoUrl: 'https://www.youtube.com/embed/5rIQ0o1wvXw'
-            },
-            {
-                id: 'legs-5',
-                name: 'Leg Extensions',
-                category: 'legs',
-                description: 'Leg extensions are an isolation exercise that specifically targets the quadriceps, making them an effective movement for developing definition and strength in the front of the thighs.',
-                image: 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?q=80&w=1469&auto=format&fit=crop',
-                muscles: ['Quadriceps', 'Rectus Femoris'],
-                steps: [
-                    'Sit on a leg extension machine with your back against the backrest.',
-                    'Hook your feet under the padded bar, adjusting it to rest on your lower shins.',
-                    'Grasp the handles on the sides of the seat for stability.',
-                    'Extend your legs to lift the weight until your legs are almost straight, but not locked.',
-                    'Pause briefly at the top of the movement, focusing on contracting your quadriceps.',
-                    'Lower the weight back to the starting position with control.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Focus on squeezing your quadriceps at the top of the movement. For maximum engagement, point your toes slightly outward during the exercise.',
-                videoUrl: 'https://www.youtube.com/embed/YyvSfVjQeL0'
-            },
-            {
-                id: 'legs-6',
-                name: 'Hamstring Curls',
-                category: 'legs',
-                description: 'Hamstring curls isolate and target the hamstring muscles on the back of the thighs, providing a complementary exercise to quadriceps-focused movements.',
-                image: 'https://images.unsplash.com/photo-1448387473223-5c37445527e7?q=80&w=1470&auto=format&fit=crop',
-                muscles: ['Hamstrings', 'Calves'],
-                steps: [
-                    'Lie face down on a hamstring curl machine, with the pad adjusted to rest just above your heels.',
-                    'Grasp the handles or the edges of the bench for stability.',
-                    'Curl your legs up by bending at the knees, bringing your heels toward your buttocks.',
-                    'Continue curling until your legs form about a 90-degree angle.',
-                    'Hold the contracted position briefly, focusing on squeezing your hamstrings.',
-                    'Lower your legs back to the starting position with control.',
-                    'Repeat for the desired number of repetitions.'
-                ],
-                mindMuscle: 'Focus on initiating the movement from your hamstrings, not your lower back. Avoid lifting your hips off the bench during the exercise.',
-                videoUrl: 'https://www.youtube.com/embed/1Tq3QdYUuHs'
-            }
-        ];
-
         // DOM Elements
         const categoryList = document.getElementById('category-list');
         const exerciseList = document.getElementById('exercise-list');
@@ -572,56 +391,358 @@
         const backButton = document.getElementById('back-button');
         const exerciseSearch = document.getElementById('exercise-search');
         const headerSearch = document.getElementById('header-search');
-        const loader = document.getElementById('loader');
+        const loadingElement = document.getElementById('loading');
+        const recommendationsSection = document.getElementById('recommendations-section');
+        const recommendationsGrid = document.getElementById('recommendations-grid');
+        const recommendationReason = document.getElementById('recommendation-reason');
+        const exercisesTitle = document.getElementById('exercises-title');
+
+        // State
+        let currentExercises = [];
+        let currentCategory = 'all';
+        let currentExerciseId = null;
+        let userWorkoutType = 'All';
 
         // Initialize the application
-        function init() {
-            renderCategories();
-            renderExercises('all');
+        async function init() {
             setupEventListeners();
-            hideLoader();
+            await loadExercises();
+            await loadRecommendations();
+            hideLoading();
         }
 
-        // Render category list
-        function renderCategories() {
-            categories.forEach(category => {
-                const categoryItem = document.createElement('div');
-                categoryItem.className = 'category-item';
-                categoryItem.dataset.category = category.id;
-                categoryItem.textContent = category.name;
-                categoryList.appendChild(categoryItem);
-            });
+        // Load exercises from API
+        async function loadExercises(category = 'all') {
+    console.log('=== LOAD EXERCISES START ===');
+    showLoading();
+    try {
+        console.log('Making API request to /api/exercises...');
+        const response = await fetch('/api/exercises');
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        
+        const data = await response.json();
+        console.log('API Response data:', data);
+        console.log('Data success:', data.success);
+        console.log('Exercises count:', data.exercises ? data.exercises.length : 'no exercises');
+        
+        if (data.success) {
+    console.log('SUCCESS: Rendering exercises');
+    currentExercises = data.exercises;
+    userWorkoutType = data.userWorkoutType; // ADD THIS LINE
+    renderExercises(category);
+    updateExercisesTitle(category, data.userWorkoutType);
+} else {
+            console.log('ERROR: Data.success is false');
+            showError('Failed to load exercises');
+        }
+    } catch (error) {
+        console.error('CATCH ERROR loading exercises:', error);
+        showError('Error loading exercises. Please try again.');
+    } finally {
+        console.log('=== LOAD EXERCISES END ===');
+    }
+}
+
+        // Load recommended exercises
+        async function loadRecommendations() {
+            try {
+                const response = await fetch('/api/exercises/recommended');
+                const data = await response.json();
+                
+                if (data.success && data.exercises.length > 0) {
+                    renderRecommendations(data.exercises, data.reason, data.basedOn);
+                    recommendationsSection.style.display = 'block';
+                } else {
+                    recommendationsSection.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading recommendations:', error);
+                recommendationsSection.style.display = 'none';
+            }
         }
 
         // Render exercises for a specific category
-        function renderExercises(categoryId) {
-            exerciseList.innerHTML = '';
+        function renderExercises(muscleGroup = 'all') {
+    exerciseList.innerHTML = '';
+    
+    let filteredExercises = currentExercises;
+    
+    if (muscleGroup !== 'all') {
+        filteredExercises = currentExercises.filter(exercise => {
+            // Check primary muscle or target muscles array
+            return exercise.primaryMuscle === muscleGroup || 
+                   (exercise.targetMuscles && exercise.targetMuscles.includes(muscleGroup));
+        });
+    }
+    
+    // Sort by user's workout type preference first
+    if (userWorkoutType && userWorkoutType !== 'All') {
+        filteredExercises.sort((a, b) => {
+            const aMatch = a.category === userWorkoutType;
+            const bMatch = b.category === userWorkoutType;
+            return bMatch - aMatch; // User's workout type exercises first
+        });
+    }
+    
+    if (filteredExercises.length === 0) {
+        showEmptyState();
+        return;
+    }
+    
+    filteredExercises.forEach(exercise => {
+        const exerciseCard = createExerciseCard(exercise);
+        exerciseList.appendChild(exerciseCard);
+    });
+}
+        // Create exercise card element
+       function createExerciseCard(exercise) {
+    const exerciseCard = document.createElement('div');
+    exerciseCard.className = 'exercise-card';
+    exerciseCard.dataset.id = exercise._id;
+    
+    const ratingHtml = exercise.userRating 
+        ? `<div class="exercise-rating"><i class="fas fa-star"></i> ${exercise.userRating}</div>`
+        : '';
+    
+    // Use instructions instead of description, and handle undefined case
+    const instructionsPreview = exercise.instructions 
+        ? exercise.instructions.substring(0, 80) + '...'
+        : 'No instructions available';
+
+    // Single image handling - remove the duplicate
+    const imageHtml = exercise.image 
+        ? `<div class="exercise-card-image" style="background-image: url('${exercise.image}')"></div>`
+        : `<div class="exercise-card-image no-image">No Image</div>`;
+    
+    exerciseCard.innerHTML = `
+        ${imageHtml}
+        <div class="exercise-category">${exercise.category}</div>
+        ${ratingHtml}
+        <h3>${exercise.name}</h3>
+        <p>${instructionsPreview}</p>
+        <div class="exercise-meta">
+            <span class="difficulty">${exercise.difficulty}</span>
+            <span class="type">${exercise.type}</span>
+        </div>
+    `;
+    
+    return exerciseCard;
+}
+
+        // Render recommended exercises
+        function renderRecommendations(exercises, reason, basedOn) {
+            recommendationsGrid.innerHTML = '';
             
-            const filteredExercises = categoryId === 'all' 
-                ? exercises 
-                : exercises.filter(exercise => exercise.category === categoryId);
-            
-            if (filteredExercises.length === 0) {
-                showEmptyState();
-                return;
+            let reasonText = 'Based on ';
+            if (reason === 'popular') {
+                reasonText += 'popular exercises';
+            } else if (reason === 'similar_to_high_rated') {
+                reasonText += 'your high-rated exercises';
+                if (basedOn) {
+                    reasonText += ` in ${basedOn.categories.join(', ')}`;
+                }
             }
             
-            filteredExercises.forEach(exercise => {
-                const exerciseCard = document.createElement('div');
-                exerciseCard.className = 'exercise-card';
-                exerciseCard.dataset.id = exercise.id;
-                
-                exerciseCard.innerHTML = `
-                    <div class="exercise-card-image" style="background-image: url(${exercise.image})"></div>
-                    <h3>${exercise.name}</h3>
-                    <p>${exercise.description.substring(0, 80)}...</p>
-                `;
-                
-                exerciseList.appendChild(exerciseCard);
+            recommendationReason.textContent = reasonText;
+            
+            exercises.forEach(exercise => {
+                const exerciseCard = createExerciseCard(exercise);
+                recommendationsGrid.appendChild(exerciseCard);
             });
         }
 
-        // Show empty state when no exercises are found
+        // Show exercise details
+        async function showExerciseDetail(exerciseId) {
+            showLoading();
+            try {
+                const response = await fetch(`/api/exercises/${exerciseId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const exercise = data.exercise;
+                    currentExerciseId = exerciseId;
+                    
+                    // Populate exercise details
+                    document.getElementById('exercise-title').textContent = exercise.name;
+                    document.getElementById('exercise-image').style.backgroundImage = `url('${exercise.image}')`;
+                    document.getElementById('exercise-description').textContent = exercise.instructions;
+                    document.getElementById('exercise-category').textContent = exercise.category;
+                    document.getElementById('exercise-difficulty').textContent = exercise.difficulty;
+                    document.getElementById('mind-muscle-tip').textContent = 'Focus on proper form and muscle engagement throughout the movement.';
+                    
+                    // Populate muscles worked
+                    const musclesList = document.getElementById('muscles-list');
+                    musclesList.innerHTML = '';
+                    exercise.targetMuscles.forEach(muscle => {
+                        const muscleTag = document.createElement('span');
+                        muscleTag.className = 'muscle-tag';
+                        muscleTag.textContent = muscle;
+                        musclesList.appendChild(muscleTag);
+                    });
+                    
+                    // Populate equipment
+                    const equipmentList = document.getElementById('equipment-list');
+                    equipmentList.innerHTML = '';
+                    if (exercise.equipment && exercise.equipment.length > 0) {
+                        exercise.equipment.forEach(equipment => {
+                            const equipmentTag = document.createElement('span');
+                            equipmentTag.className = 'equipment-tag';
+                            equipmentTag.textContent = equipment;
+                            equipmentList.appendChild(equipmentTag);
+                        });
+                    } else {
+                        equipmentList.innerHTML = '<span class="no-equipment">No equipment needed</span>';
+                    }
+                    
+                    // Populate steps (simplified for now)
+                    const stepsContainer = document.getElementById('exercise-steps');
+                    stepsContainer.innerHTML = '<li>Follow the exercise description above for proper form and technique.</li>';
+                    
+                    // Setup rating stars
+                    setupRatingStars(exercise.userRating);
+                    
+                    // Show similar exercises if available
+                    if (data.similarExercises && data.similarExercises.length > 0) {
+                        renderSimilarExercises(data.similarExercises);
+                    }
+                    
+                    // Show the detail view
+                    exerciseOverview.style.display = 'none';
+                    exerciseDetail.style.display = 'block';
+                    hideLoading();
+                } else {
+                    showError('Exercise not found');
+                }
+            } catch (error) {
+                console.error('Error loading exercise details:', error);
+                showError('Error loading exercise details');
+            }
+        }
+
+        // Setup rating stars
+        function setupRatingStars(userRating) {
+            const stars = document.querySelectorAll('#rating-stars .star');
+            const userRatingDisplay = document.getElementById('user-rating-display');
+            const userRatingValue = document.getElementById('user-rating-value');
+            const editRatingBtn = document.getElementById('edit-rating');
+            
+            // Reset stars
+            stars.forEach(star => {
+                star.classList.remove('active');
+                star.style.display = 'inline-block';
+            });
+            
+            if (userRating) {
+                // Show user's current rating
+                stars.forEach(star => {
+                    if (parseInt(star.dataset.rating) <= userRating) {
+                        star.classList.add('active');
+                    }
+                });
+                userRatingValue.textContent = `${userRating}/5`;
+                userRatingDisplay.style.display = 'flex';
+            } else {
+                userRatingDisplay.style.display = 'none';
+            }
+            
+            // Add click listeners
+            stars.forEach(star => {
+                star.addEventListener('click', async () => {
+                    const rating = parseInt(star.dataset.rating);
+                    await rateExercise(currentExerciseId, rating);
+                });
+            });
+            
+            // Edit rating button
+            editRatingBtn.addEventListener('click', () => {
+                userRatingDisplay.style.display = 'none';
+                stars.forEach(star => {
+                    star.style.display = 'inline-block';
+                });
+            });
+        }
+
+        // Rate an exercise
+        async function rateExercise(exerciseId, rating) {
+            try {
+                const response = await fetch(`/api/exercises/${exerciseId}/rate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ rating })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update UI
+                    setupRatingStars(rating);
+                    
+                    // Reload recommendations
+                    await loadRecommendations();
+                    
+                    // Show success message
+                    showMessage('Exercise rated successfully!', 'success');
+                } else {
+                    showError(data.message || 'Failed to rate exercise');
+                }
+            } catch (error) {
+                console.error('Error rating exercise:', error);
+                showError('Error rating exercise');
+            }
+        }
+
+        // Render similar exercises
+        function renderSimilarExercises(exercises) {
+            const similarExercisesGrid = document.getElementById('similar-exercises-grid');
+            similarExercisesGrid.innerHTML = '';
+            
+            exercises.forEach(exercise => {
+                const exerciseCard = createExerciseCard(exercise);
+                similarExercisesGrid.appendChild(exerciseCard);
+            });
+            
+            document.getElementById('similar-exercises').style.display = 'block';
+        }
+
+        // Search functionality
+        async function searchExercises(query) {
+            if (!query || query.trim() === '') {
+                renderExercises(currentCategory);
+                return;
+            }
+            
+            showLoading();
+            try {
+                const response = await fetch(`/api/exercises/search?query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    exerciseList.innerHTML = '';
+                    
+                    if (data.exercises.length === 0) {
+                        showEmptyState();
+                        return;
+                    }
+                    
+                    data.exercises.forEach(exercise => {
+                        const exerciseCard = createExerciseCard(exercise);
+                        exerciseList.appendChild(exerciseCard);
+                    });
+                } else {
+                    showError('Search failed');
+                }
+            } catch (error) {
+                console.error('Error searching exercises:', error);
+                showError('Error searching exercises');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Show empty state
         function showEmptyState() {
             exerciseList.innerHTML = `
                 <div class="empty-state">
@@ -632,115 +753,89 @@
             `;
         }
 
-        // Display exercise details
-        function showExerciseDetail(exerciseId) {
-            const exercise = exercises.find(ex => ex.id === exerciseId);
-            
-            if (!exercise) return;
-            
-            document.getElementById('exercise-title').textContent = exercise.name;
-      //////      document.getElementById('exercise-image').style.backgroundImage = url(${exercise.image});
-            document.getElementById('exercise-description').textContent = exercise.description;
-            
-            // Render muscles worked
-            const musclesList = document.getElementById('muscles-list');
-            musclesList.innerHTML = '';
-            exercise.muscles.forEach(muscle => {
-                const muscleTag = document.createElement('span');
-                muscleTag.className = 'muscle-tag';
-                muscleTag.textContent = muscle;
-                musclesList.appendChild(muscleTag);
-            });
-            
-            // Render exercise steps
-            const stepsContainer = document.getElementById('exercise-steps');
-            stepsContainer.innerHTML = '';
-            exercise.steps.forEach(step => {
-                const listItem = document.createElement('li');
-                listItem.textContent = step;
-                stepsContainer.appendChild(listItem);
-            });
-            
-            // Set mind-muscle connection tip
-            document.getElementById('mind-muscle-tip').textContent = exercise.mindMuscle;
-            
-            // Set video
-            document.getElementById('video-embed').innerHTML = `
-                <iframe width="560" height="315" src="${exercise.videoUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            `;
-            
-            // Show the detail view
-            exerciseOverview.style.display = 'none';
-            exerciseDetail.classList.add('active');
+        // Update exercises title
+        // Update exercises title for muscle groups
+function updateExercisesTitle(muscleGroup, userWorkoutType) {
+    if (muscleGroup === 'all') {
+        if (userWorkoutType && userWorkoutType !== 'All') {
+            exercisesTitle.textContent = `${userWorkoutType} Exercises`;
+        } else {
+            exercisesTitle.textContent = 'All Exercises';
+        }
+    } else {
+        exercisesTitle.textContent = `${muscleGroup} Exercises`;
+    }
+}
+
+        // Show/hide loading
+        function showLoading() {
+            loadingElement.style.display = 'block';
+        }
+        
+        function hideLoading() {
+            loadingElement.style.display = 'none';
         }
 
-        // Search functionality
-        function searchExercises(query) {
-            if (!query || query.trim() === '') {
-                const activeCategory = document.querySelector('.category-item.active');
-                const categoryId = activeCategory ? activeCategory.dataset.category : 'all';
-                renderExercises(categoryId);
-                return;
-            }
-            
-            query = query.toLowerCase().trim();
-            
-            const filteredExercises = exercises.filter(exercise => {
-                return exercise.name.toLowerCase().includes(query) || 
-                       exercise.description.toLowerCase().includes(query) ||
-                       exercise.muscles.some(muscle => muscle.toLowerCase().includes(query));
-            });
-            
-            exerciseList.innerHTML = '';
-            
-            if (filteredExercises.length === 0) {
-                showEmptyState();
-                return;
-            }
-            
-            filteredExercises.forEach(exercise => {
-                const exerciseCard = document.createElement('div');
-                exerciseCard.className = 'exercise-card';
-                exerciseCard.dataset.id = exercise.id;
-                
-                exerciseCard.innerHTML = `
-                    <div class="exercise-card-image" style="background-image: url(${exercise.image})"></div>
-                    <h3>${exercise.name}</h3>
-                    <p>${exercise.description.substring(0, 80)}...</p>
-                `;
-                
-                exerciseList.appendChild(exerciseCard);
-            });
+        // Show error message
+        function showError(message) {
+            exerciseList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Show success message
+        function showMessage(message, type = 'success') {
+            // Simple alert for now - you can replace with a toast notification
+            alert(message);
         }
 
         // Set up event listeners
         function setupEventListeners() {
             // Category selection
-            categoryList.addEventListener('click', function(e) {
-                if (e.target.classList.contains('category-item')) {
-                    const categoryId = e.target.dataset.category;
-                    
-                    // Update active state
-                    document.querySelectorAll('.category-item').forEach(item => {
-                        item.classList.remove('active');
-                    });
-                    e.target.classList.add('active');
-                    
-                    // Render exercises for selected category
-                    renderExercises(categoryId);
-                    
-                    // Update the container title
-            ////////// document.querySelector('.exercise-header h2').textContent = 
-                    //     categoryId === 'all' ? 'All Exercises' : ${categories.find(cat => cat.id === categoryId).name} Exercises;
-                    
-                    // Clear search input
-                    exerciseSearch.value = '';
-                    headerSearch.value = '';
+            // Category selection - UPDATED FOR MUSCLE GROUPS
+categoryList.addEventListener('click', function(e) {
+    if (e.target.classList.contains('category-item')) {
+        const muscleGroup = e.target.dataset.category;
+        
+        // Update active state
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        e.target.classList.add('active');
+        
+        // Render exercises for selected muscle group
+        currentCategory = muscleGroup;
+        renderExercises(muscleGroup);
+        updateExercisesTitle(muscleGroup, userWorkoutType); // Use stored userWorkoutType
+        
+        // Clear search input
+        exerciseSearch.value = '';
+        headerSearch.value = '';
+    }
+});
+            
+            // Exercise selection (delegated)
+            exerciseList.addEventListener('click', function(e) {
+                const exerciseCard = e.target.closest('.exercise-card');
+                if (exerciseCard) {
+                    showExerciseDetail(exerciseCard.dataset.id);
                 }
             });
             
-            // Exercise selection
-            exerciseList.addEventListener('click', function(e) {
+            // Similar exercises selection
+            document.getElementById('similar-exercises-grid').addEventListener('click', function(e) {
+                const exerciseCard = e.target.closest('.exercise-card');
+                if (exerciseCard) {
+                    showExerciseDetail(exerciseCard.dataset.id);
+                }
+            });
+            
+            // Recommended exercises selection
+            recommendationsGrid.addEventListener('click', function(e) {
                 const exerciseCard = e.target.closest('.exercise-card');
                 if (exerciseCard) {
                     showExerciseDetail(exerciseCard.dataset.id);
@@ -749,42 +844,49 @@
             
             // Back button
             backButton.addEventListener('click', function() {
-                exerciseDetail.classList.remove('active');
+                exerciseDetail.style.display = 'none';
                 exerciseOverview.style.display = 'block';
             });
             
             // Search functionality
+            let searchTimeout;
             exerciseSearch.addEventListener('input', function(e) {
-                searchExercises(e.target.value);
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    searchExercises(e.target.value);
+                }, 300);
             });
             
             headerSearch.addEventListener('input', function(e) {
                 exerciseSearch.value = e.target.value;
-                searchExercises(e.target.value);
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    searchExercises(e.target.value);
+                }, 300);
             });
         }
 
-        // Show/hide loader
-        function showLoader() {
-            loader.style.display = 'block';
-        }
-        
-        function hideLoader() {
-            loader.style.display = 'none';
-        }
-
-        // Initialize app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
-
-        // Set the first category as active by default
-        window.onload = function() {
-            if (categories.length > 0) {
-                const firstCategoryItem = document.querySelector('.category-item');
-                if (firstCategoryItem) {
-                    firstCategoryItem.classList.add('active');
-                }
+        // Mobile menu functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuIcon = document.getElementById('menuIcon');
+            const closeBtn = document.getElementById('closeBtn');
+            const sideNavbar = document.getElementById('sideNavbar');
+            
+            if (menuIcon) {
+                menuIcon.addEventListener('click', function() {
+                    sideNavbar.style.width = '250px';
+                });
             }
-        };
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    sideNavbar.style.width = '0';
+                });
+            }
+            
+            // Initialize app
+            init();
+        });
     </script>
 </body>
 </html>
