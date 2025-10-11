@@ -15,11 +15,11 @@ router.delete('/users/:id', adminController.deleteUser);
 
 // Trainer Routes
 router.get('/trainers', adminController.getTrainers);
-router.get('/api/trainers', adminController.getTrainersApi);
-//router.get('/api/trainers/stats', adminController.getTrainerStats); // Ensure this line is present
+router.get('/api/trainers/stats', adminController.getTrainerStats);
 router.post('/trainers', adminController.createTrainer);
 router.put('/trainers/:id', adminController.updateTrainer);
 router.delete('/trainers/:id', adminController.deleteTrainer);
+
 
 // Membership Routes
 router.get('/memberships', adminController.getMemberships);

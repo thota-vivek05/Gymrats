@@ -29,7 +29,7 @@ const trainerSchema = new mongoose.Schema({
     // In Trainer.js schema, update the specializations field:
     specializations: [{ 
     type: String, 
-    enum: ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding', 'Nutrition']
+    enum: ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding']
     }],
     
     verifierId: { 
