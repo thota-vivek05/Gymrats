@@ -79,16 +79,16 @@
                     <input type="password" class="form-control" id="password" placeholder="Enter your password"
                         required>
                 </div>
-
-                <div class="form-group">
+                <!-- Brimstone 2 -->
+                <!-- <div class="form-group">
                     <label for="loginMembershipPlan">Membership Plan</label>
                     <select class="form-control" id="loginMembershipPlan" name="loginMembershipPlan">
                         <option value="basic">Basic Plan</option>
                         <option value="gold">Gold Plan</option>
                         <option value="platinum">Platinum Plan</option>
                     </select>
-                </div>
-
+                </div> -->
+                <!-- Brimstone 2 -->
                 <button type="submit" class="btn">Login</button>
 
                 <div class="alternate-action">
@@ -193,9 +193,9 @@
                         <label for="membershipPlan">Membership Plan</label>
                         <select class="form-control" id="membershipPlan" name="membershipPlan" required>
                             <option value="">Select a plan</option>
-                            <option value="basic">Basic Plan - $29/month</option>
-                            <option value="gold">Gold Plan - $59/month</option>
-                            <option value="platinum">Platinum Plan - $99/month</option>
+                            <option value="basic">Basic Plan </option>
+                            <option value="gold">Gold Plan </option>
+                            <option value="platinum">Platinum Plan</option>
                         </select>
                     </div>
 
@@ -207,6 +207,14 @@
                             <option value="6">6 Months</option>
                             <option value="12">12 Months</option>
                         </select>
+                    </div>
+                    <!-- Add this after the Membership Duration form group -->
+                    <div class="form-group">
+                        <label for="membershipPrice">Membership Price</label>
+                        <div class="price-display" id="priceDisplay">
+                            <p class="price-amount"></p>
+                            <p class="save-info" id="saveInfo"></p>
+                        </div>
                     </div>
 
                     <h3>Payment Information</h3>
@@ -376,9 +384,10 @@
 
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
-                const loginMembershipPlan = document.getElementById('loginMembershipPlan').value;
-
-                if (!email || !password || !loginMembershipPlan) {
+                //brimstone 3
+                // const loginMembershipPlan = document.getElementById('loginMembershipPlan').value;
+                // brimstone 3
+                if (!email || !password) {
                     showErrorModal('Please fill in all fields');
                     return;
                 }
@@ -390,8 +399,8 @@
                         },
                         body: JSON.stringify({
                             email,
-                            password,
-                            loginMembershipPlan
+                            password
+
                         }),
                     })
                     .then(response => response.json())
@@ -590,7 +599,129 @@
             const heightInMeters = height / 100;
             const bmi = weight / (heightInMeters * heightInMeters);
             bmiField.value = bmi.toFixed(1);
+        }//brimstone
+        // Add this JavaScript code to your existing script section
+
+        // Price configuration based on your renewal options
+        const priceConfig = {
+            basic: {
+                1: {
+                    price: 299,
+                    save: ''
+                },
+                3: {
+                    price: 750,
+                    save: 'Save 15%'
+                },
+                6: {
+                    price: 1350,
+                    save: 'Save 25%'
+                },
+                12: {
+                    price: 2400,
+                    save: 'Save 33%'
+                } // Assuming 12 months for annual
+            },
+            gold: {
+                1: {
+                    price: 599,
+                    save: ''
+                },
+                3: {
+                    price: 1550,
+                    save: 'Save 15%'
+                },
+                6: {
+                    price: 2700,
+                    save: 'Save 25%'
+                },
+                12: {
+                    price: 4800,
+                    save: 'Save 33%'
+                } // Assuming 12 months for annual
+            },
+            platinum: {
+                1: {
+                    price: 999,
+                    save: ''
+                },
+                3: {
+                    price: 2500,
+                    save: 'Save 15%'
+                },
+                6: {
+                    price: 4500,
+                    save: 'Save 25%'
+                },
+                12: {
+                    price: 8000,
+                    save: 'Save 33%'
+                } // Assuming 12 months for annual
+            }
+        };
+
+        // Function to calculate and display price
+        // Updated calculatePrice function with enhanced styling
+        function calculatePrice() {
+            const membershipPlan = document.getElementById('membershipPlan').value;
+            const membershipDuration = document.getElementById('membershipDuration').value;
+            const priceDisplay = document.getElementById('priceDisplay');
+            const saveInfo = document.getElementById('saveInfo');
+
+            if (!membershipPlan || !membershipDuration) {
+                priceDisplay.innerHTML = '<p class="price-amount">Select membership plan and duration to see price</p>';
+                priceDisplay.classList.remove('has-price');
+                saveInfo.textContent = '';
+                return;
+            }
+
+            const duration = parseInt(membershipDuration);
+            const planData = priceConfig[membershipPlan];
+
+            if (planData && planData[duration]) {
+                const priceInfo = planData[duration];
+                priceDisplay.innerHTML = `
+            <p class="price-amount">₹${priceInfo.price}</p>
+        `;
+                priceDisplay.classList.add('has-price');
+
+                // Add animation for price update
+                priceDisplay.classList.add('price-update');
+                setTimeout(() => {
+                    priceDisplay.classList.remove('price-update');
+                }, 300);
+
+                saveInfo.textContent = priceInfo.save;
+
+                // Style savings information
+                if (priceInfo.save) {
+                    saveInfo.style.color = '#4ecdc4';
+                    saveInfo.style.fontWeight = '600';
+                    saveInfo.style.marginTop = '8px';
+                    saveInfo.style.textShadow = '0 0 5px rgba(78, 205, 196, 0.3)';
+                } else {
+                    saveInfo.textContent = '';
+                }
+            }
         }
+
+        // Add event listeners to membership plan and duration dropdowns
+        document.addEventListener('DOMContentLoaded', function () {
+            const membershipPlan = document.getElementById('membershipPlan');
+            const membershipDuration = document.getElementById('membershipDuration');
+
+            if (membershipPlan) {
+                membershipPlan.addEventListener('change', calculatePrice);
+            }
+
+            if (membershipDuration) {
+                membershipDuration.addEventListener('change', calculatePrice);
+            }
+
+            // Initialize price display
+            calculatePrice();
+        });
+        //brimstone
     </script>
 </body>
 

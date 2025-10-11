@@ -64,21 +64,6 @@
         </header>
     </div>
 
-    <!-- Membership Info Section            REYNA -->
-    <div class="membership-info">
-    <h3>Membership Status</h3>
-    <p>Plan: <%= user.membershipType %></p>
-    <p>Months Remaining: <%= membershipInfo.months_remaining %></p>
-    <p>Expires: <%= new Date(membershipInfo.end_date).toLocaleDateString() %></p>
-    <% if (membershipInfo.months_remaining < 2) { %>
-        <div class="renewal-warning">
-            <p>Your membership is expiring soon!</p>
-            <a href="/membership/renewal" class="renew-btn">Renew Now</a>
-        </div>
-    <% } %>
-    </div>
-
-    
     <!-- Dashboard Hero Section -->
     <section class="dashboard-hero">
         <div class="dashboard-hero-content">
@@ -313,7 +298,7 @@
 
 
         <!-- Footer -->
-        <footer class="site-footer">
+        <!-- <footer class="site-footer">
             <div class="footer-content">
                 <div class="footer-column">
                     <h3>GymRats</h3>
@@ -359,7 +344,7 @@
                     <p class="copyright">GymRats © 2025. All rights reserved.</p>
                 </div>
             </div>
-        </footer>
+        </footer> -->
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -628,7 +613,7 @@
                 timeframeSelect.addEventListener('change', updateCharts);
             });
         </script>
-        
+
 </body>
 
 </html>

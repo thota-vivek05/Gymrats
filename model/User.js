@@ -48,6 +48,12 @@ const userSchema = new mongoose.Schema({
         min: 0,
         default: null 
     },
+    // brimstone
+    workout_type: {
+    type: String,
+    enum: ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding'],
+    default: null
+},
 
     // ✅ Added fields
     bodyFat: { 
@@ -70,15 +76,6 @@ const userSchema = new mongoose.Schema({
         enum: ['Basic', 'Gold', 'Platinum'],
         default: 'Basic'
     },
-
-    // REYNA
-    // In User.js schema, add this field after the BMI field:
-    workout_type: {
-    type: String,
-    enum: ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding'],
-    default: null
-    },
-
 
   // NEW: Membership Duration Fields
     membershipDuration: {
@@ -114,14 +111,15 @@ const userSchema = new mongoose.Schema({
             default: 90,
             min: 0 
         },
-        weight_goal: { 
-            type: Number, 
-            min: 0,
-            default: null 
-        }
+        // Brimstone
+        weight_goal: {
+        type: Number,
+        required: true,
+        min: 20,
+        max: 300
     },
-
-
+    // Brimstone
+    },
 
     trainer: { 
         type: mongoose.Schema.Types.ObjectId, 
@@ -199,3 +197,29 @@ userSchema.methods.decreaseMembershipMonth = function() {
 };
 
 module.exports = mongoose.model('User', userSchema);
+// brimstone
+// Add a method to extend membership
+userSchema.methods.extendMembership = function(additionalMonths) {
+    console.log('Before extension - months_remaining:', this.membershipDuration.months_remaining);
+    console.log('Adding months:', additionalMonths);
+    
+    // ✅ FIX: Initialize months_remaining if it doesn't exist
+    if (!this.membershipDuration.months_remaining) {
+        this.membershipDuration.months_remaining = 0;
+    }
+    
+    this.membershipDuration.months_remaining += additionalMonths;
+    this.membershipDuration.last_renewal_date = new Date();
+    
+    // Update end date
+    const newEndDate = new Date();
+    newEndDate.setMonth(newEndDate.getMonth() + this.membershipDuration.months_remaining);
+    this.membershipDuration.end_date = newEndDate;
+    
+    this.status = 'Active';
+    
+    console.log('After extension - months_remaining:', this.membershipDuration.months_remaining);
+    console.log('New end date:', this.membershipDuration.end_date);
+    
+    return this.save();
+};
