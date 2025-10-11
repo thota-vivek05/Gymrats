@@ -96,7 +96,7 @@
                 <div class="stats-header">
                     <h3>Revenue Generated</h3>
                 </div>
-                <div class="stats-number" id="revenue">$<%= stats.revenue.toLocaleString() %></div>
+                <div class="stats-number" id="revenue">₹<%= stats.revenue.toLocaleString() %></div>
                 <div class="stats-label">Total revenue from memberships</div>
             </div>
         </div>
@@ -343,7 +343,7 @@ console.log('Setting up dynamic loading...');
         if (data.success) {
             // Update stats cards
             document.getElementById('totalTrainers').textContent = data.stats.totalTrainers;
-            document.getElementById('revenue').textContent = '$' + data.stats.revenue.toLocaleString();
+            document.getElementById('revenue').textContent = '₹' + data.stats.revenue.toLocaleString();
             document.getElementById('specializationCount').textContent = data.stats.specializationCount;
             document.getElementById('pendingApprovals').textContent = data.stats.pendingApprovals;
         }

@@ -3,7 +3,6 @@ const User = require('../model/User');
 const Trainer = require('../model/Trainer');
 const Exercise = require('../model/Exercise');
 const Membership = require('../model/Membership');
-const WorkoutPlan = require('../model/WorkoutPlan');
 const Verifier = require('../model/Verifier');
 const TrainerApplication = require('../model/TrainerApplication');
 const WorkoutHistory = require('../model/WorkoutHistory');
@@ -500,54 +499,6 @@ const adminController = {
       res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
       console.error('Delete exercise error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  getWorkoutPlans: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.redirect('/admin_login');
-      }
-      const workoutPlans = await WorkoutPlan.find().sort({ createdAt: -1 }).populate('creator', 'name').populate('userId', 'full_name');
-      res.render('admin_workouts', {
-        pageTitle: 'Workout Plans',
-        user: req.session.user || null,
-        workoutPlans
-      });
-    } catch (error) {
-      console.error('Workout plan management error:', error);
-      res.render('admin_workouts', {
-        pageTitle: 'Workout Plans',
-        user: req.session.user || null,
-        workoutPlans: []
-      });
-    }
-  },
-
-  createWorkoutPlan: async (req, res) => {
-    try {
-      res.status(501).json({ success: false, message: 'Not implemented yet' });
-    } catch (error) {
-      console.error('Create workout plan error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  updateWorkoutPlan: async (req, res) => {
-    try {
-      res.status(501).json({ success: false, message: 'Not implemented yet' });
-    } catch (error) {
-      console.error('Update workout plan error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  deleteWorkoutPlan: async (req, res) => {
-    try {
-      res.status(501).json({ success: false, message: 'Not implemented yet' });
-    } catch (error) {
-      console.error('Delete workout plan error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   },
