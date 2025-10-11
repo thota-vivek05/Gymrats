@@ -424,10 +424,10 @@ const signupUser = async (req, res) => {
 
         // REYNA
         // Add validation for workoutType
-        if (!workoutType) {
-            console.log('Validation failed: Workout type is required');
-            return res.status(400).json({ error: 'Please select your preferred workout type' });
-        }
+        // if (!workoutType) {
+        //     console.log('Validation failed: Workout type is required');
+        //     return res.status(400).json({ error: 'Please select your preferred workout type' });
+        // }
         // end REYNA
 
         const existingUser = await User.findOne({ email: userEmail });
@@ -665,13 +665,13 @@ const getUserDashboard = async (req, res, membershipCode) => {
         };
 
         if (currentWeekWorkout && currentWeekWorkout.exercises) {
-            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const todayDayName = dayNames[today.getDay()];
+            //const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            // const todayDayName = dayNames[today.getDay()];
             
             // Filter exercises for today
-            todayExercises = currentWeekWorkout.exercises.filter(exercise => 
-                exercise.day === todayDayName
-            );
+            // todayExercises = currentWeekWorkout.exercises.filter(exercise => 
+            //     exercise.day === todayDayName
+            // );
             
             if (todayExercises.length > 0) {
                 const completedExercises = todayExercises.filter(ex => ex.completed).length;
@@ -729,7 +729,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
         // Add this debug section after the currentWeekWorkout query:
 console.log('=== DEBUG WORKOUT DATA ===');
 console.log('Today:', today);
-console.log('Today Day Name:', dayNames[today.getDay()]);
+//console.log('Today Day Name:', dayNames[today.getDay()]);
 console.log('Week Start:', weekStart);
 console.log('Week End:', weekEnd);
 console.log('Current Week Workout Found:', !!currentWeekWorkout);
