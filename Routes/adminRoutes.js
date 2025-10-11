@@ -30,11 +30,11 @@ router.post('/memberships', adminController.createMembership);
 router.put('/memberships/:id', adminController.updateMembership);
 router.delete('/memberships/:id', adminController.deleteMembership);
 
-// Nutrition Plan Routes
-router.get('/nutrition-plans', adminController.getNutritionPlans);
-router.post('/nutrition-plans', adminController.createNutritionPlan);
-router.put('/nutrition-plans/:id', adminController.updateNutritionPlan);
-router.delete('/nutrition-plans/:id', adminController.deleteNutritionPlan);
+// // Nutrition Plan Routes
+// router.get('/nutrition-plans', adminController.getNutritionPlans);
+// router.post('/nutrition-plans', adminController.createNutritionPlan);
+// router.put('/nutrition-plans/:id', adminController.updateNutritionPlan);
+// router.delete('/nutrition-plans/:id', adminController.deleteNutritionPlan);
 
 // Exercise Routes
 router.get('/exercises', adminController.getExercises);

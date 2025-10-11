@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pending Verifications - GymRats</title>
+    <title>Rejected Verifications - GymRats</title>
     <link rel="stylesheet" type="text/css" href="/verifier/verifer.css" />
     <link rel="stylesheet" type="text/css" href="/home/home.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -61,34 +61,34 @@
             <div class="sidebar-header">
                 <a href="/home" class="brand-logo">GymRats</a>
             </div>
-    <div class="sidebar-menu">
-    <ul>
-        <li >
-            <a href="/verifier">
-                <i class="fas fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </a>
-        </li>
-        <li class="active">
-            <a href="/verifier/pendingverifications">
-                <i class="fas fa-clipboard-list"></i>
-                <span>Pending Verifications</span>
-            </a>
-        </li>
-        <li>
-            <a href="/verifier/approvedverifications">
-                <i class="fas fa-check-circle"></i>
-                <span>Approved Verifications</span>
-            </a>
-        </li>
-        <li>
-            <a href="/verifier/rejectedverifications">
-                <i class="fas fa-times-circle"></i>
-                <span>Rejected Verifications</span>
-            </a>
-        </li>
-    </ul>
-</div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li>
+                        <a href="/verifier">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/verifier/pendingverifications">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Pending Verifications</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/verifier/approvedverifications">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Approved Verifications</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="/verifier/rejectedverifications">
+                            <i class="fas fa-times-circle"></i>
+                            <span>Rejected Verifications</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
             <div class="sidebar-footer">
                 <a href="/home">
                     <i class="fas fa-sign-out-alt"></i>
@@ -106,23 +106,23 @@
                 </div>
                 
                 <div class="navbar-right">
-    <div class="user-profile">
-        <span><%= verifier.name %></span>
-    </div>
-</div>
+                    <div class="user-profile">
+                        <span><%= verifier.name %></span>
+                    </div>
+                </div>
             </div>
 
             <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <div class="page-header">
-                    <h1>Pending Trainer Verifications</h1>
-                    <p>Review and process trainer applications awaiting verification.</p>
+                    <h1>Rejected Trainer Verifications</h1>
+                    <p>View all trainer applications that have been rejected.</p>
                 </div>
 
-                <!-- Pending Applications Table -->
+                <!-- Rejected Applications Table -->
                 <div class="section-container">
                     <div class="section-header">
-                        <h2>Pending Applications</h2>
+                        <h2>Rejected Applications</h2>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -133,8 +133,8 @@
                                     <th>Phone</th>
                                     <th>Experience</th>
                                     <th>Specializations</th>
-                                    <th>Submitted Date</th>
-                                    <th>Actions</th>
+                                    <th>Rejected Date</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -154,21 +154,16 @@
                                     <td><%= app.phone %></td>
                                     <td><%= app.experience %></td>
                                     <td><%= app.specializations ? app.specializations.join(', ') : '' %></td>
-                                    <td><%= app.createdAt ? new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown' %>
+                                    <td><%= app.updatedAt ? new Date(app.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown' %>
                                     </td>
                                     <td>
-                                        <div class="action-buttons">
-                                            <a href="/verifier/approve/<%= app._id %>" class="btn-approve"
-                                                onclick="return confirm('Are you sure you want to approve this trainer?')">Approve</a>
-                                            <a href="/verifier/reject/<%= app._id %>" class="btn-reject"
-                                                onclick="return confirm('Are you sure you want to reject this trainer?')">Reject</a>
-                                        </div>
+                                        <span class="status rejected">Rejected</span>
                                     </td>
                                 </tr>
                                 <% }); %>
                                 <% } else { %>
                                 <tr>
-                                    <td colspan="7" style="text-align:center;">No pending verifications found.</td>
+                                    <td colspan="7" style="text-align:center;">No rejected verifications found.</td>
                                 </tr>
                                 <% } %>
                             </tbody>
@@ -195,5 +190,4 @@
         });
     </script>
 </body>
-
 </html>

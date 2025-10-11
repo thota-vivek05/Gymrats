@@ -18,8 +18,16 @@ router.get('/register', verifierController.getRegistrationPage);
 router.post('/register', verifierController.registerVerifier);
 
 router.get('/pendingverifications', verifierController.showPendingVerifications);
+
+//REYNA
+router.get('/approvedverifications', verifierController.requireAuth, verifierController.showApprovedVerifications);
+router.get('/rejectedverifications', verifierController.requireAuth, verifierController.showRejectedVerifications);
+
 router.get('/verify/:id', verifierController.getVerificationDetails);
 router.post('/verify/:id', verifierController.processVerification);
-router.get('/approve/:id', verifierController.approveTrainer);
-router.get('/reject/:id', verifierController.rejectTrainer);
+
+//REYNA
+router.get('/approve/:id', verifierController.requireAuth, verifierController.approveTrainer);
+router.get('/reject/:id', verifierController.requireAuth, verifierController.rejectTrainer);
+
 module.exports = router;

@@ -61,23 +61,34 @@
             <div class="sidebar-header">
                 <a href="/home" class="brand-logo">GymRats</a>
             </div>
-            <div class="sidebar-menu">
-                <ul>
-                    <li class="active">
-                        <a href="/verifier">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/verifier/pendingverifications">
-                            <i class="fas fa-clipboard-list"></i>
-                            <span>Pending Verifications</span>
-                        </a>
-                    </li>
-
-                </ul>
-            </div>
+    <div class="sidebar-menu">
+    <ul>
+        <li class="active">
+            <a href="/verifier">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a href="/verifier/pendingverifications">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Pending Verifications</span>
+            </a>
+        </li>
+        <li>
+            <a href="/verifier/approvedverifications">
+                <i class="fas fa-check-circle"></i>
+                <span>Approved Verifications</span>
+            </a>
+        </li>
+        <li>
+            <a href="/verifier/rejectedverifications">
+                <i class="fas fa-times-circle"></i>
+                <span>Rejected Verifications</span>
+            </a>
+        </li>
+    </ul>
+</div>
             <div class="sidebar-footer">
                 <a href="/home">
                     <i class="fas fa-sign-out-alt"></i>
@@ -156,7 +167,7 @@
                 <div class="section-container">
                     <div class="section-header">
                         <h2>Recent Verification Requests</h2>
-                        <a href="/pendingverifications" class="view-all">View All</a>
+                        <a href="/verifier/pendingverifications" class="view-all">View All</a>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -223,37 +234,46 @@
                 <!-- Calendar and Messages -->
                 <div class="split-section">
                    
-                    <!-- Messages -->
-                    <div class="messages-container">
-                        <div class="section-header">
-                            <h2>Recent Messages</h2>
-                            <a href="/messages" class="view-all">View All</a>
-                        </div>
-                        <div class="message-list">
-                            <% if (recentMessages && recentMessages.length > 0) { %>
-                            <% recentMessages.forEach(msg => { %>
-                            <div class="message-item <%= msg.unread ? 'unread' : '' %>">
-                                <div class="message-avatar">
-                                    <img src="<%= msg.avatar %>" alt="<%= msg.name %>" />
-                                </div>
-                                <div class="message-content">
-                                    <div class="message-header">
-                                        <h4><%= msg.name %></h4>
-                                        <span class="message-time"><%= msg.time %></span>
-                                    </div>
-                                    <p class="message-text"><%= msg.text %></p>
-                                </div>
-                            </div>
-                            <% }); %>
-                            <% } else { %>
-                            <div class="message-item">
-                                <div class="message-content">
-                                    <p>No recent messages.</p>
-                                </div>
-                            </div>
-                            <% } %>
-                        </div>
-                    </div>
+                    <!-- REYNA  -->
+                    <!-- Recent Approved Trainers -->
+<div class="messages-container">
+    <div class="section-header">
+        <h2>Recently Approved Trainers</h2>
+        <a href="/verifier/approvedverifications" class="view-all">View All</a>
+    </div>
+    <div class="message-list">
+        <% if (recentApprovedTrainers && recentApprovedTrainers.length > 0) { %>
+        <% recentApprovedTrainers.forEach(trainer => { %>
+        <div class="message-item">
+            <div class="message-avatar">
+                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=40&h=40&fit=crop&auto=format" 
+                     alt="<%= trainer.firstName %> <%= trainer.lastName %>" />
+            </div>
+            <div class="message-content">
+                <div class="message-header">
+                    <h4><%= trainer.firstName %> <%= trainer.lastName %></h4>
+                    <span class="message-time">
+                        <%= trainer.updatedAt ? new Date(trainer.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recently' %>
+                    </span>
+                </div>
+                <p class="message-text">
+                    <strong>Specializations:</strong> <%= trainer.specializations ? trainer.specializations.join(', ') : 'Not specified' %>
+                </p>
+                <p class="message-text">
+                    <strong>Email:</strong> <%= trainer.email %>
+                </p>
+            </div>
+        </div>
+        <% }); %>
+        <% } else { %>
+        <div class="message-item">
+            <div class="message-content">
+                <p>No recently approved trainers.</p>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</div>
                 </div>
             </div>
         </div>
