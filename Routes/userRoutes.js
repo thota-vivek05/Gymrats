@@ -58,7 +58,7 @@ router.get('/user_exercises', userController.checkMembershipActive, isAuthentica
         currentPage: 'exercises'
     });
 });
-
-module.exports = router;
 // Add this route to userRoutes.js
 router.put('/user/profile/update', isAuthenticated, userController.updateUserProfile);
+
+module.exports = router;
