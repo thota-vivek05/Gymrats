@@ -79,6 +79,7 @@ const userSchema = new mongoose.Schema({
     default: null
     },
 
+    
 
   // NEW: Membership Duration Fields
     membershipDuration: {
@@ -135,6 +136,7 @@ const userSchema = new mongoose.Schema({
 
 
 
+
     class_schedules: [{
         trainerId: { 
             type: mongoose.Schema.Types.ObjectId, 
@@ -158,7 +160,22 @@ const userSchema = new mongoose.Schema({
         description: { 
             type: String 
         }
-    }]
+    }],
+
+     // OMEN
+    // Add to models/User.js (in the schema)
+exercisePreferences: {
+  preferredCategories: [{ type: String }],
+  dislikedCategories: [{ type: String }],
+  favoriteExercises: [{ 
+    exerciseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Exercise' },
+    rating: { type: Number },
+    addedAt: { type: Date, default: Date.now }
+  }],
+  lastRatedAt: { type: Date }
+}
+
+
 });
 
 // REYNA
@@ -197,5 +214,7 @@ userSchema.methods.decreaseMembershipMonth = function() {
     }
     return Promise.resolve(this);
 };
+
+
 
 module.exports = mongoose.model('User', userSchema);

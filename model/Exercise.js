@@ -1,3 +1,5 @@
+// models/Exercise.js - UPDATED
+// OMEN
 const mongoose = require("mongoose");
 
 const exerciseSchema = new mongoose.Schema(
@@ -5,7 +7,7 @@ const exerciseSchema = new mongoose.Schema(
     name: { type: String, required: true },
     category: {
       type: String,
-      enum: ["Strength", "Cardio", "Flexibility", "Balance"],
+      enum: ["Calisthenics", "Weight Loss", "HIIT", "Competitive", "Strength Training", "Cardio", "Flexibility", "Bodybuilding"],
       required: true,
     },
     difficulty: {
@@ -24,15 +26,18 @@ const exerciseSchema = new mongoose.Schema(
       required: true,
     },
     defaultSets: { type: Number, default: 3 },
-    defaultRepsOrDuration: { type: String, required: true }, // e.g., "12 reps" or "30 seconds"
-    equipment: { type: [String], default: [] }, // e.g., ["Dumbbell", "Bench"]
-    workoutPlanLevel: {
-      type: String,
-      enum: ["Basic", "Intermediate", "Advanced"],
-      required: true,
-    },
+    defaultRepsOrDuration: { type: String, required: true },
+    equipment: { type: [String], default: [] },
+    // Rating fields
+    averageRating: { type: Number, default: 0 },
+    totalRatings: { type: Number, default: 0 },
+    // Additional fields for better recommendations
+    movementPattern: { type: String }, // e.g., "Push", "Pull", "Squat", "Hinge"
+    primaryMuscle: { type: String },
+    secondaryMuscles: { type: [String] }
   },
   { timestamps: true }
 );
 
 module.exports = mongoose.model("Exercise", exerciseSchema);
+
