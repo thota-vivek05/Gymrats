@@ -34,7 +34,9 @@ router.post('/api/workout/complete', userController.markWorkoutCompleted);
 router.post('/membership/extend', membershipController.extendMembership);
 router.get('/membership/status', membershipController.getMembershipStatus);
 router.post('/membership/auto-renew', membershipController.toggleAutoRenew);
-
+//brimstone
+router.post('/user/membership/change', isAuthenticated, userController.changeMembership);
+//brimstone
 router.get('/membership_renewal', isAuthenticated, (req, res) => {
     res.render('membership_renewal', { 
         user: req.session.user 

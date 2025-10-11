@@ -3,7 +3,9 @@ const User = require('../model/User');
 const WorkoutPlan = require('../model/WorkoutPlan');
 const WorkoutHistory = require('../model/WorkoutHistory');
 const NutritionHistory = require('../model/NutritionHistory');
-
+//brimstone
+const Membership = require('../model/Membership'); // Add this line
+//brimstone
 // for membership management           REYNA
 const Trainer = require('../model/Trainer');
 
@@ -523,6 +525,142 @@ const signupUser = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+//brimstone
+// Add this function to userController.js
+const changeMembership = async (req, res) => {
+    try {
+        if (!req.session || !req.session.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authentication required'
+            });
+        }
+
+        const userId = req.session.user.id;
+        const { newMembershipType, duration, amount, cardLastFour } = req.body;
+
+        console.log('Changing membership for user:', userId, 'Data:', req.body);
+
+        // Validate input
+        if (!newMembershipType || !duration || !amount) {
+            return res.status(400).json({
+                success: false,
+                message: 'All fields are required'
+            });
+        }
+
+        // Validate membership type
+        const validMembershipTypes = ['Basic', 'Gold', 'Platinum'];
+        if (!validMembershipTypes.includes(newMembershipType)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid membership type'
+            });
+        }
+
+        // Validate duration
+        const validDurations = [1, 3, 6];
+        if (!validDurations.includes(duration)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid duration'
+            });
+        }
+
+        // Find user
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Calculate new membership duration
+        const newMonthsRemaining = duration;
+
+        // Update user membership - PRESERVE EXISTING FITNESS GOALS
+        user.membershipType = newMembershipType;
+        user.membershipDuration.months_remaining = newMonthsRemaining;
+        user.membershipDuration.last_renewal_date = new Date();
+        
+        // Update end date
+        const newEndDate = new Date();
+        newEndDate.setMonth(newEndDate.getMonth() + newMonthsRemaining);
+        user.membershipDuration.end_date = newEndDate;
+        
+        user.status = 'Active';
+
+        // Ensure fitness_goals are preserved and not set to null
+        if (!user.fitness_goals) {
+            user.fitness_goals = {
+                calorie_goal: 2200,
+                protein_goal: 90,
+                weight_goal: user.weight || 70 // Use current weight as default if no goal exists
+            };
+        } else if (user.fitness_goals.weight_goal === null || user.fitness_goals.weight_goal === undefined) {
+            // Set a default weight goal if it's null/undefined
+            user.fitness_goals.weight_goal = user.weight || 70;
+        }
+
+        // Create membership record
+        const membershipRecord = new Membership({
+            user_id: userId,
+            plan: newMembershipType.toLowerCase(),
+            duration: duration,
+            start_date: new Date(),
+            end_date: newEndDate,
+            price: amount,
+            payment_method: 'credit_card',
+            card_last_four: cardLastFour,
+            status: 'Active'
+        });
+
+        // Save both user and membership record
+        await Promise.all([
+            user.save(),
+            membershipRecord.save()
+        ]);
+
+        // Update session
+        req.session.user.membershipType = newMembershipType;
+        req.session.user.membership = newMembershipType.toLowerCase();
+        req.session.user.membershipDuration = {
+            months_remaining: newMonthsRemaining,
+            end_date: newEndDate,
+            auto_renew: user.membershipDuration.auto_renew
+        };
+
+        console.log('Membership changed successfully for user:', userId);
+
+        res.json({
+            success: true,
+            message: 'Membership changed successfully',
+            newMembershipType: newMembershipType,
+            monthsRemaining: newMonthsRemaining,
+            redirect: `/userdashboard_${newMembershipType.charAt(0).toLowerCase()}`
+        });
+
+    } catch (error) {
+        console.error('Error changing membership:', error);
+        
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: errors
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
+//brimstone
 // brimstone
 // Add this function to userController.js
 const updateUserProfile = async (req, res) => {
@@ -984,5 +1122,6 @@ module.exports = {
     markWorkoutCompleted,
     checkMembershipActive,
     checkTrainerSubscription,
-    updateUserProfile
+    updateUserProfile,
+    changeMembership
 };
