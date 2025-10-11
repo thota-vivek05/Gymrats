@@ -213,11 +213,10 @@ const renderTrainerDashboard = async (req, res) => {
         const trainerId = req.session.trainer.id;
         console.log('Fetching Platinum users for trainer:', trainerId);
 
-        // Fetch trainer details            REYNA
-        
+        // Fetch trainer details
         const trainer = await Trainer.findById(trainerId);
       
-        
+        // Fetch Platinum users assigned to this trainer
         const users = await User.find({ 
             trainer: trainerId, 
             status: 'Active',
@@ -231,7 +230,7 @@ const renderTrainerDashboard = async (req, res) => {
         const clients = users.map(user => {
             const progress = 0; // We'll fetch this dynamically on client selection
 
-            const nextSession = user.class_schedules.length > 0
+            const nextSession = user.class_schedules && user.class_schedules.length > 0
                 ? user.class_schedules.find(schedule => new Date(schedule.date) >= new Date())
                 : null;
             const nextSessionDate = nextSession
@@ -265,31 +264,77 @@ const renderTrainerDashboard = async (req, res) => {
             };
         });
 
-        // Fetch nutrition data for the selected client (first client by default)
+        // Fetch data for the first client (if available) - FIXED VERSION
         let selectedClient = clients.length > 0 ? clients[0] : null;
         let nutritionData = null;
         let workoutData = null;
 
         if (selectedClient) {
-            // Simulate a request to getNutritionData
-            const nutritionReq = { params: { userId: selectedClient.id }, session: req.session };
-            const nutritionRes = {
-                json: (data) => { nutritionData = data; },
-                status: (code) => ({
-                    json: (data) => { throw new Error(data.error); }
-                })
-            };
-            await getNutritionData(nutritionReq, nutritionRes);
+            try {
+                // Get today's date for nutrition data
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const tomorrow = new Date(today);
+                tomorrow.setDate(today.getDate() + 1);
 
-            // Simulate a request to getWorkoutData
-            const workoutReq = { params: { userId: selectedClient.id }, session: req.session };
-            const workoutRes = {
-                json: (data) => { workoutData = data; },
-                status: (code) => ({
-                    json: (data) => { throw new Error(data.error); }
-                })
-            };
-            await getWorkoutData(workoutReq, workoutRes);
+                // Fetch nutrition data directly
+                const latestNutrition = await NutritionHistory.findOne({
+                    userId: selectedClient.id,
+                    date: { $gte: today, $lt: tomorrow }
+                }).lean();
+
+                nutritionData = {
+                    nutrition: {
+                        protein_goal: users.find(u => u._id.toString() === selectedClient.id)?.fitness_goals?.protein_goal || 'N/A',
+                        calorie_goal: users.find(u => u._id.toString() === selectedClient.id)?.fitness_goals?.calorie_goal || 'N/A',
+                        foods: latestNutrition ? latestNutrition.foods : [],
+                        macros: latestNutrition ? latestNutrition.macros : { protein: 0, carbs: 0, fats: 0 }
+                    }
+                };
+
+                // Fetch workout data directly
+                const todayWorkout = new Date();
+                todayWorkout.setHours(0, 0, 0, 0);
+                const weekStart = new Date(todayWorkout);
+                weekStart.setDate(todayWorkout.getDate() - todayWorkout.getDay()); // Start of week (Sunday)
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekStart.getDate() + 7);
+
+                const currentWorkout = await WorkoutHistory.findOne({
+                    userId: selectedClient.id,
+                    date: { $gte: weekStart, $lt: weekEnd }
+                }).lean();
+
+                const weeklySchedule = {
+                    Monday: [],
+                    Tuesday: [],
+                    Wednesday: [],
+                    Thursday: [],
+                    Friday: [],
+                    Saturday: [],
+                    Sunday: []
+                };
+
+                if (currentWorkout && currentWorkout.exercises) {
+                    currentWorkout.exercises.forEach(exercise => {
+                        if (weeklySchedule[exercise.day]) {
+                            weeklySchedule[exercise.day].push({
+                                name: exercise.name,
+                                sets: exercise.sets,
+                                reps: exercise.reps,
+                                weight: exercise.weight,
+                                duration: exercise.duration,
+                                completed: exercise.completed
+                            });
+                        }
+                    });
+                }
+
+                workoutData = { weeklySchedule };
+            } catch (dataError) {
+                console.error('Error fetching client data:', dataError);
+                // Continue with null data rather than failing completely
+            }
         }
 
         res.render('trainer', {
@@ -419,7 +464,7 @@ const saveWorkoutPlan = async (req, res) => {
                 console.log('reps:', ex.reps, 'type:', typeof ex.reps);
                 console.log('weight:', ex.weight, 'type:', typeof ex.weight);
                 
-                if (ex.name) {
+                if (ex.name || !ex.name.trim()) {
                     const processedExercise = {
                         day,
                         name: ex.name,
@@ -734,6 +779,11 @@ const getWorkoutData = async (req, res) => {
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
 
+        // REYNA
+        // This logic is incomplete for determining today's exercises
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const todayDayName = dayNames[today.getDay()];
+        // END REYNA
         const currentWorkout = await WorkoutHistory.findOne({
             userId: userId,
             date: { $gte: weekStart, $lt: weekEnd }
@@ -816,6 +866,149 @@ const getNutritionData = async (req, res) => {
     }
 };
 
+// REYNA
+// Render trainer assignment page
+const renderTrainerAssignment = async (req, res) => {
+    try {
+        if (!req.session.trainer) {
+            console.log('Unauthorized access to trainer assignment');
+            return res.redirect('/trainer_login');
+        }
+
+        const trainerId = req.session.trainer.id;
+        const trainer = await Trainer.findById(trainerId);
+        
+        if (!trainer) {
+            console.log('Trainer not found:', trainerId);
+            return res.status(404).render('trainer', {
+                errorMessage: 'Trainer not found'
+            });
+        }
+
+        // Find unassigned users (trainer field is null) that match trainer's specializations
+        const unassignedUsers = await User.find({
+            trainer: null,
+            workout_type: { $in: trainer.specializations },
+            status: 'Active'
+        }).select('full_name email workout_type dob weight height BMI fitness_goals created_at');
+
+        res.render('trainer_assignment', {
+            trainer: req.session.trainer,
+            unassignedUsers: unassignedUsers || [],
+            trainerSpecializations: trainer.specializations
+        });
+    } catch (error) {
+        console.error('Error rendering trainer assignment page:', error);
+        res.status(500).render('trainer', {
+            errorMessage: 'Server error. Please try again later.'
+        });
+    }
+};
+
+// Assign user to trainer
+const assignUserToTrainer = async (req, res) => {
+    try {
+        if (!req.session.trainer) {
+            console.log('Unauthorized access to assign user');
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        const { userId } = req.body;
+        const trainerId = req.session.trainer.id;
+
+        if (!userId) {
+            console.log('Validation failed: User ID is required');
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        // Find user and trainer
+        const user = await User.findById(userId);
+        const trainer = await Trainer.findById(trainerId);
+
+        if (!user) {
+            console.log('User not found:', userId);
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (!trainer) {
+            console.log('Trainer not found:', trainerId);
+            return res.status(404).json({ error: 'Trainer not found' });
+        }
+
+        // Check if user is already assigned
+        if (user.trainer) {
+            console.log('User already assigned to a trainer:', userId);
+            return res.status(400).json({ error: 'User is already assigned to a trainer' });
+        }
+
+        // Check if workout type matches trainer's specializations
+        if (!trainer.specializations.includes(user.workout_type)) {
+            console.log('Workout type mismatch:', user.workout_type, trainer.specializations);
+            return res.status(400).json({ error: 'User workout type does not match your specializations' });
+        }
+
+        // Assign user to trainer
+        user.trainer = trainerId;
+        await user.save();
+
+        // Add user to trainer's clients array if not already there
+        if (!trainer.clients.includes(userId)) {
+            trainer.clients.push(userId);
+            await trainer.save();
+        }
+
+        console.log('User assigned to trainer successfully:', userId, trainerId);
+        res.json({ 
+            success: true, 
+            message: 'User assigned successfully',
+            user: {
+                id: user._id,
+                name: user.full_name,
+                workout_type: user.workout_type
+            }
+        });
+    } catch (error) {
+        console.error('Error assigning user to trainer:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// Get unassigned users by workout type
+const getUnassignedUsers = async (req, res) => {
+    try {
+        if (!req.session.trainer) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        const trainerId = req.session.trainer.id;
+        const trainer = await Trainer.findById(trainerId);
+        
+        if (!trainer) {
+            return res.status(404).json({ error: 'Trainer not found' });
+        }
+
+        const { workoutType } = req.query;
+        let query = { trainer: null, status: 'Active' };
+
+        // Filter by workout type if provided, otherwise show all matching trainer's specializations
+        if (workoutType && workoutType !== 'all') {
+            query.workout_type = workoutType;
+        } else {
+            query.workout_type = { $in: trainer.specializations };
+        }
+
+        const unassignedUsers = await User.find(query)
+            .select('full_name email workout_type dob weight height BMI fitness_goals created_at')
+            .sort({ created_at: -1 });
+
+        res.json({ success: true, users: unassignedUsers });
+    } catch (error) {
+        console.error('Error fetching unassigned users:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+// END REYNA
+
 module.exports = { 
     signupTrainer, 
     loginTrainer, 
@@ -827,5 +1020,8 @@ module.exports = {
     editNutritionPlan, 
     getClientData,
     getWorkoutData,
-    getNutritionData
+    getNutritionData,
+    renderTrainerAssignment,    // REYNA
+    assignUserToTrainer,        // REYNA
+    getUnassignedUsers          // REYNA
 };
