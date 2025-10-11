@@ -839,14 +839,14 @@ const getUserDashboard = async (req, res, membershipCode) => {
             workoutPlanId: null
         };
 
+         const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         if (currentWeekWorkout && currentWeekWorkout.exercises) {
-            // const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            // const todayDayName = dayNames[today.getDay()];
+            const todayDayName = dayNames[today.getDay()];
             
-            // // Filter exercises for today
-            // todayExercises = currentWeekWorkout.exercises.filter(exercise => 
-            //     exercise.day === todayDayName
-            // );
+            // Filter exercises for today
+            todayExercises = currentWeekWorkout.exercises.filter(exercise => 
+                exercise.day === todayDayName
+            );
             
             if (todayExercises.length > 0) {
                 const completedExercises = todayExercises.filter(ex => ex.completed).length;
@@ -904,7 +904,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
         // Add this debug section after the currentWeekWorkout query:
 console.log('=== DEBUG WORKOUT DATA ===');
 console.log('Today:', today);
-// console.log('Today Day Name:', dayNames[today.getDay()]);
+console.log('Today Day Name:', dayNames[today.getDay()]);
 console.log('Week Start:', weekStart);
 console.log('Week End:', weekEnd);
 console.log('Current Week Workout Found:', !!currentWeekWorkout);
