@@ -15,10 +15,12 @@ body {
     margin: 0;
     padding: 0;
 }
+
 .action-buttons {
     display: flex;
     gap: 10px;
 }
+
 .btn-approve {
     background-color: #28a745;
     color: white;
@@ -27,6 +29,7 @@ body {
     text-decoration: none;
     font-size: 12px;
 }
+
 .btn-reject {
     background-color: #dc3545;
     color: white;
@@ -35,12 +38,15 @@ body {
     text-decoration: none;
     font-size: 12px;
 }
+
 .btn-approve:hover {
     background-color: #218838;
 }
+
 .btn-reject:hover {
     background-color: #c82333;
 }
+
 /* Dashboard Container */
 .dashboard-container {
     display: flex;
@@ -221,6 +227,7 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
 }
+
 .btn-approve:hover {
     background-color: #333;
 }
@@ -234,6 +241,7 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
 }
+
 .btn-reject:hover {
     background-color: #333;
 }
@@ -764,6 +772,53 @@ button {
     line-height: 1.5;
 }
 
+/* Footer Section */
+.site-footer {
+    background-color: #333;
+    color: white;
+    padding: 30px 0;
+    margin-top: 40px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-around;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.footer-column {
+    flex: 1;
+    min-width: 200px;
+    margin: 0 15px 20px;
+}
+
+.footer-column h4 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #f8f9fa;
+}
+
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-column ul li {
+    margin-bottom: 8px;
+}
+
+.footer-column ul li a {
+    color: #ddd;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-column ul li a:hover {
+    color: #fff;
+}
+
 /* Responsive Styles */
 @media (max-width: 1200px) {
     .stats-container {
@@ -813,6 +868,16 @@ button {
     .user-profile span {
         display: none;
     }
+    
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .footer-column {
+        margin: 0 0 20px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -838,5 +903,9 @@ button {
     
     .stat-count {
         font-size: 1.5rem;
+    }
+    
+    .site-footer {
+        padding: 20px 0;
     }
 }
