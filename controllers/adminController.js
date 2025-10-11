@@ -719,7 +719,51 @@ const adminController = {
       console.error('Get trainer stats error:', error);
       res.status(500).json({ success: false, message: error.message });
     }
+  },
+
+  // Search Trainers API
+  searchTrainers: async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+      
+      const { search } = req.query;
+      let query = {};
+      
+      console.log('Search query received:', search);
+      
+      // Build search query
+      if (search && search.trim() !== '') {
+        const searchRegex = new RegExp(search, 'i');
+        query = {
+          $or: [
+            { name: searchRegex },
+            { email: searchRegex },
+            { specializations: { $in: [searchRegex] } }
+          ]
+        };
+      }
+      
+      const trainers = await Trainer.find(query)
+        .select('name email experience specializations status')
+        .sort({ createdAt: -1 });
+      
+      console.log(`Found ${trainers.length} trainers for search: ${search}`);
+      
+      res.json({
+        success: true,
+        trainers
+      });
+    } catch (error) {
+      console.error('Search trainers error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error searching trainers'
+      });
+    }
   }
-};
+
+}; // End of adminController object
 
 module.exports = adminController;
