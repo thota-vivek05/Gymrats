@@ -44,6 +44,10 @@ router.delete('/exercises/:id', adminController.deleteExercise);
 
 // Verifier Routes
 router.get('/verifier', adminController.getVerifiers);
+// router.get('/verifier', adminController.getVerifierPage);
+router.get('/verifier_form', (req, res) => {
+    res.render('verifier_form'); // You might need to create this view
+});
 router.post('/verifier', adminController.createVerifier);
 router.put('/verifier/:id', adminController.updateVerifier);
 router.delete('/verifier/:id', adminController.deleteVerifier);

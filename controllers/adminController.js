@@ -407,26 +407,26 @@ const adminController = {
     }
   },
 
-  getNutritionPlans: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.redirect('/admin_login');
-      }
-      const nutritionPlans = await NutritionPlan.find().sort({ createdAt: -1 }).populate('creator', 'name').populate('userId', 'full_name');
-      res.render('admin_nutrition', {
-        pageTitle: 'Nutrition Plans',
-        user: req.session.user || null,
-        nutritionPlans
-      });
-    } catch (error) {
-      console.error('Nutrition plan management error:', error);
-      res.render('admin_nutrition', {
-        pageTitle: 'Nutrition Plans',
-        user: req.session.user || null,
-        nutritionPlans: []
-      });
+ getNutritionPlans: async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/admin_login');
     }
-  },
+      const nutritionPlans = await NutritionPlan.find().sort({ createdAt: -1 }).populate('creator', 'name').populate('userId', 'full_name');
+    res.render('admin_nutrition', {
+      pageTitle: 'Nutrition Plans',
+      user: req.session.user || null,
+      nutritionPlans
+    });
+  } catch (error) {
+    console.error('Nutrition plan management error:', error);
+    res.render('admin_nutrition', {
+      pageTitle: 'Nutrition Plans',
+      user: req.session.user || null,
+      nutritionPlans: []
+    });
+  }
+},
 
   createNutritionPlan: async (req, res) => {
     try {
@@ -503,22 +503,22 @@ const adminController = {
     }
   },
 
-  getVerifiers: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.redirect('/admin_login');
-      }
-      const verifiers = await Verifier.find().sort({ createdAt: -1 });
-      res.render('admin_verifier', {
-        pageTitle: 'Verifier Management',
-        user: req.session.user || null,
+getVerifiers: async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/admin_login');
+    }
+    const verifiers = await Verifier.find().sort({ createdAt: -1 });
+    res.render('admin_verifier', {
+      pageTitle: 'Verifier Management',
+      user: req.session.user || null,
         verifiers
-      });
-    } catch (error) {
-      console.error('Verifier management error:', error);
-      res.render('admin_verifier', {
-        pageTitle: 'Verifier Management',
-        user: req.session.user || null,
+    });
+  } catch (error) {
+    console.error('Verifier management error:', error);
+    res.render('admin_verifier', {
+      pageTitle: 'Verifier Management',
+      user: req.session.user || null,
         verifiers: []
       });
     }
@@ -549,8 +549,8 @@ const adminController = {
     } catch (error) {
       console.error('Create verifier error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
+  }
+},
 
   updateVerifier: async (req, res) => {
     try {
