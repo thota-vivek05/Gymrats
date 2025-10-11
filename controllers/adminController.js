@@ -185,14 +185,39 @@ const adminController = {
         return res.redirect('/admin_login');
       }
       const trainers = await Trainer.find().sort({ createdAt: -1 });
-      const trainerCount = await Trainer.countDocuments();
+      const trainerCount = await Trainer.countDocuments({ status: 'Active' });
       const pendingApprovals = await TrainerApplication.countDocuments({ status: 'Pending' });
+      
+      // Calculate revenue using User model
+      const users = await User.find({ status: 'Active' });
+      let revenue = 0;
+      const prices = {
+        basic: 299,
+        gold: 599,
+        platinum: 999
+      };
+      users.forEach(user => {
+        const remainingMonths = user.membershipDuration.months_remaining || 0;
+        const price = prices[user.membershipType.toLowerCase()] || 0;
+        revenue += remainingMonths * price;
+      });
+
+      // Count unique specializations using aggregation
+      const specializationResult = await Trainer.aggregate([
+        { $unwind: '$specializations' },
+        { $group: { _id: '$specializations' } },
+        { $count: 'uniqueCount' }
+      ]);
+      const specializationCount = specializationResult.length > 0 ? specializationResult[0].uniqueCount : 0;
+
       res.render('admin_trainers', {
         pageTitle: 'Trainer Management',
         user: req.session.user || null,
         trainers,
         stats: {
           totalTrainers: trainerCount,
+          revenue,
+          specializationCount,
           pendingApprovals
         }
       });
@@ -201,33 +226,14 @@ const adminController = {
       res.render('admin_trainers', {
         pageTitle: 'Trainer Management',
         user: req.session.user || null,
-        trainers: []
+        trainers: [],
+        stats: {
+          totalTrainers: 0,
+          revenue: 0,
+          specializationCount: 0,
+          pendingApprovals: 0
+        }
       });
-    }
-  },
-
-  // New API endpoint to fetch trainers dynamically
-  getTrainersApi: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-      const { search } = req.query; // Allow search query parameter
-      let query = {};
-      if (search) {
-        query = {
-          $or: [
-            { name: { $regex: search, $options: 'i' } },
-            { email: { $regex: search, $options: 'i' } },
-            { specializations: { $regex: search, $options: 'i' } }
-          ]
-        };
-      }
-      const trainers = await Trainer.find(query).sort({ createdAt: -1 }).select('name email specializations experience status');
-      res.status(200).json({ success: true, trainers });
-    } catch (error) {
-      console.error('Get trainers API error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
     }
   },
 
@@ -251,9 +257,8 @@ const adminController = {
         password_hash: hashedPassword,
         phone,
         experience,
-        specializations: specializations || [],
-        status: 'Active',
-        createdAt: new Date()
+        specializations: specializations ? specializations.split(',').map(s => s.trim()) : [],
+        status: 'Pending'
       });
       await newTrainer.save();
       res.status(201).json({ success: true, message: 'Trainer created successfully', trainer: newTrainer });
@@ -277,9 +282,8 @@ const adminController = {
           email,
           phone,
           experience,
-          specializations,
-          status,
-          updatedAt: new Date()
+          specializations: specializations ? specializations.split(',').map(s => s.trim()) : [],
+          status
         },
         { new: true }
       );
@@ -303,10 +307,6 @@ const adminController = {
       if (!deletedTrainer) {
         return res.status(404).json({ success: false, message: 'Trainer not found' });
       }
-      await User.updateMany(
-        { trainer: trainerId },
-        { $set: { trainer: null } }
-      );
       res.status(200).json({ success: true, message: 'Trainer deleted successfully' });
     } catch (error) {
       console.error('Delete trainer error:', error);
@@ -314,108 +314,7 @@ const adminController = {
     }
   },
 
-  getVerifiers: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.redirect('/admin_login');
-      }
-      const verifiers = await Verifier.find().sort({ createdAt: -1 });
-      const verifierCount = await Verifier.countDocuments();
-      res.render('admin_verifier', {
-        pageTitle: 'Verifier Management',
-        user: req.session.user || null,
-        verifiers,
-        stats: {
-          totalVerifiers: verifierCount
-        }
-      });
-    } catch (error) {
-      console.error('Verifier management error:', error);
-      res.render('admin_verifier', {
-        pageTitle: 'Verifier Management',
-        user: req.session.user || null,
-        verifiers: []
-      });
-    }
-  },
-
-  createVerifier: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-      const { name, email, phone, password, experienceYears } = req.body;
-      if (!name || !email || !password || !experienceYears) {
-        return res.status(400).json({ success: false, message: 'Missing required fields' });
-      }
-      const existingVerifier = await Verifier.findOne({ email });
-      if (existingVerifier) {
-        return res.status(400).json({ success: false, message: 'Email already in use' });
-      }
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newVerifier = new Verifier({
-        name,
-        email,
-        phone,
-        password: hashedPassword,
-        experienceYears: Number(experienceYears)
-      });
-      await newVerifier.save();
-      res.status(201).json({ success: true, message: 'Verifier created successfully', verifier: newVerifier });
-    } catch (error) {
-      console.error('Create verifier error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  updateVerifier: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-      const verifierId = req.params.id;
-      const { name, email, phone, experienceYears } = req.body;
-      const updatedVerifier = await Verifier.findByIdAndUpdate(
-        verifierId,
-        {
-          name,
-          email,
-          phone,
-          experienceYears: Number(experienceYears)
-        },
-        { new: true }
-      );
-      if (!updatedVerifier) {
-        return res.status(404).json({ success: false, message: 'Verifier not found' });
-      }
-      res.status(200).json({ success: true, message: 'Verifier updated successfully', verifier: updatedVerifier });
-    } catch (error) {
-      console.error('Update verifier error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  deleteVerifier: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-      const verifierId = req.params.id;
-      const deletedVerifier = await Verifier.findByIdAndDelete(verifierId);
-      if (!deletedVerifier) {
-        return res.status(404).json({ success: false, message: 'Verifier not found' });
-      }
-      await Trainer.updateMany(
-        { verifierId },
-        { $set: { verifierId: null } }
-      );
-      res.status(200).json({ success: true, message: 'Verifier deleted successfully' });
-    } catch (error) {
-      console.error('Delete verifier error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
+  // Membership Management
   getMemberships: async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -442,24 +341,19 @@ const adminController = {
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-      const { userId, type, startDate, endDate, price } = req.body;
-      if (!userId || !type || !startDate || !endDate || !price) {
+      const { userId, plan, startDate, endDate } = req.body;
+      if (!userId || !plan || !startDate || !endDate) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
-      }
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).json({ success: false, message: 'User not found' });
       }
       const newMembership = new Membership({
         user_id: userId,
-        type,
+        plan,
         start_date: new Date(startDate),
         end_date: new Date(endDate),
-        price: Number(price),
         status: 'Active'
       });
       await newMembership.save();
-      await User.findByIdAndUpdate(userId, { membershipType: type });
+      await User.findByIdAndUpdate(userId, { membershipType: plan, status: 'Active' });
       res.status(201).json({ success: true, message: 'Membership created successfully', membership: newMembership });
     } catch (error) {
       console.error('Create membership error:', error);
@@ -473,14 +367,13 @@ const adminController = {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
       const membershipId = req.params.id;
-      const { type, startDate, endDate, price, status } = req.body;
+      const { plan, startDate, endDate, status } = req.body;
       const updatedMembership = await Membership.findByIdAndUpdate(
         membershipId,
         {
-          type,
+          plan,
           start_date: startDate ? new Date(startDate) : undefined,
           end_date: endDate ? new Date(endDate) : undefined,
-          price: price ? Number(price) : undefined,
           status
         },
         { new: true }
@@ -488,9 +381,7 @@ const adminController = {
       if (!updatedMembership) {
         return res.status(404).json({ success: false, message: 'Membership not found' });
       }
-      if (status === 'Active') {
-        await User.findByIdAndUpdate(updatedMembership.user_id, { membershipType: type });
-      }
+      await User.findByIdAndUpdate(updatedMembership.user_id, { membershipType: plan, status });
       res.status(200).json({ success: true, message: 'Membership updated successfully', membership: updatedMembership });
     } catch (error) {
       console.error('Update membership error:', error);
@@ -661,6 +552,98 @@ const adminController = {
     }
   },
 
+  getVerifiers: async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.redirect('/admin_login');
+      }
+      const verifiers = await Verifier.find().sort({ createdAt: -1 });
+      res.render('admin_verifier', {
+        pageTitle: 'Verifier Management',
+        user: req.session.user || null,
+        verifiers
+      });
+    } catch (error) {
+      console.error('Verifier management error:', error);
+      res.render('admin_verifier', {
+        pageTitle: 'Verifier Management',
+        user: req.session.user || null,
+        verifiers: []
+      });
+    }
+  },
+
+  createVerifier: async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+      const { name, email, password, phone } = req.body;
+      if (!name || !email || !password || !phone) {
+        return res.status(400).json({ success: false, message: 'Missing required fields' });
+      }
+      const existingVerifier = await Verifier.findOne({ email });
+      if (existingVerifier) {
+        return res.status(400).json({ success: false, message: 'Email already in use' });
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newVerifier = new Verifier({
+        name,
+        email,
+        password_hash: hashedPassword,
+        phone
+      });
+      await newVerifier.save();
+      res.status(201).json({ success: true, message: 'Verifier created successfully', verifier: newVerifier });
+    } catch (error) {
+      console.error('Create verifier error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  updateVerifier: async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+      const verifierId = req.params.id;
+      const { name, email, phone } = req.body;
+      const updatedVerifier = await Verifier.findByIdAndUpdate(
+        verifierId,
+        {
+          name,
+          email,
+          phone
+        },
+        { new: true }
+      );
+      if (!updatedVerifier) {
+        return res.status(404).json({ success: false, message: 'Verifier not found' });
+      }
+      res.status(200).json({ success: true, message: 'Verifier updated successfully', verifier: updatedVerifier });
+    } catch (error) {
+      console.error('Update verifier error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  deleteVerifier: async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+      const verifierId = req.params.id;
+      const deletedVerifier = await Verifier.findByIdAndDelete(verifierId);
+      if (!deletedVerifier) {
+        return res.status(404).json({ success: false, message: 'Verifier not found' });
+      }
+      res.status(200).json({ success: true, message: 'Verifier deleted successfully' });
+    } catch (error) {
+      console.error('Delete verifier error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
   getSettings: async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -685,6 +668,56 @@ const adminController = {
     } catch (error) {
       console.error('Update settings error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Get Trainer Statistics API
+  getTrainerStats: async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+
+      // Total active trainers
+      const totalTrainers = await Trainer.countDocuments({ status: 'Active' });
+      
+      // Calculate revenue using User model
+      const users = await User.find({ status: 'Active' });
+      let revenue = 0;
+      const prices = {
+        basic: 299,
+        gold: 599,
+        platinum: 999
+      };
+      users.forEach(user => {
+        const remainingMonths = user.membershipDuration.months_remaining || 0;
+        const price = prices[user.membershipType.toLowerCase()] || 0;
+        revenue += remainingMonths * price;
+      });
+
+      // Count unique specializations using aggregation
+      const specializationResult = await Trainer.aggregate([
+        { $unwind: '$specializations' },
+        { $group: { _id: '$specializations' } },
+        { $count: 'uniqueCount' }
+      ]);
+      const specializationCount = specializationResult.length > 0 ? specializationResult[0].uniqueCount : 0;
+
+      // Count pending trainer applications
+      const pendingApprovals = await TrainerApplication.countDocuments({ status: 'Pending' });
+
+      res.json({
+        success: true,
+        stats: {
+          totalTrainers,
+          revenue,
+          specializationCount,
+          pendingApprovals
+        }
+      });
+    } catch (error) {
+      console.error('Get trainer stats error:', error);
+      res.status(500).json({ success: false, message: error.message });
     }
   }
 };

@@ -80,53 +80,53 @@
                     </div>
                 </div>
             </div>
-            <!-- Stats Cards -->
-            <div class="stats-container">
-                <div class="stats-card">
-                    <div class="stats-content">
-                        <div class="stats-info">
-                            <div class="stats-header">
-                                <h3>Total Trainers</h3>
-                            </div>
-                            <div class="stats-number"><%= stats.totalTrainers %></div>
-                            <div class="stats-label">+9% from last month</div>
-                        </div>
-                    </div>
+           <!-- Stats Cards -->
+<div class="stats-container">
+    <div class="stats-card">
+        <div class="stats-content">
+            <div class="stats-info">
+                <div class="stats-header">
+                    <h3>Total Trainers</h3>
                 </div>
-                <div class="stats-card">
-                    <div class="stats-content">
-                        <div class="stats-info">
-                            <div class="stats-header">
-                                <h3>Revenue Generated</h3>
-                            </div>
-                            <div class="stats-number">$245,750</div>
-                            <div class="stats-label">+12% from last month</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="stats-card">
-                    <div class="stats-content">
-                        <div class="stats-info">
-                            <div class="stats-header">
-                                <h3>Active Sessions</h3>
-                            </div>
-                            <div class="stats-number">842</div>
-                            <div class="stats-label">+8% from last month</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="stats-card">
-                    <div class="stats-content">
-                        <div class="stats-info">
-                            <div class="stats-header">
-                                <h3>Pending Approvals</h3>
-                            </div>
-                            <div class="stats-number"><%= stats.pendingApprovals %></div>
-                            <div class="stats-label">+5 since yesterday</div>
-                        </div>
-                    </div>
-                </div>
+                <div class="stats-number" id="totalTrainers"><%= stats.totalTrainers %></div>
+                <div class="stats-label">Active trainers</div>
             </div>
+        </div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-content">
+            <div class="stats-info">
+                <div class="stats-header">
+                    <h3>Revenue Generated</h3>
+                </div>
+                <div class="stats-number" id="revenue">$<%= stats.revenue.toLocaleString() %></div>
+                <div class="stats-label">Total revenue from memberships</div>
+            </div>
+        </div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-content">
+            <div class="stats-info">
+                <div class="stats-header">
+                    <h3>Specializations</h3>
+                </div>
+                <div class="stats-number" id="specializationCount"><%= stats.specializationCount %></div>
+                <div class="stats-label">Unique workout types</div>
+            </div>
+        </div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-content">
+            <div class="stats-info">
+                <div class="stats-header">
+                    <h3>Pending Approvals</h3>
+                </div>
+                <div class="stats-number" id="pendingApprovals"><%= stats.pendingApprovals %></div>
+                <div class="stats-label">Trainer applications pending</div>
+            </div>
+        </div>
+    </div>
+</div>
             <!-- Search Bar -->
             <div class="search-container">
                 <div class="search-bar">
@@ -152,39 +152,41 @@
                             </tr>
                         </thead>
                         <tbody id="trainerTableBody">
-                            <% if (trainers && trainers.length > 0) { %>
-                            <% trainers.forEach(trainer => { %>
-                            <tr>
-                                <td>
-                                    <div class="user-info">
-                                        <div class="avatar"><%= trainer.name.charAt(0) %></div>
-                                        <span><%= trainer.name %></span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="specialization-tags">
-                                        <% if (trainer.specializations && trainer.specializations.length > 0) { %>
-                                        <% trainer.specializations.slice(0, 3).forEach(spec => { %>
-                                        <span class="tag"><%= spec %></span>
-                                        <% }); %>
-                                        <% if (trainer.specializations.length > 3) { %>
-                                        <span class="tag">+<%= trainer.specializations.length - 3 %></span>
-                                        <% } %>
-                                        <% } else { %>
-                                        <span class="tag">No specializations</span>
-                                        <% } %>
-                                    </div>
-                                </td>
-                                <td><%= trainer.experience %> years</td>
-                                <td><span class="status <%= trainer.status.toLowerCase() %>"><%= trainer.status %></span></td>
-                                <td><%= trainer.email %></td>
-                            </tr>
-                            <% }); %>
-                            <% } else { %>
-                            <tr>
-                                <td colspan="5" class="no-data">No trainers found</td>
-                            </tr>
-                            <% } %>
+                        
+                        <% if (trainers && trainers.length > 0) { %>
+                        <% trainers.forEach(trainer => { %>
+                        <tr>
+                            <td>
+                                <div class="user-info">
+                                    <div class="avatar"><%= trainer.name ? trainer.name.charAt(0).toUpperCase() : '?' %></div>
+                                    <span><%= trainer.name || 'Unknown Trainer' %></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="specialization-tags">
+                                    <% if (trainer.specializations && trainer.specializations.length > 0) { %>
+                                    <% trainer.specializations.slice(0, 3).forEach(spec => { %>
+                                    <span class="tag"><%= spec %></span>
+                                    <% }); %>
+                                    <% if (trainer.specializations.length > 3) { %>
+                                    <span class="tag">+<%= trainer.specializations.length - 3 %></span>
+                                    <% } %>
+                                    <% } else { %>
+                                    <span class="tag">No specializations</span>
+                                    <% } %>
+                                </div>
+                            </td>
+                            <td><%= trainer.experience || '0' %> years</td>
+                            <td><span class="status <%= trainer.status ? trainer.status.toLowerCase() : 'unknown' %>"><%= trainer.status || 'Unknown' %></span></td>
+                            <td><%= trainer.email || 'No email' %></td>
+                        </tr>
+                        <% }); %>
+                        <% } else { %>
+                        <tr>
+                            <td colspan="5" class="no-data">No trainers found</td>
+                        </tr>
+                        <% } %>
+                    
                         </tbody>
                     </table>
                 </div>
@@ -300,34 +302,35 @@
                     trainerTableBody.innerHTML = '<tr><td colspan="5" class="no-data">Error loading trainers</td></tr>';
                 }
             }
-
-            function updateTrainerTable(trainers) {
-                if (trainers.length === 0) {
-                    trainerTableBody.innerHTML = '<tr><td colspan="5" class="no-data">No trainers found</td></tr>';
-                    return;
-                }
-                trainerTableBody.innerHTML = trainers.map(trainer => `
-                    <tr>
-                        <td>
-                            <div class="user-info">
-                                <div class="avatar">${trainer.name.charAt(0)}</div>
-                                <span>${trainer.name}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="specialization-tags">
-                                ${trainer.specializations && trainer.specializations.length > 0 ?
-                                    trainer.specializations.slice(0, 3).map(spec => `<span class="tag">${spec}</span>`).join('') +
-                                    (trainer.specializations.length > 3 ? `<span class="tag">+${trainer.specializations.length - 3}</span>` : '') :
-                                    '<span class="tag">No specializations</span>'}
-                            </div>
-                        </td>
-                        <td>${trainer.experience} years</td>
-                        <td><span class="status ${trainer.status.toLowerCase()}">${trainer.status}</span></td>
-                        <td>${trainer.email}</td>
-                    </tr>
-                `).join('');
-            }
+        //veto
+           function updateTrainerTable(trainers) {
+    if (trainers.length === 0) {
+        trainerTableBody.innerHTML = '<tr><td colspan="5" class="no-data">No trainers found</td></tr>';
+        return;
+    }
+    trainerTableBody.innerHTML = trainers.map(trainer => `
+        <tr>
+            <td>
+                <div class="user-info">
+                    <div class="avatar">${trainer.name ? trainer.name.charAt(0) : '?'}</div>
+                    <span>${trainer.name || 'Unknown Trainer'}</span>
+                </div>
+            </td>
+            <td>
+                <div class="specialization-tags">
+                    ${trainer.specializations && trainer.specializations.length > 0 ?
+                        trainer.specializations.slice(0, 3).map(spec => `<span class="tag">${spec}</span>`).join('') +
+                        (trainer.specializations.length > 3 ? `<span class="tag">+${trainer.specializations.length - 3}</span>` : '') :
+                        '<span class="tag">No specializations</span>'}
+                </div>
+            </td>
+            <td>${trainer.experience || '0'} years</td>
+            <td><span class="status ${trainer.status ? trainer.status.toLowerCase() : 'unknown'}">${trainer.status || 'Unknown'}</span></td>
+            <td>${trainer.email || 'No email'}</td>
+        </tr>
+    `).join('');
+}
+//veto
 
             if (searchInput) {
                 searchInput.addEventListener('input', function () {
@@ -378,6 +381,31 @@
                 });
             }
         }
+        async function fetchStats() {
+    try {
+        const response = await fetch('/admin/api/trainers/stats');
+        const data = await response.json();
+        if (data.success) {
+            // Update stats cards
+            document.getElementById('totalTrainers').textContent = data.stats.totalTrainers;
+            document.getElementById('revenue').textContent = '$' + data.stats.revenue.toLocaleString();
+            document.getElementById('specializationCount').textContent = data.stats.specializationCount;
+            document.getElementById('pendingApprovals').textContent = data.stats.pendingApprovals;
+        }
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+    }
+}
+
+// Update your DOMContentLoaded to include:
+document.addEventListener('DOMContentLoaded', function () {
+    setupResponsiveFeatures();
+    setupDynamicLoading();
+    fetchStats(); // Add this line
+    
+    // Refresh stats every 30 seconds
+    setInterval(fetchStats, 30000);
+});
     </script>
 </body>
 </html>
