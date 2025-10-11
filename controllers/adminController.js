@@ -1,4 +1,3 @@
-// Import models
 const User = require('../model/User');
 const Trainer = require('../model/Trainer');
 const Exercise = require('../model/Exercise');
@@ -56,21 +55,28 @@ const adminController = {
         return res.redirect('/admin_login');
       }
       const users = await User.find().sort({ created_at: -1 });
-      const userCount = await User.countDocuments();
+      const totalUsers = await User.countDocuments();
       const activeMembers = await User.countDocuments({ status: 'Active' });
       const platinumUsers = await User.countDocuments({ membershipType: 'Platinum' });
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       const newSignups = await User.countDocuments({ 
-        created_at: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+        created_at: { $gte: oneWeekAgo }
       });
+
       res.render('admin_user', {
         pageTitle: 'User Management',
         user: req.session.user || null,
         users,
         stats: {
-          totalUsers: userCount,
+          totalUsers,
           activeMembers,
           platinumUsers,
-          newSignups
+          newSignups,
+          totalUsersChange: '+12%',
+          activeMembersChange: '+5%', 
+          platinumUsersChange: '+12%',
+          newSignupsChange: '+5%'
         }
       });
     } catch (error) {
@@ -78,7 +84,17 @@ const adminController = {
       res.render('admin_user', {
         pageTitle: 'User Management',
         user: req.session.user || null,
-        users: []
+        users: [],
+        stats: {
+          totalUsers: 0,
+          activeMembers: 0,
+          platinumUsers: 0,
+          newSignups: 0,
+          totalUsersChange: '+0%',
+          activeMembersChange: '+0%',
+          platinumUsersChange: '+0%',
+          newSignupsChange: '+0%'
+        }
       });
     }
   },
@@ -206,13 +222,12 @@ const adminController = {
     }
   },
 
-  // New API endpoint to fetch trainers dynamically
   getTrainersApi: async (req, res) => {
     try {
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-      const { search } = req.query; // Allow search query parameter
+      const { search } = req.query;
       let query = {};
       if (search) {
         query = {
@@ -314,6 +329,7 @@ const adminController = {
     }
   },
 
+  // Verifier Management
   getVerifiers: async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -416,23 +432,114 @@ const adminController = {
     }
   },
 
+  // Membership Management
   getMemberships: async (req, res) => {
     try {
       if (!req.session.userId) {
         return res.redirect('/admin_login');
       }
       const memberships = await Membership.find().sort({ createdAt: -1 }).populate('user_id', 'full_name email');
+
+      // Calculate real-time stats from MongoDB
+      const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+      // Aggregate for plan stats, total revenue, and averages
+      const agg = await User.aggregate([
+        { $match: { status: 'Active' } },
+        {
+          $addFields: {
+            months: {
+              $max: [
+                1,
+                {
+                  $ceil: {
+                    $divide: [
+                      { $subtract: [new Date(), '$created_at'] },
+                      1000 * 60 * 60 * 24 * 30
+                    ]
+                  }
+                }
+              ]
+            },
+            price: {
+              $switch: {
+                branches: [
+                  { case: { $eq: ['$membershipType', 'Basic'] }, then: 19 },
+                  { case: { $eq: ['$membershipType', 'Gold'] }, then: 39 },
+                  { case: { $eq: ['$membershipType', 'Platinum'] }, then: 79 },
+                ],
+                default: 0
+              }
+            }
+          }
+        },
+        {
+          $group: {
+            _id: '$membershipType',
+            active: { $sum: 1 },
+            revenue: { $sum: { $multiply: ['$price', '$months'] } },
+            retention: { $avg: '$months' }
+          }
+        }
+      ]);
+
+      // Process aggregate results into planStats
+      let planStats = {
+        basic: { active: 0, revenue: 0, retention: 0 },
+        gold: { active: 0, revenue: 0, retention: 0 },
+        platinum: { active: 0, revenue: 0, retention: 0 }
+      };
+
+      agg.forEach(group => {
+        const type = group._id.toLowerCase();
+        if (planStats[type]) {
+          planStats[type] = {
+            active: group.active,
+            revenue: group.revenue,
+            retention: group.retention
+          };
+        }
+      });
+
+      // Calculate top-level stats
+      const totalUsers = await User.countDocuments();
+      const activeMembers = await User.countDocuments({ status: 'Active' });
+      const premiumMembers = await User.countDocuments({ status: 'Active', membershipType: 'Platinum' });
+      const newSignups = await User.countDocuments({ created_at: { $gte: oneWeekAgo } });
+      const totalRevenue = agg.reduce((sum, group) => sum + group.revenue, 0);
+
       res.render('admin_membership', {
         pageTitle: 'Membership Management',
         user: req.session.user || null,
-        memberships
+        memberships,
+        stats: {
+          totalUsers,
+          totalRevenue,
+          activeMembers,
+          premiumMembers,
+          newSignups
+        },
+        planStats
       });
     } catch (error) {
       console.error('Membership management error:', error);
       res.render('admin_membership', {
         pageTitle: 'Membership Management',
         user: req.session.user || null,
-        memberships: []
+        memberships: [],
+        stats: {
+          totalUsers: 0,
+          totalRevenue: 0,
+          activeMembers: 0,
+          premiumMembers: 0,
+          newSignups: 0
+        },
+        planStats: {
+          basic: { active: 0, revenue: 0, retention: 0 },
+          gold: { active: 0, revenue: 0, retention: 0 },
+          platinum: { active: 0, revenue: 0, retention: 0 }
+        }
       });
     }
   },
@@ -517,6 +624,7 @@ const adminController = {
     }
   },
 
+  // Nutrition Plan Management
   getNutritionPlans: async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -565,6 +673,7 @@ const adminController = {
     }
   },
 
+  // Exercise Management
   getExercises: async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -613,6 +722,7 @@ const adminController = {
     }
   },
 
+  // Workout Plan Management
   getWorkoutPlans: async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -661,6 +771,7 @@ const adminController = {
     }
   },
 
+  // Settings
   getSettings: async (req, res) => {
     try {
       if (!req.session.userId) {
