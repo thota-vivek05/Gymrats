@@ -67,14 +67,14 @@ const signupTrainer = async (req, res) => {
         }
 
         const validSpecializations = [
+            'Calisthenics',
             'Weight Loss',
-            'Muscle Gain',
-            'Flexibility',
-            'Cardiovascular',
+            'HIIT',
+            'Competitive',
             'Strength Training',
-            'Post-Rehab',
-            'Sports Performance',
-            'Nutrition'
+            'Cardio',
+            'Flexibility',
+            'Bodybuilding'
         ];
         if (!Array.isArray(specializations) || specializations.length === 0) {
             console.log('Validation failed: No specializations selected');
