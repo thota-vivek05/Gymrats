@@ -42,12 +42,6 @@ router.post('/exercises', adminController.createExercise);
 router.put('/exercises/:id', adminController.updateExercise);
 router.delete('/exercises/:id', adminController.deleteExercise);
 
-// Workout Plan Routes
-router.get('/workout-plans', adminController.getWorkoutPlans);
-router.post('/workout-plans', adminController.createWorkoutPlan);
-router.put('/workout-plans/:id', adminController.updateWorkoutPlan);
-router.delete('/workout-plans/:id', adminController.deleteWorkoutPlan);
-
 // Verifier Routes
 router.get('/verifier', adminController.getVerifiers);
 router.post('/verifier', adminController.createVerifier);
