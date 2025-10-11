@@ -3,7 +3,9 @@ const User = require('../model/User');
 const WorkoutPlan = require('../model/WorkoutPlan');
 const WorkoutHistory = require('../model/WorkoutHistory');
 const NutritionHistory = require('../model/NutritionHistory');
-
+//brimstone
+const Membership = require('../model/Membership'); // Add this line
+//brimstone
 // for membership management           REYNA
 const Trainer = require('../model/Trainer');
 
@@ -262,159 +264,14 @@ const getUserProfile = async (req, res) => {
     }
 };
 
-// REYNA
-
-// Add this function before module.exports
-const updateUserProfile = async (req, res) => {
-    try {
-        if (!req.session || !req.session.user) {
-            return res.status(401).json({
-                success: false,
-                message: 'Authentication required'
-            });
-        }
-
-        const userId = req.session.user.id;
-        const { full_name, email, phone, dob, height, weight } = req.body;
-
-        console.log('Updating profile for user:', userId, 'Data:', req.body);
-
-        // Validate required fields
-        if (!full_name || !email) {
-            return res.status(400).json({
-                success: false,
-                message: 'Name and email are required fields'
-            });
-        }
-
-        // Validate email format
-        const emailRegex = /^\S+@\S+\.\S+$/;
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Please enter a valid email address'
-            });
-        }
-
-        // Validate phone format
-        const phoneRegex = /^\+?[\d\s-]{10,}$/;
-        if (phone && !phoneRegex.test(phone)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Please enter a valid phone number'
-            });
-        }
-
-        // Calculate BMI if height and weight are provided
-        let BMI = null;
-        if (height && weight && height > 0) {
-            const heightInMeters = height / 100;
-            BMI = (weight / (heightInMeters * heightInMeters)).toFixed(1);
-        }
-
-        // Prepare update data
-        const updateData = {
-            full_name,
-            email,
-            phone,
-            height: height ? Number(height) : null,
-            weight: weight ? Number(weight) : null,
-            BMI: BMI ? Number(BMI) : null
-        };
-
-        // Only add dob if provided and valid
-        if (dob) {
-            const dobDate = new Date(dob);
-            if (!isNaN(dobDate.getTime())) {
-                updateData.dob = dobDate;
-            }
-        }
-
-        // Remove undefined/null fields
-        Object.keys(updateData).forEach(key => {
-            if (updateData[key] === undefined || updateData[key] === null) {
-                delete updateData[key];
-            }
-        });
-
-        console.log('Update data:', updateData);
-
-        // Update user in database
-        const updatedUser = await User.findByIdAndUpdate(
-            userId,
-            { $set: updateData },
-            { 
-                new: true, // Return updated document
-                runValidators: true // Run schema validators
-            }
-        );
-
-        if (!updatedUser) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
-
-        // Update session data
-        req.session.user = {
-            ...req.session.user,
-            full_name: updatedUser.full_name,
-            email: updatedUser.email,
-            phone: updatedUser.phone,
-            dob: updatedUser.dob,
-            height: updatedUser.height,
-            weight: updatedUser.weight,
-            BMI: updatedUser.BMI
-        };
-
-        console.log('Profile updated successfully for user:', userId);
-
-        res.json({
-            success: true,
-            message: 'Profile updated successfully',
-            user: updatedUser,
-            BMI: BMI
-        });
-
-    } catch (error) {
-        console.error('Error updating profile:', error);
-        
-        // Handle duplicate email error
-        if (error.code === 11000) {
-            return res.status(400).json({
-                success: false,
-                message: 'Email already exists'
-            });
-        }
-
-        // Handle validation errors
-        if (error.name === 'ValidationError') {
-            const errors = Object.values(error.errors).map(err => err.message);
-            return res.status(400).json({
-                success: false,
-                message: 'Validation error',
-                errors: errors
-            });
-        }
-
-        res.status(500).json({
-            success: false,
-            message: 'Internal server error',
-            error: error.message
-        });
-    }
-};
-
-//END REYNA
 
 const loginUser = async (req, res) => {
     try {
-        const { email, password, loginMembershipPlan } = req.body;
+        const { email, password } = req.body;
 
-        console.log('Login request received:', { email, loginMembershipPlan });
+        console.log('Login request received:', { email});
 
-        if (!email || !password || !loginMembershipPlan) {
+        if (!email || !password) {
             console.log('Validation failed: Missing fields');
             return res.status(400).json({ error: 'All fields are required' });
         }
@@ -430,12 +287,12 @@ const loginUser = async (req, res) => {
             console.log('Password mismatch for:', email);
             return res.status(401).json({ error: 'Invalid email or password' });
         }
-
-        if (user.membershipType.toLowerCase() !== loginMembershipPlan.toLowerCase()) {
-            console.log('Membership plan mismatch:', { user: user.membershipType, input: loginMembershipPlan });
-            return res.status(400).json({ error: 'Selected membership plan does not match user membership' });
-        }
-
+        //brimstone 1
+        // if (user.membershipType.toLowerCase() !== loginMembershipPlan.toLowerCase()) {
+        //     console.log('Membership plan mismatch:', { user: user.membershipType, input: loginMembershipPlan });
+        //     return res.status(400).json({ error: 'Selected membership plan does not match user membership' });
+        // }
+        // brimstone
         if (!req.session) {
             console.error('Session middleware not initialized');
             return res.status(500).json({ error: 'Session not available. Please try again later.' });
@@ -659,7 +516,7 @@ const signupUser = async (req, res) => {
             height: height !== undefined ? Number(height) : null,
             BMI: calculatedBMI,
             //REYNA
-            // workout_type: workoutType 
+            workout_type: workoutType 
         });
         console.log('New user object created:', newUser);
 
@@ -696,7 +553,287 @@ const signupUser = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+//brimstone
+// Add this function to userController.js
+const changeMembership = async (req, res) => {
+    try {
+        if (!req.session || !req.session.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authentication required'
+            });
+        }
 
+        const userId = req.session.user.id;
+        const { newMembershipType, duration, amount, cardLastFour } = req.body;
+
+        console.log('Changing membership for user:', userId, 'Data:', req.body);
+
+        // Validate input
+        if (!newMembershipType || !duration || !amount) {
+            return res.status(400).json({
+                success: false,
+                message: 'All fields are required'
+            });
+        }
+
+        // Validate membership type
+        const validMembershipTypes = ['Basic', 'Gold', 'Platinum'];
+        if (!validMembershipTypes.includes(newMembershipType)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid membership type'
+            });
+        }
+
+        // Validate duration
+        const validDurations = [1, 3, 6];
+        if (!validDurations.includes(duration)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid duration'
+            });
+        }
+
+        // Find user
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+
+        // Calculate new membership duration
+        const newMonthsRemaining = duration;
+
+        // Update user membership - PRESERVE EXISTING FITNESS GOALS
+        user.membershipType = newMembershipType;
+        user.membershipDuration.months_remaining = newMonthsRemaining;
+        user.membershipDuration.last_renewal_date = new Date();
+        
+        // Update end date
+        const newEndDate = new Date();
+        newEndDate.setMonth(newEndDate.getMonth() + newMonthsRemaining);
+        user.membershipDuration.end_date = newEndDate;
+        
+        user.status = 'Active';
+
+        // Ensure fitness_goals are preserved and not set to null
+        if (!user.fitness_goals) {
+            user.fitness_goals = {
+                calorie_goal: 2200,
+                protein_goal: 90,
+                weight_goal: user.weight || 70 // Use current weight as default if no goal exists
+            };
+        } else if (user.fitness_goals.weight_goal === null || user.fitness_goals.weight_goal === undefined) {
+            // Set a default weight goal if it's null/undefined
+            user.fitness_goals.weight_goal = user.weight || 70;
+        }
+
+        // Create membership record
+        const membershipRecord = new Membership({
+            user_id: userId,
+            plan: newMembershipType.toLowerCase(),
+            duration: duration,
+            start_date: new Date(),
+            end_date: newEndDate,
+            price: amount,
+            payment_method: 'credit_card',
+            card_last_four: cardLastFour,
+            status: 'Active'
+        });
+
+        // Save both user and membership record
+        await Promise.all([
+            user.save(),
+            membershipRecord.save()
+        ]);
+
+        // Update session
+        req.session.user.membershipType = newMembershipType;
+        req.session.user.membership = newMembershipType.toLowerCase();
+        req.session.user.membershipDuration = {
+            months_remaining: newMonthsRemaining,
+            end_date: newEndDate,
+            auto_renew: user.membershipDuration.auto_renew
+        };
+
+        console.log('Membership changed successfully for user:', userId);
+
+        res.json({
+            success: true,
+            message: 'Membership changed successfully',
+            newMembershipType: newMembershipType,
+            monthsRemaining: newMonthsRemaining,
+            redirect: `/userdashboard_${newMembershipType.charAt(0).toLowerCase()}`
+        });
+
+    } catch (error) {
+        console.error('Error changing membership:', error);
+        
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: errors
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
+//brimstone
+// brimstone
+// Add this function to userController.js
+const updateUserProfile = async (req, res) => {
+    try {
+        if (!req.session || !req.session.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authentication required'
+            });
+        }
+
+        const userId = req.session.user.id;
+        const { full_name, email, phone, dob, height, weight } = req.body;
+
+        console.log('Updating profile for user:', userId, 'Data:', req.body);
+
+        // Validate required fields
+        if (!full_name || !email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Name and email are required fields'
+            });
+        }
+
+        // Validate email format
+        const emailRegex = /^\S+@\S+\.\S+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please enter a valid email address'
+            });
+        }
+
+        // Validate phone format
+        const phoneRegex = /^\+?[\d\s-]{10,}$/;
+        if (phone && !phoneRegex.test(phone)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please enter a valid phone number'
+            });
+        }
+
+        // Calculate BMI if height and weight are provided
+        let BMI = null;
+        if (height && weight && height > 0) {
+            const heightInMeters = height / 100;
+            BMI = (weight / (heightInMeters * heightInMeters)).toFixed(1);
+        }
+
+        // Prepare update data
+        const updateData = {
+            full_name,
+            email,
+            phone,
+            height: height ? Number(height) : null,
+            weight: weight ? Number(weight) : null,
+            BMI: BMI ? Number(BMI) : null
+        };
+
+        // Only add dob if provided and valid
+        if (dob) {
+            const dobDate = new Date(dob);
+            if (!isNaN(dobDate.getTime())) {
+                updateData.dob = dobDate;
+            }
+        }
+
+        // Remove undefined/null fields
+        Object.keys(updateData).forEach(key => {
+            if (updateData[key] === undefined || updateData[key] === null) {
+                delete updateData[key];
+            }
+        });
+
+        console.log('Update data:', updateData);
+
+        // Update user in database
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: updateData },
+            { 
+                new: true, // Return updated document
+                runValidators: true // Run schema validators
+            }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Update session data
+        req.session.user = {
+            ...req.session.user,
+            full_name: updatedUser.full_name,
+            email: updatedUser.email,
+            phone: updatedUser.phone,
+            dob: updatedUser.dob,
+            height: updatedUser.height,
+            weight: updatedUser.weight,
+            BMI: updatedUser.BMI
+        };
+
+        console.log('Profile updated successfully for user:', userId);
+
+        res.json({
+            success: true,
+            message: 'Profile updated successfully',
+            user: updatedUser,
+            BMI: BMI
+        });
+
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        
+        // Handle duplicate email error
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email already exists'
+            });
+        }
+
+        // Handle validation errors
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: errors
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
+// Update the getUserDashboard function in userController.js to fetch nutrition data:
+// brimstone
 // Get user dashboard based on membership type
 const getUserDashboard = async (req, res, membershipCode) => {
     try {
@@ -729,7 +866,6 @@ const getUserDashboard = async (req, res, membershipCode) => {
             default:
                 dashboardTemplate = 'userdashboard_b';
         }
-        
         
         // Get last 5 workouts
         const recentWorkouts = await WorkoutHistory.find({ userId: userId })
@@ -859,10 +995,10 @@ const getUserDashboard = async (req, res, membershipCode) => {
         if (currentWeekWorkout && currentWeekWorkout.exercises) {
             const todayDayName = dayNames[today.getDay()];
             
-            // // Filter exercises for today
-            // todayExercises = currentWeekWorkout.exercises.filter(exercise => 
-            //     exercise.day === todayDayName
-            // );
+            // Filter exercises for today
+            todayExercises = currentWeekWorkout.exercises.filter(exercise => 
+                exercise.day === todayDayName
+            );
             
             if (todayExercises.length > 0) {
                 const completedExercises = todayExercises.filter(ex => ex.completed).length;
@@ -920,7 +1056,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
         // Add this debug section after the currentWeekWorkout query:
 console.log('=== DEBUG WORKOUT DATA ===');
 console.log('Today:', today);
-// console.log('Today Day Name:', dayNames[today.getDay()]);
+console.log('Today Day Name:', dayNames[today.getDay()]);
 console.log('Week Start:', weekStart);
 console.log('Week End:', weekEnd);
 console.log('Current Week Workout Found:', !!currentWeekWorkout);
@@ -939,7 +1075,8 @@ if (currentWeekWorkout) {
                 total: recentWorkouts.length
             },
             todayWorkout: todayWorkoutData, // Use the fixed todayWorkoutData
-            exerciseProgress: exerciseProgress, // Use the updated exercise progress
+            exerciseProgress: exerciseProgress, // Use the updated exercise progress 
+           
 
             // added new membership info       REYNA
             membershipInfo: {
@@ -1103,5 +1240,6 @@ module.exports = {
     markWorkoutCompleted,
     checkMembershipActive,
     checkTrainerSubscription,
-    updateUserProfile
+    updateUserProfile,
+    changeMembership
 };

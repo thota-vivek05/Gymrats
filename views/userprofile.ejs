@@ -9,9 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/userprofile/userprofile.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
-    <style>
 
-    </style>
 </head>
 
 <body>
@@ -31,21 +29,14 @@
             </div>
 
             <div class="right-container">
-                <div class="search-container">
-                    <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
-                    <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
+                <!--brimstone-->
+                <div class="change-membership-nav">
+                    <button class="change-membership-btn-nav" onclick="openChangeMembershipModal()">
+                        <i class="fas fa-exchange-alt"></i>
+                        Change Membership
+                    </button>
                 </div>
-
-                <div class="user-profile">
-                    <a href="/userprofile" class="active">
-                        <% if (user && user.full_name) { %>
-                        <span><%= user.full_name %></span>
-                        <% } else { %>
-                        <span>User</span>
-                        <% } %>
-                    </a>
-                </div>
-
+                <!--brimstone-->
                 <!-- Add Logout Button -->
                 <div class="logout-container">
                     <a href="/logout" class="logout-btn">
@@ -53,9 +44,7 @@
                     </a>
                 </div>
             </div>
-            <div class="mobile-menu-icon" id="menuIcon">
-                <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
-            </div>
+
             <div class="mobile-sidebar" id="sideNavbar">
                 <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
                 <a
@@ -71,6 +60,7 @@
                         <% } %>
                     </a>
                 </div>
+
                 <!-- Add Logout Button in Mobile Sidebar -->
                 <div class="sidebar-logout">
                     <a href="/logout" class="logout-btn">
@@ -118,12 +108,16 @@
                 </div>
             </div>
         </div>
-        <!-- Profile Overview -->
-        <div class="profile-grid">
+
+        <!-- Profile Overview - Side by Side Layout -->
+        <div class="profile-grid-2col">
             <!-- User Information Card -->
             <div class="profile-card user-info-card">
                 <div class="card-header">
                     <h2>Personal Information</h2>
+                    <button class="edit-profile-btn" id="editProfileBtn">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
                 </div>
                 <div class="profile-content">
                     <div class="profile-status-container">
@@ -132,46 +126,49 @@
                     <div class="profile-details">
                         <div class="profile-item">
                             <span class="profile-label">Name:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="nameValue">
                                 <% if (user && typeof user === 'object') { %>
                                 <%= user.full_name || user.name || 'Not provided' %>
                                 <% } else { %>
                                 Not provided
                                 <% } %>
                             </span>
-                            <input type="text" class="profile-edit-input"
+                            <input type="text" class="profile-edit-input" id="nameInput"
                                 value="<%= user && typeof user === 'object' ? (user.full_name || user.name || '') : '' %>"
                                 style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Email:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="emailValue">
                                 <% if (typeof user === 'object' && user !== null && user.email) { %>
                                 <%= user.email %>
                                 <% } else { %>
                                 Not provided
                                 <% } %>
                             </span>
-                            <input type="email" class="profile-edit-input"
+                            <input type="email" class="profile-edit-input" id="emailInput"
                                 value="<%= typeof user === 'object' && user !== null && user.email ? user.email : '' %>"
                                 style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Phone:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="phoneValue">
                                 <% if (typeof user === 'object' && user !== null && user.phone) { %>
                                 <%= user.phone %>
                                 <% } else { %>
                                 Not provided
                                 <% } %>
                             </span>
-                            <input type="tel" class="profile-edit-input"
+                            <input type="tel" class="profile-edit-input" id="phoneInput"
                                 value="<%= typeof user === 'object' && user !== null && user.phone ? user.phone : '' %>"
                                 style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Age:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="ageValue">
                                 <% if (typeof user === 'object' && user !== null && user.dob) { 
                                     try {
                                         const today = new Date();
@@ -190,46 +187,56 @@
                                 Not provided
                                 <% } %>
                             </span>
-                            <input type="number" class="profile-edit-input" value="" style="display: none;">
+                            <input type="date" class="profile-edit-input" id="dobInput"
+                                value="<%= user && user.dob ? new Date(user.dob).toISOString().split('T')[0] : '' %>"
+                                style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Height:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="heightValue">
                                 <% if (typeof user === 'object' && user !== null && user.height) { %>
                                 <%= user.height %> cm
                                 <% } else { %>
                                 Not provided
                                 <% } %>
                             </span>
-                            <input type="number" class="profile-edit-input"
+                            <input type="number" class="profile-edit-input" id="heightInput"
                                 value="<%= typeof user === 'object' && user !== null && user.height ? user.height : '' %>"
-                                style="display: none;">
+                                placeholder="Height in cm" style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Weight:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="weightValue">
                                 <% if (typeof user === 'object' && user !== null && user.weight) { %>
                                 <%= user.weight %> kg
                                 <% } else { %>
                                 Not provided
                                 <% } %>
                             </span>
-                            <input type="number" class="profile-edit-input"
+                            <input type="number" class="profile-edit-input" id="weightInput"
                                 value="<%= typeof user === 'object' && user !== null && user.weight ? user.weight : '' %>"
-                                style="display: none;">
+                                placeholder="Weight in kg" style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">BMI:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="bmiValue">
                                 <% if (typeof user === 'object' && user !== null && user.BMI) { %>
                                 <%= user.BMI %>
                                 <% } else { %>
                                 Not provided
                                 <% } %>
                             </span>
+                            <input type="number" class="profile-edit-input" id="bmiInput" readonly
+                                value="<%= typeof user === 'object' && user !== null && user.BMI ? user.BMI : '' %>"
+                                style="display: none;">
                         </div>
                     </div>
-                    <div class="profile-edit-actions" style="display: none;">
+
+                    <!-- Add Save/Cancel Buttons -->
+                    <div class="profile-edit-actions" id="editActions" style="display: none;">
                         <button class="save-btn" id="saveProfileBtn">Save Changes</button>
                         <button class="cancel-btn" id="cancelEditBtn">Cancel</button>
                     </div>
@@ -261,7 +268,7 @@
                                 <%= user && user.membershipType ? user.membershipType : 'Basic' %>
                             </span>
                         </div>
-                        
+
                         <div class="membership-item">
                             <span class="membership-label">Status:</span>
                             <span class="membership-value active">
@@ -303,8 +310,7 @@
             </div>
         </div>
 
-        <!-- brim stone -->
-        <!-- Membership Extension Section -->
+        <!-- Membership Extension Section - Below the two cards -->
         <div class="profile-card membership-extension-card">
             <div class="card-header">
                 <h2>Extend Membership</h2>
@@ -348,80 +354,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Statistics Card -->
-        <div class="profile-wide-card">
-            <div class="card-header">
-                <h2>My Fitness Statistics</h2>
-            </div>
-            <div class="stats-content">
-                <div class="stats-summary">
-                    <div class="stat-box">
-                        <div class="stat-icon">
-                            <i class="fas fa-dumbbell"></i>
-                        </div>
-                        <div class="stat-value">
-                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.workoutsCompleted !== undefined) { %>
-                            <%= fitnessStats.workoutsCompleted %>
-                            <% } else { %>
-                            0
-                            <% } %>
-                        </div>
-                        <div class="stat-label">Workouts</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-icon">
-                            <i class="fas fa-fire"></i>
-                        </div>
-                        <div class="stat-value">
-                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.caloriesBurned !== undefined) { %>
-                            <%= fitnessStats.caloriesBurned.toLocaleString() %>
-                            <% } else { %>
-                            0
-                            <% } %>
-                        </div>
-                        <div class="stat-label">Calories Burned</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-value">
-                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.hoursActive !== undefined) { %>
-                            <%= fitnessStats.hoursActive %>
-                            <% } else { %>
-                            0
-                            <% } %>
-                        </div>
-                        <div class="stat-label">Hours Active</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-icon">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <div class="stat-value">
-                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.goalsAchieved !== undefined) { %>
-                            <%= fitnessStats.goalsAchieved %>
-                            <% } else { %>
-                            0
-                            <% } %>
-                        </div>
-                        <div class="stat-label">Goals Achieved</div>
-                    </div>
-                </div>
-                <div class="stats-charts">
-                    <div class="chart-container">
-                        <h3>Workout Frequency</h3>
-                        <canvas id="workoutFrequencyChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h3>Weight Progress</h3>
-                        <canvas id="weightProgressChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Workout History Card -->
         <div class="profile-wide-card">
             <div class="card-header">
@@ -472,8 +404,9 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Footer
+    <!-- Footer
         <footer class="site-footer">
             <div class="footer-content">
                 <div class="footer-column">
@@ -550,7 +483,8 @@
                     %
                 } % > ;
             const weightProgressData = < %
-                if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData.weightProgress
+                if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData
+                    .weightProgress
                     .length > 0) {
                     %
                     >
@@ -565,7 +499,8 @@
                     %
                 } % > ;
             const weightLabels = < %
-                if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData.weightProgress
+                if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData
+                    .weightProgress
                     .length > 0) {
                     %
                     >
@@ -580,7 +515,9 @@
                     %
                 } % > ;
             if (document.getElementById('workoutFrequencyChart')) {
-                const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart').getContext('2d');
+                const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart')
+                    .getContext(
+                        '2d');
                 new Chart(workoutFrequencyCtx, {
                     type: 'bar',
                     data: {
@@ -613,7 +550,8 @@
                 });
             }
             if (document.getElementById('weightProgressChart')) {
-                const weightProgressCtx = document.getElementById('weightProgressChart').getContext('2d');
+                const weightProgressCtx = document.getElementById('weightProgressChart').getContext(
+                    '2d');
                 new Chart(weightProgressCtx, {
                     type: 'line',
                     data: {
@@ -655,6 +593,161 @@
             window.location.href = '/membership_renewal';
         }
     </script>
+    <!-- Change Membership Modal -->
+    <div id="changeMembershipModal" class="modal">
+        <div class="modal-content membership-modal">
+            <div class="modal-header">
+                <h2>Change Membership Plan</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Current Membership Info -->
+                <div class="current-membership-info">
+                    <h3>Current Plan: <span id="currentPlanDisplay"><%= user.membershipType || 'Basic' %></span></h3>
+                </div>
+
+                <!-- Membership Selection -->
+                <div class="membership-selection">
+                    <h3>Select New Plan</h3>
+                    <div class="plan-options">
+                        <% if (user.membershipType === 'Basic') { %>
+                        <div class="plan-option" data-plan="gold">
+                            <h4>Gold Plan</h4>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
+                                <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
+                                <li><i class="fas fa-check"></i> Current Stats Tracking</li>
+                                <li><i class="fas fa-times"></i> Online Classes</li>
+                                <li><i class="fas fa-times"></i> Personal Training</li>
+                            </ul>
+                            <p class="plan-price">₹599/month</p>
+                        </div>
+                        <div class="plan-option" data-plan="platinum">
+                            <h4>Platinum Plan</h4>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> All Gold Features</li>
+                                <li><i class="fas fa-check"></i> Online Classes</li>
+                                <li><i class="fas fa-check"></i> Personal Training Sessions</li>
+                                <li><i class="fas fa-check"></i> Priority Support</li>
+                            </ul>
+                            <p class="plan-price">₹999/month</p>
+                        </div>
+                        <% } else if (user.membershipType === 'Gold') { %>
+                        <div class="plan-option" data-plan="basic">
+                            <h4>Basic Plan</h4>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                                <li><i class="fas fa-check"></i> Basic Workout Plans</li>
+                                <li><i class="fas fa-check"></i> Nutritional Tips</li>
+                                <li><i class="fas fa-times"></i> Current Stats Tracking</li>
+                                <li><i class="fas fa-times"></i> Online Classes</li>
+                            </ul>
+                            <p class="plan-price">₹299/month</p>
+                        </div>
+                        <div class="plan-option" data-plan="platinum">
+                            <h4>Platinum Plan</h4>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> All Gold Features</li>
+                                <li><i class="fas fa-check"></i> Online Classes</li>
+                                <li><i class="fas fa-check"></i> Personal Training Sessions</li>
+                                <li><i class="fas fa-check"></i> Priority Support</li>
+                            </ul>
+                            <p class="plan-price">₹999/month</p>
+                        </div>
+                        <% } else if (user.membershipType === 'Platinum') { %>
+                        <div class="plan-option" data-plan="basic">
+                            <h4>Basic Plan</h4>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                                <li><i class="fas fa-check"></i> Basic Workout Plans</li>
+                                <li><i class="fas fa-check"></i> Nutritional Tips</li>
+                                <li><i class="fas fa-times"></i> Current Stats Tracking</li>
+                                <li><i class="fas fa-times"></i> Online Classes</li>
+                            </ul>
+                            <p class="plan-price">₹299/month</p>
+                        </div>
+                        <div class="plan-option" data-plan="gold">
+                            <h4>Gold Plan</h4>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
+                                <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
+                                <li><i class="fas fa-check"></i> Current Stats Tracking</li>
+                                <li><i class="fas fa-times"></i> Online Classes</li>
+                                <li><i class="fas fa-times"></i> Personal Training</li>
+                            </ul>
+                            <p class="plan-price">₹599/month</p>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Duration Selection -->
+                <div class="duration-selection">
+                    <h3>Select Duration</h3>
+                    <div class="duration-options">
+                        <div class="duration-option" data-months="1">
+                            <h4>1 Month</h4>
+                            <p class="duration-price" id="durationPrice-1">-</p>
+                            <button class="select-duration">Select</button>
+                        </div>
+                        <div class="duration-option" data-months="3">
+                            <h4>3 Months</h4>
+                            <p class="duration-price" id="durationPrice-3">-</p>
+                            <p class="save-text">Save 15%</p>
+                            <button class="select-duration">Select</button>
+                        </div>
+                        <div class="duration-option" data-months="6">
+                            <h4>6 Months</h4>
+                            <p class="duration-price" id="durationPrice-6">-</p>
+                            <p class="save-text">Save 25%</p>
+                            <button class="select-duration">Select</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Section -->
+                <div class="payment-section" id="paymentSection" style="display: none;">
+                    <h3>Payment Details</h3>
+                    <div class="selected-plan-summary">
+                        <p><strong>Plan:</strong> <span id="selectedPlan">-</span></p>
+                        <p><strong>Duration:</strong> <span id="selectedDuration">-</span></p>
+                        <p><strong>Total Amount:</strong> ₹<span id="totalAmount">0</span></p>
+                    </div>
+
+                    <form id="paymentForm">
+                        <div class="form-group">
+                            <label for="cardNumber">Card Number</label>
+                            <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456"
+                                required maxlength="19">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expiryDate">Expiration Date</label>
+                                <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" required
+                                    maxlength="5">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" name="cvv" placeholder="123" required maxlength="3">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cardHolder">Card Holder Name</label>
+                            <input type="text" id="cardHolder" name="cardHolder" placeholder="John Doe" required>
+                        </div>
+
+                        <button type="submit" class="process-payment-btn">
+                            <i class="fas fa-lock"></i>
+                            Process Payment - ₹<span id="paymentAmount">0</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 <script>
@@ -1648,6 +1741,394 @@
             notes: 'Detailed information for this workout is not available.'
         };
     }
+    // Add this to your existing JavaScript section
+    document.addEventListener('DOMContentLoaded', function () {
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const editActions = document.getElementById('editActions');
+
+        let originalValues = {};
+
+        // Edit button click handler
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', enableProfileEditing);
+        }
+
+        // Save button click handler
+        if (saveProfileBtn) {
+            saveProfileBtn.addEventListener('click', saveProfileChanges);
+        }
+
+        // Cancel button click handler
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', cancelProfileEditing);
+        }
+
+        // BMI calculation when height or weight changes
+        const heightInput = document.getElementById('heightInput');
+        const weightInput = document.getElementById('weightInput');
+        const bmiInput = document.getElementById('bmiInput');
+
+        if (heightInput && weightInput && bmiInput) {
+            heightInput.addEventListener('input', calculateBMI);
+            weightInput.addEventListener('input', calculateBMI);
+        }
+
+        function enableProfileEditing() {
+            // Store original values
+            originalValues = {
+                name: document.getElementById('nameInput').value,
+                email: document.getElementById('emailInput').value,
+                phone: document.getElementById('phoneInput').value,
+                dob: document.getElementById('dobInput').value,
+                height: document.getElementById('heightInput').value,
+                weight: document.getElementById('weightInput').value,
+                bmi: document.getElementById('bmiInput').value
+            };
+
+            // Hide all values and show inputs
+            document.querySelectorAll('.profile-value').forEach(value => {
+                value.style.display = 'none';
+            });
+
+            document.querySelectorAll('.profile-edit-input').forEach(input => {
+                input.style.display = 'block';
+            });
+
+            // Show save/cancel buttons
+            editActions.style.display = 'flex';
+
+            // Hide edit button
+            editProfileBtn.style.display = 'none';
+
+            // Calculate BMI with current values
+            calculateBMI();
+        }
+
+        function calculateBMI() {
+            const height = parseFloat(heightInput.value);
+            const weight = parseFloat(weightInput.value);
+
+            if (height && weight && height > 0) {
+                const heightInMeters = height / 100;
+                const bmi = weight / (heightInMeters * heightInMeters);
+                bmiInput.value = bmi.toFixed(1);
+            } else {
+                bmiInput.value = '';
+            }
+        }
+
+        function saveProfileChanges() {
+            const updatedData = {
+                full_name: document.getElementById('nameInput').value,
+                email: document.getElementById('emailInput').value,
+                phone: document.getElementById('phoneInput').value,
+                dob: document.getElementById('dobInput').value,
+                height: parseFloat(document.getElementById('heightInput').value),
+                weight: parseFloat(document.getElementById('weightInput').value),
+                BMI: parseFloat(document.getElementById('bmiInput').value) || null
+            };
+
+            // Validate required fields
+            if (!updatedData.full_name || !updatedData.email || !updatedData.phone) {
+                alert('Please fill in all required fields: Name, Email, and Phone');
+                return;
+            }
+
+            // Validate email format
+            const emailRegex = /^\S+@\S+\.\S+$/;
+            if (!emailRegex.test(updatedData.email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            // Validate phone format
+            const phoneRegex = /^\+?[\d\s-]{10,}$/;
+            if (!phoneRegex.test(updatedData.phone)) {
+                alert('Please enter a valid phone number');
+                return;
+            }
+
+            // Show loading state
+            saveProfileBtn.textContent = 'Saving...';
+            saveProfileBtn.disabled = true;
+
+            // Send update request
+            fetch('/user/profile/update', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update displayed values
+                        document.getElementById('nameValue').textContent = updatedData.full_name;
+                        document.getElementById('emailValue').textContent = updatedData.email;
+                        document.getElementById('phoneValue').textContent = updatedData.phone;
+                        document.getElementById('heightValue').textContent = updatedData.height ?
+                            updatedData.height + ' cm' : 'Not provided';
+                        document.getElementById('weightValue').textContent = updatedData.weight ?
+                            updatedData.weight + ' kg' : 'Not provided';
+                        document.getElementById('bmiValue').textContent = updatedData.BMI || 'Not provided';
+
+                        // Update age display
+                        if (updatedData.dob) {
+                            const today = new Date();
+                            const birthDate = new Date(updatedData.dob);
+                            let age = today.getFullYear() - birthDate.getFullYear();
+                            const m = today.getMonth() - birthDate.getMonth();
+                            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                                age--;
+                            }
+                            document.getElementById('ageValue').textContent = age + ' years';
+                        }
+
+                        // Exit edit mode
+                        cancelProfileEditing();
+
+                        alert('Profile updated successfully!');
+                    } else {
+                        throw new Error(data.message || 'Failed to update profile');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating profile:', error);
+                    alert('Error updating profile: ' + error.message);
+                })
+                .finally(() => {
+                    saveProfileBtn.textContent = 'Save Changes';
+                    saveProfileBtn.disabled = false;
+                });
+        }
+
+        function cancelProfileEditing() {
+            // Restore original values to inputs
+            document.getElementById('nameInput').value = originalValues.name;
+            document.getElementById('emailInput').value = originalValues.email;
+            document.getElementById('phoneInput').value = originalValues.phone;
+            document.getElementById('dobInput').value = originalValues.dob;
+            document.getElementById('heightInput').value = originalValues.height;
+            document.getElementById('weightInput').value = originalValues.weight;
+            document.getElementById('bmiInput').value = originalValues.bmi;
+
+            // Show all values and hide inputs
+            document.querySelectorAll('.profile-value').forEach(value => {
+                value.style.display = 'block';
+            });
+
+            document.querySelectorAll('.profile-edit-input').forEach(input => {
+                input.style.display = 'none';
+            });
+
+            // Hide save/cancel buttons
+            editActions.style.display = 'none';
+
+            // Show edit button
+            editProfileBtn.style.display = 'block';
+        }
+    });
+    // Add this to your existing JavaScript
+    let selectedPlan = null;
+    let selectedMonths = null;
+    let selectedPrice = 0;
+
+    function openChangeMembershipModal() {
+        const modal = document.getElementById('changeMembershipModal');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        resetSelections();
+    }
+
+    function resetSelections() {
+        selectedPlan = null;
+        selectedMonths = null;
+        selectedPrice = 0;
+
+        // Reset UI
+        document.querySelectorAll('.plan-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+
+        document.querySelectorAll('.duration-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+
+        document.getElementById('paymentSection').style.display = 'none';
+    }
+
+    // Plan selection
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.plan-option')) {
+            const planOption = e.target.closest('.plan-option');
+            selectedPlan = planOption.dataset.plan;
+
+            // Update UI
+            document.querySelectorAll('.plan-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            planOption.classList.add('selected');
+
+            // Update prices based on selected plan
+            updateDurationPrices();
+        }
+
+        if (e.target.closest('.select-duration')) {
+            const durationOption = e.target.closest('.duration-option');
+            selectedMonths = parseInt(durationOption.dataset.months);
+
+            // Update UI
+            document.querySelectorAll('.duration-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            durationOption.classList.add('selected');
+
+            // Show payment section
+            showPaymentSection();
+        }
+    });
+
+    function updateDurationPrices() {
+        const prices = getPlanPrices(selectedPlan);
+
+        document.getElementById('durationPrice-1').textContent = `₹${prices[1]}`;
+        document.getElementById('durationPrice-3').textContent = `₹${prices[3]}`;
+        document.getElementById('durationPrice-6').textContent = `₹${prices[6]}`;
+    }
+
+    function getPlanPrices(plan) {
+        const priceMap = {
+            'basic': {
+                1: 299,
+                3: 750,
+                6: 1350
+            },
+            'gold': {
+                1: 599,
+                3: 1550,
+                6: 2700
+            },
+            'platinum': {
+                1: 999,
+                3: 2500,
+                6: 4500
+            }
+        };
+        return priceMap[plan] || priceMap['basic'];
+    }
+
+    function showPaymentSection() {
+        if (selectedPlan && selectedMonths) {
+            const prices = getPlanPrices(selectedPlan);
+            selectedPrice = prices[selectedMonths];
+
+            // Update payment summary
+            document.getElementById('selectedPlan').textContent = selectedPlan.charAt(0).toUpperCase() + selectedPlan
+                .slice(1);
+            document.getElementById('selectedDuration').textContent =
+                `${selectedMonths} Month${selectedMonths > 1 ? 's' : ''}`;
+            document.getElementById('totalAmount').textContent = selectedPrice;
+            document.getElementById('paymentAmount').textContent = selectedPrice;
+
+            // Show payment section
+            document.getElementById('paymentSection').style.display = 'block';
+
+            // Scroll to payment section
+            document.getElementById('paymentSection').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    // Payment form submission
+    document.getElementById('paymentForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        if (!selectedPlan || !selectedMonths) {
+            alert('Please select a plan and duration');
+            return;
+        }
+
+        // Validate card details
+        if (!validateCardDetails()) {
+            return;
+        }
+
+        processPayment();
+    });
+
+    function validateCardDetails() {
+        const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+        const expiryDate = document.getElementById('expiryDate').value;
+        const cvv = document.getElementById('cvv').value;
+
+        // Basic validation
+        if (cardNumber.length !== 16 || !/^\d+$/.test(cardNumber)) {
+            alert('Please enter a valid 16-digit card number');
+            return false;
+        }
+
+        if (!/^\d{2}\/\d{2}$/.test(expiryDate)) {
+            alert('Please enter a valid expiry date (MM/YY)');
+            return false;
+        }
+
+        if (cvv.length !== 3 || !/^\d+$/.test(cvv)) {
+            alert('Please enter a valid 3-digit CVV');
+            return false;
+        }
+
+        return true;
+    }
+
+    function processPayment() {
+        const paymentData = {
+            newMembershipType: selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1),
+            duration: selectedMonths,
+            amount: selectedPrice,
+            cardLastFour: document.getElementById('cardNumber').value.slice(-4)
+        };
+
+        const processBtn = document.querySelector('.process-payment-btn');
+        processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        processBtn.disabled = true;
+
+        fetch('/user/membership/change', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(paymentData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Membership updated successfully!');
+                    // Close modal and refresh page
+                    document.getElementById('changeMembershipModal').classList.remove('active');
+                    window.location.reload();
+                } else {
+                    throw new Error(data.message || 'Payment failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Payment failed: ' + error.message);
+                processBtn.innerHTML = '<i class="fas fa-lock"></i> Process Payment - ₹' + selectedPrice;
+                processBtn.disabled = false;
+            });
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('modal')) {
+            e.target.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    });
 </script>
 
 </html>
