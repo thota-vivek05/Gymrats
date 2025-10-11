@@ -384,6 +384,13 @@ document.querySelectorAll('.client-item').forEach(item => {
             // Fetch weekly workout schedule
             const workoutResponse = await fetch(`/workout/${clientId}`);
             const workoutData = await workoutResponse.json();
+            console.log("DEBUG: Workout API Response:", workoutData)
+
+            if (!workoutData.weeklySchedule) {
+    console.error("DEBUG: weeklySchedule is missing from response!");
+    console.error("DEBUG: Full response:", workoutData);
+}
+
             const weeklyScheduleDiv = document.getElementById('weeklySchedule');
             weeklyScheduleDiv.innerHTML = '';
             if (workoutData.error || !workoutData.weeklySchedule) {

@@ -10,42 +10,132 @@ const nutritionHistorySchema = new mongoose.Schema({
         type: Date, 
         default: Date.now 
     },
-    calories_consumed: { 
-        type: Number, 
-        min: 0 
-    },
-    protein_consumed: { 
-        type: Number, 
-        min: 0 
-    },
-    macros: {
-        protein: { 
-            type: Number, 
-            min: 0 
+    // Weekly goals
+    protein_goal: { type: Number, min: 0 },
+    calorie_goal: { type: Number, min: 0 },
+    
+    // ✅ NEW: Daily nutrition with macros for the entire week
+    daily_nutrition: {
+        Monday: {
+            calories_consumed: { type: Number, min: 0, default: 0 },
+            protein_consumed: { type: Number, min: 0, default: 0 },
+            foods: [{
+                name: { type: String },
+                protein: { type: Number, min: 0 },
+                calories: { type: Number, min: 0 },
+                carbs: { type: Number, min: 0 },
+                fats: { type: Number, min: 0 }
+            }],
+            macros: {
+                protein: { type: Number, min: 0, default: 0 },
+                carbs: { type: Number, min: 0, default: 0 },
+                fats: { type: Number, min: 0, default: 0 }
+            }
         },
-        carbs: { 
-            type: Number, 
-            min: 0 
+        Tuesday: {
+            calories_consumed: { type: Number, min: 0, default: 0 },
+            protein_consumed: { type: Number, min: 0, default: 0 },
+            foods: [{
+                name: { type: String },
+                protein: { type: Number, min: 0 },
+                calories: { type: Number, min: 0 },
+                carbs: { type: Number, min: 0 },
+                fats: { type: Number, min: 0 }
+            }],
+            macros: {
+                protein: { type: Number, min: 0, default: 0 },
+                carbs: { type: Number, min: 0, default: 0 },
+                fats: { type: Number, min: 0, default: 0 }
+            }
         },
-        fats: { 
-            type: Number, 
-            min: 0 
+        Wednesday: {
+            calories_consumed: { type: Number, min: 0, default: 0 },
+            protein_consumed: { type: Number, min: 0, default: 0 },
+            foods: [{
+                name: { type: String },
+                protein: { type: Number, min: 0 },
+                calories: { type: Number, min: 0 },
+                carbs: { type: Number, min: 0 },
+                fats: { type: Number, min: 0 }
+            }],
+            macros: {
+                protein: { type: Number, min: 0, default: 0 },
+                carbs: { type: Number, min: 0, default: 0 },
+                fats: { type: Number, min: 0, default: 0 }
+            }
+        },
+        Thursday: {
+            calories_consumed: { type: Number, min: 0, default: 0 },
+            protein_consumed: { type: Number, min: 0, default: 0 },
+            foods: [{
+                name: { type: String },
+                protein: { type: Number, min: 0 },
+                calories: { type: Number, min: 0 },
+                carbs: { type: Number, min: 0 },
+                fats: { type: Number, min: 0 }
+            }],
+            macros: {
+                protein: { type: Number, min: 0, default: 0 },
+                carbs: { type: Number, min: 0, default: 0 },
+                fats: { type: Number, min: 0, default: 0 }
+            }
+        },
+        Friday: {
+            calories_consumed: { type: Number, min: 0, default: 0 },
+            protein_consumed: { type: Number, min: 0, default: 0 },
+            foods: [{
+                name: { type: String },
+                protein: { type: Number, min: 0 },
+                calories: { type: Number, min: 0 },
+                carbs: { type: Number, min: 0 },
+                fats: { type: Number, min: 0 }
+            }],
+            macros: {
+                protein: { type: Number, min: 0, default: 0 },
+                carbs: { type: Number, min: 0, default: 0 },
+                fats: { type: Number, min: 0, default: 0 }
+            }
+        },
+        Saturday: {
+            calories_consumed: { type: Number, min: 0, default: 0 },
+            protein_consumed: { type: Number, min: 0, default: 0 },
+            foods: [{
+                name: { type: String },
+                protein: { type: Number, min: 0 },
+                calories: { type: Number, min: 0 },
+                carbs: { type: Number, min: 0 },
+                fats: { type: Number, min: 0 }
+            }],
+            macros: {
+                protein: { type: Number, min: 0, default: 0 },
+                carbs: { type: Number, min: 0, default: 0 },
+                fats: { type: Number, min: 0, default: 0 }
+            }
+        },
+        Sunday: {
+            calories_consumed: { type: Number, min: 0, default: 0 },
+            protein_consumed: { type: Number, min: 0, default: 0 },
+            foods: [{
+                name: { type: String },
+                protein: { type: Number, min: 0 },
+                calories: { type: Number, min: 0 },
+                carbs: { type: Number, min: 0 },
+                fats: { type: Number, min: 0 }
+            }],
+            macros: {
+                protein: { type: Number, min: 0, default: 0 },
+                carbs: { type: Number, min: 0, default: 0 },
+                fats: { type: Number, min: 0, default: 0 }
+            }
         }
     },
-    foods: [{
-        name: { 
-            type: String, 
-            required: true 
-        },
-        protein: { 
-            type: Number, 
-            min: 0 
-        },
-        calories: { 
-            type: Number, 
-            min: 0 
-        }
-    }]
+    
+    // Weekly average macros
+    weekly_macros: {
+        protein: { type: Number, min: 0 },
+        carbs: { type: Number, min: 0 },
+        fats: { type: Number, min: 0 }
+    }
 });
 
 module.exports = mongoose.model('NutritionHistory', nutritionHistorySchema);
