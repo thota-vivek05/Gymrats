@@ -8,7 +8,7 @@
 
  | **Invalid** | `Email: abc@example.com`, `Password: 123456` | Error message: "Invalid email or password". | A red banner with the text "Invalid email or password" is displayed. | Passed | ![Invalid Signin Case](test_plan/user_login_error.png) | 
 
- | **Valid** | `Email: abc@example.com`, `Password: Password123` | User successfully authenticated. | A green banner with "Login successful" is displayed. | Passed | ![Valid Signin Case](test_plan/user_login_correct.png) | 
+ | **Valid** | `Email: dexter@gmail.com`, `Password: Password123` | User successfully authenticated. | A green banner with "Login successful" is displayed. | Passed | ![Valid Signin Case](test_plan/user_login_correct.png) | 
 
 
 
@@ -26,7 +26,7 @@
 
   **Invalid** | `Email: trainer@example.com`, `Password: 123456` | Error message: "Invalid email or password". | A red banner with the text "Invalid email or password" is displayed. | Passed | ![Invalid Signin Case](test_plan/trainer_login_error.png) | 
 
- | **Valid** | `Email: trainer@example.com`, `Password: Password123` | User successfully authenticated. | details are displayed. | Passed | ![Valid Signin Case](test_plan/trainer_login_correct.png) | 
+ | **Valid** | `Email: emma.wilson@example.com`, `Password: Password123` | User successfully authenticated. | details are displayed. | Passed | ![Valid Signin Case](test_plan/trainer_login_correct.png) | 
 
  --- 
 
@@ -42,7 +42,7 @@
 
  | **Invalid** | `Email: verifier@example.com`, `Password: 123456` | Error message: "Invalid email or password". | A red banner with the text "Invalid email or password" is displayed. | Passed | ![Invalid Signin Case](test_plan/user_login_error.png) | 
 
- | **Valid** | `Email: verifier@example.com`, `Password: Password123` | User successfully authenticated. | A green banner with "Login successful" is displayed. | Passed | ![Valid Signin Case](test_plan/user_login_correct.png) | 
+ | **Valid** | `Email: vivek@gmail.com`, `Password: Password123` | User successfully authenticated. | A green banner with "Login successful" is displayed. | Passed | ![Valid Signin Case](test_plan/user_login_correct.png) | 
 
 
 
@@ -60,6 +60,7 @@
 
  | **Invalid** | `Email: admin@example.com`, `Password: 123456` | Error message: "Invalid email or password". | A red banner with the text "Invalid email or password" is displayed. | Passed | ![Invalid Signin Case](test_plan/admin_login_error.png) | 
 
- | **Valid** | `Email: admin@example.com`, `Password: Password123` | User successfully authenticated. | A green banner with "Login successful" is displayed. | Passed | ![Valid Signin Case](test_plan/admin_login_correct.png) | 
+ | **Valid** | `Email: admin1@gymrats.com`, `Password: Password123` | User successfully authenticated. | A green banner with "Login successful" is displayed. | Passed | ![Valid Signin Case](test_plan/admin_login_correct.png) | 
 
  ---
+
