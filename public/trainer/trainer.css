@@ -378,6 +378,54 @@ input:focus {
     border-bottom: none;
 }
 
+.membership-badge {
+    font-size: 0.7em;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.membership-basic {
+    background: #6c757d;
+    color: white;
+}
+
+.membership-gold {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #333;
+}
+
+.membership-platinum {
+    background: linear-gradient(135deg, #E5E4E2, #C0C0C0);
+    color: #333;
+}
+
+/* Membership-based section styling */
+.disabled-section {
+    opacity: 0.7;
+    background-color: #f8f9fa;
+    border: 1px dashed #dee2e6;
+}
+
+.upgrade-message {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+}
+
+.upgrade-message p {
+    margin: 5px 0;
+}
+
+.upgrade-info {
+    font-size: 0.9em;
+    color: #495057;
+}
+
+
+
 .goals-reached {
     margin: 15px 0;
     padding: 10px;

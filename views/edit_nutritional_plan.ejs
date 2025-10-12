@@ -129,16 +129,16 @@
                     </div>
                     <!-- Carbohydrates -->
                     <div class="food-item" data-category="carbs">
-                        <div class="food-info">
-                            <h3>Brown Rice</h3>
-                            <p>45g carbs per 100g</p>
-                            <p>112 calories</p>
-                        </div>
-                        <div class="food-macro">
-                            <div class="macro-circle carbs"><span>C</span></div>
-                        </div>
-                        <button class="add-btn">Add</button>
-                    </div>
+    <div class="food-info">
+        <h3>Brown Rice</h3>
+        <p>45g carbs per 100g</p>
+        <p>112 calories</p>
+    </div>
+    <div class="food-macro">
+        <div class="macro-circle carbs"><span>C</span></div>
+    </div>
+    <button class="add-btn">Add</button>
+</div>
                     <div class="food-item" data-category="carbs">
                         <div class="food-info">
                             <h3>Sweet Potato</h3>
@@ -163,16 +163,16 @@
                     </div>
                     <!-- Healthy Fats -->
                     <div class="food-item" data-category="fats">
-                        <div class="food-info">
-                            <h3>Avocado</h3>
-                            <p>15g fat per 100g</p>
-                            <p>160 calories</p>
-                        </div>
-                        <div class="food-macro">
-                            <div class="macro-circle fats"><span>F</span></div>
-                        </div>
-                        <button class="add-btn">Add</button>
-                    </div>
+    <div class="food-info">
+        <h3>Avocado</h3>
+        <p>15g fat per 100g</p>
+        <p>160 calories</p>
+    </div>
+    <div class="food-macro">
+        <div class="macro-circle fats"><span>F</span></div>
+    </div>
+    <button class="add-btn">Add</button>
+</div>
                     <div class="food-item" data-category="fats">
                         <div class="food-info">
                             <h3>Almonds</h3>
@@ -456,41 +456,73 @@
                 emptyState.style.display = selectedFoodsList.querySelectorAll('.selected-food-item').length > 0 ? 'none' : 'block';
             }
 
-            function extractNutritionInfo(foodItem) {
-                const foodInfo = foodItem.querySelector('.food-info');
-                const foodName = foodInfo.querySelector('h3').textContent;
+           function extractNutritionInfo(foodItem) {
+    const foodInfo = foodItem.querySelector('.food-info');
+    const foodName = foodInfo.querySelector('h3').textContent;
 
-                const proteinText = foodInfo.querySelectorAll('p')[0].textContent;
-                const proteinMatch = proteinText.match(/(\d+)g protein/) || [null, 0];
-                const protein = parseInt(proteinMatch[1]) || 0;
+    // Get all paragraph elements containing nutrition info
+    const paragraphs = foodInfo.querySelectorAll('p');
+    
+    let protein = 0;
+    let calories = 0;
+    let carbs = 0;
+    let fats = 0;
 
-                const caloriesText = foodInfo.querySelectorAll('p')[1].textContent;
-                const caloriesMatch = caloriesText.match(/(\d+) calories/) || [null, 0];
-                const calories = parseInt(caloriesMatch[1]) || 0;
+    // Parse protein information
+    const proteinText = paragraphs[0].textContent;
+    const proteinMatch = proteinText.match(/(\d+)g protein/) || proteinText.match(/(\d+)g protein per/) || [null, 0];
+    protein = parseInt(proteinMatch[1]) || 0;
 
-                const macroCircle = foodItem.querySelector('.macro-circle');
-                const macroType = macroCircle.classList.contains('protein') ? 'protein' :
-                    macroCircle.classList.contains('carbs') ? 'carbs' : 'fats';
+    // Parse calories information
+    const caloriesText = paragraphs[1] ? paragraphs[1].textContent : '';
+    const caloriesMatch = caloriesText.match(/(\d+) calories/) || caloriesText.match(/(\d+) cal/) || [null, 0];
+    calories = parseInt(caloriesMatch[1]) || 0;
 
-                let carbs = 0;
-                let fats = 0;
+    // Parse carbs information if available (for carb-focused foods)
+    const carbsMatch = paragraphs[0].textContent.match(/(\d+)g carbs/) || paragraphs[0].textContent.match(/(\d+)g carbs per/) || [null, 0];
+    carbs = parseInt(carbsMatch[1]) || 0;
 
-                if (macroType === 'protein') {
-                    carbs = Math.round(calories * 0.15 / 4);
-                    fats = Math.round((calories - (protein * 4) - (carbs * 4)) / 9);
-                } else if (macroType === 'carbs') {
-                    carbs = Math.round(calories * 0.7 / 4);
-                    protein = Math.round(calories * 0.15 / 4);
-                    fats = Math.round(calories * 0.15 / 9);
-                } else if (macroType === 'fats') {
-                    fats = Math.round(calories * 0.7 / 9);
-                    protein = Math.round(calories * 0.15 / 4);
-                    carbs = Math.round(calories * 0.15 / 4);
-                }
+    // Parse fats information if available (for fat-focused foods)
+    const fatsMatch = paragraphs[0].textContent.match(/(\d+)g fat/) || paragraphs[0].textContent.match(/(\d+)g fat per/) || [null, 0];
+    fats = parseInt(fatsMatch[1]) || 0;
 
-                return { name: foodName, protein, carbs, fats, calories, macroType };
-            }
+    const macroCircle = foodItem.querySelector('.macro-circle');
+    const macroType = macroCircle.classList.contains('protein') ? 'protein' :
+                     macroCircle.classList.contains('carbs') ? 'carbs' : 
+                     macroCircle.classList.contains('fats') ? 'fats' : 'protein';
 
+    // Calculate missing macros based on food type
+    if (macroType === 'protein') {
+        // For protein foods, estimate carbs and fats
+        if (carbs === 0) carbs = Math.round(calories * 0.15 / 4);
+        if (fats === 0) fats = Math.round((calories - (protein * 4) - (carbs * 4)) / 9);
+    } else if (macroType === 'carbs') {
+        // For carb foods, estimate protein and fats
+        if (protein === 0) protein = Math.round(calories * 0.15 / 4);
+        if (carbs === 0 && calories > 0) carbs = Math.round(calories * 0.7 / 4);
+        if (fats === 0) fats = Math.round(calories * 0.15 / 9);
+    } else if (macroType === 'fats') {
+        // For fat foods, estimate protein and carbs
+        if (protein === 0) protein = Math.round(calories * 0.15 / 4);
+        if (carbs === 0) carbs = Math.round(calories * 0.15 / 4);
+        if (fats === 0 && calories > 0) fats = Math.round(calories * 0.7 / 9);
+    }
+
+    // Ensure we don't have negative values
+    protein = Math.max(0, protein);
+    carbs = Math.max(0, carbs);
+    fats = Math.max(0, fats);
+    calories = Math.max(0, calories);
+
+    return { 
+        name: foodName, 
+        protein, 
+        carbs, 
+        fats, 
+        calories, 
+        macroType 
+    };
+}
             addButtons.forEach(button => {
                 button.addEventListener('click', function () {
                     const foodItem = this.closest('.food-item');
