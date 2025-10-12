@@ -170,46 +170,69 @@
             </div>
 
             <!-- Online Class Card -->
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h2>Upcoming Class</h2>
-                    <span class="badge"><%= upcomingClass && upcomingClass.date ? 'Today' : 'Soon' %></span>
+            <!-- Online Class Card -->
+<!-- Online Class Card -->
+<div class="dashboard-card">
+    <div class="card-header">
+        <h2>Upcoming Class</h2>
+        <% if (upcomingClass) { %>
+            <span class="badge">
+                <%= new Date(upcomingClass.date).toDateString() === new Date().toDateString() ? 'Today' : 'Soon' %>
+            </span>
+        <% } %>
+    </div>
+    <div class="class-content">
+        <% if (upcomingClass) { %>
+            <div class="class-details">
+                <div class="class-time">
+                    <span class="time"><%= upcomingClass.time %></span>
+                    <span class="date">
+                        <%= new Date(upcomingClass.date).toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            month: 'long', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                        }) %>
+                    </span>
                 </div>
-                <div class="class-content">
-                    <% if (upcomingClass) { %>
-                    <div class="class-details">
-                        <div class="class-time">
-                            <span class="time"><%= upcomingClass.time %></span>
-                            <span
-                                class="date"><%= new Date(upcomingClass.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></span>
-                        </div>
-                        <div class="class-info">
-                            <h3><%= upcomingClass.name %></h3>
-                            <p>with <%= upcomingClass.trainerName || 'Coach' %></p>
-                        </div>
-                    </div>
-
-                    <div class="class-description">
-                        <p><%= upcomingClass.description || 'Join this exciting class to boost your fitness!' %></p>
-                    </div>
-
-                    <div class="class-checklist">
-                        <h4>Prepare for class:</h4>
-                        <ul>
-                            <li>Clear workout space</li>
-                            <li>Water bottle ready</li>
-                            <li>Test camera and microphone</li>
-                        </ul>
-                    </div>
-
-                    <a href="<%= upcomingClass.meetLink || '#' %>" class="class-join-btn" target="_blank">
-                        <i class="fas fa-video"></i> Join Class
-                    </a>
-                    <% } else { %>
-                    <p>No upcoming classes scheduled.</p>
-                    <% } %>
+                <div class="class-info">
+                    <h3><%= upcomingClass.name %></h3>
+                    <p>with <%= upcomingClass.trainerName || 'Coach' %></p>
                 </div>
             </div>
+
+            <% if (upcomingClass.description) { %>
+            <div class="class-description">
+                <p><%= upcomingClass.description %></p>
+            </div>
+            <% } %>
+
+            <div class="class-checklist">
+                <h4>Prepare for class:</h4>
+                <ul>
+                    <li>Clear workout space</li>
+                    <li>Water bottle ready</li>
+                    <li>Test camera and microphone</li>
+                </ul>
+            </div>
+
+            <% if (upcomingClass.meetLink) { %>
+                <a href="<%= upcomingClass.meetLink %>" class="class-join-btn" target="_blank">
+                    <i class="fas fa-video"></i> Join Class
+                </a>
+            <% } else { %>
+                <button class="class-join-btn" disabled>
+                    <i class="fas fa-video"></i> Link Not Available
+                </button>
+            <% } %>
+        <% } else { %>
+            <div class="no-class-message">
+                <p>No upcoming classes scheduled.</p>
+                <p class="subtext">Check back later for new class schedules!</p>
+            </div>
+        <% } %>
+    </div>
+</div>
         </div>
 
         <!-- Stats Section -->
