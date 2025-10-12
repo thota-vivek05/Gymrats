@@ -60,7 +60,7 @@ exports.processVerification = async (req, res) => {
       const newTrainer = new Trainer({
         name: `${application.firstName} ${application.lastName}`,
         email: application.email,
-        password_hash: application.password_hash,
+        password: application.password,
         phone: application.phone,
         experience: application.experience,
         specializations: application.specializations,
@@ -461,7 +461,7 @@ exports.approveTrainer = async (req, res) => {
     const newTrainer = new Trainer({
       name: `${application.firstName} ${application.lastName}`,
       email: application.email,
-      password_hash: application.password_hash,
+      password: application.password,
       phone: application.phone,
       experience: application.experience,
       specializations: application.specializations,
