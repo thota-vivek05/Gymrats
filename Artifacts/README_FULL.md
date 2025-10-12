@@ -6,10 +6,10 @@
 - **Project Title:** GYMRATS
 - **SPOC:** Thota Vivek, vivek.t23@iiits.in, Roll No: S20230010244
 - **Team Members & Roles:**
-  1. S20230010162 - Rahul Naskanti – Trainer dashboard and backend
-  2. S20230010057 - Chedideepu Jayanth - User dashboard and backend
-  3. S20230010058 – Cheela Anvesh - Verifier dashboard and backend
-  4. S20230010031 – B Manoj - Forms Validation and Pages design
+  1. S20230010162 - Rahul Naskanti – User dashboard and backend
+  2. S20230010057 - Chedideepu Jayanth - Trainer dashboard and backend
+  3. S20230010058 – Cheela Anvesh - User dashboard and backend
+  4. S20230010031 – B Manoj - Forms Validation and database functionalities
 
 ---
 
@@ -43,7 +43,7 @@
 **Steps:**
 
 ```bash
-git clone <your_repo_link>
+git clone <https://github.com/thota-vivek05/Gymrats.git>
 cd GYMRATS
 npm install
 npm start
