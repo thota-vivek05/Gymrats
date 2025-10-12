@@ -407,55 +407,6 @@ const adminController = {
     }
   },
 
-  getNutritionPlans: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.redirect('/admin_login');
-      }
-      // Note: You need to import NutritionPlan model if you're using it
-      const nutritionPlans = []; // Placeholder - replace with actual model
-      res.render('admin_nutrition', {
-        pageTitle: 'Nutrition Plans',
-        user: req.session.user || null,
-        nutritionPlans
-      });
-    } catch (error) {
-      console.error('Nutrition plan management error:', error);
-      res.render('admin_nutrition', {
-        pageTitle: 'Nutrition Plans',
-        user: req.session.user || null,
-        nutritionPlans: []
-      });
-    }
-  },
-
-  createNutritionPlan: async (req, res) => {
-    try {
-      res.status(501).json({ success: false, message: 'Not implemented yet' });
-    } catch (error) {
-      console.error('Create nutrition plan error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  updateNutritionPlan: async (req, res) => {
-    try {
-      res.status(501).json({ success: false, message: 'Not implemented yet' });
-    } catch (error) {
-      console.error('Update nutrition plan error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  deleteNutritionPlan: async (req, res) => {
-    try {
-      res.status(501).json({ success: false, message: 'Not implemented yet' });
-    } catch (error) {
-      console.error('Delete nutrition plan error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
   // Exercise Management - UPDATED
 getExercises: async (req, res) => {
     try {
