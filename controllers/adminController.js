@@ -860,32 +860,48 @@ getVerifiers: async (req, res) => {
 },
 
   createVerifier: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
-      const { name, email, password, phone } = req.body;
-      if (!name || !email || !password || !phone) {
-        return res.status(400).json({ success: false, message: 'Missing required fields' });
-      }
-      const existingVerifier = await Verifier.findOne({ email });
-      if (existingVerifier) {
-        return res.status(400).json({ success: false, message: 'Email already in use' });
-      }
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newVerifier = new Verifier({
-        name,
-        email,
-        password_hash: hashedPassword,
-        phone
-      });
-      await newVerifier.save();
-      res.status(201).json({ success: true, message: 'Verifier created successfully', verifier: newVerifier });
-    } catch (error) {
-      console.error('Create verifier error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
+  try {
+    if (!req.session.userId) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
-  },
+    
+    const { name, email, password, phone, experienceYears } = req.body; // Added experienceYears
+    
+    console.log('Received verifier data:', { name, email, phone, experienceYears }); // Debug log
+    
+    if (!name || !email || !password || !phone || !experienceYears) { // Added experienceYears check
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Missing required fields',
+        received: { name, email, phone, experienceYears } // Debug info
+      });
+    }
+    
+    const existingVerifier = await Verifier.findOne({ email });
+    if (existingVerifier) {
+      return res.status(400).json({ success: false, message: 'Email already in use' });
+    }
+    
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newVerifier = new Verifier({
+      name,
+      email,
+      password_hash: hashedPassword,
+      phone,
+      experienceYears: parseInt(experienceYears) // Make sure it's a number
+    });
+    
+    await newVerifier.save();
+    res.status(201).json({ success: true, message: 'Verifier created successfully', verifier: newVerifier });
+  } catch (error) {
+    console.error('Create verifier error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error',
+      error: error.message 
+    });
+  }
+},
 
   updateVerifier: async (req, res) => {
     try {
