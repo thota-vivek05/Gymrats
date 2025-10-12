@@ -30,7 +30,7 @@ router.post('/memberships', adminController.createMembership);
 router.put('/memberships/:id', adminController.updateMembership);
 router.delete('/memberships/:id', adminController.deleteMembership);
 
-// // Nutrition Plan Routes
+// Nutrition Plan Routes
 // router.get('/nutrition-plans', adminController.getNutritionPlans);
 // router.post('/nutrition-plans', adminController.createNutritionPlan);
 // router.put('/nutrition-plans/:id', adminController.updateNutritionPlan);
@@ -41,9 +41,14 @@ router.get('/exercises', adminController.getExercises);
 router.post('/exercises', adminController.createExercise);
 router.put('/exercises/:id', adminController.updateExercise);
 router.delete('/exercises/:id', adminController.deleteExercise);
+router.get('/api/exercises', adminController.searchExercises);
 
 // Verifier Routes
 router.get('/verifier', adminController.getVerifiers);
+// router.get('/verifier', adminController.getVerifierPage);
+router.get('/verifier_form', (req, res) => {
+    res.render('verifier_form'); // You might need to create this view
+});
 router.post('/verifier', adminController.createVerifier);
 router.put('/verifier/:id', adminController.updateVerifier);
 router.delete('/verifier/:id', adminController.deleteVerifier);

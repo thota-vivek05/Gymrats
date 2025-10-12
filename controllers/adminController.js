@@ -407,87 +407,240 @@ const adminController = {
     }
   },
 
-  // getNutritionPlans: async (req, res) => {
-  //   try {
-  //     if (!req.session.userId) {
-  //       return res.redirect('/admin_login');
-  //     }
-  //     const nutritionPlans = await NutritionPlan.find().sort({ createdAt: -1 }).populate('creator', 'name').populate('userId', 'full_name');
-  //     res.render('admin_nutrition', {
-  //       pageTitle: 'Nutrition Plans',
-  //       user: req.session.user || null,
-  //       nutritionPlans
-  //     });
-  //   } catch (error) {
-  //     console.error('Nutrition plan management error:', error);
-  //     res.render('admin_nutrition', {
-  //       pageTitle: 'Nutrition Plans',
-  //       user: req.session.user || null,
-  //       nutritionPlans: []
-  //     });
-  //   }
-  // },
-
-  // createNutritionPlan: async (req, res) => {
-  //   try {
-  //     res.status(501).json({ success: false, message: 'Not implemented yet' });
-  //   } catch (error) {
-  //     console.error('Create nutrition plan error:', error);
-  //     res.status(500).json({ success: false, message: 'Internal server error' });
-  //   }
-  // },
-
-  // updateNutritionPlan: async (req, res) => {
-  //   try {
-  //     res.status(501).json({ success: false, message: 'Not implemented yet' });
-  //   } catch (error) {
-  //     console.error('Update nutrition plan error:', error);
-  //     res.status(500).json({ success: false, message: 'Internal server error' });
-  //   }
-  // },
-
-  // deleteNutritionPlan: async (req, res) => {
-  //   try {
-  //     res.status(501).json({ success: false, message: 'Not implemented yet' });
-  //   } catch (error) {
-  //     console.error('Delete nutrition plan error:', error);
-  //     res.status(500).json({ success: false, message: 'Internal server error' });
-  //   }
-  // },
-
-  getExercises: async (req, res) => {
+  getNutritionPlans: async (req, res) => {
     try {
       if (!req.session.userId) {
         return res.redirect('/admin_login');
       }
-      const exercises = await Exercise.find().sort({ name: 1 });
-      res.render('admin_exercises', {
-        pageTitle: 'Exercise Library',
+      // Note: You need to import NutritionPlan model if you're using it
+      const nutritionPlans = []; // Placeholder - replace with actual model
+      res.render('admin_nutrition', {
+        pageTitle: 'Nutrition Plans',
         user: req.session.user || null,
-        exercises
+        nutritionPlans
       });
     } catch (error) {
-      console.error('Exercise management error:', error);
-      res.render('admin_exercises', {
-        pageTitle: 'Exercise Library',
+      console.error('Nutrition plan management error:', error);
+      res.render('admin_nutrition', {
+        pageTitle: 'Nutrition Plans',
         user: req.session.user || null,
-        exercises: []
+        nutritionPlans: []
       });
     }
   },
 
-  createExercise: async (req, res) => {
+  createNutritionPlan: async (req, res) => {
     try {
       res.status(501).json({ success: false, message: 'Not implemented yet' });
     } catch (error) {
-      console.error('Create exercise error:', error);
+      console.error('Create nutrition plan error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   },
 
-  updateExercise: async (req, res) => {
+  updateNutritionPlan: async (req, res) => {
     try {
       res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Update nutrition plan error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  deleteNutritionPlan: async (req, res) => {
+    try {
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Delete nutrition plan error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  // Exercise Management - UPDATED
+getExercises: async (req, res) => {
+    try {
+        if (!req.session.userId) {
+            return res.redirect('/admin_login');
+        }
+        
+        const exercises = await Exercise.find().sort({ name: 1 });
+        
+        // Fixed list of primary muscle groups
+        const fixedMuscleGroups = [
+            "Chest", "Back", "Quadriceps", "Triceps", "Shoulders", 
+            "Core", "Full Body", "Obliques", "Lower Abs", "Calves", 
+            "Rear Shoulders", "Brachialis", "Biceps", "Arms", "Cardio", 
+            "Legs", "Cardiovascular"
+        ];
+        
+        // Calculate stats for the dashboard
+        const totalExercises = await Exercise.countDocuments();
+        const verifiedExercises = await Exercise.countDocuments({ verified: true });
+        const unverifiedExercises = await Exercise.countDocuments({ verified: false });
+        
+        // Get most popular exercise
+        const mostPopular = await Exercise.findOne().sort({ usageCount: -1 }).select('name usageCount');
+        
+        // Get exercise count by fixed muscle group
+        const muscleGroupStats = {};
+        fixedMuscleGroups.forEach(muscle => {
+            muscleGroupStats[muscle] = exercises.filter(ex => 
+                ex.primaryMuscle === muscle || 
+                (ex.targetMuscles && ex.targetMuscles.includes(muscle))
+            ).length;
+        });
+
+        res.render('admin_exercises', {
+            pageTitle: 'Exercise Library',
+            user: req.session.user || null,
+            exercises,
+            muscleGroups: fixedMuscleGroups,
+            stats: {
+                totalExercises,
+                verifiedExercises,
+                unverifiedExercises,
+                mostPopular: mostPopular ? mostPopular.name : 'N/A',
+                mostPopularCount: mostPopular ? mostPopular.usageCount : 0,
+                verificationRate: totalExercises > 0 ? Math.round((verifiedExercises / totalExercises) * 100) : 0,
+                totalMuscleGroups: fixedMuscleGroups.length
+            }
+        });
+    } catch (error) {
+        console.error('Exercise management error:', error);
+        res.render('admin_exercises', {
+            pageTitle: 'Exercise Library',
+            user: req.session.user || null,
+            exercises: [],
+            muscleGroups: [],
+            stats: {
+                totalExercises: 0,
+                verifiedExercises: 0,
+                unverifiedExercises: 0,
+                mostPopular: 'N/A',
+                mostPopularCount: 0,
+                verificationRate: 0,
+                totalMuscleGroups: 0
+            }
+        });
+    }
+},
+  createExercise: async (req, res) => {
+    try {
+        if (!req.session.userId) {
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        }
+
+        const {
+            name,
+            category,
+            difficulty,
+            targetMuscles,
+            instructions,
+            type,
+            defaultSets,
+            defaultRepsOrDuration,
+            equipment,
+            movementPattern,
+            primaryMuscle, // This is now REQUIRED
+            secondaryMuscles,
+            image
+        } = req.body;
+
+        // Validate required fields - primaryMuscle is now required
+        if (!name || !category || !difficulty || !targetMuscles || !instructions || !type || !defaultRepsOrDuration || !primaryMuscle) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Missing required fields. Primary muscle is required.' 
+            });
+        }
+
+        const newExercise = new Exercise({
+            name,
+            category,
+            difficulty,
+            targetMuscles: Array.isArray(targetMuscles) ? targetMuscles : targetMuscles.split(',').map(m => m.trim()),
+            instructions,
+            type,
+            defaultSets: defaultSets || 3,
+            defaultRepsOrDuration,
+            equipment: equipment ? (Array.isArray(equipment) ? equipment : equipment.split(',').map(e => e.trim())) : [],
+            movementPattern: movementPattern || '',
+            primaryMuscle: primaryMuscle, // This is crucial for filtering
+            secondaryMuscles: secondaryMuscles ? (Array.isArray(secondaryMuscles) ? secondaryMuscles : secondaryMuscles.split(',').map(m => m.trim())) : [],
+            image: image || '',
+            verified: false,
+            usageCount: 0,
+            averageRating: 0,
+            totalRatings: 0
+        });
+
+        await newExercise.save();
+        
+        res.status(201).json({ 
+            success: true, 
+            message: 'Exercise created successfully', 
+            exercise: newExercise 
+        });
+    } catch (error) {
+        console.error('Create exercise error:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+},
+
+  updateExercise: async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+
+      const exerciseId = req.params.id;
+      const {
+        name,
+        category,
+        difficulty,
+        targetMuscles,
+        instructions,
+        type,
+        defaultSets,
+        defaultRepsOrDuration,
+        equipment,
+        movementPattern,
+        primaryMuscle,
+        secondaryMuscles,
+        image,
+        verified
+      } = req.body;
+
+      const updatedExercise = await Exercise.findByIdAndUpdate(
+        exerciseId,
+        {
+          name,
+          category,
+          difficulty,
+          targetMuscles: Array.isArray(targetMuscles) ? targetMuscles : targetMuscles.split(',').map(m => m.trim()),
+          instructions,
+          type,
+          defaultSets,
+          defaultRepsOrDuration,
+          equipment: equipment ? (Array.isArray(equipment) ? equipment : equipment.split(',').map(e => e.trim())) : [],
+          movementPattern,
+          primaryMuscle,
+          secondaryMuscles: secondaryMuscles ? (Array.isArray(secondaryMuscles) ? secondaryMuscles : secondaryMuscles.split(',').map(m => m.trim())) : [],
+          image,
+          verified: verified === 'true' || verified === true
+        },
+        { new: true }
+      );
+
+      if (!updatedExercise) {
+        return res.status(404).json({ success: false, message: 'Exercise not found' });
+      }
+
+      res.status(200).json({ 
+        success: true, 
+        message: 'Exercise updated successfully', 
+        exercise: updatedExercise 
+      });
     } catch (error) {
       console.error('Update exercise error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
@@ -496,33 +649,106 @@ const adminController = {
 
   deleteExercise: async (req, res) => {
     try {
-      res.status(501).json({ success: false, message: 'Not implemented yet' });
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+
+      const exerciseId = req.params.id;
+      const deletedExercise = await Exercise.findByIdAndDelete(exerciseId);
+      
+      if (!deletedExercise) {
+        return res.status(404).json({ success: false, message: 'Exercise not found' });
+      }
+
+      res.status(200).json({ success: true, message: 'Exercise deleted successfully' });
     } catch (error) {
       console.error('Delete exercise error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   },
 
-  getVerifiers: async (req, res) => {
+  searchExercises: async (req, res) => {
     try {
       if (!req.session.userId) {
-        return res.redirect('/admin_login');
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-      const verifiers = await Verifier.find().sort({ createdAt: -1 });
-      res.render('admin_verifier', {
-        pageTitle: 'Verifier Management',
-        user: req.session.user || null,
-        verifiers
+      
+      const { search } = req.query;
+      let query = {};
+      
+      if (search && search.trim() !== '') {
+        const searchRegex = new RegExp(search, 'i');
+        query = {
+          $or: [
+            { name: searchRegex },
+            { category: searchRegex },
+            { difficulty: searchRegex },
+            { targetMuscles: { $in: [searchRegex] } },
+            { primaryMuscle: searchRegex }
+          ]
+        };
+      }
+      
+      const exercises = await Exercise.find(query).sort({ name: 1 });
+      
+      res.json({
+        success: true,
+        exercises
       });
     } catch (error) {
-      console.error('Verifier management error:', error);
-      res.render('admin_verifier', {
-        pageTitle: 'Verifier Management',
-        user: req.session.user || null,
-        verifiers: []
+      console.error('Search exercises error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error searching exercises'
       });
     }
   },
+// Verifier Management
+getVerifiers: async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/admin_login');
+    }
+    
+    // Get all verifiers
+    const verifiers = await Verifier.find().sort({ createdAt: -1 });
+    const totalVerifiers = verifiers.length;
+    
+    // Calculate trainer statistics - ALL from TrainerApplication model for consistency
+    const approvedTrainers = await TrainerApplication.countDocuments({ status: 'Approved' });
+    const pendingTrainers = await TrainerApplication.countDocuments({ status: 'Pending' });
+    const rejectedTrainers = await TrainerApplication.countDocuments({ status: 'Rejected' });
+
+    console.log('Verifier Stats:', {
+      totalVerifiers,
+      approvedTrainers,
+      pendingTrainers,
+      rejectedTrainers
+    });
+
+    res.render('admin_verifier', {
+      pageTitle: 'Verifier Management',
+      user: req.session.user || null,
+      verifiers,
+      totalVerifiers: totalVerifiers || 0,
+      approvedTrainers: approvedTrainers || 0,
+      pendingTrainers: pendingTrainers || 0,
+      rejectedTrainers: rejectedTrainers || 0
+    });
+  } catch (error) {
+    console.error('Verifier management error:', error);
+    // Make sure to pass all required variables even in error case
+    res.render('admin_verifier', {
+      pageTitle: 'Verifier Management',
+      user: req.session.user || null,
+      verifiers: [],
+      totalVerifiers: 0,
+      approvedTrainers: 0,
+      pendingTrainers: 0,
+      rejectedTrainers: 0
+    });
+  }
+},
 
   createVerifier: async (req, res) => {
     try {
