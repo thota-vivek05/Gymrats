@@ -849,7 +849,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
             return res.status(404).render('error', { message: 'User not found' });
         }
 
-         // Check if membership is active          REYNA
+        // Check if membership is active - REYNA
         if (!user.isMembershipActive()) {
             return res.redirect('/membership/renewal');
         }
@@ -926,18 +926,70 @@ const getUserDashboard = async (req, res, membershipCode) => {
             nutritionChartData.protein.push(dayData ? dayData.protein_consumed || 0 : 0);
         });
         
-        // Most recent foods for food log (platinum feature only)
-        const recentFoods = weeklyNutrition.reduce((foods, entry) => {
-            if (entry.foods && entry.foods.length > 0) {
-                return [...foods, ...entry.foods.map(food => ({
-                    ...food.toObject(),
-                    date: entry.date
-                }))];
-            }
-            return foods;
-        }, [])
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .slice(0, 10);
+       // ✅ IMPROVE THIS FUNCTION (inside getUserDashboard)
+const getRecentFoods = async (userId, limit = 10) => {
+    try {
+        console.log('🔍 Fetching recent foods for user:', userId);
+        
+        // Get nutrition entries from last 30 days for better coverage
+        const nutritionEntries = await NutritionHistory.find({ 
+            userId: userId,
+            date: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } // Last 30 days
+        })
+        .sort({ date: -1 })
+        .limit(10); // Get more entries to find foods
+
+        console.log('📊 Found nutrition entries:', nutritionEntries.length);
+
+        let foods = [];
+        
+        nutritionEntries.forEach((entry, index) => {
+            console.log(`📅 Processing entry ${index + 1}:`, entry.date);
+            
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            days.forEach(day => {
+                if (entry.daily_nutrition && 
+                    entry.daily_nutrition[day] && 
+                    entry.daily_nutrition[day].foods && 
+                    entry.daily_nutrition[day].foods.length > 0) {
+                    
+                    console.log(`🍽️ Found ${entry.daily_nutrition[day].foods.length} foods for ${day}`);
+                    
+                    entry.daily_nutrition[day].foods.forEach(food => {
+                        if (food.name && food.calories) {
+                            foods.push({
+                                name: food.name,
+                                calories: food.calories,
+                                protein: food.protein || 0,
+                                carbs: food.carbs || 0,
+                                fats: food.fats || 0,
+                                date: entry.date,
+                                day: day // Add day for debugging
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        console.log('🎯 Total foods collected:', foods.length);
+        
+        // Sort by date (most recent first) and limit
+        const sortedFoods = foods.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, limit);
+        
+        console.log('✅ Final recent foods to display:', sortedFoods.length);
+        sortedFoods.forEach((food, index) => {
+            console.log(`${index + 1}. ${food.name} - ${food.calories} kcal - ${food.day} - ${new Date(food.date).toLocaleDateString()}`);
+        });
+        
+        return sortedFoods;
+    } catch (error) {
+        console.error('❌ Error getting recent foods:', error);
+        return [];
+    }
+};
+
+        const recentFoods = await getRecentFoods(userId, 10);
         
         // Calculate nutrition stats
         const calorieAvg = weeklyNutrition.length > 0 
@@ -975,9 +1027,6 @@ const getUserDashboard = async (req, res, membershipCode) => {
             date: { $gte: weekStart, $lt: weekEnd }
         }).lean();
 
-
-        
-
         // Extract today's exercises from weekly schedule
         let todayExercises = [];
         let todayWorkoutData = {
@@ -991,7 +1040,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
             workoutPlanId: null
         };
 
-         const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         if (currentWeekWorkout && currentWeekWorkout.exercises) {
             const todayDayName = dayNames[today.getDay()];
             
@@ -1054,16 +1103,23 @@ const getUserDashboard = async (req, res, membershipCode) => {
         }
 
         // Add this debug section after the currentWeekWorkout query:
-console.log('=== DEBUG WORKOUT DATA ===');
-console.log('Today:', today);
-console.log('Today Day Name:', dayNames[today.getDay()]);
-console.log('Week Start:', weekStart);
-console.log('Week End:', weekEnd);
-console.log('Current Week Workout Found:', !!currentWeekWorkout);
-if (currentWeekWorkout) {
-    console.log('Workout Exercises:', currentWeekWorkout.exercises);
-    console.log('Today Exercises:', todayExercises);
-}
+        console.log('=== DEBUG WORKOUT DATA ===');
+        console.log('Today:', today);
+        console.log('Today Day Name:', dayNames[today.getDay()]);
+        console.log('Week Start:', weekStart);
+        console.log('Week End:', weekEnd);
+        console.log('Current Week Workout Found:', !!currentWeekWorkout);
+        if (currentWeekWorkout) {
+            console.log('Workout Exercises:', currentWeekWorkout.exercises);
+            console.log('Today Exercises:', todayExercises);
+        }
+
+        // ✅ DEBUG: Check recent foods data
+        console.log('=== DEBUG RECENT FOODS ===');
+        console.log('Recent foods count:', recentFoods.length);
+        recentFoods.forEach((food, index) => {
+            console.log(`${index + 1}. ${food.name} - ${food.calories} kcal - ${new Date(food.date).toLocaleDateString()}`);
+        });
         
         // Common data for all membership types
         const commonData = {
@@ -1076,9 +1132,8 @@ if (currentWeekWorkout) {
             },
             todayWorkout: todayWorkoutData, // Use the fixed todayWorkoutData
             exerciseProgress: exerciseProgress, // Use the updated exercise progress 
-           
 
-            // added new membership info       REYNA
+            // added new membership info - REYNA
             membershipInfo: {
                 months_remaining: user.membershipDuration.months_remaining,
                 end_date: user.membershipDuration.end_date,
@@ -1095,7 +1150,7 @@ if (currentWeekWorkout) {
             const platinumData = {
                 ...commonData,
                 nutritionChartData: nutritionChartData,
-                recentFoods: recentFoods,
+                recentFoods: recentFoods, // ✅ Now properly populated from NutritionHistory
                 nutritionStats: {
                     calorieAvg: Math.round(calorieAvg),
                     proteinAvg: Math.round(proteinAvg),
