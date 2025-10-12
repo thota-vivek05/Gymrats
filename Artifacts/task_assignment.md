@@ -2,8 +2,9 @@
 
 | Team Member | Role | Key Responsibilities |
 |--------------|------|----------------------|
-| Thota Vivek | SPOC / Full Stack Dev | Project setup, backend API, DB integration |
-| Rahul Naskanti | Frontend Dev | UI design (HTML, CSS, JS) |
-| Chedideepu Jayanth | Backend Dev | Express routes, async handling |
-| Cheela Anvesh | DB Manager | MongoDB + SQLite schema setup |
-| B Manoj | Tester | Validation + network testing |
+| Thota Vivek | SPOC / verifier frontend and backend |
+| Rahul Naskanti | user and admin side |
+| Chedideepu Jayanth | trainer side front end and backend. |
+| Cheela Anvesh |user and admin side |
+| B Manoj | database functionalities|
+
