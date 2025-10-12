@@ -703,28 +703,52 @@ getExercises: async (req, res) => {
       });
     }
   },
-
-  // Verifier Management
-  getVerifiers: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.redirect('/admin_login');
-      }
-      const verifiers = await Verifier.find().sort({ createdAt: -1 });
-      res.render('admin_verifier', {
-        pageTitle: 'Verifier Management',
-        user: req.session.user || null,
-        verifiers
-      });
-    } catch (error) {
-      console.error('Verifier management error:', error);
-      res.render('admin_verifier', {
-        pageTitle: 'Verifier Management',
-        user: req.session.user || null,
-        verifiers: []
-      });
+// Verifier Management
+getVerifiers: async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/admin_login');
     }
-  },
+    
+    // Get all verifiers
+    const verifiers = await Verifier.find().sort({ createdAt: -1 });
+    const totalVerifiers = verifiers.length;
+    
+    // Calculate trainer statistics - ALL from TrainerApplication model for consistency
+    const approvedTrainers = await TrainerApplication.countDocuments({ status: 'Approved' });
+    const pendingTrainers = await TrainerApplication.countDocuments({ status: 'Pending' });
+    const rejectedTrainers = await TrainerApplication.countDocuments({ status: 'Rejected' });
+
+    console.log('Verifier Stats:', {
+      totalVerifiers,
+      approvedTrainers,
+      pendingTrainers,
+      rejectedTrainers
+    });
+
+    res.render('admin_verifier', {
+      pageTitle: 'Verifier Management',
+      user: req.session.user || null,
+      verifiers,
+      totalVerifiers: totalVerifiers || 0,
+      approvedTrainers: approvedTrainers || 0,
+      pendingTrainers: pendingTrainers || 0,
+      rejectedTrainers: rejectedTrainers || 0
+    });
+  } catch (error) {
+    console.error('Verifier management error:', error);
+    // Make sure to pass all required variables even in error case
+    res.render('admin_verifier', {
+      pageTitle: 'Verifier Management',
+      user: req.session.user || null,
+      verifiers: [],
+      totalVerifiers: 0,
+      approvedTrainers: 0,
+      pendingTrainers: 0,
+      rejectedTrainers: 0
+    });
+  }
+},
 
   createVerifier: async (req, res) => {
     try {
