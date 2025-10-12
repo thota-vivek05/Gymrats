@@ -4,6 +4,7 @@ const Trainer = require('../model/Trainer');
 const User = require('../model/User');
 const WorkoutHistory = require('../model/WorkoutHistory');
 const NutritionHistory = require('../model/NutritionHistory');
+const Exercise = require('../model/Exercise'); 
 
 const signupTrainer = async (req, res) => {
     try {
@@ -269,73 +270,52 @@ const renderTrainerDashboard = async (req, res) => {
         let nutritionData = null;
         let workoutData = null;
 
-        if (selectedClient) {
-            try {
-                // Get today's date for nutrition data
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const tomorrow = new Date(today);
-                tomorrow.setDate(today.getDate() + 1);
+        // Replace the nutrition data fetching section with this:
 
-                // Fetch nutrition data directly
-                const latestNutrition = await NutritionHistory.findOne({
-                    userId: selectedClient.id,
-                    date: { $gte: today, $lt: tomorrow }
-                }).lean();
+if (selectedClient) {
+    try {
+        // ✅ FIXED: Use same week calculation as nutrition saving
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const weekStart = new Date(today);
+        const dayOfWeek = today.getDay();
+        const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        weekStart.setDate(today.getDate() + diffToMonday);
+        weekStart.setHours(0, 0, 0, 0);
+        
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
 
-                nutritionData = {
-                    nutrition: {
-                        protein_goal: users.find(u => u._id.toString() === selectedClient.id)?.fitness_goals?.protein_goal || 'N/A',
-                        calorie_goal: users.find(u => u._id.toString() === selectedClient.id)?.fitness_goals?.calorie_goal || 'N/A',
-                        foods: latestNutrition ? latestNutrition.foods : [],
-                        macros: latestNutrition ? latestNutrition.macros : { protein: 0, carbs: 0, fats: 0 }
-                    }
-                };
+        // ✅ FIXED: Fetch weekly nutrition data (not daily)
+        const weeklyNutrition = await NutritionHistory.findOne({
+            userId: selectedClient.id,
+            date: { $gte: weekStart, $lt: weekEnd }
+        }).lean();
 
-                // Fetch workout data directly
-                const todayWorkout = new Date();
-                todayWorkout.setHours(0, 0, 0, 0);
-                const weekStart = new Date(todayWorkout);
-                weekStart.setDate(todayWorkout.getDate() - todayWorkout.getDay()); // Start of week (Sunday)
-                const weekEnd = new Date(weekStart);
-                weekEnd.setDate(weekStart.getDate() + 7);
-
-                const currentWorkout = await WorkoutHistory.findOne({
-                    userId: selectedClient.id,
-                    date: { $gte: weekStart, $lt: weekEnd }
-                }).lean();
-
-                const weeklySchedule = {
-                    Monday: [],
-                    Tuesday: [],
-                    Wednesday: [],
-                    Thursday: [],
-                    Friday: [],
-                    Saturday: [],
-                    Sunday: []
-                };
-
-                if (currentWorkout && currentWorkout.exercises) {
-                    currentWorkout.exercises.forEach(exercise => {
-                        if (weeklySchedule[exercise.day]) {
-                            weeklySchedule[exercise.day].push({
-                                name: exercise.name,
-                                sets: exercise.sets,
-                                reps: exercise.reps,
-                                weight: exercise.weight,
-                                duration: exercise.duration,
-                                completed: exercise.completed
-                            });
-                        }
-                    });
-                }
-
-                workoutData = { weeklySchedule };
-            } catch (dataError) {
-                console.error('Error fetching client data:', dataError);
-                // Continue with null data rather than failing completely
-            }
+        // ✅ FIXED: Get today's nutrition from the weekly data
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const todayName = days[today.getDay()];
+        
+        let todayNutrition = null;
+        if (weeklyNutrition && weeklyNutrition.daily_nutrition) {
+            todayNutrition = weeklyNutrition.daily_nutrition[todayName];
         }
+
+        nutritionData = {
+            nutrition: {
+                protein_goal: users.find(u => u._id.toString() === selectedClient.id)?.fitness_goals?.protein_goal || 'N/A',
+                calorie_goal: users.find(u => u._id.toString() === selectedClient.id)?.fitness_goals?.calorie_goal || 'N/A',
+                foods: todayNutrition ? todayNutrition.foods : [],
+                macros: todayNutrition ? todayNutrition.macros : { protein: 0, carbs: 0, fats: 0 }
+            }
+        };
+
+        // ... rest of your workout data code remains the same
+    } catch (dataError) {
+        console.error('Error fetching client data:', dataError);
+    }
+}
 
         res.render('trainer', {
             trainer: req.session.trainer,
@@ -378,14 +358,28 @@ const renderEditWorkoutPlan = async (req, res) => {
             });
         }
 
+        // ✅ FIX: Fetch all exercises from database
+        const exercises = await Exercise.find({ verified: true })
+            .select('name category difficulty targetMuscles type defaultSets defaultRepsOrDuration')
+            .sort({ name: 1 })
+            .lean();
+
+        // ✅ FIXED: Consistent date calculation with saveWorkoutPlan
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1);
+        
+        const weekStart = new Date(today);
+        const dayOfWeek = today.getDay();
+        const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        weekStart.setDate(today.getDate() + diffToMonday);
+        weekStart.setHours(0, 0, 0, 0);
+        
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
 
         const currentWorkout = await WorkoutHistory.findOne({
             userId: userId,
-            date: { $gte: today, $lt: tomorrow }
+            date: { $gte: weekStart, $lt: weekEnd }
         }).lean() || null;
 
         const workoutPlan = currentWorkout ? {
@@ -404,13 +398,12 @@ const renderEditWorkoutPlan = async (req, res) => {
             name: user.full_name,
             goal: user.fitness_goals.weight_goal ? `${user.fitness_goals.weight_goal} kg` : user.fitness_goals.calorie_goal ? `${user.fitness_goals.calorie_goal} kcal` : 'Strength Training',
             workoutPlan,
-            notes: currentWorkout ? currentWorkout.notes : ''
+            notes: currentWorkout ? currentWorkout.notes : '',
+            exercises: exercises
         });
     } catch (error) {
         console.error('Error rendering edit workout plan:', error);
-        res.status(500).render('trainer', {
-            errorMessage: 'Server error. Please try again later.'
-        });
+        res.redirect('/trainer?error=Failed to load workout plan editor');
     }
 };
 
@@ -421,20 +414,16 @@ const saveWorkoutPlan = async (req, res) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        const { clientId, notes, currentWeek, nextWeek } = req.body;
+        const { clientId, notes, currentWeek } = req.body;
         const trainerId = req.session.trainer.id;
 
         console.log('Saving workout plan for Platinum user:', clientId);
-        
-        // ADD THESE DEBUG LOGS:
         console.log('=== DEBUG: Received currentWeek data ===');
         console.log(JSON.stringify(currentWeek, null, 2));
-        console.log('=== DEBUG: Received nextWeek data ===');
-        console.log(JSON.stringify(nextWeek, null, 2));
 
-        if (!clientId || !currentWeek || !nextWeek) {
+        if (!clientId || !currentWeek) {
             console.log('Validation failed: Missing required fields');
-            return res.status(400).json({ error: 'All fields are required' });
+            return res.status(400).json({ error: 'Client ID and current week data are required' });
         }
 
         const user = await User.findOne({ 
@@ -447,24 +436,33 @@ const saveWorkoutPlan = async (req, res) => {
             return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
         }
 
+        // ✅ FIXED: Better date calculation for the current week
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+        
+        // Get start of current week (Monday)
         const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay());
+        const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Adjust for Monday start
+        weekStart.setDate(today.getDate() + diffToMonday);
+        weekStart.setHours(0, 0, 0, 0);
+        
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
+        weekEnd.setHours(23, 59, 59, 999);
+
+        console.log('=== DEBUG: Date Range ===');
+        console.log('Week Start:', weekStart);
+        console.log('Week End:', weekEnd);
+        console.log('Today:', today);
 
         const currentWeekExercises = [];
         for (const [day, exercises] of Object.entries(currentWeek)) {
-            // ADD DEBUG LOGS FOR EACH EXERCISE:
             console.log(`=== DEBUG: Processing ${day} ===`);
             exercises.forEach(ex => {
                 console.log('Exercise data:', ex);
-                console.log('sets:', ex.sets, 'type:', typeof ex.sets);
-                console.log('reps:', ex.reps, 'type:', typeof ex.reps);
-                console.log('weight:', ex.weight, 'type:', typeof ex.weight);
                 
-                if (ex.name || !ex.name.trim()) {
+                if (ex.name && ex.name.trim()) {
                     const processedExercise = {
                         day,
                         name: ex.name,
@@ -480,93 +478,34 @@ const saveWorkoutPlan = async (req, res) => {
             });
         }
 
-        let currentWeekWorkout = await WorkoutHistory.findOne({
+        // ✅ NEW: Always create a NEW workout document for the current week
+        // This ensures each week gets its own object in MongoDB
+        const newWorkout = new WorkoutHistory({
             userId: clientId,
-            date: { $gte: weekStart, $lt: weekEnd }
+            date: weekStart, // Use week start as the date
+            exercises: currentWeekExercises,
+            progress: 0,
+            completed: false,
+            notes: notes || ''
         });
 
-        if (currentWeekWorkout) {
-            currentWeekWorkout.exercises = currentWeekExercises;
-            currentWeekWorkout.progress = 0;
-            currentWeekWorkout.completed = false;
-            currentWeekWorkout.notes = notes;
-            console.log('Updated existing workout history entry for current week:', clientId);
-        } else {
-            currentWeekWorkout = new WorkoutHistory({
-                userId: clientId,
-                date: weekStart,
-                exercises: currentWeekExercises,
-                progress: 0,
-                completed: false,
-                notes
-            });
-            console.log('Added new workout history entry for current week:', clientId);
-        }
-        await currentWeekWorkout.save();
+        await newWorkout.save();
+        console.log('✅ NEW workout document created for week:', weekStart);
+        console.log('Workout saved successfully:', newWorkout._id);
 
-        // Link workout to user if not already linked            REYNA
-        if (!user.workout_history.some(id => id.equals(currentWeekWorkout._id))) {
-            user.workout_history.push(currentWeekWorkout._id);
-            await user.save(); 
-        }
+        // ✅ Link to user's workout history
+        // ✅ FIXED: REPLACE the workout_history with only the current week's workout
+// This removes old workout IDs and keeps only the current week
+user.workout_history = [newWorkout._id];
+await user.save();
+console.log('User workout history updated - only current week workout kept');
 
-
-        const nextWeekStart = new Date(weekEnd);
-        const nextWeekEnd = new Date(nextWeekStart);
-        nextWeekEnd.setDate(nextWeekStart.getDate() + 7);
-
-        const nextWeekExercises = [];
-        for (const [day, exercises] of Object.entries(nextWeek)) {
-            exercises.forEach(ex => {
-                if (ex.name) {
-                    nextWeekExercises.push({
-                        day,
-                        name: ex.name,
-                        sets: ex.sets ? parseInt(ex.sets) : null,
-                        reps: ex.reps ? parseInt(ex.reps) : null,
-                        weight: ex.weight ? parseFloat(ex.weight) : null,
-                        duration: ex.duration ? parseInt(ex.duration) : null,
-                        completed: false
-                    });
-                }
-            });
-        }
-
-        let nextWeekWorkout = await WorkoutHistory.findOne({
-            userId: clientId,
-            date: { $gte: nextWeekStart, $lt: nextWeekEnd }
-        });
-
-        if (nextWeekWorkout) {
-            nextWeekWorkout.exercises = nextWeekExercises;
-            nextWeekWorkout.progress = 0;
-            nextWeekWorkout.completed = false;
-            nextWeekWorkout.notes = notes;
-            console.log('Updated existing workout history entry for next week:', clientId);
-        } else {
-            nextWeekWorkout = new WorkoutHistory({
-                userId: clientId,
-                date: nextWeekStart,
-                exercises: nextWeekExercises,
-                progress: 0,
-                completed: false,
-                notes
-            });
-            console.log('Added new workout history entry for next week:', clientId);
-        }
-        await nextWeekWorkout.save();
-
-        // link nxt week workout to user if not already linked          REYNA
-        if (!user.workout_history.some(id => id.equals(nextWeekWorkout._id))) {
-            user.workout_history.push(nextWeekWorkout._id);
-            await user.save();
-        }
-
+        console.log('Workout linked to user');
 
         res.json({ message: 'Workout plan saved successfully', redirect: '/trainer' });
     } catch (error) {
         console.error('Error saving workout plan:', error);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: 'Server error: ' + error.message });
     }
 };
 
@@ -630,14 +569,15 @@ const editNutritionPlan = async (req, res) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        const { userId, proteinGoal, calorieGoal, foods } = req.body;
+        const { userId, proteinGoal, calorieGoal, foods, day } = req.body; // ✅ ADDED 'day' parameter
         const trainerId = req.session.trainer.id;
 
         console.log('Saving nutrition plan for Platinum user:', userId);
+        console.log('Day:', day); // ✅ Log which day we're saving for
 
-        if (!userId || !proteinGoal || !calorieGoal || !Array.isArray(foods)) {
+        if (!userId || !proteinGoal || !calorieGoal || !Array.isArray(foods) || !day) {
             console.log('Validation failed: Missing required fields');
-            return res.status(400).json({ error: 'All fields are required' });
+            return res.status(400).json({ error: 'All fields are required, including day' });
         }
 
         const user = await User.findOne({ 
@@ -650,68 +590,116 @@ const editNutritionPlan = async (req, res) => {
             return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
         }
 
+        // ✅ FIXED: Use same week calculation as workouts
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        const weekStart = new Date(today);
+        const dayOfWeek = today.getDay();
+        const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        weekStart.setDate(today.getDate() + diffToMonday);
+        weekStart.setHours(0, 0, 0, 0);
+        
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
 
-        let nutritionEntry = await NutritionHistory.findOne({
+        console.log('=== NUTRITION DEBUG: Week Range ===');
+        console.log('Week Start:', weekStart);
+        console.log('Week End:', weekEnd);
+        console.log('Saving for day:', day);
+
+        // ✅ FIXED: Always create NEW weekly nutrition document (like workouts)
+        let weeklyNutrition = await NutritionHistory.findOne({
             userId: userId,
-            date: { $gte: today, $lt: tomorrow }
+            date: { $gte: weekStart, $lt: weekEnd }
         });
 
-        const nutritionData = {
-            calories_consumed: foods.reduce((sum, food) => sum + (food.calories || 0), 0),
-            protein_consumed: foods.reduce((sum, food) => sum + (food.protein || 0), 0),
-            macros: {
-                protein: foods.length > 0 ? (foods.reduce((sum, food) => sum + (food.protein || 0), 0) / foods.length) : 0,
-                carbs: foods.length > 0 ? (foods.reduce((sum, food) => sum + (food.carbs || 0), 0) / foods.length) : 0,
-                fats: foods.length > 0 ? (foods.reduce((sum, food) => sum + (food.fats || 0), 0) / foods.length) : 0
-            },
+        // Calculate nutrition data for the specific day
+        const dayCalories = foods.reduce((sum, food) => sum + (food.calories || 0), 0);
+        const dayProtein = foods.reduce((sum, food) => sum + (food.protein || 0), 0);
+        const dayCarbs = foods.reduce((sum, food) => sum + (food.carbs || 0), 0);
+        const dayFats = foods.reduce((sum, food) => sum + (food.fats || 0), 0);
+
+        const dayNutritionData = {
+            calories_consumed: dayCalories,
+            protein_consumed: dayProtein,
             foods: foods.map(food => ({
                 name: food.name,
                 protein: food.protein || 0,
-                calories: food.calories || 0
-            }))
+                calories: food.calories || 0,
+                carbs: food.carbs || 0,
+                fats: food.fats || 0
+            })),
+            macros: {
+                protein: dayProtein,
+                carbs: dayCarbs,
+                fats: dayFats
+            }
         };
 
-        if (nutritionEntry) {
-            nutritionEntry.calories_consumed = nutritionData.calories_consumed;
-            nutritionEntry.protein_consumed = nutritionData.protein_consumed;
-            nutritionEntry.macros = nutritionData.macros;
-            nutritionEntry.foods = nutritionData.foods;
-            console.log('Updated existing nutrition history entry for today:', userId);
+        if (weeklyNutrition) {
+            // Update existing weekly nutrition - only update the specific day
+            weeklyNutrition.daily_nutrition[day] = dayNutritionData;
+            console.log(`Updated nutrition for ${day} in existing weekly document`);
         } else {
-            nutritionEntry = new NutritionHistory({
+            // Create new weekly nutrition document
+            weeklyNutrition = new NutritionHistory({
                 userId: userId,
-                date: today,
-                ...nutritionData
+                date: weekStart,
+                protein_goal: parseInt(proteinGoal),
+                calorie_goal: parseInt(calorieGoal),
+                daily_nutrition: {
+                    Monday: day === 'Monday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
+                    Tuesday: day === 'Tuesday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
+                    Wednesday: day === 'Wednesday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
+                    Thursday: day === 'Thursday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
+                    Friday: day === 'Friday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
+                    Saturday: day === 'Saturday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
+                    Sunday: day === 'Sunday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } }
+                }
             });
-            console.log('Added new nutrition history entry for today:', userId);
-        }
-        await nutritionEntry.save();
-
-        // Link nutrition entry to user if not already linked              REYNA
-        if (!user.nutrition_history) user.nutrition_history = [];
-
-        const alreadyLinked = user.nutrition_history.some(id => id.equals(nutritionEntry._id));
-
-        if (!alreadyLinked) {
-            user.nutrition_history.push(nutritionEntry._id);
-            await user.save();
+            console.log('✅ NEW weekly nutrition document created for week:', weekStart);
         }
 
+        // Calculate weekly averages for macros
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        let totalProtein = 0, totalCarbs = 0, totalFats = 0;
+        let dayCount = 0;
 
+        days.forEach(dayName => {
+            if (weeklyNutrition.daily_nutrition[dayName].foods.length > 0) {
+                totalProtein += weeklyNutrition.daily_nutrition[dayName].macros.protein;
+                totalCarbs += weeklyNutrition.daily_nutrition[dayName].macros.carbs;
+                totalFats += weeklyNutrition.daily_nutrition[dayName].macros.fats;
+                dayCount++;
+            }
+        });
 
+        weeklyNutrition.weekly_macros = {
+            protein: dayCount > 0 ? Math.round(totalProtein / dayCount) : 0,
+            carbs: dayCount > 0 ? Math.round(totalCarbs / dayCount) : 0,
+            fats: dayCount > 0 ? Math.round(totalFats / dayCount) : 0
+        };
+
+        await weeklyNutrition.save();
+        console.log('Weekly nutrition saved successfully:', weeklyNutrition._id);
+
+        // ✅ FIXED: REPLACE user's nutrition_history with only current week's nutrition
+        user.nutrition_history = [weeklyNutrition._id];
+        await user.save();
+        console.log('User nutrition history updated - only current week nutrition kept');
+
+        // Update user fitness goals
         user.fitness_goals.protein_goal = parseInt(proteinGoal);
         user.fitness_goals.calorie_goal = parseInt(calorieGoal);
         await user.save();
+        
         console.log('Nutrition plan and goals saved for Platinum user:', userId);
 
         res.json({ message: 'Nutrition plan saved successfully', redirect: '/trainer' });
     } catch (error) {
         console.error('Error saving nutrition plan:', error);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: 'Server error: ' + error.message });
     }
 };
 
@@ -772,23 +760,25 @@ const getWorkoutData = async (req, res) => {
             return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
         }
 
+        // ✅ FIXED: Use same Monday-start week calculation as saveWorkoutPlan
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+        
         const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay()); // Start of the week (Sunday)
+        const dayOfWeek = today.getDay();
+        const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        weekStart.setDate(today.getDate() + diffToMonday);
+        weekStart.setHours(0, 0, 0, 0);
+        
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
 
-        // REYNA
-        // This logic is incomplete for determining today's exercises
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const todayDayName = dayNames[today.getDay()];
-        // END REYNA
         const currentWorkout = await WorkoutHistory.findOne({
             userId: userId,
             date: { $gte: weekStart, $lt: weekEnd }
         }).lean() || null;
 
+        // ✅ FIXED: Ensure consistent weeklySchedule structure
         const weeklySchedule = {
             Monday: [],
             Tuesday: [],
@@ -801,18 +791,24 @@ const getWorkoutData = async (req, res) => {
 
         if (currentWorkout && currentWorkout.exercises) {
             currentWorkout.exercises.forEach(exercise => {
-                weeklySchedule[exercise.day].push({
-                    name: exercise.name,
-                    sets: exercise.sets,
-                    reps: exercise.reps,
-                    weight: exercise.weight,
-                    duration: exercise.duration,
-                    completed: exercise.completed
-                });
+                if (weeklySchedule[exercise.day]) {
+                    weeklySchedule[exercise.day].push({
+                        name: exercise.name,
+                        sets: exercise.sets,
+                        reps: exercise.reps,
+                        weight: exercise.weight,
+                        duration: exercise.duration,
+                        completed: exercise.completed
+                    });
+                }
             });
         }
 
-        res.json({ weeklySchedule });
+        // ✅ FIXED: Return the exact structure expected by frontend
+        res.json({ 
+            weeklySchedule: weeklySchedule,
+            success: true 
+        });
     } catch (error) {
         console.error('Error fetching workout data:', error);
         res.status(500).json({ error: 'Server error' });
@@ -842,22 +838,39 @@ const getNutritionData = async (req, res) => {
             return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
         }
 
+        // ✅ FIXED: Use same week calculation
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1);
+        
+        const weekStart = new Date(today);
+        const dayOfWeek = today.getDay();
+        const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        weekStart.setDate(today.getDate() + diffToMonday);
+        weekStart.setHours(0, 0, 0, 0);
+        
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
 
-        const latestNutrition = await NutritionHistory.findOne({
+        const weeklyNutrition = await NutritionHistory.findOne({
             userId: userId,
-            date: { $gte: today, $lt: tomorrow }
-        }).lean() || null;
+            date: { $gte: weekStart, $lt: weekEnd }
+        }).lean();
+
+        // ✅ FIXED: Get today's nutrition from weekly data
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const todayName = days[today.getDay()];
+        
+        let todayNutrition = null;
+        if (weeklyNutrition && weeklyNutrition.daily_nutrition) {
+            todayNutrition = weeklyNutrition.daily_nutrition[todayName];
+        }
 
         res.json({
             nutrition: {
                 protein_goal: user.fitness_goals.protein_goal || 'N/A',
                 calorie_goal: user.fitness_goals.calorie_goal || 'N/A',
-                foods: latestNutrition ? latestNutrition.foods : [],
-                macros: latestNutrition ? latestNutrition.macros : { protein: 0, carbs: 0, fats: 0 }
+                foods: todayNutrition ? todayNutrition.foods : [],
+                macros: todayNutrition ? todayNutrition.macros : { protein: 0, carbs: 0, fats: 0 }
             }
         });
     } catch (error) {

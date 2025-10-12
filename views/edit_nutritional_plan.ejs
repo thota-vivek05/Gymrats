@@ -302,6 +302,27 @@
                         </div>
                     </div>
 
+                    <div class="form-group day-selection" style="margin: 20px 0;">
+    <label for="daySelect" style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">
+        Select Day for Nutrition Plan:
+    </label>
+    <select id="daySelect" name="day" required 
+            style="padding: 10px 12px; border: 2px solid #ddd; border-radius: 8px; width: 100%; max-width: 300px; font-size: 16px; background-color: white;">
+        <option value="">-- Choose a day --</option>
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+        <option value="Saturday">Saturday</option>
+        <option value="Sunday">Sunday</option>
+    </select>
+    <small style="display: block; margin-top: 5px; color: #666;">
+        Select which day of the week this nutrition plan is for
+    </small>
+</div>
+
+
                     <div class="action-buttons">
                         <button type="submit" class="save-btn" id="saveNutritionPlan">Save Nutrition Plan</button>
                         <button type="button" class="cancel-btn" id="cancelEdit">Cancel</button>
@@ -528,43 +549,54 @@
             proteinGoalInput.addEventListener('input', updateNutritionSummary);
             calorieGoalInput.addEventListener('input', updateNutritionSummary);
 
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                const formData = new FormData(form);
-                const selectedFoods = Array.from(selectedFoodsList.querySelectorAll('.selected-food-item')).map(item => ({
-                    name: item.querySelector('h4').textContent,
-                    protein: parseInt(item.dataset.protein) || 0,
-                    carbs: parseInt(item.dataset.carbs) || 0,
-                    fats: parseInt(item.dataset.fats) || 0,
-                    calories: parseInt(item.dataset.calories) || 0
-                }));
+      form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const selectedFoods = Array.from(selectedFoodsList.querySelectorAll('.selected-food-item')).map(item => ({
+        name: item.querySelector('h4').textContent,
+        protein: parseInt(item.dataset.protein) || 0,
+        carbs: parseInt(item.dataset.carbs) || 0,
+        fats: parseInt(item.dataset.fats) || 0,
+        calories: parseInt(item.dataset.calories) || 0
+    }));
 
-                fetch('/edit_nutritional_plan', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userId: formData.get('userId'),
-                        proteinGoal: formData.get('proteinGoal'),
-                        calorieGoal: formData.get('calorieGoal'),
-                        foods: selectedFoods
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert('Error: ' + data.error);
-                    } else {
-                        alert(data.message);
-                        window.location.href = data.redirect;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error saving nutrition plan:', error);
-                    alert('Failed to save nutrition plan.');
-                });
-            });
+    // Get the selected day
+    const daySelect = document.getElementById('daySelect');
+    const selectedDay = daySelect.value;
 
-            document.getElementById('cancelEdit').addEventListener('click', function () {
+    if (!selectedDay) {
+        alert('Please select a day for the nutrition plan');
+        daySelect.focus();
+        return;
+    }
+
+    fetch('/edit_nutritional_plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            userId: formData.get('userId'),
+            proteinGoal: formData.get('proteinGoal'),
+            calorieGoal: formData.get('calorieGoal'),
+            foods: selectedFoods,
+            day: selectedDay  // ✅ ADD THIS - this fixes the error
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert('Error: ' + data.error);
+        } else {
+            alert(data.message);
+            window.location.href = data.redirect;
+        }
+    })
+    .catch(error => {
+        console.error('Error saving nutrition plan:', error);
+        alert('Failed to save nutrition plan.');
+    });
+});
+   
+document.getElementById('cancelEdit').addEventListener('click', function () {
                 if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
                     window.location.href = '/trainer';
                 }
