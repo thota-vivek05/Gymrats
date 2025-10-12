@@ -41,6 +41,7 @@ router.get('/exercises', adminController.getExercises);
 router.post('/exercises', adminController.createExercise);
 router.put('/exercises/:id', adminController.updateExercise);
 router.delete('/exercises/:id', adminController.deleteExercise);
+router.get('/api/exercises', adminController.searchExercises);
 
 // Verifier Routes
 router.get('/verifier', adminController.getVerifiers);

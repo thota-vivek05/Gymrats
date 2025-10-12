@@ -48,7 +48,7 @@
                         <span>Exercises</span>
                     </a>
                 </li>
-               
+
                 <li class="nav-item">
                     <a href="/admin_verifier" class="nav-link">
                         <span>Verifiers</span>
@@ -67,10 +67,6 @@
             <div class="header">
                 <h2>Exercises Management</h2>
                 <div class="right-container">
-                    <div class="search-container">
-                        <img src="https://img.icons8.com/ios/250/8A2BE2/search--v1.png" height="18px" alt="Search Icon" />
-                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-                    </div>
                     <div class="user-info">
                         <div class="avatar">A</div>
                         <span>Admin</span>
@@ -78,519 +74,338 @@
                 </div>
             </div>
 
-            <!-- Stats Cards -->
-            <div class="stats-container">
-                <div class="stats-card">
-                    <div class="stats-content">
-                        <div class="stats-info">
-                            <div class="stats-header">
-                                <h3>Total Exercises</h3>
-                            </div>
-                            <div class="stats-number">478</div>
-                            <div class="stats-label">+32 from last month</div>
-                        </div>
-                    </div>
+          <!-- Stats Cards -->
+<div class="stats-container">
+    <div class="stats-card">
+        <div class="stats-content">
+            <div class="stats-info">
+                <div class="stats-header">
+                    <h3>Total Exercises</h3>
                 </div>
-                <div class="stats-card">
-                    <div class="stats-content">
-                        <div class="stats-info">
-                            <div class="stats-header">
-                                <h3>Most Popular</h3>
-                            </div>
-                            <div class="stats-number">Squats</div>
-                            <div class="stats-label">8,245 total uses</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="stats-card">
-                    <div class="stats-content">
-                        <div class="stats-info">
-                            <div class="stats-header">
-                                <h3>Verified Exercises</h3>
-                            </div>
-                            <div class="stats-number">392</div>
-                            <div class="stats-label">82% of total</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="stats-card">
-                    <div class="stats-content">
-                        <div class="stats-info">
-                            <div class="stats-header">
-                                <h3>Trending This Week</h3>
-                            </div>
-                            <div class="stats-number">Kettlebell Swings</div>
-                            <div class="stats-label">+65% usage</div>
-                        </div>
-                    </div>
-                </div>
+                <div class="stats-number"><%= stats.totalExercises %></div>
+                <div class="stats-label"><%= stats.verifiedExercises %> verified</div>
             </div>
-
-            <!-- Charts Section for Exercise Statistics -->
-            <div class="section">
-                <div class="section-header">
-                    <h3 class="section-title">Exercise Analytics</h3>
-                </div>
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <h4>Most Popular Exercises</h4>
-                        <div class="chart-container">
-                            <canvas id="popularExercisesChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <h4>Exercises by Category</h4>
-                        <div class="chart-container">
-                            <canvas id="categoryDistributionChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <h4>Exercises Usage Trend</h4>
-                        <div class="chart-container">
-                            <canvas id="exerciseTrendChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Search Bar -->
-            <div class="search-container">
-                <div class="search-bar">
-                    <input type="text" id="exerciseSearchInput" placeholder="Search exercises by name, category or difficulty...">
-                </div>
-                <button class="filter-btn" id="filterBtn">Filter Options</button>
-            </div>
-
-            <!-- Tab Navigation -->
-            <div class="tab-container">
-                <button class="tab active" data-tab="all">All Exercises</button>
-                <button class="tab" data-tab="strength">Strength</button>
-                <button class="tab" data-tab="cardio">Cardio</button>
-                <button class="tab" data-tab="flexibility">Flexibility</button>
-                <button class="tab" data-tab="balance">Balance</button>
-                <button class="tab" data-tab="trending">Trending</button>
-                <button class="tab" data-tab="unverified">Unverified</button>
-            </div>
-
-            <!-- Exercises Table -->
-            <div class="section">
-                <div class="table-header">
-                    <h3 class="section-title">Exercise Library</h3>
-                    <button class="add-btn" id="addExerciseBtn">+ Add New Exercise</button>
-                </div>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Exercise</th>
-                                <th>Category</th>
-                                <th>Muscle Groups</th>
-                                <th>Difficulty</th>
-                                <th>Popularity</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="exerciseTableBody">
-                            <tr data-exercise-id="1">
-                                <td>
-                                    <div class="exercise-info">
-                                        <div class="exercise-image">
-                                            <img src="https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?q=80&w=1374&auto=format&fit=crop" alt="Squats">
-                                        </div>
-                                        <div>Barbell Squats <span class="verified-badge">Verified</span> <span class="trending-badge">Trending</span></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="category-tags">
-                                        <span class="category-tag">Strength</span>
-                                    </div>
-                                </td>
-                                <td>Quadriceps, Hamstrings, Glutes, Lower Back</td>
-                                <td>
-                                    <div class="difficulty-indicator">
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="popularity-bar">
-                                        <div class="popularity-fill high-popularity" style="width: 98%"></div>
-                                    </div>
-                                    <span>8,245 uses</span>
-                                </td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn view-details">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr class="detail-row" id="details-1">
-                                <td colspan="7">
-                                    <div class="detail-content">
-                                        <div class="exercise-detail-image">
-                                            <img src="https://images.unsplash.com/photo-1574680178050-55c6a6a96e0a?q=80&w=1374&auto=format&fit=crop" alt="Squats">
-                                        </div>
-                                        <div class="exercise-details">
-                                            <h4>Barbell Squats</h4>
-                                            <p><strong>Equipment:</strong> Barbell, Squat Rack</p>
-                                            <p><strong>Description:</strong> A compound exercise that targets multiple muscle groups, primarily focusing on the lower body. The barbell squat is considered one of the most effective strength-building exercises.</p>
-                                            <p><strong>Instructions:</strong></p>
-                                            <ol class="instruction-list">
-                                                <li>Stand with feet shoulder-width apart, barbell resting on your upper back.</li>
-                                                <li>Keep your chest up and back straight.</li>
-                                                <li>Bend at the knees and hips to lower your body, as if sitting in a chair.</li>
-                                                <li>Lower until thighs are parallel to the ground (or as low as mobility allows).</li>
-                                                <li>Push through your heels to return to the starting position.</li>
-                                            </ol>
-                                            <p><strong>Verified By:</strong> Mark Johnson (Exercise Form Expert)</p>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-exercise-id="2">
-                                <td>
-                                    <div class="exercise-info">
-                                        <div>Push-ups <span class="verified-badge">Verified</span></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="category-tags">
-                                        <span class="category-tag">Strength</span>
-                                        <span class="category-tag">Bodyweight</span>
-                                    </div>
-                                </td>
-                                <td>Chest, Shoulders, Triceps, Core</td>
-                                <td>
-                                    <div class="difficulty-indicator">
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="popularity-bar">
-                                        <div class="popularity-fill high-popularity" style="width: 96%"></div>
-                                    </div>
-                                    <span>7,890 uses</span>
-                                </td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn view-details">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr class="detail-row" id="details-2">
-                                <td colspan="7">
-                                    <div class="detail-content">
-                                        
-                                        <div class="exercise-details">
-                                            <h4>Push-ups</h4>
-                                            <p><strong>Equipment:</strong> None (Bodyweight)</p>
-                                            <p><strong>Description:</strong> A classic bodyweight exercise that builds upper body strength, particularly in the chest, shoulders, and arms. Push-ups also engage the core for stability.</p>
-                                            <p><strong>Instructions:</strong></p>
-                                            <ol class="instruction-list">
-                                                <li>Start in a plank position with hands slightly wider than shoulder-width.</li>
-                                                <li>Keep your body in a straight line from head to heels.</li>
-                                                <li>Lower your body by bending your elbows until your chest nearly touches the floor.</li>
-                                                <li>Push back up to the starting position by extending your arms.</li>
-                                                <li>Keep your core engaged throughout the movement.</li>
-                                            </ol>
-                                            <p><strong>Verified By:</strong> Lisa Rodriguez (Fitness Safety Expert)</p>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-exercise-id="3">
-                                <td>
-                                    <div class="exercise-info">
-                                        
-                                        <div>Treadmill Running <span class="verified-badge">Verified</span></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="category-tags">
-                                        <span class="category-tag">Cardio</span>
-                                    </div>
-                                </td>
-                                <td>Legs, Heart, Lungs</td>
-                                <td>
-                                    <div class="difficulty-indicator">
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="popularity-bar">
-                                        <div class="popularity-fill high-popularity" style="width: 90%"></div>
-                                    </div>
-                                    <span>7,125 uses</span>
-                                </td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn view-details">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr data-exercise-id="4">
-                                <td>
-                                    <div class="exercise-info">
-                                        
-                                        <div>Kettlebell Swings <span class="verified-badge">Verified</span> <span class="trending-badge">Trending</span></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="category-tags">
-                                        <span class="category-tag">Strength</span>
-                                        <span class="category-tag">Cardio</span>
-                                    </div>
-                                </td>
-                                <td>Glutes, Hamstrings, Lower Back, Shoulders</td>
-                                <td>
-                                    <div class="difficulty-indicator">
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="popularity-bar">
-                                        <div class="popularity-fill medium-popularity" style="width: 85%"></div>
-                                    </div>
-                                    <span>6,580 uses</span>
-                                </td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn view-details">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr data-exercise-id="5">
-                                <td>
-                                    <div class="exercise-info">
-                                        
-                                        <div>Downward Dog <span class="verified-badge">Verified</span></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="category-tags">
-                                        <span class="category-tag">Flexibility</span>
-                                        <span class="category-tag">Yoga</span>
-                                    </div>
-                                </td>
-                                <td>Shoulders, Hamstrings, Calves, Arms</td>
-                                <td>
-                                    <div class="difficulty-indicator">
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="popularity-bar">
-                                        <div class="popularity-fill medium-popularity" style="width: 78%"></div>
-                                    </div>
-                                    <span>6,125 uses</span>
-                                </td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn view-details">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr data-exercise-id="6">
-                                <td>
-                                    <div class="exercise-info">
-                                        
-                                        <div>Dumbbell Rows <span class="verified-badge">Verified</span></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="category-tags">
-                                        <span class="category-tag">Strength</span>
-                                    </div>
-                                </td>
-                                <td>Back, Biceps, Shoulders</td>
-                                <td>
-                                    <div class="difficulty-indicator">
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="popularity-bar">
-                                        <div class="popularity-fill medium-popularity" style="width: 75%"></div>
-                                    </div>
-                                    <span>5,980 uses</span>
-                                </td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn view-details">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr data-exercise-id="7">
-                                <td>
-                                    <div class="exercise-info">
-                                        
-                                        <div>Plank <span class="verified-badge">Verified</span></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="category-tags">
-                                        <span class="category-tag">Strength</span>
-                                        <span class="category-tag">Bodyweight</span>
-                                    </div>
-                                </td>
-                                <td>Core, Shoulders, Back</td>
-                                <td>
-                                    <div class="difficulty-indicator">
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="popularity-bar">
-                                        <div class="popularity-fill medium-popularity" style="width: 72%"></div>
-                                    </div>
-                                    <span>5,750 uses</span>
-                                </td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn view-details">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr data-exercise-id="8">
-                                <td>
-                                    <div class="exercise-info">
-                                        
-                                        <div>Bicycle Crunches</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="category-tags">
-                                        <span class="category-tag">Strength</span>
-                                        <span class="category-tag">Bodyweight</span>
-                                    </div>
-                                </td>
-                                <td>Abs, Obliques</td>
-                                <td>
-                                    <div class="difficulty-indicator">
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-filled"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                        <div class="difficulty-dot dot-empty"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="popularity-bar">
-                                        <div class="popularity-fill low-popularity" style="width: 60%"></div>
-                                    </div>
-                                    <span>4,825 uses</span>
-                                </td>
-                                <td><span class="status pending">Unverified</span></td>
-                                <td>
-                                    <button class="action-btn view-details">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Pagination -->
-                <div class="pagination">
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <button class="page-btn">Next</button>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Add Exercise Modal -->
-    <div class="form-modal" id="exerciseFormModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add New Exercise</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <form id="exerciseForm">
-                <div class="form-group">
-                    <label for="exerciseName">Exercise Name*</label>
-                    <input type="text" id="exerciseName" name="exerciseName" required>
-                </div>
-                <div class="form-group">
-                    <label for="exerciseCategory">Category*</label>
-                    <select id="exerciseCategory" name="exerciseCategory" required>
-                        <option value="">Select Category</option>
-                        <option value="strength">Strength</option>
-                        <option value="cardio">Cardio</option>
-                        <option value="flexibility">Flexibility</option>
-                        <option value="balance">Balance</option>
-                        <option value="bodyweight">Bodyweight</option>
-                        <option value="yoga">Yoga</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="exerciseMuscles">Muscle Groups*</label>
-                    <input type="text" id="exerciseMuscles" name="exerciseMuscles" required placeholder="Primary muscle groups targeted, separated by commas">
-                </div>
-                <div class="form-group">
-                    <label for="exerciseDifficulty">Difficulty Level*</label>
-                    <select id="exerciseDifficulty" name="exerciseDifficulty" required>
-                        <option value="">Select Difficulty</option>
-                        <option value="1">Beginner (1/5)</option>
-                        <option value="2">Easy (2/5)</option>
-                        <option value="3">Intermediate (3/5)</option>
-                        <option value="4">Advanced (4/5)</option>
-                        <option value="5">Expert (5/5)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="exerciseEquipment">Equipment Required</label>
-                    <input type="text" id="exerciseEquipment" name="exerciseEquipment" placeholder="List equipment needed, or 'None' for bodyweight exercises">
-                </div>
-                <div class="form-group">
-                    <label for="exerciseDescription">Description*</label>
-                    <textarea id="exerciseDescription" name="exerciseDescription" required placeholder="Brief description of the exercise and its benefits"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="exerciseInstructions">Instructions*</label>
-                    <textarea id="exerciseInstructions" name="exerciseInstructions" required placeholder="Step-by-step instructions for performing the exercise correctly"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="exerciseImage">Image URL</label>
-                    <input type="text" id="exerciseImage" name="exerciseImage" placeholder="URL to an image demonstrating the exercise">
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="cancel-btn">Cancel</button>
-                    <button type="submit" class="submit-btn">Add Exercise</button>
-                </div>
-            </form>
         </div>
     </div>
+    <div class="stats-card">
+        <div class="stats-content">
+            <div class="stats-info">
+                <div class="stats-header">
+                    <h3>Most Popular</h3>
+                </div>
+                <div class="stats-number" style="font-size: 1.1rem;"><%= stats.mostPopular %></div>
+                <div class="stats-label"><%= stats.mostPopularCount.toLocaleString() %> uses</div>
+            </div>
+        </div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-content">
+            <div class="stats-info">
+                <div class="stats-header">
+                    <h3>Muscle Groups</h3>
+                </div>
+                <div class="stats-number"><%= stats.totalMuscleGroups %></div>
+                <div class="stats-label">Unique muscles targeted</div>
+            </div>
+        </div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-content">
+            <div class="stats-info">
+                <div class="stats-header">
+                    <h3>Verification Rate</h3>
+                </div>
+                <div class="stats-number"><%= stats.verificationRate %>%</div>
+                <div class="stats-label"><%= stats.unverifiedExercises %> pending</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+           <!-- Search Bar -->
+                <div class="search-container">
+                    <div class="search-bar">
+                        <input type="text" id="exerciseSearchInput" placeholder="Search exercises by name, primary muscle, or difficulty..." style="width: 100%; padding: 12px; border: 1px solid #444; border-radius: 8px; background: #2a2a2a; color: #f1f1f1; font-size: 14px;">
+                    </div>
+                </div>
+
+            <!-- Tab Navigation -->
+                    <div class="tab-container">
+                        <button class="tab active" data-tab="all">All Exercises</button>
+                        <% muscleGroups.forEach((muscle, index) => { %>
+                            <button class="tab" data-tab="<%= muscle.toLowerCase().replace(/\s+/g, '-') %>">
+                                <%= muscle %>
+                            </button>
+                        <% }); %>
+                        <button class="tab" data-tab="unverified">Unverified</button>
+                        <button class="tab" data-tab="trending">Trending</button>
+                    </div>
+        <!-- Exercises Table -->
+<div class="section">
+    <div class="table-header">
+        <h3 class="section-title">Exercise Library</h3>
+        <button class="add-btn" id="addExerciseBtn">+ Add New Exercise</button>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Exercise</th>
+                    <th>Primary Muscles</th>
+                    <th>All Muscle Groups</th>
+                    <th>Difficulty</th>
+                    <th>Popularity</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="exerciseTableBody">
+                <% if (exercises && exercises.length > 0) { %>
+                    <% exercises.forEach((exercise, index) => { %>
+                        <tr data-exercise-id="<%= exercise._id %>">
+                            <td>
+                                <div class="exercise-info">
+                                    <% if (exercise.image) { %>
+                                        <div class="exercise-image">
+                                            <img src="<%= exercise.image %>" alt="<%= exercise.name %>">
+                                        </div>
+                                    <% } %>
+                                    <div>
+                                        <%= exercise.name %>
+                                        <% if (exercise.verified) { %>
+                                            <span class="verified-badge">Verified</span>
+                                        <% } %>
+                                        <% if (exercise.usageCount > 5000) { %>
+                                            <span class="trending-badge">Trending</span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="muscle-tags">
+                                    <% if (exercise.primaryMuscle) { %>
+                                        <span class="muscle-tag primary"><%= exercise.primaryMuscle %></span>
+                                    <% } else if (exercise.targetMuscles && exercise.targetMuscles.length > 0) { %>
+                                        <span class="muscle-tag primary"><%= exercise.targetMuscles[0] %></span>
+                                    <% } %>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="muscle-tags">
+                                    <% if (exercise.targetMuscles && exercise.targetMuscles.length > 0) { %>
+                                        <% exercise.targetMuscles.forEach((muscle, idx) => { %>
+                                            <% if (idx < 3) { %>
+                                                <span class="muscle-tag"><%= muscle %></span>
+                                            <% } %>
+                                        <% }); %>
+                                        <% if (exercise.targetMuscles.length > 3) { %>
+                                            <span class="muscle-tag more">+<%= exercise.targetMuscles.length - 3 %></span>
+                                        <% } %>
+                                    <% } else { %>
+                                        <span class="no-muscles">No muscles specified</span>
+                                    <% } %>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="difficulty-indicator">
+                                    <% 
+                                        const difficultyLevels = {
+                                            'Beginner': 2,
+                                            'Intermediate': 3, 
+                                            'Advanced': 4
+                                        };
+                                        const level = difficultyLevels[exercise.difficulty] || 2;
+                                    %>
+                                    <% for(let i = 1; i <= 5; i++) { %>
+                                        <div class="difficulty-dot <%= i <= level ? 'dot-filled' : 'dot-empty' %>"></div>
+                                    <% } %>
+                                    <span class="difficulty-text"><%= exercise.difficulty %></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="popularity-bar">
+                                    <% 
+                                        const maxUsage = 10000;
+                                        const percentage = Math.min((exercise.usageCount / maxUsage) * 100, 100);
+                                        let popularityClass = 'low-popularity';
+                                        if (exercise.usageCount > 5000) popularityClass = 'high-popularity';
+                                        else if (exercise.usageCount > 2000) popularityClass = 'medium-popularity';
+                                    %>
+                                    <div class="popularity-fill <%= popularityClass %>" style="width: <%= percentage %>%"></div>
+                                </div>
+                                <span><%= exercise.usageCount.toLocaleString() %> uses</span>
+                            </td>
+                            <td>
+                                <span class="status <%= exercise.verified ? 'active' : 'pending' %>">
+                                    <%= exercise.verified ? 'Verified' : 'Unverified' %>
+                                </span>
+                            </td>
+                            <td>
+                                <button class="action-btn view-details">View</button>
+                                <button class="action-btn edit-exercise" data-id="<%= exercise._id %>">Edit</button>
+                            </td>
+                        </tr>
+                        <!-- Detail row remains the same -->
+                        <tr class="detail-row" id="details-<%= exercise._id %>">
+                            <td colspan="7">
+                                <div class="detail-content">
+                                    <% if (exercise.image) { %>
+                                        <div class="exercise-detail-image">
+                                            <img src="<%= exercise.image %>" alt="<%= exercise.name %>">
+                                        </div>
+                                    <% } %>
+                                    <div class="exercise-details">
+                                        <h4><%= exercise.name %></h4>
+                                        <p><strong>Category:</strong> <%= exercise.category %></p>
+                                        <p><strong>Equipment:</strong> <%= exercise.equipment && exercise.equipment.length > 0 ? exercise.equipment.join(', ') : 'None' %></p>
+                                        <p><strong>Type:</strong> <%= exercise.type %></p>
+                                        <p><strong>Default Sets:</strong> <%= exercise.defaultSets %></p>
+                                        <p><strong>Default Reps/Duration:</strong> <%= exercise.defaultRepsOrDuration %></p>
+                                        <p><strong>Primary Muscle:</strong> <%= exercise.primaryMuscle || 'Not specified' %></p>
+                                        <p><strong>All Target Muscles:</strong> <%= exercise.targetMuscles ? exercise.targetMuscles.join(', ') : 'Not specified' %></p>
+                                        <p><strong>Movement Pattern:</strong> <%= exercise.movementPattern || 'N/A' %></p>
+                                        <p><strong>Instructions:</strong> <%= exercise.instructions %></p>
+                                        <p><strong>Average Rating:</strong> <%= exercise.averageRating.toFixed(1) %>/5 (<%= exercise.totalRatings %> ratings)</p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">
+                            No exercises found in the database.
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="pagination">
+        <button class="page-btn active">1</button>
+    </div>
+</div>
+
+  <!-- Add Exercise Modal -->
+<div class="form-modal" id="exerciseFormModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Add New Exercise</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+        <form id="exerciseForm">
+            <div class="form-group">
+                <label for="exerciseName">Exercise Name*</label>
+                <input type="text" id="exerciseName" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="exerciseCategory">Category*</label>
+                <select id="exerciseCategory" name="category" required>
+                    <option value="">Select Category</option>
+                    <option value="Calisthenics">Calisthenics</option>
+                    <option value="Weight Loss">Weight Loss</option>
+                    <option value="HIIT">HIIT</option>
+                    <option value="Competitive">Competitive</option>
+                    <option value="Strength Training">Strength Training</option>
+                    <option value="Cardio">Cardio</option>
+                    <option value="Flexibility">Flexibility</option>
+                    <option value="Bodybuilding">Bodybuilding</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="primaryMuscle">Primary Muscle*</label>
+                <select id="primaryMuscle" name="primaryMuscle" required>
+                    <option value="">Select Primary Muscle</option>
+                    <option value="Chest">Chest</option>
+                    <option value="Back">Back</option>
+                    <option value="Quadriceps">Quadriceps</option>
+                    <option value="Triceps">Triceps</option>
+                    <option value="Shoulders">Shoulders</option>
+                    <option value="Core">Core</option>
+                    <option value="Full Body">Full Body</option>
+                    <option value="Obliques">Obliques</option>
+                    <option value="Lower Abs">Lower Abs</option>
+                    <option value="Calves">Calves</option>
+                    <option value="Rear Shoulders">Rear Shoulders</option>
+                    <option value="Brachialis">Brachialis</option>
+                    <option value="Biceps">Biceps</option>
+                    <option value="Arms">Arms</option>
+                    <option value="Cardio">Cardio</option>
+                    <option value="Legs">Legs</option>
+                    <option value="Cardiovascular">Cardiovascular</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="exerciseDifficulty">Difficulty*</label>
+                <select id="exerciseDifficulty" name="difficulty" required>
+                    <option value="">Select Difficulty</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="exerciseMuscles">Target Muscles*</label>
+                <input type="text" id="exerciseMuscles" name="targetMuscles" required placeholder="e.g., Chest, Shoulders, Triceps (comma separated)">
+            </div>
+            
+            <div class="form-group">
+                <label for="exerciseType">Exercise Type*</label>
+                <select id="exerciseType" name="type" required>
+                    <option value="">Select Type</option>
+                    <option value="Reps">Reps-based</option>
+                    <option value="Time">Time-based</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="defaultSets">Default Sets</label>
+                <input type="number" id="defaultSets" name="defaultSets" value="3" min="1" max="10">
+            </div>
+            
+            <div class="form-group">
+                <label for="defaultRepsOrDuration">Default Reps/Duration*</label>
+                <input type="text" id="defaultRepsOrDuration" name="defaultRepsOrDuration" required placeholder="e.g., 10 reps or 30 seconds">
+            </div>
+            
+            <div class="form-group">
+                <label for="exerciseEquipment">Equipment</label>
+                <input type="text" id="exerciseEquipment" name="equipment" placeholder="e.g., Dumbbells, Barbell, None (comma separated)">
+            </div>
+            
+            <div class="form-group">
+                <label for="movementPattern">Movement Pattern</label>
+                <input type="text" id="movementPattern" name="movementPattern" placeholder="e.g., Push, Pull, Squat, Hinge">
+            </div>
+            
+            <div class="form-group">
+                <label for="secondaryMuscles">Secondary Muscles</label>
+                <input type="text" id="secondaryMuscles" name="secondaryMuscles" placeholder="e.g., Shoulders, Core (comma separated)">
+            </div>
+            
+            <div class="form-group">
+                <label for="exerciseInstructions">Instructions*</label>
+                <textarea id="exerciseInstructions" name="instructions" required placeholder="Step-by-step instructions for performing the exercise correctly" rows="4"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="exerciseImage">Image URL</label>
+                <input type="text" id="exerciseImage" name="image" placeholder="URL to an image demonstrating the exercise">
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="cancel-btn">Cancel</button>
+                <button type="submit" class="submit-btn">Add Exercise</button>
+            </div>
+        </form>
+    </div>
+</div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -663,7 +478,6 @@ function setupResponsiveFeatures() {
         });
     }
 }
-
 function setupTabNavigation() {
     const tabs = document.querySelectorAll('.tab');
     const exerciseRows = document.querySelectorAll('#exerciseTableBody tr:not(.detail-row)');
@@ -676,7 +490,7 @@ function setupTabNavigation() {
             
             const tabType = this.getAttribute('data-tab');
             
-            // Filter exercises based on tab
+            // Filter exercises based on tab - ONLY BY PRIMARY MUSCLE
             exerciseRows.forEach(row => {
                 // Close any open details
                 const rowId = row.getAttribute('data-exercise-id');
@@ -687,19 +501,19 @@ function setupTabNavigation() {
                     }
                 }
 
-                const categoryCell = row.querySelector('.category-tags');
+                const primaryMuscleElement = row.querySelector('.muscle-tag.primary');
                 const trendingBadge = row.querySelector('.trending-badge');
                 const statusCell = row.querySelector('.status');
+                
+                // Get the primary muscle text
+                const primaryMuscle = primaryMuscleElement ? primaryMuscleElement.textContent.trim().toLowerCase() : '';
                 
                 switch(tabType) {
                     case 'all':
                         row.style.display = '';
                         break;
-                    case 'strength':
-                    case 'cardio':
-                    case 'flexibility':
-                    case 'balance':
-                        if (categoryCell && categoryCell.textContent.toLowerCase().includes(tabType)) {
+                    case 'unverified':
+                        if (statusCell && statusCell.classList.contains('pending')) {
                             row.style.display = '';
                         } else {
                             row.style.display = 'none';
@@ -712,8 +526,10 @@ function setupTabNavigation() {
                             row.style.display = 'none';
                         }
                         break;
-                    case 'unverified':
-                        if (statusCell && statusCell.classList.contains('pending')) {
+                    default:
+                        // Muscle group filtering - ONLY match exact primary muscle
+                        const muscleName = tabType.replace(/-/g, ' ');
+                        if (primaryMuscle === muscleName) {
                             row.style.display = '';
                         } else {
                             row.style.display = 'none';
@@ -731,7 +547,10 @@ function setupSearchFunctionality() {
     
     if (searchInput) {
         searchInput.addEventListener('keyup', function() {
-            const searchTerm = this.value.toLowerCase();
+            const searchTerm = this.value.toLowerCase().trim();
+            console.log('Searching for:', searchTerm); // Debug log
+            
+            let visibleCount = 0;
             
             exerciseRows.forEach(row => {
                 // Close any open details
@@ -743,16 +562,51 @@ function setupSearchFunctionality() {
                     }
                 }
 
-                const exerciseName = row.querySelector('.exercise-info div:nth-child(2)').textContent.toLowerCase();
-                const category = row.querySelectorAll('td')[1].textContent.toLowerCase();
-                const muscles = row.querySelectorAll('td')[2].textContent.toLowerCase();
+                // Get exercise data
+                const exerciseNameElement = row.querySelector('.exercise-info div:nth-child(2)');
+                const primaryMuscleElement = row.querySelector('.muscle-tag.primary');
+                const difficultyElement = row.querySelector('.difficulty-text');
                 
-                if (exerciseName.includes(searchTerm) || category.includes(searchTerm) || muscles.includes(searchTerm)) {
+                const exerciseName = exerciseNameElement ? exerciseNameElement.textContent.toLowerCase() : '';
+                const primaryMuscle = primaryMuscleElement ? primaryMuscleElement.textContent.toLowerCase() : '';
+                const difficulty = difficultyElement ? difficultyElement.textContent.toLowerCase() : '';
+                
+                // Check if any field matches the search term
+                const matchesSearch = searchTerm === '' || 
+                    exerciseName.includes(searchTerm) || 
+                    primaryMuscle.includes(searchTerm) ||
+                    difficulty.includes(searchTerm);
+                
+                if (matchesSearch) {
                     row.style.display = '';
+                    visibleCount++;
                 } else {
                     row.style.display = 'none';
                 }
             });
+            
+            console.log('Found', visibleCount, 'matching exercises'); // Debug log
+            
+            // Show message if no results found
+            const noResultsRow = document.querySelector('#exerciseTableBody tr:last-child');
+            if (noResultsRow && !noResultsRow.getAttribute('data-exercise-id')) {
+                if (searchTerm !== '' && visibleCount === 0) {
+                    noResultsRow.style.display = '';
+                    noResultsRow.innerHTML = `<td colspan="7" style="text-align: center; padding: 40px; color: #ff6b6b;">No exercises found matching "${searchTerm}"</td>`;
+                } else if (searchTerm === '') {
+                    noResultsRow.style.display = 'none';
+                }
+            }
+        });
+        
+        // Add focus styling for better UX
+        searchInput.addEventListener('focus', function() {
+            this.style.borderColor = '#8A2BE2';
+            this.style.outline = 'none';
+        });
+        
+        searchInput.addEventListener('blur', function() {
+            this.style.borderColor = '#444';
         });
     }
 }
@@ -810,13 +664,78 @@ function setupModalFunctionality() {
         }
     });
     
-    // Form submission
+    // Form submission - UPDATED TO WORK WITH BACKEND
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            alert('Exercise added successfully!');
-            closeModal();
-            // In a real implementation, this would call an API to add the exercise to the database
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Validate required fields
+            if (!data.name || !data.category || !data.primaryMuscle || !data.difficulty || 
+                !data.targetMuscles || !data.type || !data.defaultRepsOrDuration || !data.instructions) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            // Convert strings to arrays
+            if (data.targetMuscles) {
+                data.targetMuscles = data.targetMuscles.split(',').map(muscle => muscle.trim()).filter(muscle => muscle !== '');
+            }
+            
+            if (data.equipment && data.equipment.trim() !== '') {
+                data.equipment = data.equipment.split(',').map(item => item.trim()).filter(item => item !== '');
+            } else {
+                data.equipment = [];
+            }
+            
+            if (data.secondaryMuscles && data.secondaryMuscles.trim() !== '') {
+                data.secondaryMuscles = data.secondaryMuscles.split(',').map(muscle => muscle.trim()).filter(muscle => muscle !== '');
+            } else {
+                data.secondaryMuscles = [];
+            }
+            
+            // Set default values
+            data.defaultSets = data.defaultSets || 3;
+            data.verified = false;
+            data.usageCount = 0;
+            data.averageRating = 0;
+            data.totalRatings = 0;
+            
+            // Remove empty fields
+            Object.keys(data).forEach(key => {
+                if (data[key] === '' || data[key] === null || data[key] === undefined) {
+                    delete data[key];
+                }
+            });
+            
+            try {
+                console.log('Sending data:', data); // For debugging
+                
+                const response = await fetch('/admin/exercises', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Exercise added successfully!');
+                    closeModal();
+                    // Reload the page to show the new exercise
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error adding exercise:', error);
+                alert('Error adding exercise. Please check console for details and try again.');
+            }
         });
     }
 }
