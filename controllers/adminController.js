@@ -1,3 +1,4 @@
+// Import models
 const User = require('../model/User');
 const Trainer = require('../model/Trainer');
 const Exercise = require('../model/Exercise');
@@ -54,28 +55,21 @@ const adminController = {
         return res.redirect('/admin_login');
       }
       const users = await User.find().sort({ created_at: -1 });
-      const totalUsers = await User.countDocuments();
+      const userCount = await User.countDocuments();
       const activeMembers = await User.countDocuments({ status: 'Active' });
       const platinumUsers = await User.countDocuments({ membershipType: 'Platinum' });
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       const newSignups = await User.countDocuments({ 
-        created_at: { $gte: oneWeekAgo }
+        created_at: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
       });
-
       res.render('admin_user', {
         pageTitle: 'User Management',
         user: req.session.user || null,
         users,
         stats: {
-          totalUsers,
+          totalUsers: userCount,
           activeMembers,
           platinumUsers,
-          newSignups,
-          totalUsersChange: '+12%',
-          activeMembersChange: '+5%', 
-          platinumUsersChange: '+12%',
-          newSignupsChange: '+5%'
+          newSignups
         }
       });
     } catch (error) {
@@ -83,17 +77,7 @@ const adminController = {
       res.render('admin_user', {
         pageTitle: 'User Management',
         user: req.session.user || null,
-        users: [],
-        stats: {
-          totalUsers: 0,
-          activeMembers: 0,
-          platinumUsers: 0,
-          newSignups: 0,
-          totalUsersChange: '+0%',
-          activeMembersChange: '+0%',
-          platinumUsersChange: '+0%',
-          newSignupsChange: '+0%'
-        }
+        users: []
       });
     }
   },
@@ -330,182 +314,45 @@ const adminController = {
   },
 
   // Membership Management
-  // In adminController.js - getMemberships method (COMPLETE UPDATED VERSION)
-getMemberships: async (req, res) => {
-  try {
-    if (!req.session.userId) {
-      return res.redirect('/admin_login');
+  getMemberships: async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.redirect('/admin_login');
+      }
+      const memberships = await Membership.find().sort({ createdAt: -1 }).populate('user_id', 'full_name email');
+      res.render('admin_membership', {
+        pageTitle: 'Membership Management',
+        user: req.session.user || null,
+        memberships
+      });
+    } catch (error) {
+      console.error('Membership management error:', error);
+      res.render('admin_membership', {
+        pageTitle: 'Membership Management',
+        user: req.session.user || null,
+        memberships: []
+      });
     }
-    
-    const memberships = await Membership.find({ user_id: { $ne: null } })
-      .sort({ createdAt: -1 })
-      .populate('user_id', 'full_name email');
+  },
 
-    // Calculate real-time stats from MongoDB
-    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-
-    // FIXED: Aggregate for plan stats with correct pricing and months_remaining
-    const agg = await User.aggregate([
-      { 
-        $match: { 
-          status: 'Active',
-          membershipType: { $in: ['Basic', 'Gold', 'Platinum'] }
-        } 
-      },
-      {
-        $addFields: {
-          // Use months_remaining for revenue calculation, default to 1 if not set
-          months_paid: {
-            $cond: {
-              if: { 
-                $and: [
-                  { $ifNull: ['$membershipDuration.months_remaining', false] },
-                  { $gt: ['$membershipDuration.months_remaining', 0] }
-                ]
-              },
-              then: '$membershipDuration.months_remaining',
-              else: 1
-            }
-          },
-          // FIXED: Use correct pricing based on membershipType
-          monthly_price: {
-            $switch: {
-              branches: [
-                { case: { $eq: ['$membershipType', 'Basic'] }, then: 299 },    // ₹299
-                { case: { $eq: ['$membershipType', 'Gold'] }, then: 599 },     // ₹599
-                { case: { $eq: ['$membershipType', 'Platinum'] }, then: 999 }, // ₹999
-              ],
-              default: 0
-            }
-          },
-          // Calculate membership duration in months for retention
-          membership_months: {
-            $max: [
-              1,
-              {
-                $ceil: {
-                  $divide: [
-                    { 
-                      $subtract: [
-                        new Date(), 
-                        { $ifNull: ['$membershipDuration.start_date', '$created_at'] }
-                      ] 
-                    },
-                    1000 * 60 * 60 * 24 * 30 // milliseconds in a month
-                  ]
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        $group: {
-          _id: '$membershipType',
-          active: { $sum: 1 },
-          // FIXED: Multiply monthly_price by months_paid for total revenue
-          revenue: { $sum: { $multiply: ['$monthly_price', '$months_paid'] } },
-          retention: { $avg: '$membership_months' }
-        }
-      }
-    ]);
-
-    // Process aggregate results into planStats
-    let planStats = {
-      basic: { active: 0, revenue: 0, retention: 0 },
-      gold: { active: 0, revenue: 0, retention: 0 },
-      platinum: { active: 0, revenue: 0, retention: 0 }
-    };
-
-    agg.forEach(group => {
-      const type = group._id ? group._id.toLowerCase() : 'basic';
-      if (planStats[type]) {
-        planStats[type] = {
-          active: group.active || 0,
-          revenue: group.revenue || 0,
-          retention: group.retention || 0
-        };
-      }
-    });
-
-    // Calculate top-level stats
-    const totalUsers = await User.countDocuments();
-    const activeMembers = await User.countDocuments({ status: 'Active' });
-    const premiumMembers = await User.countDocuments({ 
-      status: 'Active', 
-      membershipType: 'Platinum' 
-    });
-    const newSignups = await User.countDocuments({ 
-      created_at: { $gte: oneWeekAgo } 
-    });
-    
-    // Calculate total revenue from all plans
-    const totalRevenue = agg.reduce((sum, group) => sum + (group.revenue || 0), 0);
-
-    // Ensure all plan stats have values even if no users in that plan
-    ['basic', 'gold', 'platinum'].forEach(plan => {
-      if (!planStats[plan].active && !planStats[plan].revenue && !planStats[plan].retention) {
-        planStats[plan] = { active: 0, revenue: 0, retention: 0 };
-      }
-    });
-
-    res.render('admin_membership', {
-      pageTitle: 'Membership Management',
-      user: req.session.user || null,
-      memberships: memberships || [],
-      stats: {
-        totalUsers,
-        totalRevenue,
-        activeMembers,
-        premiumMembers,
-        newSignups
-      },
-      planStats
-    });
-  } catch (error) {
-    console.error('Membership management error:', error);
-    res.render('admin_membership', {
-      pageTitle: 'Membership Management',
-      user: req.session.user || null,
-      memberships: [],
-      stats: {
-        totalUsers: 0,
-        totalRevenue: 0,
-        activeMembers: 0,
-        premiumMembers: 0,
-        newSignups: 0
-      },
-      planStats: {
-        basic: { active: 0, revenue: 0, retention: 0 },
-        gold: { active: 0, revenue: 0, retention: 0 },
-        platinum: { active: 0, revenue: 0, retention: 0 }
-      }
-    });
-  }
-},
   createMembership: async (req, res) => {
     try {
       if (!req.session.userId) {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
-      const { userId, type, startDate, endDate, price } = req.body;
-      if (!userId || !type || !startDate || !endDate || !price) {
+      const { userId, plan, startDate, endDate } = req.body;
+      if (!userId || !plan || !startDate || !endDate) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
-      }
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).json({ success: false, message: 'User not found' });
       }
       const newMembership = new Membership({
         user_id: userId,
-        type,
+        plan,
         start_date: new Date(startDate),
         end_date: new Date(endDate),
-        price: Number(price),
         status: 'Active'
       });
       await newMembership.save();
-      await User.findByIdAndUpdate(userId, { membershipType: type });
+      await User.findByIdAndUpdate(userId, { membershipType: plan, status: 'Active' });
       res.status(201).json({ success: true, message: 'Membership created successfully', membership: newMembership });
     } catch (error) {
       console.error('Create membership error:', error);
@@ -519,14 +366,13 @@ getMemberships: async (req, res) => {
         return res.status(401).json({ success: false, message: 'Unauthorized' });
       }
       const membershipId = req.params.id;
-      const { type, startDate, endDate, price, status } = req.body;
+      const { plan, startDate, endDate, status } = req.body;
       const updatedMembership = await Membership.findByIdAndUpdate(
         membershipId,
         {
-          type,
+          plan,
           start_date: startDate ? new Date(startDate) : undefined,
           end_date: endDate ? new Date(endDate) : undefined,
-          price: price ? Number(price) : undefined,
           status
         },
         { new: true }
@@ -534,9 +380,7 @@ getMemberships: async (req, res) => {
       if (!updatedMembership) {
         return res.status(404).json({ success: false, message: 'Membership not found' });
       }
-      if (status === 'Active') {
-        await User.findByIdAndUpdate(updatedMembership.user_id, { membershipType: type });
-      }
+      await User.findByIdAndUpdate(updatedMembership.user_id, { membershipType: plan, status });
       res.status(200).json({ success: true, message: 'Membership updated successfully', membership: updatedMembership });
     } catch (error) {
       console.error('Update membership error:', error);
@@ -563,7 +407,54 @@ getMemberships: async (req, res) => {
     }
   },
 
-  
+  getNutritionPlans: async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.redirect('/admin_login');
+      }
+      // Note: You need to import NutritionPlan model if you're using it
+      const nutritionPlans = []; // Placeholder - replace with actual model
+      res.render('admin_nutrition', {
+        pageTitle: 'Nutrition Plans',
+        user: req.session.user || null,
+        nutritionPlans
+      });
+    } catch (error) {
+      console.error('Nutrition plan management error:', error);
+      res.render('admin_nutrition', {
+        pageTitle: 'Nutrition Plans',
+        user: req.session.user || null,
+        nutritionPlans: []
+      });
+    }
+  },
+
+  createNutritionPlan: async (req, res) => {
+    try {
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Create nutrition plan error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  updateNutritionPlan: async (req, res) => {
+    try {
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Update nutrition plan error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
+
+  deleteNutritionPlan: async (req, res) => {
+    try {
+      res.status(501).json({ success: false, message: 'Not implemented yet' });
+    } catch (error) {
+      console.error('Delete nutrition plan error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  },
 
   // Exercise Management - UPDATED
 getExercises: async (req, res) => {
@@ -860,48 +751,32 @@ getVerifiers: async (req, res) => {
 },
 
   createVerifier: async (req, res) => {
-  try {
-    if (!req.session.userId) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
-    
-    const { name, email, password, phone, experienceYears } = req.body; // Added experienceYears
-    
-    console.log('Received verifier data:', { name, email, phone, experienceYears }); // Debug log
-    
-    if (!name || !email || !password || !phone || !experienceYears) { // Added experienceYears check
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Missing required fields',
-        received: { name, email, phone, experienceYears } // Debug info
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
+      const { name, email, password, phone } = req.body;
+      if (!name || !email || !password || !phone) {
+        return res.status(400).json({ success: false, message: 'Missing required fields' });
+      }
+      const existingVerifier = await Verifier.findOne({ email });
+      if (existingVerifier) {
+        return res.status(400).json({ success: false, message: 'Email already in use' });
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newVerifier = new Verifier({
+        name,
+        email,
+        password_hash: hashedPassword,
+        phone
       });
+      await newVerifier.save();
+      res.status(201).json({ success: true, message: 'Verifier created successfully', verifier: newVerifier });
+    } catch (error) {
+      console.error('Create verifier error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
     }
-    
-    const existingVerifier = await Verifier.findOne({ email });
-    if (existingVerifier) {
-      return res.status(400).json({ success: false, message: 'Email already in use' });
-    }
-    
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newVerifier = new Verifier({
-      name,
-      email,
-      password_hash: hashedPassword,
-      phone,
-      experienceYears: parseInt(experienceYears) // Make sure it's a number
-    });
-    
-    await newVerifier.save();
-    res.status(201).json({ success: true, message: 'Verifier created successfully', verifier: newVerifier });
-  } catch (error) {
-    console.error('Create verifier error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error',
-      error: error.message 
-    });
-  }
-},
+  },
 
   updateVerifier: async (req, res) => {
     try {

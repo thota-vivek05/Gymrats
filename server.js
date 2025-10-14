@@ -143,7 +143,7 @@ app.get('/admin_dashboard', (req, res) => res.redirect('/admin/dashboard'));
 app.get('/admin_user', (req, res) => res.redirect('/admin/users'));
 app.get('/admin_trainers', (req, res) => res.redirect('/admin/trainers'));
 app.get('/admin_membership', (req, res) => res.redirect('/admin/memberships'));
-
+app.get('/admin_nutrition', (req, res) => res.redirect('/admin/nutrition-plans'));
 app.get('/admin_exercises', (req, res) => res.redirect('/admin/exercises'));
 app.get('/admin_verifier', (req, res) => res.redirect('/admin/verifier'));
 app.get('/admin_settings', (req, res) => res.redirect('/admin/settings'));
