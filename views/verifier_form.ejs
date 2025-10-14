@@ -4,63 +4,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymRats - Verifier Registration</title>
+    <title>Add New Verifier</title>
     <link rel="stylesheet" type="text/css" href="/verifier_form/verifier_form.css" />
 </head>
 
 <body>
-   
     <!-- Registration Section -->
     <section class="registration-section">
         <div class="registration-container">
             <div class="form-card">
-                <form id="verifierForm" class="registration-form" action="/verifier/register" method="POST">
-                    <div class="form-group">
-                        <label for="fullName">Full Name</label>
-                        <input type="text" id="fullName" name="fullName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="experienceYears">Years of Experience</label>
-                        <input type="number" id="experienceYears" name="experienceYears" min="1" required>
-                    </div>
+                <div class="form-header">
+                    <h2>Add New Verifier</h2>
+                    <p>Create a new content verifier account</p>
+                </div>
+                
+                <div id="message" class="message"></div>
+                
+                <form id="verifierForm" class="registration-form">
+    <div class="form-group">
+        <label for="name">Full Name *</label>
+        <input type="text" id="name" name="name" placeholder="Enter full name" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="email">Email Address *</label>
+        <input type="email" id="email" name="email" placeholder="Enter email address" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="phone">Phone Number *</label>
+        <input type="tel" id="phone" name="phone" placeholder="Enter phone number" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="password">Password *</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="experienceYears">Years of Experience *</label>
+        <input type="number" id="experienceYears" name="experienceYears" min="1" 
+               placeholder="Enter years of experience" required>
+    </div>
 
-                    <button type="submit" class="btn submit-btn">Submit Application</button>
-                </form>
+    <button type="submit" class="submit-btn">Create Verifier</button>
+</form>
             </div>
         </div>
     </section>
 
     <script>
-        // Mobile menu functionality
-        document.getElementById('menuIcon').addEventListener('click', function () {
-            document.getElementById('sideNavbar').style.width = "250px";
+        document.getElementById('verifierForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            
+            const submitBtn = this.querySelector('.submit-btn');
+            const messageDiv = document.getElementById('message');
+            const originalText = submitBtn.textContent;
+            
+            // Show loading state
+            submitBtn.textContent = 'Creating...';
+            submitBtn.disabled = true;
+            messageDiv.style.display = 'none';
+            
+            try {
+                const formData = new FormData(this);
+                
+                const response = await fetch('/admin/verifier', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success message
+                    messageDiv.textContent = 'Verifier created successfully!';
+                    messageDiv.className = 'message success';
+                    messageDiv.style.display = 'block';
+                    
+                    // Reset form
+                    this.reset();
+                    
+                    // Refresh parent page after delay
+                    setTimeout(() => {
+                        if (window.parent && window.parent.refreshVerifierList) {
+                            window.parent.refreshVerifierList();
+                        }
+                        // Close modal
+                        if (window.parent && window.parent.document) {
+                            const modal = window.parent.document.getElementById('addVerifierModal');
+                            if (modal) {
+                                modal.style.display = 'none';
+                            }
+                        }
+                    }, 1500);
+                    
+                } else {
+                    throw new Error(data.message || 'Failed to create verifier');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.textContent = error.message || 'Error creating verifier. Please try again.';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+            } finally {
+                // Reset button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
         });
 
-        document.getElementById('closeBtn').addEventListener('click', function () {
-            document.getElementById('sideNavbar').style.width = "0";
-        });
-
-        // Client-side form validation
-        document.getElementById('verifierForm').addEventListener('submit', function (event) {
+        // Basic form validation
+        document.getElementById('verifierForm').addEventListener('input', function() {
             const experience = document.getElementById('experienceYears').value;
-            if (experience < 5) {
-                event.preventDefault();
-                alert('You need a minimum of 5 years of experience to be a verifier.');
+            const submitBtn = this.querySelector('.submit-btn');
+            
+            if (experience && experience < 1) {
+                document.getElementById('experienceYears').setCustomValidity('Experience must be at least 1 year');
+            } else {
+                document.getElementById('experienceYears').setCustomValidity('');
             }
         });
     </script>
 </body>
-
 </html>
