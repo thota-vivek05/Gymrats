@@ -1,0 +1,543 @@
+﻿358e402 | AnveshCheela | 2025-10-11 | added extra form group in login_signup page and changing membership in user profile
+ef257ce | AnveshCheela | 2025-10-11 | removed membershiptype in login_signup.ejs
+18af3ff | AnveshCheela | 2025-10-11 | css fix in userprofile
+2b584d1 | AnveshCheela | 2025-10-11 | isolation page
+eea4756 | AnveshCheela | 2025-10-11 | personal information edit
+7f22444 | AnveshCheela | 2025-10-10 | login_signup workout_type and weight_goal and membership_renewal changes userprofile changes
+b693b71 | AnveshCheela | 2025-10-10 | npm update
+a984f98 | AnveshCheela | 2025-10-10 | removed node modules from anvesh branch
+44cd439 | AnveshCheela | 2025-10-10 | added gitignore
+2198ac5 | AnveshCheela | 2025-10-10 | i have added extend membership section and membership_renewal functionality
+a940158 | AnveshCheela | 2025-10-09 | Login_signup Validations
+2c9ecf8 | AnveshCheela | 2025-10-09 | Merge branch 'main' into Anvesh i want the updated databases schema
+8d52133 | AnveshCheela | 2025-05-08 | Verifier side
+aa750a2 | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+7b00815 | AnveshCheela | 2025-05-07 | few edits  in edi_nutri and trainer_lo
+d70d97f | AnveshCheela | 2025-05-07 | edit_nutritional_plan
+b0a63b2 | AnveshCheela | 2025-05-07 | removing forgot password
+b90ef2a | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+dedec4f | AnveshCheela | 2025-05-07 | trainer_login
+44c70f0 | AnveshCheela | 2025-05-04 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+f42258d | AnveshCheela | 2025-05-04 | user schema
+7c6c14a | AnveshCheela | 2025-05-04 | Rename adminControllers.js to adminController.js
+a49c49b | AnveshCheela | 2025-03-18 | Update userdashboard_p.ejs
+9a58a4c | AnveshCheela | 2025-03-18 | Update userdashboard_g.ejs
+f72ea26 | AnveshCheela | 2025-03-18 | Update verifer.css
+61072b1 | AnveshCheela | 2025-03-18 | Update verifier.ejs
+1115579 | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+18c90ec | AnveshCheela | 2025-03-18 | Add files via upload
+03aa19a | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+0836cec | AnveshCheela | 2025-03-18 | Add files via upload
+1468b1a | AnveshCheela | 2025-03-18 | Add files via upload
+eb99900 | AnveshCheela | 2025-03-18 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+5a67579 | AnveshCheela | 2025-03-18 | change to ejs
+300ebde | AnveshCheela | 2025-03-18 | Update userdashboard_g.html
+076a183 | AnveshCheela | 2025-03-18 | Add files via upload
+711fc7f | AnveshCheela | 2025-03-18 | Add files via upload
+1774368 | AnveshCheela | 2025-03-18 | Add files via upload
+94bf51c | AnveshCheela | 2025-03-18 | Add files via upload
+c4f392a | AnveshCheela | 2025-03-18 | Update isolation.html
+f636767 | AnveshCheela | 2025-03-18 | Create trainers.html
+a86b4cd | AnveshCheela | 2025-03-18 | Update calculators.html
+58fc781 | AnveshCheela | 2025-03-18 | Add files via upload
+3665c2e | AnveshCheela | 2025-03-18 | Add files via upload
+67267d4 | AnveshCheela | 2025-03-18 | Update about.html
+9ab2483 | AnveshCheela | 2025-03-18 | Update nutrition.html
+68dbd13 | AnveshCheela | 2025-03-18 | Update home.html
+313daf4 | AnveshCheela | 2025-03-18 | Update about.html
+db2e0ad | AnveshCheela | 2025-03-18 | Update about.html
+7663b69 | AnveshCheela | 2025-03-18 | Update privacy_policy.html
+89613a7 | AnveshCheela | 2025-03-18 | Update workout_plans.html
+1885f2a | AnveshCheela | 2025-03-18 | Update workout_plans.html
+51043ec | AnveshCheela | 2025-03-18 | Update home.html
+de2bebd | AnveshCheela | 2025-03-18 | Add files via upload
+b3e8c41 | AnveshCheela | 2025-03-18 | Add files via upload
+573a437 | AnveshCheela | 2025-03-18 | Add files via upload
+6436eef | AnveshCheela | 2025-03-18 | Update isolation.html
+8edcf31 | AnveshCheela | 2025-03-18 | Update testimonial.html
+f032cf2 | AnveshCheela | 2025-03-18 | Update testimonial.css
+0e27494 | AnveshCheela | 2025-03-18 | Update home.html
+850cfa8 | AnveshCheela | 2025-03-18 | Add files via upload
+6ad4874 | AnveshCheela | 2025-03-18 | Add files via upload
+a2d554a | AnveshCheela | 2025-03-17 | Update terms.css
+d987c69 | AnveshCheela | 2025-03-17 | Add files via upload
+191ecbd | AnveshCheela | 2025-03-17 | Add files via upload
+aa95a51 | AnveshCheela | 2025-03-17 | Delete public/Terms directory
+7b694c6 | AnveshCheela | 2025-03-17 | Update terms.html
+4c16a67 | AnveshCheela | 2025-03-17 | Update terms.html
+8145ed5 | AnveshCheela | 2025-03-17 | Create contact.html
+0e57102 | AnveshCheela | 2025-03-17 | Create about.html
+bc568b3 | AnveshCheela | 2025-03-17 | Update privacy_policy.html
+41350e5 | AnveshCheela | 2025-03-17 | Add files via upload
+f5ca15c | AnveshCheela | 2025-03-17 | Add files via upload
+dd877aa | AnveshCheela | 2025-03-17 | Update blog.html
+73fe2c7 | AnveshCheela | 2025-03-17 | Add files via upload
+bf3bb1d | AnveshCheela | 2025-03-17 | Add files via upload
+efd33b2 | AnveshCheela | 2025-03-17 | Update terms.html
+1eb900b | AnveshCheela | 2025-03-17 | Update terms.html
+72255f4 | AnveshCheela | 2025-03-17 | Update terms.html
+3982bce | AnveshCheela | 2025-03-17 | Update and rename Terms.html to terms.html
+865bef9 | AnveshCheela | 2025-03-17 | Add files via upload
+b2e634a | AnveshCheela | 2025-03-17 | Add files via upload
+ef257ce | AnveshCheela | 2025-10-11 | removed membershiptype in login_signup.ejs
+18af3ff | AnveshCheela | 2025-10-11 | css fix in userprofile
+2b584d1 | AnveshCheela | 2025-10-11 | isolation page
+eea4756 | AnveshCheela | 2025-10-11 | personal information edit
+7f22444 | AnveshCheela | 2025-10-10 | login_signup workout_type and weight_goal and membership_renewal changes userprofile changes
+b693b71 | AnveshCheela | 2025-10-10 | npm update
+a984f98 | AnveshCheela | 2025-10-10 | removed node modules from anvesh branch
+44cd439 | AnveshCheela | 2025-10-10 | added gitignore
+2198ac5 | AnveshCheela | 2025-10-10 | i have added extend membership section and membership_renewal functionality
+a940158 | AnveshCheela | 2025-10-09 | Login_signup Validations
+2c9ecf8 | AnveshCheela | 2025-10-09 | Merge branch 'main' into Anvesh i want the updated databases schema
+8d52133 | AnveshCheela | 2025-05-08 | Verifier side
+aa750a2 | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+7b00815 | AnveshCheela | 2025-05-07 | few edits  in edi_nutri and trainer_lo
+d70d97f | AnveshCheela | 2025-05-07 | edit_nutritional_plan
+b0a63b2 | AnveshCheela | 2025-05-07 | removing forgot password
+b90ef2a | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+dedec4f | AnveshCheela | 2025-05-07 | trainer_login
+44c70f0 | AnveshCheela | 2025-05-04 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+f42258d | AnveshCheela | 2025-05-04 | user schema
+7c6c14a | AnveshCheela | 2025-05-04 | Rename adminControllers.js to adminController.js
+a49c49b | AnveshCheela | 2025-03-18 | Update userdashboard_p.ejs
+9a58a4c | AnveshCheela | 2025-03-18 | Update userdashboard_g.ejs
+f72ea26 | AnveshCheela | 2025-03-18 | Update verifer.css
+61072b1 | AnveshCheela | 2025-03-18 | Update verifier.ejs
+1115579 | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+18c90ec | AnveshCheela | 2025-03-18 | Add files via upload
+03aa19a | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+0836cec | AnveshCheela | 2025-03-18 | Add files via upload
+1468b1a | AnveshCheela | 2025-03-18 | Add files via upload
+eb99900 | AnveshCheela | 2025-03-18 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+5a67579 | AnveshCheela | 2025-03-18 | change to ejs
+300ebde | AnveshCheela | 2025-03-18 | Update userdashboard_g.html
+076a183 | AnveshCheela | 2025-03-18 | Add files via upload
+711fc7f | AnveshCheela | 2025-03-18 | Add files via upload
+1774368 | AnveshCheela | 2025-03-18 | Add files via upload
+94bf51c | AnveshCheela | 2025-03-18 | Add files via upload
+c4f392a | AnveshCheela | 2025-03-18 | Update isolation.html
+f636767 | AnveshCheela | 2025-03-18 | Create trainers.html
+a86b4cd | AnveshCheela | 2025-03-18 | Update calculators.html
+58fc781 | AnveshCheela | 2025-03-18 | Add files via upload
+3665c2e | AnveshCheela | 2025-03-18 | Add files via upload
+67267d4 | AnveshCheela | 2025-03-18 | Update about.html
+9ab2483 | AnveshCheela | 2025-03-18 | Update nutrition.html
+68dbd13 | AnveshCheela | 2025-03-18 | Update home.html
+313daf4 | AnveshCheela | 2025-03-18 | Update about.html
+db2e0ad | AnveshCheela | 2025-03-18 | Update about.html
+7663b69 | AnveshCheela | 2025-03-18 | Update privacy_policy.html
+89613a7 | AnveshCheela | 2025-03-18 | Update workout_plans.html
+1885f2a | AnveshCheela | 2025-03-18 | Update workout_plans.html
+51043ec | AnveshCheela | 2025-03-18 | Update home.html
+de2bebd | AnveshCheela | 2025-03-18 | Add files via upload
+b3e8c41 | AnveshCheela | 2025-03-18 | Add files via upload
+573a437 | AnveshCheela | 2025-03-18 | Add files via upload
+6436eef | AnveshCheela | 2025-03-18 | Update isolation.html
+8edcf31 | AnveshCheela | 2025-03-18 | Update testimonial.html
+f032cf2 | AnveshCheela | 2025-03-18 | Update testimonial.css
+0e27494 | AnveshCheela | 2025-03-18 | Update home.html
+850cfa8 | AnveshCheela | 2025-03-18 | Add files via upload
+6ad4874 | AnveshCheela | 2025-03-18 | Add files via upload
+a2d554a | AnveshCheela | 2025-03-17 | Update terms.css
+d987c69 | AnveshCheela | 2025-03-17 | Add files via upload
+191ecbd | AnveshCheela | 2025-03-17 | Add files via upload
+aa95a51 | AnveshCheela | 2025-03-17 | Delete public/Terms directory
+7b694c6 | AnveshCheela | 2025-03-17 | Update terms.html
+4c16a67 | AnveshCheela | 2025-03-17 | Update terms.html
+8145ed5 | AnveshCheela | 2025-03-17 | Create contact.html
+0e57102 | AnveshCheela | 2025-03-17 | Create about.html
+bc568b3 | AnveshCheela | 2025-03-17 | Update privacy_policy.html
+41350e5 | AnveshCheela | 2025-03-17 | Add files via upload
+f5ca15c | AnveshCheela | 2025-03-17 | Add files via upload
+dd877aa | AnveshCheela | 2025-03-17 | Update blog.html
+73fe2c7 | AnveshCheela | 2025-03-17 | Add files via upload
+bf3bb1d | AnveshCheela | 2025-03-17 | Add files via upload
+efd33b2 | AnveshCheela | 2025-03-17 | Update terms.html
+1eb900b | AnveshCheela | 2025-03-17 | Update terms.html
+72255f4 | AnveshCheela | 2025-03-17 | Update terms.html
+3982bce | AnveshCheela | 2025-03-17 | Update and rename Terms.html to terms.html
+865bef9 | AnveshCheela | 2025-03-17 | Add files via upload
+b2e634a | AnveshCheela | 2025-03-17 | Add files via upload
+358e402 | AnveshCheela | 2025-10-11 | added extra form group in login_signup page and changing membership in user profile
+ef257ce | AnveshCheela | 2025-10-11 | removed membershiptype in login_signup.ejs
+18af3ff | AnveshCheela | 2025-10-11 | css fix in userprofile
+2b584d1 | AnveshCheela | 2025-10-11 | isolation page
+eea4756 | AnveshCheela | 2025-10-11 | personal information edit
+7f22444 | AnveshCheela | 2025-10-10 | login_signup workout_type and weight_goal and membership_renewal changes userprofile changes
+b693b71 | AnveshCheela | 2025-10-10 | npm update
+a984f98 | AnveshCheela | 2025-10-10 | removed node modules from anvesh branch
+44cd439 | AnveshCheela | 2025-10-10 | added gitignore
+2198ac5 | AnveshCheela | 2025-10-10 | i have added extend membership section and membership_renewal functionality
+a940158 | AnveshCheela | 2025-10-09 | Login_signup Validations
+2c9ecf8 | AnveshCheela | 2025-10-09 | Merge branch 'main' into Anvesh i want the updated databases schema
+8d52133 | AnveshCheela | 2025-05-08 | Verifier side
+aa750a2 | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+7b00815 | AnveshCheela | 2025-05-07 | few edits  in edi_nutri and trainer_lo
+d70d97f | AnveshCheela | 2025-05-07 | edit_nutritional_plan
+b0a63b2 | AnveshCheela | 2025-05-07 | removing forgot password
+b90ef2a | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+dedec4f | AnveshCheela | 2025-05-07 | trainer_login
+44c70f0 | AnveshCheela | 2025-05-04 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+f42258d | AnveshCheela | 2025-05-04 | user schema
+7c6c14a | AnveshCheela | 2025-05-04 | Rename adminControllers.js to adminController.js
+a49c49b | AnveshCheela | 2025-03-18 | Update userdashboard_p.ejs
+9a58a4c | AnveshCheela | 2025-03-18 | Update userdashboard_g.ejs
+f72ea26 | AnveshCheela | 2025-03-18 | Update verifer.css
+61072b1 | AnveshCheela | 2025-03-18 | Update verifier.ejs
+1115579 | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+18c90ec | AnveshCheela | 2025-03-18 | Add files via upload
+03aa19a | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+0836cec | AnveshCheela | 2025-03-18 | Add files via upload
+1468b1a | AnveshCheela | 2025-03-18 | Add files via upload
+eb99900 | AnveshCheela | 2025-03-18 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+5a67579 | AnveshCheela | 2025-03-18 | change to ejs
+300ebde | AnveshCheela | 2025-03-18 | Update userdashboard_g.html
+076a183 | AnveshCheela | 2025-03-18 | Add files via upload
+711fc7f | AnveshCheela | 2025-03-18 | Add files via upload
+1774368 | AnveshCheela | 2025-03-18 | Add files via upload
+94bf51c | AnveshCheela | 2025-03-18 | Add files via upload
+c4f392a | AnveshCheela | 2025-03-18 | Update isolation.html
+f636767 | AnveshCheela | 2025-03-18 | Create trainers.html
+a86b4cd | AnveshCheela | 2025-03-18 | Update calculators.html
+58fc781 | AnveshCheela | 2025-03-18 | Add files via upload
+3665c2e | AnveshCheela | 2025-03-18 | Add files via upload
+67267d4 | AnveshCheela | 2025-03-18 | Update about.html
+9ab2483 | AnveshCheela | 2025-03-18 | Update nutrition.html
+68dbd13 | AnveshCheela | 2025-03-18 | Update home.html
+313daf4 | AnveshCheela | 2025-03-18 | Update about.html
+db2e0ad | AnveshCheela | 2025-03-18 | Update about.html
+7663b69 | AnveshCheela | 2025-03-18 | Update privacy_policy.html
+89613a7 | AnveshCheela | 2025-03-18 | Update workout_plans.html
+1885f2a | AnveshCheela | 2025-03-18 | Update workout_plans.html
+51043ec | AnveshCheela | 2025-03-18 | Update home.html
+de2bebd | AnveshCheela | 2025-03-18 | Add files via upload
+b3e8c41 | AnveshCheela | 2025-03-18 | Add files via upload
+573a437 | AnveshCheela | 2025-03-18 | Add files via upload
+6436eef | AnveshCheela | 2025-03-18 | Update isolation.html
+8edcf31 | AnveshCheela | 2025-03-18 | Update testimonial.html
+f032cf2 | AnveshCheela | 2025-03-18 | Update testimonial.css
+0e27494 | AnveshCheela | 2025-03-18 | Update home.html
+850cfa8 | AnveshCheela | 2025-03-18 | Add files via upload
+6ad4874 | AnveshCheela | 2025-03-18 | Add files via upload
+a2d554a | AnveshCheela | 2025-03-17 | Update terms.css
+d987c69 | AnveshCheela | 2025-03-17 | Add files via upload
+191ecbd | AnveshCheela | 2025-03-17 | Add files via upload
+aa95a51 | AnveshCheela | 2025-03-17 | Delete public/Terms directory
+7b694c6 | AnveshCheela | 2025-03-17 | Update terms.html
+4c16a67 | AnveshCheela | 2025-03-17 | Update terms.html
+8145ed5 | AnveshCheela | 2025-03-17 | Create contact.html
+0e57102 | AnveshCheela | 2025-03-17 | Create about.html
+bc568b3 | AnveshCheela | 2025-03-17 | Update privacy_policy.html
+41350e5 | AnveshCheela | 2025-03-17 | Add files via upload
+f5ca15c | AnveshCheela | 2025-03-17 | Add files via upload
+dd877aa | AnveshCheela | 2025-03-17 | Update blog.html
+73fe2c7 | AnveshCheela | 2025-03-17 | Add files via upload
+bf3bb1d | AnveshCheela | 2025-03-17 | Add files via upload
+efd33b2 | AnveshCheela | 2025-03-17 | Update terms.html
+1eb900b | AnveshCheela | 2025-03-17 | Update terms.html
+72255f4 | AnveshCheela | 2025-03-17 | Update terms.html
+3982bce | AnveshCheela | 2025-03-17 | Update and rename Terms.html to terms.html
+865bef9 | AnveshCheela | 2025-03-17 | Add files via upload
+b2e634a | AnveshCheela | 2025-03-17 | Add files via upload
+aa750a2 | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+7b00815 | AnveshCheela | 2025-05-07 | few edits  in edi_nutri and trainer_lo
+d70d97f | AnveshCheela | 2025-05-07 | edit_nutritional_plan
+b0a63b2 | AnveshCheela | 2025-05-07 | removing forgot password
+b90ef2a | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+dedec4f | AnveshCheela | 2025-05-07 | trainer_login
+44c70f0 | AnveshCheela | 2025-05-04 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+f42258d | AnveshCheela | 2025-05-04 | user schema
+7c6c14a | AnveshCheela | 2025-05-04 | Rename adminControllers.js to adminController.js
+a49c49b | AnveshCheela | 2025-03-18 | Update userdashboard_p.ejs
+9a58a4c | AnveshCheela | 2025-03-18 | Update userdashboard_g.ejs
+f72ea26 | AnveshCheela | 2025-03-18 | Update verifer.css
+61072b1 | AnveshCheela | 2025-03-18 | Update verifier.ejs
+1115579 | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+18c90ec | AnveshCheela | 2025-03-18 | Add files via upload
+03aa19a | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+0836cec | AnveshCheela | 2025-03-18 | Add files via upload
+1468b1a | AnveshCheela | 2025-03-18 | Add files via upload
+eb99900 | AnveshCheela | 2025-03-18 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+5a67579 | AnveshCheela | 2025-03-18 | change to ejs
+300ebde | AnveshCheela | 2025-03-18 | Update userdashboard_g.html
+076a183 | AnveshCheela | 2025-03-18 | Add files via upload
+711fc7f | AnveshCheela | 2025-03-18 | Add files via upload
+1774368 | AnveshCheela | 2025-03-18 | Add files via upload
+94bf51c | AnveshCheela | 2025-03-18 | Add files via upload
+c4f392a | AnveshCheela | 2025-03-18 | Update isolation.html
+f636767 | AnveshCheela | 2025-03-18 | Create trainers.html
+a86b4cd | AnveshCheela | 2025-03-18 | Update calculators.html
+58fc781 | AnveshCheela | 2025-03-18 | Add files via upload
+3665c2e | AnveshCheela | 2025-03-18 | Add files via upload
+67267d4 | AnveshCheela | 2025-03-18 | Update about.html
+9ab2483 | AnveshCheela | 2025-03-18 | Update nutrition.html
+68dbd13 | AnveshCheela | 2025-03-18 | Update home.html
+313daf4 | AnveshCheela | 2025-03-18 | Update about.html
+db2e0ad | AnveshCheela | 2025-03-18 | Update about.html
+7663b69 | AnveshCheela | 2025-03-18 | Update privacy_policy.html
+89613a7 | AnveshCheela | 2025-03-18 | Update workout_plans.html
+1885f2a | AnveshCheela | 2025-03-18 | Update workout_plans.html
+51043ec | AnveshCheela | 2025-03-18 | Update home.html
+de2bebd | AnveshCheela | 2025-03-18 | Add files via upload
+b3e8c41 | AnveshCheela | 2025-03-18 | Add files via upload
+573a437 | AnveshCheela | 2025-03-18 | Add files via upload
+6436eef | AnveshCheela | 2025-03-18 | Update isolation.html
+8edcf31 | AnveshCheela | 2025-03-18 | Update testimonial.html
+f032cf2 | AnveshCheela | 2025-03-18 | Update testimonial.css
+0e27494 | AnveshCheela | 2025-03-18 | Update home.html
+850cfa8 | AnveshCheela | 2025-03-18 | Add files via upload
+6ad4874 | AnveshCheela | 2025-03-18 | Add files via upload
+a2d554a | AnveshCheela | 2025-03-17 | Update terms.css
+d987c69 | AnveshCheela | 2025-03-17 | Add files via upload
+191ecbd | AnveshCheela | 2025-03-17 | Add files via upload
+aa95a51 | AnveshCheela | 2025-03-17 | Delete public/Terms directory
+7b694c6 | AnveshCheela | 2025-03-17 | Update terms.html
+4c16a67 | AnveshCheela | 2025-03-17 | Update terms.html
+8145ed5 | AnveshCheela | 2025-03-17 | Create contact.html
+0e57102 | AnveshCheela | 2025-03-17 | Create about.html
+bc568b3 | AnveshCheela | 2025-03-17 | Update privacy_policy.html
+41350e5 | AnveshCheela | 2025-03-17 | Add files via upload
+f5ca15c | AnveshCheela | 2025-03-17 | Add files via upload
+dd877aa | AnveshCheela | 2025-03-17 | Update blog.html
+73fe2c7 | AnveshCheela | 2025-03-17 | Add files via upload
+bf3bb1d | AnveshCheela | 2025-03-17 | Add files via upload
+efd33b2 | AnveshCheela | 2025-03-17 | Update terms.html
+1eb900b | AnveshCheela | 2025-03-17 | Update terms.html
+72255f4 | AnveshCheela | 2025-03-17 | Update terms.html
+3982bce | AnveshCheela | 2025-03-17 | Update and rename Terms.html to terms.html
+865bef9 | AnveshCheela | 2025-03-17 | Add files via upload
+b2e634a | AnveshCheela | 2025-03-17 | Add files via upload
+358e402 | AnveshCheela | 2025-10-11 | added extra form group in login_signup page and changing membership in user profile
+ef257ce | AnveshCheela | 2025-10-11 | removed membershiptype in login_signup.ejs
+18af3ff | AnveshCheela | 2025-10-11 | css fix in userprofile
+2b584d1 | AnveshCheela | 2025-10-11 | isolation page
+eea4756 | AnveshCheela | 2025-10-11 | personal information edit
+7f22444 | AnveshCheela | 2025-10-10 | login_signup workout_type and weight_goal and membership_renewal changes userprofile changes
+b693b71 | AnveshCheela | 2025-10-10 | npm update
+a984f98 | AnveshCheela | 2025-10-10 | removed node modules from anvesh branch
+44cd439 | AnveshCheela | 2025-10-10 | added gitignore
+2198ac5 | AnveshCheela | 2025-10-10 | i have added extend membership section and membership_renewal functionality
+a940158 | AnveshCheela | 2025-10-09 | Login_signup Validations
+2c9ecf8 | AnveshCheela | 2025-10-09 | Merge branch 'main' into Anvesh i want the updated databases schema
+8d52133 | AnveshCheela | 2025-05-08 | Verifier side
+aa750a2 | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+7b00815 | AnveshCheela | 2025-05-07 | few edits  in edi_nutri and trainer_lo
+d70d97f | AnveshCheela | 2025-05-07 | edit_nutritional_plan
+b0a63b2 | AnveshCheela | 2025-05-07 | removing forgot password
+b90ef2a | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+dedec4f | AnveshCheela | 2025-05-07 | trainer_login
+44c70f0 | AnveshCheela | 2025-05-04 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+f42258d | AnveshCheela | 2025-05-04 | user schema
+7c6c14a | AnveshCheela | 2025-05-04 | Rename adminControllers.js to adminController.js
+a49c49b | AnveshCheela | 2025-03-18 | Update userdashboard_p.ejs
+9a58a4c | AnveshCheela | 2025-03-18 | Update userdashboard_g.ejs
+f72ea26 | AnveshCheela | 2025-03-18 | Update verifer.css
+61072b1 | AnveshCheela | 2025-03-18 | Update verifier.ejs
+1115579 | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+18c90ec | AnveshCheela | 2025-03-18 | Add files via upload
+03aa19a | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+0836cec | AnveshCheela | 2025-03-18 | Add files via upload
+1468b1a | AnveshCheela | 2025-03-18 | Add files via upload
+eb99900 | AnveshCheela | 2025-03-18 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+5a67579 | AnveshCheela | 2025-03-18 | change to ejs
+300ebde | AnveshCheela | 2025-03-18 | Update userdashboard_g.html
+076a183 | AnveshCheela | 2025-03-18 | Add files via upload
+711fc7f | AnveshCheela | 2025-03-18 | Add files via upload
+1774368 | AnveshCheela | 2025-03-18 | Add files via upload
+94bf51c | AnveshCheela | 2025-03-18 | Add files via upload
+c4f392a | AnveshCheela | 2025-03-18 | Update isolation.html
+f636767 | AnveshCheela | 2025-03-18 | Create trainers.html
+a86b4cd | AnveshCheela | 2025-03-18 | Update calculators.html
+58fc781 | AnveshCheela | 2025-03-18 | Add files via upload
+3665c2e | AnveshCheela | 2025-03-18 | Add files via upload
+67267d4 | AnveshCheela | 2025-03-18 | Update about.html
+9ab2483 | AnveshCheela | 2025-03-18 | Update nutrition.html
+68dbd13 | AnveshCheela | 2025-03-18 | Update home.html
+313daf4 | AnveshCheela | 2025-03-18 | Update about.html
+db2e0ad | AnveshCheela | 2025-03-18 | Update about.html
+7663b69 | AnveshCheela | 2025-03-18 | Update privacy_policy.html
+89613a7 | AnveshCheela | 2025-03-18 | Update workout_plans.html
+1885f2a | AnveshCheela | 2025-03-18 | Update workout_plans.html
+51043ec | AnveshCheela | 2025-03-18 | Update home.html
+de2bebd | AnveshCheela | 2025-03-18 | Add files via upload
+b3e8c41 | AnveshCheela | 2025-03-18 | Add files via upload
+573a437 | AnveshCheela | 2025-03-18 | Add files via upload
+6436eef | AnveshCheela | 2025-03-18 | Update isolation.html
+8edcf31 | AnveshCheela | 2025-03-18 | Update testimonial.html
+f032cf2 | AnveshCheela | 2025-03-18 | Update testimonial.css
+0e27494 | AnveshCheela | 2025-03-18 | Update home.html
+850cfa8 | AnveshCheela | 2025-03-18 | Add files via upload
+6ad4874 | AnveshCheela | 2025-03-18 | Add files via upload
+a2d554a | AnveshCheela | 2025-03-17 | Update terms.css
+d987c69 | AnveshCheela | 2025-03-17 | Add files via upload
+191ecbd | AnveshCheela | 2025-03-17 | Add files via upload
+aa95a51 | AnveshCheela | 2025-03-17 | Delete public/Terms directory
+7b694c6 | AnveshCheela | 2025-03-17 | Update terms.html
+4c16a67 | AnveshCheela | 2025-03-17 | Update terms.html
+8145ed5 | AnveshCheela | 2025-03-17 | Create contact.html
+0e57102 | AnveshCheela | 2025-03-17 | Create about.html
+bc568b3 | AnveshCheela | 2025-03-17 | Update privacy_policy.html
+41350e5 | AnveshCheela | 2025-03-17 | Add files via upload
+f5ca15c | AnveshCheela | 2025-03-17 | Add files via upload
+dd877aa | AnveshCheela | 2025-03-17 | Update blog.html
+73fe2c7 | AnveshCheela | 2025-03-17 | Add files via upload
+bf3bb1d | AnveshCheela | 2025-03-17 | Add files via upload
+efd33b2 | AnveshCheela | 2025-03-17 | Update terms.html
+1eb900b | AnveshCheela | 2025-03-17 | Update terms.html
+72255f4 | AnveshCheela | 2025-03-17 | Update terms.html
+3982bce | AnveshCheela | 2025-03-17 | Update and rename Terms.html to terms.html
+865bef9 | AnveshCheela | 2025-03-17 | Add files via upload
+b2e634a | AnveshCheela | 2025-03-17 | Add files via upload
+a940158 | AnveshCheela | 2025-10-09 | Login_signup Validations
+2c9ecf8 | AnveshCheela | 2025-10-09 | Merge branch 'main' into Anvesh i want the updated databases schema
+8d52133 | AnveshCheela | 2025-05-08 | Verifier side
+aa750a2 | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+7b00815 | AnveshCheela | 2025-05-07 | few edits  in edi_nutri and trainer_lo
+d70d97f | AnveshCheela | 2025-05-07 | edit_nutritional_plan
+b0a63b2 | AnveshCheela | 2025-05-07 | removing forgot password
+b90ef2a | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+dedec4f | AnveshCheela | 2025-05-07 | trainer_login
+44c70f0 | AnveshCheela | 2025-05-04 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+f42258d | AnveshCheela | 2025-05-04 | user schema
+7c6c14a | AnveshCheela | 2025-05-04 | Rename adminControllers.js to adminController.js
+a49c49b | AnveshCheela | 2025-03-18 | Update userdashboard_p.ejs
+9a58a4c | AnveshCheela | 2025-03-18 | Update userdashboard_g.ejs
+f72ea26 | AnveshCheela | 2025-03-18 | Update verifer.css
+61072b1 | AnveshCheela | 2025-03-18 | Update verifier.ejs
+1115579 | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+18c90ec | AnveshCheela | 2025-03-18 | Add files via upload
+03aa19a | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+0836cec | AnveshCheela | 2025-03-18 | Add files via upload
+1468b1a | AnveshCheela | 2025-03-18 | Add files via upload
+eb99900 | AnveshCheela | 2025-03-18 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+5a67579 | AnveshCheela | 2025-03-18 | change to ejs
+300ebde | AnveshCheela | 2025-03-18 | Update userdashboard_g.html
+076a183 | AnveshCheela | 2025-03-18 | Add files via upload
+711fc7f | AnveshCheela | 2025-03-18 | Add files via upload
+1774368 | AnveshCheela | 2025-03-18 | Add files via upload
+94bf51c | AnveshCheela | 2025-03-18 | Add files via upload
+c4f392a | AnveshCheela | 2025-03-18 | Update isolation.html
+f636767 | AnveshCheela | 2025-03-18 | Create trainers.html
+a86b4cd | AnveshCheela | 2025-03-18 | Update calculators.html
+58fc781 | AnveshCheela | 2025-03-18 | Add files via upload
+3665c2e | AnveshCheela | 2025-03-18 | Add files via upload
+67267d4 | AnveshCheela | 2025-03-18 | Update about.html
+9ab2483 | AnveshCheela | 2025-03-18 | Update nutrition.html
+68dbd13 | AnveshCheela | 2025-03-18 | Update home.html
+313daf4 | AnveshCheela | 2025-03-18 | Update about.html
+db2e0ad | AnveshCheela | 2025-03-18 | Update about.html
+7663b69 | AnveshCheela | 2025-03-18 | Update privacy_policy.html
+89613a7 | AnveshCheela | 2025-03-18 | Update workout_plans.html
+1885f2a | AnveshCheela | 2025-03-18 | Update workout_plans.html
+51043ec | AnveshCheela | 2025-03-18 | Update home.html
+de2bebd | AnveshCheela | 2025-03-18 | Add files via upload
+b3e8c41 | AnveshCheela | 2025-03-18 | Add files via upload
+573a437 | AnveshCheela | 2025-03-18 | Add files via upload
+6436eef | AnveshCheela | 2025-03-18 | Update isolation.html
+8edcf31 | AnveshCheela | 2025-03-18 | Update testimonial.html
+f032cf2 | AnveshCheela | 2025-03-18 | Update testimonial.css
+0e27494 | AnveshCheela | 2025-03-18 | Update home.html
+850cfa8 | AnveshCheela | 2025-03-18 | Add files via upload
+6ad4874 | AnveshCheela | 2025-03-18 | Add files via upload
+a2d554a | AnveshCheela | 2025-03-17 | Update terms.css
+d987c69 | AnveshCheela | 2025-03-17 | Add files via upload
+191ecbd | AnveshCheela | 2025-03-17 | Add files via upload
+aa95a51 | AnveshCheela | 2025-03-17 | Delete public/Terms directory
+7b694c6 | AnveshCheela | 2025-03-17 | Update terms.html
+4c16a67 | AnveshCheela | 2025-03-17 | Update terms.html
+8145ed5 | AnveshCheela | 2025-03-17 | Create contact.html
+0e57102 | AnveshCheela | 2025-03-17 | Create about.html
+bc568b3 | AnveshCheela | 2025-03-17 | Update privacy_policy.html
+41350e5 | AnveshCheela | 2025-03-17 | Add files via upload
+f5ca15c | AnveshCheela | 2025-03-17 | Add files via upload
+dd877aa | AnveshCheela | 2025-03-17 | Update blog.html
+73fe2c7 | AnveshCheela | 2025-03-17 | Add files via upload
+bf3bb1d | AnveshCheela | 2025-03-17 | Add files via upload
+efd33b2 | AnveshCheela | 2025-03-17 | Update terms.html
+1eb900b | AnveshCheela | 2025-03-17 | Update terms.html
+72255f4 | AnveshCheela | 2025-03-17 | Update terms.html
+3982bce | AnveshCheela | 2025-03-17 | Update and rename Terms.html to terms.html
+865bef9 | AnveshCheela | 2025-03-17 | Add files via upload
+b2e634a | AnveshCheela | 2025-03-17 | Add files via upload
+358e402 | AnveshCheela | 2025-10-11 | added extra form group in login_signup page and changing membership in user profile
+ef257ce | AnveshCheela | 2025-10-11 | removed membershiptype in login_signup.ejs
+18af3ff | AnveshCheela | 2025-10-11 | css fix in userprofile
+2b584d1 | AnveshCheela | 2025-10-11 | isolation page
+eea4756 | AnveshCheela | 2025-10-11 | personal information edit
+7f22444 | AnveshCheela | 2025-10-10 | login_signup workout_type and weight_goal and membership_renewal changes userprofile changes
+b693b71 | AnveshCheela | 2025-10-10 | npm update
+a984f98 | AnveshCheela | 2025-10-10 | removed node modules from anvesh branch
+44cd439 | AnveshCheela | 2025-10-10 | added gitignore
+2198ac5 | AnveshCheela | 2025-10-10 | i have added extend membership section and membership_renewal functionality
+a940158 | AnveshCheela | 2025-10-09 | Login_signup Validations
+2c9ecf8 | AnveshCheela | 2025-10-09 | Merge branch 'main' into Anvesh i want the updated databases schema
+8d52133 | AnveshCheela | 2025-05-08 | Verifier side
+aa750a2 | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+7b00815 | AnveshCheela | 2025-05-07 | few edits  in edi_nutri and trainer_lo
+d70d97f | AnveshCheela | 2025-05-07 | edit_nutritional_plan
+b0a63b2 | AnveshCheela | 2025-05-07 | removing forgot password
+b90ef2a | AnveshCheela | 2025-05-07 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+dedec4f | AnveshCheela | 2025-05-07 | trainer_login
+44c70f0 | AnveshCheela | 2025-05-04 | Merge branch 'endsem' of https://github.com/NeverConquered/Gymrats into endsem
+f42258d | AnveshCheela | 2025-05-04 | user schema
+7c6c14a | AnveshCheela | 2025-05-04 | Rename adminControllers.js to adminController.js
+a49c49b | AnveshCheela | 2025-03-18 | Update userdashboard_p.ejs
+9a58a4c | AnveshCheela | 2025-03-18 | Update userdashboard_g.ejs
+f72ea26 | AnveshCheela | 2025-03-18 | Update verifer.css
+61072b1 | AnveshCheela | 2025-03-18 | Update verifier.ejs
+1115579 | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+18c90ec | AnveshCheela | 2025-03-18 | Add files via upload
+03aa19a | AnveshCheela | 2025-03-18 | Update verifier_form.ejs
+0836cec | AnveshCheela | 2025-03-18 | Add files via upload
+1468b1a | AnveshCheela | 2025-03-18 | Add files via upload
+eb99900 | AnveshCheela | 2025-03-18 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+5a67579 | AnveshCheela | 2025-03-18 | change to ejs
+300ebde | AnveshCheela | 2025-03-18 | Update userdashboard_g.html
+076a183 | AnveshCheela | 2025-03-18 | Add files via upload
+711fc7f | AnveshCheela | 2025-03-18 | Add files via upload
+1774368 | AnveshCheela | 2025-03-18 | Add files via upload
+94bf51c | AnveshCheela | 2025-03-18 | Add files via upload
+c4f392a | AnveshCheela | 2025-03-18 | Update isolation.html
+f636767 | AnveshCheela | 2025-03-18 | Create trainers.html
+a86b4cd | AnveshCheela | 2025-03-18 | Update calculators.html
+58fc781 | AnveshCheela | 2025-03-18 | Add files via upload
+3665c2e | AnveshCheela | 2025-03-18 | Add files via upload
+67267d4 | AnveshCheela | 2025-03-18 | Update about.html
+9ab2483 | AnveshCheela | 2025-03-18 | Update nutrition.html
+68dbd13 | AnveshCheela | 2025-03-18 | Update home.html
+313daf4 | AnveshCheela | 2025-03-18 | Update about.html
+db2e0ad | AnveshCheela | 2025-03-18 | Update about.html
+7663b69 | AnveshCheela | 2025-03-18 | Update privacy_policy.html
+89613a7 | AnveshCheela | 2025-03-18 | Update workout_plans.html
+1885f2a | AnveshCheela | 2025-03-18 | Update workout_plans.html
+51043ec | AnveshCheela | 2025-03-18 | Update home.html
+de2bebd | AnveshCheela | 2025-03-18 | Add files via upload
+b3e8c41 | AnveshCheela | 2025-03-18 | Add files via upload
+573a437 | AnveshCheela | 2025-03-18 | Add files via upload
+6436eef | AnveshCheela | 2025-03-18 | Update isolation.html
+8edcf31 | AnveshCheela | 2025-03-18 | Update testimonial.html
+f032cf2 | AnveshCheela | 2025-03-18 | Update testimonial.css
+0e27494 | AnveshCheela | 2025-03-18 | Update home.html
+850cfa8 | AnveshCheela | 2025-03-18 | Add files via upload
+6ad4874 | AnveshCheela | 2025-03-18 | Add files via upload
+a2d554a | AnveshCheela | 2025-03-17 | Update terms.css
+d987c69 | AnveshCheela | 2025-03-17 | Add files via upload
+191ecbd | AnveshCheela | 2025-03-17 | Add files via upload
+aa95a51 | AnveshCheela | 2025-03-17 | Delete public/Terms directory
+7b694c6 | AnveshCheela | 2025-03-17 | Update terms.html
+4c16a67 | AnveshCheela | 2025-03-17 | Update terms.html
+8145ed5 | AnveshCheela | 2025-03-17 | Create contact.html
+0e57102 | AnveshCheela | 2025-03-17 | Create about.html
+bc568b3 | AnveshCheela | 2025-03-17 | Update privacy_policy.html
+41350e5 | AnveshCheela | 2025-03-17 | Add files via upload
+f5ca15c | AnveshCheela | 2025-03-17 | Add files via upload
+dd877aa | AnveshCheela | 2025-03-17 | Update blog.html
+73fe2c7 | AnveshCheela | 2025-03-17 | Add files via upload
+bf3bb1d | AnveshCheela | 2025-03-17 | Add files via upload
+efd33b2 | AnveshCheela | 2025-03-17 | Update terms.html
+1eb900b | AnveshCheela | 2025-03-17 | Update terms.html
+72255f4 | AnveshCheela | 2025-03-17 | Update terms.html
+3982bce | AnveshCheela | 2025-03-17 | Update and rename Terms.html to terms.html
+865bef9 | AnveshCheela | 2025-03-17 | Add files via upload
+b2e634a | AnveshCheela | 2025-03-17 | Add files via upload

@@ -9,7 +9,66 @@
     <link rel="stylesheet" href="/admin/admin_verifier.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
+    <style>
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
 
+        .modal-content {
+            background-color: #2d2d2d;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #444;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #f1f1f1;
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0 10px;
+        }
+
+        .close-modal:hover {
+            color: #f1f1f1;
+        }
+
+        .modal-body {
+            padding: 0;
+        }
+
+        #verifierFormFrame {
+            width: 100%;
+            height: 500px;
+            border: none;
+            border-radius: 0 0 12px 12px;
+        }
+    </style>
 </head>
 
 <body>
@@ -21,48 +80,43 @@
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="/admin_dashboard" class="nav-link ">
+                    <a href="/admin/dashboard" class="nav-link">
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin_user" class="nav-link">
+                    <a href="/admin/users" class="nav-link">
                         <span>Users</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin_trainers" class="nav-link">
+                    <a href="/admin/trainers" class="nav-link">
                         <span>Trainers</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin_membership" class="nav-link">
+                    <a href="/admin/memberships" class="nav-link">
                         <span>Memberships</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin_nutrition" class="nav-link">
-                        <span>Nutrition Plans</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/admin_exercises" class="nav-link">
+                    <a href="/admin/exercises" class="nav-link">
                         <span>Exercises</span>
                     </a>
                 </li>
-               
                 <li class="nav-item">
-                    <a href="/admin_verifier" class="nav-link active">
+                    <a href="/admin/verifier" class="nav-link active">
                         <span>Verifiers</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin_settings" class="nav-link">
+                    <a href="/admin/settings" class="nav-link">
                         <span>Settings</span>
                     </a>
                 </li>
             </ul>
         </aside>
+
         <!-- Main Content Area -->
         <main class="main-content">
             <!-- Header -->
@@ -123,11 +177,11 @@
                     </div>
                 </div>
             </div>
+
             <!-- Search Bar -->
             <div class="search-container">
                 <div class="search-bar">
-                    <input type="text" id="verifierSearchInput"
-                        placeholder="Search verifiers by name, expertise or status...">
+                    <input type="text" id="verifierSearchInput" placeholder="Search verifiers by name, expertise or status...">
                 </div>
             </div>
 
@@ -137,7 +191,6 @@
             </div>
 
             <!-- Verifier Table -->
-
             <div class="section">
                 <div class="table-header">
                     <h3 class="section-title">Verifier List</h3>
@@ -148,26 +201,30 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody id="verifierTableBody"> <!-- Add this ID -->
+                        <tbody id="verifierTableBody">
                             <% if (verifiers && verifiers.length > 0) { %>
-                            <% verifiers.forEach(verifier => { %>
-                            <tr>
-                                <td>
-                                    <div class="user-info verifier-info"> <!-- Add verifier-info class -->
-                                        <div class="avatar"><%= verifier.name.charAt(0) %></div>
-                                        <span><%= verifier.name %></span>
-                                    </div>
-                                </td>
-                                <td><span class="status active">Active</span></td>
-                            </tr>
-                            <% }); %>
+                                <% verifiers.forEach(verifier => { %>
+                                    <tr>
+                                        <td>
+                                            <div class="user-info verifier-info">
+                                                <div class="avatar"><%= verifier.name.charAt(0) %></div>
+                                                <span><%= verifier.name %></span>
+                                            </div>
+                                        </td>
+                                        <td><%= verifier.email %></td>
+                                        <td><%= verifier.phone || 'N/A' %></td>
+                                        <td><span class="status active">Active</span></td>
+                                    </tr>
+                                <% }); %>
                             <% } else { %>
-                            <tr>
-                                <td colspan="2" class="no-data">No verifiers found</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="4" class="no-data">No verifiers found</td>
+                                </tr>
                             <% } %>
                         </tbody>
                     </table>
@@ -195,9 +252,47 @@
         </main>
     </div>
 
+    <!-- Add Verifier Modal -->
+    <div id="addVerifierModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Verifier</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <iframe src="/admin/verifier_form" id="verifierFormFrame"></iframe>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Setup interactive elements
+            // Modal functionality
+            const addVerifierBtn = document.getElementById('addVerifierBtn');
+            const modal = document.getElementById('addVerifierModal');
+            const closeModal = document.querySelector('.close-modal');
+
+            if (addVerifierBtn && modal) {
+                addVerifierBtn.addEventListener('click', function () {
+                    console.log('Add Verifier button clicked');
+                    modal.style.display = 'block';
+                });
+            }
+
+            if (closeModal) {
+                closeModal.addEventListener('click', function () {
+                    modal.style.display = 'none';
+                });
+            }
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function (event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            // Setup other functionality
             setupResponsiveFeatures();
             setupTabNavigation();
             setupSearchFunctionality();
@@ -205,171 +300,59 @@
         });
 
         function setupResponsiveFeatures() {
-            // Navigation buttons
             const navItems = document.querySelectorAll('.nav-link');
-
             navItems.forEach(item => {
                 item.addEventListener('click', function (e) {
-                    const href = this.getAttribute('href');
-                    // Prevent default only for the current page to avoid redundant navigation
-                    if (href === '/admin_verifier') {
-                        e.preventDefault();
-                        navItems.forEach(link => link.classList.remove('active'));
-                        this.classList.add('active');
-                    }
-                    // Allow navigation for all other hrefs
-                });
-            });
-
-            // Action buttons
-            const actionButtons = document.querySelectorAll('.action-btn');
-            actionButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    this.classList.add('clicked');
-                    setTimeout(() => {
-                        this.classList.remove('clicked');
-                    }, 200);
-
-                    // Handle approve/reject actions
-                    if (this.classList.contains('approve')) {
-                        const row = this.closest('tr');
-                        const statusCell = row.querySelector('.status');
-                        if (statusCell) {
-                            statusCell.classList.remove('pending');
-                            statusCell.classList.add('active');
-                            statusCell.textContent = 'Active';
-                        }
-
-                        // Replace action buttons
-                        const actionCell = this.closest('td');
-                        actionCell.innerHTML = `
-                    <button class="action-btn">View</button>
-                    <button class="action-btn">Edit</button>
-                `;
-
-                        // Reattach event listeners
-                        const newButtons = actionCell.querySelectorAll('.action-btn');
-                        newButtons.forEach(btn => {
-                            btn.addEventListener('click', function () {
-                                this.classList.add('clicked');
-                                setTimeout(() => {
-                                    this.classList.remove('clicked');
-                                }, 200);
-                            });
-                        });
-                    } else if (this.classList.contains('reject')) {
-                        const row = this.closest('tr');
-                        if (confirm('Are you sure you want to reject this verifier?')) {
-                            row.remove();
-                        }
-                    }
-                });
-            });
-
-            // Pagination buttons
-            const pageButtons = document.querySelectorAll('.page-btn');
-            pageButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    pageButtons.forEach(btn => btn.classList.remove('active'));
+                    navItems.forEach(link => link.classList.remove('active'));
                     this.classList.add('active');
                 });
             });
-
-            // Add New Verifier button
-                    
-                const addVerifierBtn = document.querySelector('.add-btn');
-                const modal = document.getElementById('addVerifierModal');
-                const closeModal = document.querySelector('.close-modal');
-
-                if (addVerifierBtn) {
-                    addVerifierBtn.addEventListener('click', function () {
-                        modal.style.display = 'block';
-                    });
-                }
-
-                if (closeModal) {
-                    closeModal.addEventListener('click', function () {
-                        modal.style.display = 'none';
-                    });
-                }
-
-                // Close modal when clicking outside
-                window.addEventListener('click', function (event) {
-                    if (event.target === modal) {
-                        modal.style.display = 'none';
-                    }
-                });
-                        }
+        }
 
         function setupTabNavigation() {
-    const tabs = document.querySelectorAll('.tab');
-    const verifierRows = document.querySelectorAll('#verifierTableBody tr');
+            const tabs = document.querySelectorAll('.tab');
+            const verifierRows = document.querySelectorAll('#verifierTableBody tr');
 
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function () {
-            // Update active tab
-            tabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
 
-            const tabType = this.getAttribute('data-tab');
-
-            // Filter verifiers based on tab
-            verifierRows.forEach(row => {
-                const statusCell = row.querySelector('.status');
-
-                switch (tabType) {
-                    case 'all':
-                        row.style.display = '';
-                        break;
-                    case 'active':
-                        if (statusCell && statusCell.classList.contains('active')) {
+                    const tabType = this.getAttribute('data-tab');
+                    verifierRows.forEach(row => {
+                        const statusCell = row.querySelector('.status');
+                        if (tabType === 'all') {
                             row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
+                        } else if (statusCell) {
+                            if (statusCell.textContent.toLowerCase().includes(tabType)) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
                         }
-                        break;
-                    case 'pending':
-                        if (statusCell && statusCell.classList.contains('pending')) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
-                        }
-                        break;
-                    default:
-                        row.style.display = '';
-                        break;
-                }
+                    });
+                });
             });
-        });
-    });
-}
+        }
+
         function setupSearchFunctionality() {
-    const searchInput = document.getElementById('verifierSearchInput');
-    const verifierRows = document.querySelectorAll('#verifierTableBody tr');
+            const searchInput = document.getElementById('verifierSearchInput');
+            const verifierRows = document.querySelectorAll('#verifierTableBody tr');
 
-    if (searchInput) {
-        searchInput.addEventListener('keyup', function () {
-            const searchTerm = this.value.toLowerCase();
-
-            verifierRows.forEach(row => {
-                // Get the verifier name from the user-info div
-                const verifierNameElement = row.querySelector('.user-info span');
-                const statusElement = row.querySelector('.status');
-                
-                if (verifierNameElement && statusElement) {
-                    const verifierName = verifierNameElement.textContent.toLowerCase();
-                    const status = statusElement.textContent.toLowerCase();
-
-                    if (verifierName.includes(searchTerm) || status.includes(searchTerm)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                }
-            });
-        });
-    }
-}
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function () {
+                    const searchTerm = this.value.toLowerCase();
+                    verifierRows.forEach(row => {
+                        const textContent = row.textContent.toLowerCase();
+                        if (textContent.includes(searchTerm)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        }
 
         function initializeCharts() {
             // Content Type Distribution Chart
@@ -378,18 +361,10 @@
                 new Chart(contentTypeCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Exercise Form', 'Nutrition Plans', 'Workout Programs', 'Equipment Use',
-                            'Safety Guides'
-                        ],
+                        labels: ['Exercise Form', 'Nutrition Plans', 'Workout Programs', 'Equipment Use', 'Safety Guides'],
                         datasets: [{
                             data: [35, 25, 20, 12, 8],
-                            backgroundColor: [
-                                '#8A2BE2',
-                                '#9370DB',
-                                '#BA55D3',
-                                '#DA70D6',
-                                '#EE82EE'
-                            ],
+                            backgroundColor: ['#8A2BE2', '#9370DB', '#BA55D3', '#DA70D6', '#EE82EE'],
                             borderWidth: 1,
                             borderColor: '#1e1e1e'
                         }]
@@ -400,21 +375,13 @@
                         plugins: {
                             legend: {
                                 position: 'bottom',
-                                labels: {
-                                    color: '#f1f1f1',
-                                    padding: 20,
-                                    font: {
-                                        size: 12
-                                    }
-                                }
+                                labels: { color: '#f1f1f1', padding: 20, font: { size: 12 } }
                             },
                             title: {
                                 display: true,
                                 text: 'Content Types Verified',
                                 color: '#f1f1f1',
-                                font: {
-                                    size: 16
-                                }
+                                font: { size: 16 }
                             }
                         }
                     }
@@ -427,17 +394,11 @@
                 new Chart(performanceCtx, {
                     type: 'bar',
                     data: {
-                        labels: ['High Performers (90%+)', 'Med Performers (70-89%)',
-                            'New Verifiers (<10 reviews)'
-                        ],
+                        labels: ['High Performers (90%+)', 'Med Performers (70-89%)', 'New Verifiers (<10 reviews)'],
                         datasets: [{
                             label: 'Verifier Count',
                             data: [32, 15, 5],
-                            backgroundColor: [
-                                '#4CAF50',
-                                '#FFC107',
-                                '#8A2BE2'
-                            ],
+                            backgroundColor: ['#4CAF50', '#FFC107', '#8A2BE2'],
                             borderWidth: 1,
                             borderColor: '#1e1e1e'
                         }]
@@ -448,52 +409,32 @@
                         scales: {
                             y: {
                                 beginAtZero: true,
-                                ticks: {
-                                    color: '#f1f1f1'
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                }
+                                ticks: { color: '#f1f1f1' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
                             },
                             x: {
-                                ticks: {
-                                    color: '#f1f1f1'
-                                },
-                                grid: {
-                                    display: false
-                                }
+                                ticks: { color: '#f1f1f1' },
+                                grid: { display: false }
                             }
                         },
                         plugins: {
-                            legend: {
-                                display: false
-                            },
+                            legend: { display: false },
                             title: {
                                 display: true,
                                 text: 'Verifier Performance Distribution',
                                 color: '#f1f1f1',
-                                font: {
-                                    size: 16
-                                }
+                                font: { size: 16 }
                             }
                         }
                     }
                 });
             }
         }
-    </script>
-    <!-- Add Verifier Modal -->
-<div id="addVerifierModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Add New Verifier</h3>
-            <span class="close-modal">&times;</span>
-        </div>
-        <div class="modal-body">
-            <iframe src="/admin/verifier_form" id="verifierFormFrame" style="width: 100%; height: 500px; border: none;"></iframe>
-        </div>
-    </div>
-</div>
-</body>
 
+        // Function to refresh the page after form submission (to be called from iframe)
+        function refreshVerifierList() {
+            window.location.reload();
+        }
+    </script>
+</body>
 </html>

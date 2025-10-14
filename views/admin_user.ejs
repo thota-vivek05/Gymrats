@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="/admin/admin_user.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
-
 </head>
 
 <body>
@@ -21,7 +20,7 @@
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="/admin_dashboard" class="nav-link ">
+                    <a href="/admin_dashboard" class="nav-link">
                         <span>Dashboard</span>
                     </a>
                 </li>
@@ -40,17 +39,13 @@
                         <span>Memberships</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/admin_nutrition" class="nav-link">
-                        <span>Nutrition Plans</span>
-                    </a>
-                </li>
+                
                 <li class="nav-item">
                     <a href="/admin_exercises" class="nav-link">
                         <span>Exercises</span>
                     </a>
                 </li>
-                
+               
                 <li class="nav-item">
                     <a href="/admin_verifier" class="nav-link">
                         <span>Verifiers</span>
@@ -70,8 +65,7 @@
                 <h2>User Management</h2>
                 <div class="right-container">
                     <div class="search-container">
-                        <img src="https://img.icons8.com/ios/250/8A2BE2/search--v1.png" height="18px"
-                            alt="Search Icon" />
+                        <img src="https://img.icons8.com/ios/250/8A2BE2/search--v1.png" height="18px" alt="Search Icon" />
                         <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
                     </div>
                     <div class="user-info">
@@ -89,7 +83,7 @@
                             <div class="stats-header">
                                 <h3>Total Users</h3>
                             </div>
-                            <div class="stats-number">12,452</div>
+                            <div class="stats-number"><%= stats.totalUsers %></div>
                             <div class="stats-label">+12% from last month</div>
                         </div>
                     </div>
@@ -100,7 +94,7 @@
                             <div class="stats-header">
                                 <h3>Active Members</h3>
                             </div>
-                            <div class="stats-number">8,574</div>
+                            <div class="stats-number"><%= stats.activeMembers %></div>
                             <div class="stats-label">+5% from last month</div>
                         </div>
                     </div>
@@ -111,7 +105,7 @@
                             <div class="stats-header">
                                 <h3>Platinum Users</h3>
                             </div>
-                            <div class="stats-number">3,254</div>
+                            <div class="stats-number"><%= stats.platinumUsers %></div>
                             <div class="stats-label">+12% from last month</div>
                         </div>
                     </div>
@@ -122,7 +116,7 @@
                             <div class="stats-header">
                                 <h3>New Signups</h3>
                             </div>
-                            <div class="stats-number">462</div>
+                            <div class="stats-number"><%= stats.newSignups %></div>
                             <div class="stats-label">+5% from last week</div>
                         </div>
                     </div>
@@ -132,7 +126,7 @@
             <!-- Search Bar -->
             <div class="search-container">
                 <div class="search-bar">
-                    <input type="text" id="userSearchInput" placeholder="Search users by name, email or membership...">
+                    <input type="text" id="userSearchInput" placeholder="Search users by name...">
                 </div>
                 <button class="filter-btn" id="filterBtn">Filter Options</button>
             </div>
@@ -140,7 +134,6 @@
             <!-- Tab Navigation -->
             <div class="tab-container">
                 <button class="tab active" data-tab="all">All Users</button>
-
             </div>
 
             <!-- User Table -->
@@ -160,7 +153,7 @@
                                 <th>Registration Date</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="userTableBody">
                             <% if (users && users.length > 0) { %>
                             <% users.forEach(user => { %>
                             <tr>
@@ -185,15 +178,11 @@
                     </table>
                 </div>
             </div>
-
-
-    </div>
-    </main>
+        </main>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Setup interactive elements
             setupResponsiveFeatures();
             setupTabNavigation();
             setupSearchFunctionality();
@@ -243,49 +232,32 @@
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', function () {
-                    // Update active tab
                     tabs.forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
 
                     const tabType = this.getAttribute('data-tab');
 
-                    // Filter users based on tab
                     userRows.forEach(row => {
                         const statusCell = row.querySelector('.status');
-                        const platinumBadge = row.querySelector('.platinum-badge');
-                        const newBadge = row.querySelector('.new-badge');
+                        const membership = row.cells[3]?.textContent.toLowerCase();
+                        const registrationDate = new Date(row.cells[4]?.textContent);
+                        const isNew = (Date.now() - registrationDate.getTime()) < (7 * 24 * 60 * 60 * 1000);
 
                         switch (tabType) {
                             case 'all':
                                 row.style.display = '';
                                 break;
                             case 'active':
-                                if (statusCell && statusCell.classList.contains('active')) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
+                                row.style.display = statusCell?.classList.contains('active') ? '' : 'none';
                                 break;
                             case 'platinum':
-                                if (platinumBadge) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
+                                row.style.display = membership === 'platinum' ? '' : 'none';
                                 break;
                             case 'new':
-                                if (newBadge) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
+                                row.style.display = isNew ? '' : 'none';
                                 break;
                             case 'inactive':
-                                if (statusCell && statusCell.classList.contains('inactive')) {
-                                    row.style.display = '';
-                                } else {
-                                    row.style.display = 'none';
-                                }
+                                row.style.display = statusCell?.classList.contains('inactive') ? '' : 'none';
                                 break;
                         }
                     });
@@ -295,25 +267,34 @@
 
         function setupSearchFunctionality() {
             const searchInput = document.getElementById('userSearchInput');
+            const userTableBody = document.getElementById('userTableBody');
             const userRows = document.querySelectorAll('#userTableBody tr');
+            const noDataRow = userTableBody.querySelector('.no-data');
 
             if (searchInput) {
-                searchInput.addEventListener('keyup', function () {
-                    const searchTerm = this.value.toLowerCase();
+                searchInput.addEventListener('input', function () {
+                    const searchTerm = this.value.trim().toLowerCase();
+                    let visibleRows = 0;
 
                     userRows.forEach(row => {
-                        const userName = row.querySelector('.user-info div:nth-child(2)').textContent
-                            .toLowerCase();
-                        const userEmail = row.querySelectorAll('td')[1].textContent.toLowerCase();
-                        const membership = row.querySelectorAll('td')[2].textContent.toLowerCase();
+                        // Skip the "No users found" row
+                        if (row.classList.contains('no-data')) return;
 
-                        if (userName.includes(searchTerm) || userEmail.includes(searchTerm) ||
-                            membership.includes(searchTerm)) {
+                        const userName = row.querySelector('.user-info span')?.textContent.toLowerCase() || '';
+
+                        // Show rows that match the search term by name
+                        if (searchTerm === '' || userName.includes(searchTerm)) {
                             row.style.display = '';
+                            visibleRows++;
                         } else {
                             row.style.display = 'none';
                         }
                     });
+
+                    // Show/hide the "No users found" row based on visible rows
+                    if (noDataRow) {
+                        noDataRow.style.display = visibleRows === 0 && searchTerm !== '' ? '' : 'none';
+                    }
                 });
             }
         }

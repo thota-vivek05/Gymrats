@@ -18,7 +18,7 @@
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="/admin_dashboard" class="nav-link ">
+                    <a href="/admin_dashboard" class="nav-link">
                         <span>Dashboard</span>
                     </a>
                 </li>
@@ -37,17 +37,13 @@
                         <span>Memberships</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/admin_nutrition" class="nav-link">
-                        <span>Nutrition Plans</span>
-                    </a>
-                </li>
+               
                 <li class="nav-item">
                     <a href="/admin_exercises" class="nav-link">
                         <span>Exercises</span>
                     </a>
                 </li>
-            
+                
                 <li class="nav-item">
                     <a href="/admin_verifier" class="nav-link">
                         <span>Verifiers</span>
@@ -85,7 +81,7 @@
                             <div class="stats-header">
                                 <h3>Total Revenue</h3>
                             </div>
-                            <div class="stats-number">$892,845</div>
+                            <div class="stats-number">₹<%= stats.totalRevenue.toLocaleString() %></div>
                             <div class="stats-label">+8% from last month</div>
                         </div>
                     </div>
@@ -96,7 +92,7 @@
                             <div class="stats-header">
                                 <h3>Active Members</h3>
                             </div>
-                            <div class="stats-number">12,452</div>
+                            <div class="stats-number"><%= stats.activeMembers.toLocaleString() %></div>
                             <div class="stats-label">+5% from last month</div>
                         </div>
                     </div>
@@ -107,7 +103,7 @@
                             <div class="stats-header">
                                 <h3>Premium Members</h3>
                             </div>
-                            <div class="stats-number">3,254</div>
+                            <div class="stats-number"><%= stats.premiumMembers.toLocaleString() %></div>
                             <div class="stats-label">+12% from last month</div>
                         </div>
                     </div>
@@ -118,7 +114,7 @@
                             <div class="stats-header">
                                 <h3>New Sign-ups</h3>
                             </div>
-                            <div class="stats-number">462</div>
+                            <div class="stats-number"><%= stats.newSignups.toLocaleString() %></div>
                             <div class="stats-label">+5% from last week</div>
                         </div>
                     </div>
@@ -133,15 +129,15 @@
                 
                 <div class="membership-grid">
                     <!-- Basic Plan Card -->
-                    <div class="membership-card standard-card">
+                    <div class="membership-card basic-card">
                         <div class="membership-header">
-                            <h3 class="membership-title standard-title">Basic</h3>
+                            <h3 class="membership-title basic-title">Basic</h3>
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20 6H4V18H20V6Z" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>
                         <div class="membership-price">
-                            <span class="price-currency">$</span>19<span class="price-period">/month</span>
+                            <span class="price-currency">₹</span>299<span class="price-period">/month</span>
                         </div>
                         <div class="membership-details">
                             <div class="membership-feature">
@@ -179,21 +175,18 @@
                         <div class="membership-stats">
                             <div class="stat-item">
                                 <span class="stat-label">Active Members</span>
-                                <span class="stat-value">8,235</span>
+                                <span class="stat-value"><%= planStats.basic.active.toLocaleString() %></span>
                             </div>
                             <div class="stat-item">
                                 <span class="stat-label">Revenue</span>
-                                <span class="stat-value">$156,465</span>
+                                <span class="stat-value">₹<%= planStats.basic.revenue.toLocaleString() %></span>
                             </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Avg. Retention</span>
-                                <span class="stat-value">4.2 months</span>
-                            </div>
+                           
                         </div>
 
                         <div class="membership-actions">
-                            <button class="edit-btn" data-plan="standard">Edit Plan</button>
-                            <a href="#" class="view-all-btn">View Members</a>
+                            <button class="edit-btn" data-plan="basic">Edit Plan</button>
+                            
                         </div>
                     </div>
 
@@ -207,7 +200,7 @@
                             </svg>
                         </div>
                         <div class="membership-price">
-                            <span class="price-currency">$</span>39<span class="price-period">/month</span>
+                            <span class="price-currency">₹</span>599<span class="price-period">/month</span>
                         </div>
                         <div class="membership-details">
                             <div class="membership-feature">
@@ -245,21 +238,18 @@
                         <div class="membership-stats">
                             <div class="stat-item">
                                 <span class="stat-label">Active Members</span>
-                                <span class="stat-value">2,963</span>
+                                <span class="stat-value"><%= planStats.gold.active.toLocaleString() %></span>
                             </div>
                             <div class="stat-item">
                                 <span class="stat-label">Revenue</span>
-                                <span class="stat-value">$115,557</span>
+                                <span class="stat-value">₹<%= planStats.gold.revenue.toLocaleString() %></span>
                             </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Avg. Retention</span>
-                                <span class="stat-value">6.8 months</span>
-                            </div>
+                           
                         </div>
 
                         <div class="membership-actions">
                             <button class="edit-btn" data-plan="gold">Edit Plan</button>
-                            <a href="#" class="view-all-btn">View Members</a>
+                          
                         </div>
                     </div>
 
@@ -272,7 +262,7 @@
                             </svg>
                         </div>
                         <div class="membership-price">
-                            <span class="price-currency">$</span>79<span class="price-period">/month</span>
+                            <span class="price-currency">₹</span>999<span class="price-period">/month</span>
                         </div>
                         <div class="membership-details">
                             <div class="membership-feature">
@@ -310,21 +300,18 @@
                         <div class="membership-stats">
                             <div class="stat-item">
                                 <span class="stat-label">Active Members</span>
-                                <span class="stat-value">1,254</span>
+                                <span class="stat-value"><%= planStats.platinum.active.toLocaleString() %></span>
                             </div>
                             <div class="stat-item">
                                 <span class="stat-label">Revenue</span>
-                                <span class="stat-value">$99,066</span>
+                                <span class="stat-value">₹<%= planStats.platinum.revenue.toLocaleString() %></span>
                             </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Avg. Retention</span>
-                                <span class="stat-value">11.3 months</span>
-                            </div>
+                            
                         </div>
 
                         <div class="membership-actions">
                             <button class="edit-btn" data-plan="platinum">Edit Plan</button>
-                            <a href="#" class="view-all-btn">View Members</a>
+                            
                         </div>
                     </div>
                 </div>
@@ -376,7 +363,7 @@
                 <!-- Tab Navigation -->
                 <div class="tab-container">
                     <button class="tab active" data-tab="all-members">All Members</button>
-                    <button class="tab standard-tab" data-tab="standard-members">Basic</button>
+                    <button class="tab basic-tab" data-tab="basic-members">Basic</button>
                     <button class="tab gold-tab" data-tab="gold-members">Gold</button>
                     <button class="tab platinum-tab" data-tab="platinum-members">Platinum</button>
                     <button class="tab" data-tab="expired-members">Expired</button>
@@ -385,7 +372,7 @@
                 <!-- Search Bar -->
                 <div class="search-container">
                     <div class="search-bar">
-                        <input type="text" id="memberSearchInput" placeholder="Search by name, email, or membership ID...">
+                        <input type="text" id="memberSearchInput" placeholder="Search by name...">
                     </div>
                     <button class="filter-btn" id="filterBtn">Filter Options</button>
                 </div>
@@ -404,68 +391,31 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>John Mitchell</td>
-                                <td>john.mitchell@email.com</td>
-                                <td>Platinum</td>
-                                <td>Jan 15, 2023</td>
-                                <td>Apr 15, 2024</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Sarah Davis</td>
-                                <td>sarah.davis@email.com</td>
-                                <td>Gold</td>
-                                <td>Mar 22, 2023</td>
-                                <td>Apr 22, 2024</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Michael Johnson</td>
-                                <td>michael.j@email.com</td>
-                                <td>Basic</td>
-                                <td>Jul 5, 2023</td>
-                                <td>Mar 5, 2024</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Emma Wilson</td>
-                                <td>emma.w@email.com</td>
-                                <td>Basic</td>
-                                <td>Feb 18, 2023</td>
-                                <td>Feb 18, 2024</td>
-                                <td><span class="status expired">Expired</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Renew</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Robert Brown</td>
-                                <td>robert.b@email.com</td>
-                                <td>Gold</td>
-                                <td>Aug 12, 2023</td>
-                                <td>May 12, 2024</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="action-btn">View</button>
-                                    <button class="action-btn">Edit</button>
-                                </td>
-                            </tr>
-                        </tbody>
+                        <!-- In admin_membership.ejs - around line 415 -->
+<tbody id="memberTableBody">
+  <% if (memberships && memberships.length > 0) { %>
+  <% memberships.forEach(mem => { %>
+    <% if (mem.user_id) { %> <!-- Add this null check -->
+    <tr>
+      <td><%= mem.user_id.full_name %></td>
+      <td><%= mem.user_id.email %></td>
+      <td><%= mem.type %></td>
+      <td><%= new Date(mem.start_date).toLocaleDateString() %></td>
+      <td><%= new Date(mem.end_date).toLocaleDateString() %></td>
+      <td><span class="status <%= mem.status.toLowerCase() %>"><%= mem.status %></span></td>
+      <td>
+        <button class="action-btn">View</button>
+        <button class="action-btn"><%= mem.status === 'Active' ? 'Edit' : 'Renew' %></button>
+      </td>
+    </tr>
+    <% } %> <!-- End of null check -->
+  <% }); %>
+  <% } else { %>
+  <tr>
+    <td colspan="7" class="no-data">No memberships found</td>
+  </tr>
+  <% } %>
+</tbody>
                     </table>
                 </div>
                 
@@ -496,7 +446,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="planPrice">Monthly Price ($)</label>
+                    <label for="planPrice">Monthly Price (₹)</label>
                     <input type="number" id="planPrice" name="planPrice" min="0" step="0.01" required>
                 </div>
                 
@@ -528,7 +478,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Setup interactive elements
             setupTabNavigation();
             setupModalFunctionality();
             setupChartsData();
@@ -538,37 +487,34 @@
 
         function setupTabNavigation() {
             const tabs = document.querySelectorAll('.tab');
-            const tableRows = document.querySelectorAll('tbody tr');
+            const userRows = document.querySelectorAll('#memberTableBody tr');
             
             tabs.forEach(tab => {
                 tab.addEventListener('click', function() {
-                    // Remove active class from all tabs
                     tabs.forEach(t => t.classList.remove('active'));
-                    // Add active class to clicked tab
                     this.classList.add('active');
                     
-                    // Filter table based on selected tab
                     const tabType = this.getAttribute('data-tab');
                     
-                    tableRows.forEach(row => {
-                        const planType = row.children[2].textContent.toLowerCase();
-                        const status = row.querySelector('.status').textContent.toLowerCase();
+                    userRows.forEach(row => {
+                        const planType = row.children[2]?.textContent.toLowerCase() || '';
+                        const status = row.querySelector('.status')?.textContent.toLowerCase() || '';
                         
                         switch(tabType) {
                             case 'all-members':
                                 row.style.display = '';
                                 break;
-                            case 'standard-members':
-                                row.style.display = planType.includes('standard') ? '' : 'none';
+                            case 'basic-members':
+                                row.style.display = (planType === 'basic') ? '' : 'none';
                                 break;
                             case 'gold-members':
-                                row.style.display = planType.includes('gold') ? '' : 'none';
+                                row.style.display = (planType === 'gold') ? '' : 'none';
                                 break;
                             case 'platinum-members':
-                                row.style.display = planType.includes('platinum') ? '' : 'none';
+                                row.style.display = (planType === 'platinum') ? '' : 'none';
                                 break;
                             case 'expired-members':
-                                row.style.display = status.includes('expired') ? '' : 'none';
+                                row.style.display = (status === 'expired') ? '' : 'none';
                                 break;
                         }
                     });
@@ -583,87 +529,73 @@
             const cancelButton = document.querySelector('.cancel-btn');
             const form = document.getElementById('editPlanForm');
             
-            // Open modal when edit button is clicked
             editButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const planType = this.getAttribute('data-plan');
                     
-                    // Set form values based on plan type
                     document.getElementById('planType').value = planType;
                     
                     switch(planType) {
-                        case 'standard':
+                        case 'basic':
                             document.getElementById('planName').value = 'Basic';
-                            document.getElementById('planPrice').value = '19.00';
+                            document.getElementById('planPrice').value = '299.00';
                             document.getElementById('planDescription').value = 'Basic membership plan with access to gym equipment and basic workout programs.';
                             document.getElementById('planFeatures').value = 'Access to gym equipment\nBasic workout programs\nAccess to locker rooms';
                             document.getElementById('modalTitle').textContent = 'Edit Basic Plan';
                             break;
                         case 'gold':
                             document.getElementById('planName').value = 'Gold';
-                            document.getElementById('planPrice').value = '39.00';
+                            document.getElementById('planPrice').value = '599.00';
                             document.getElementById('planDescription').value = 'Intermediate membership plan with personal training and group classes.';
                             document.getElementById('planFeatures').value = 'All Basic features\n1 personal training session/month\nAccess to group classes\nAdvanced workout programs';
                             document.getElementById('modalTitle').textContent = 'Edit Gold Plan';
                             break;
                         case 'platinum':
                             document.getElementById('planName').value = 'Platinum';
-                            document.getElementById('planPrice').value = '79.00';
+                            document.getElementById('planPrice').value = '999.00';
                             document.getElementById('planDescription').value = 'Premium membership plan with weekly personal training and nutrition planning.';
                             document.getElementById('planFeatures').value = 'All Gold features\nWeekly personal training\nPersonalized nutrition plan\nPremium locker service\nUnlimited guest passes';
                             document.getElementById('modalTitle').textContent = 'Edit Platinum Plan';
                             break;
                     }
                     
-                    // Show modal
                     modal.style.display = 'flex';
                 });
             });
             
-            // Close modal when close button is clicked
             closeButton.addEventListener('click', function() {
                 modal.style.display = 'none';
             });
             
-            // Close modal when cancel button is clicked
             cancelButton.addEventListener('click', function() {
                 modal.style.display = 'none';
             });
             
-            // Close modal when clicking outside of it
             window.addEventListener('click', function(event) {
                 if (event.target == modal) {
                     modal.style.display = 'none';
                 }
             });
             
-            // Form submission
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
                 
-                // Get form values
                 const planType = document.getElementById('planType').value;
                 const planPrice = document.getElementById('planPrice').value;
                 
-                // Update UI with new price
-                if (planType === 'standard') {
-                    // Update price display for Basic plan card
-                    const standardPrice = document.querySelector('.standard-card .membership-price');
-                    standardPrice.innerHTML = `<span class="price-currency">$</span>${planPrice}<span class="price-period">/month</span>`;
+                if (planType === 'basic') {
+                    const basicPrice = document.querySelector('.basic-card .membership-price');
+                    basicPrice.innerHTML = `<span class="price-currency">$</span>${planPrice}<span class="price-period">/month</span>`;
                 } else if (planType === 'gold') {
-                    // Update price display for Gold plan card
                     const goldPrice = document.querySelector('.gold-card .membership-price');
                     goldPrice.innerHTML = `<span class="price-currency">$</span>${planPrice}<span class="price-period">/month</span>`;
                 } else if (planType === 'platinum') {
-                    // Update price display for Platinum plan card
                     const platinumPrice = document.querySelector('.platinum-card .membership-price');
                     platinumPrice.innerHTML = `<span class="price-currency">$</span>${planPrice}<span class="price-period">/month</span>`;
                 }
                 
-                // Close modal
                 modal.style.display = 'none';
                 
-                // Show success message
                 alert(`${planType.charAt(0).toUpperCase() + planType.slice(1)} plan updated successfully!`);
             });
         }
@@ -677,7 +609,7 @@
                     labels: ['Basic', 'Gold', 'Platinum'],
                     datasets: [{
                         label: 'Revenue',
-                        data: [156465, 115557, 99066],
+                        data: [<%= planStats.basic.revenue %>, <%= planStats.gold.revenue %>, <%= planStats.platinum.revenue %>],
                         backgroundColor: [
                             '#4CAF50',
                             '#FFC107',
@@ -725,7 +657,7 @@
                     labels: ['Basic', 'Gold', 'Platinum'],
                     datasets: [{
                         label: 'Members',
-                        data: [8235, 2963, 1254],
+                        data: [<%= planStats.basic.active %>, <%= planStats.gold.active %>, <%= planStats.platinum.active %>],
                         backgroundColor: [
                             '#4CAF50',
                             '#FFC107',
@@ -835,7 +767,7 @@
                     labels: ['Basic', 'Gold', 'Platinum'],
                     datasets: [{
                         label: 'Average Retention (months)',
-                        data: [4.2, 6.8, 11.3],
+                        data: [<%= planStats.basic.retention %>, <%= planStats.gold.retention %>, <%= planStats.platinum.retention %>],
                         backgroundColor: [
                             '#4CAF50',
                             '#FFC107',
@@ -877,38 +809,32 @@
         }
 
         function setupActionButtons() {
-            // View members buttons
             const viewButtons = document.querySelectorAll('.view-all-btn');
             viewButtons.forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     
-                    // Get the plan type from the closest membership card
                     const card = this.closest('.membership-card');
                     let planType = '';
                     
-                    if (card.classList.contains('standard-card')) {
-                        planType = 'standard';
+                    if (card.classList.contains('basic-card')) {
+                        planType = 'basic';
                     } else if (card.classList.contains('gold-card')) {
                         planType = 'gold';
                     } else if (card.classList.contains('platinum-card')) {
                         planType = 'platinum';
                     }
                     
-                    // Find and click the corresponding tab
                     const tabs = document.querySelectorAll('.tab');
                     tabs.forEach(tab => {
-                        if (tab.getAttribute('data-tab') === `${planType}-members`) {
+                        if (tab.getAttribute('data-tab') === `₹{planType}-members`) {
                             tab.click();
-                            
-                            // Scroll to the members table section
                             document.querySelector('.members-table').scrollIntoView({ behavior: 'smooth' });
                         }
                     });
                 });
             });
             
-            // Action buttons in the member table
             const actionButtons = document.querySelectorAll('.action-btn');
             actionButtons.forEach(button => {
                 button.addEventListener('click', function() {
@@ -929,7 +855,6 @@
                 });
             });
             
-            // Filter button
             const filterBtn = document.getElementById('filterBtn');
             if (filterBtn) {
                 filterBtn.addEventListener('click', function() {
@@ -940,23 +865,31 @@
 
         function setupSearch() {
             const searchInput = document.getElementById('memberSearchInput');
-            const tableRows = document.querySelectorAll('tbody tr');
-            
+            const userTableBody = document.getElementById('memberTableBody');
+            const userRows = document.querySelectorAll('#memberTableBody tr');
+            const noDataRow = userTableBody.querySelector('.no-data');
+
             if (searchInput) {
-                searchInput.addEventListener('keyup', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    
-                    tableRows.forEach(row => {
-                        const name = row.children[0].textContent.toLowerCase();
-                        const email = row.children[1].textContent.toLowerCase();
-                        const plan = row.children[2].textContent.toLowerCase();
-                        
-                        if (name.includes(searchTerm) || email.includes(searchTerm) || plan.includes(searchTerm)) {
+                searchInput.addEventListener('input', function () {
+                    const searchTerm = this.value.trim().toLowerCase();
+                    let visibleRows = 0;
+
+                    userRows.forEach(row => {
+                        if (row.classList.contains('no-data')) return;
+
+                        const userName = row.querySelector('td:first-child')?.textContent.toLowerCase() || '';
+
+                        if (searchTerm === '' || userName.includes(searchTerm)) {
                             row.style.display = '';
+                            visibleRows++;
                         } else {
                             row.style.display = 'none';
                         }
                     });
+
+                    if (noDataRow) {
+                        noDataRow.style.display = visibleRows === 0 && searchTerm !== '' ? '' : 'none';
+                    }
                 });
             }
         }
