@@ -24,7 +24,9 @@ const nutritionHistorySchema = new mongoose.Schema({
                 protein: { type: Number, min: 0 },
                 calories: { type: Number, min: 0 },
                 carbs: { type: Number, min: 0 },
-                fats: { type: Number, min: 0 }
+                fats: { type: Number, min: 0 },
+                consumed: { type: Boolean, default: false }, // Track if food is eaten
+                consumedAt: { type: Date } // Timestamp when marked as eaten
             }],
             macros: {
                 protein: { type: Number, min: 0, default: 0 },
@@ -40,7 +42,9 @@ const nutritionHistorySchema = new mongoose.Schema({
                 protein: { type: Number, min: 0 },
                 calories: { type: Number, min: 0 },
                 carbs: { type: Number, min: 0 },
-                fats: { type: Number, min: 0 }
+                fats: { type: Number, min: 0 },
+                consumed: { type: Boolean, default: false }, // Track if food is eaten
+                consumedAt: { type: Date } // Timestamp when marked as eaten
             }],
             macros: {
                 protein: { type: Number, min: 0, default: 0 },
@@ -56,7 +60,9 @@ const nutritionHistorySchema = new mongoose.Schema({
                 protein: { type: Number, min: 0 },
                 calories: { type: Number, min: 0 },
                 carbs: { type: Number, min: 0 },
-                fats: { type: Number, min: 0 }
+                fats: { type: Number, min: 0 },
+                consumed: { type: Boolean, default: false }, // Track if food is eaten
+                consumedAt: { type: Date } // Timestamp when marked as eaten
             }],
             macros: {
                 protein: { type: Number, min: 0, default: 0 },
@@ -72,7 +78,9 @@ const nutritionHistorySchema = new mongoose.Schema({
                 protein: { type: Number, min: 0 },
                 calories: { type: Number, min: 0 },
                 carbs: { type: Number, min: 0 },
-                fats: { type: Number, min: 0 }
+                fats: { type: Number, min: 0 },
+                consumed: { type: Boolean, default: false }, // Track if food is eaten
+                consumedAt: { type: Date } // Timestamp when marked as eaten
             }],
             macros: {
                 protein: { type: Number, min: 0, default: 0 },
@@ -88,7 +96,9 @@ const nutritionHistorySchema = new mongoose.Schema({
                 protein: { type: Number, min: 0 },
                 calories: { type: Number, min: 0 },
                 carbs: { type: Number, min: 0 },
-                fats: { type: Number, min: 0 }
+                fats: { type: Number, min: 0 },
+                consumed: { type: Boolean, default: false }, // Track if food is eaten
+                consumedAt: { type: Date } // Timestamp when marked as eaten
             }],
             macros: {
                 protein: { type: Number, min: 0, default: 0 },
@@ -104,7 +114,9 @@ const nutritionHistorySchema = new mongoose.Schema({
                 protein: { type: Number, min: 0 },
                 calories: { type: Number, min: 0 },
                 carbs: { type: Number, min: 0 },
-                fats: { type: Number, min: 0 }
+                fats: { type: Number, min: 0 },
+                consumed: { type: Boolean, default: false }, // Track if food is eaten
+                consumedAt: { type: Date } // Timestamp when marked as eaten
             }],
             macros: {
                 protein: { type: Number, min: 0, default: 0 },
@@ -120,7 +132,9 @@ const nutritionHistorySchema = new mongoose.Schema({
                 protein: { type: Number, min: 0 },
                 calories: { type: Number, min: 0 },
                 carbs: { type: Number, min: 0 },
-                fats: { type: Number, min: 0 }
+                fats: { type: Number, min: 0 },
+                consumed: { type: Boolean, default: false }, // Track if food is eaten
+                consumedAt: { type: Date } // Timestamp when marked as eaten
             }],
             macros: {
                 protein: { type: Number, min: 0, default: 0 },
