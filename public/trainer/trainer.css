@@ -378,6 +378,47 @@ input:focus {
     border-bottom: none;
 }
 
+/* Enhanced Membership badges */
+.membership-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.75em;
+    font-weight: 700;
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.membership-basic {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    border-color: #495057;
+}
+
+.membership-gold {
+    background: linear-gradient(135deg, #ffd700, #daa520);
+    color: #333;
+    border-color: #daa520;
+}
+
+.membership-platinum {
+    background: linear-gradient(135deg, #e5e4e2, #c0c0c0);
+    color: #333;
+    border-color: #c0c0c0;
+}
+
+/* Make sure badges are visible in both pages */
+.client-name .membership-badge,
+.user-name .membership-badge {
+    font-size: 0.7em;
+    padding: 3px 8px;
+}
+
+
+
 .goals-reached {
     margin: 15px 0;
     padding: 10px;

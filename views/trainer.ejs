@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/trainer/trainer.css" />
 </head>
+
 <body>
     <!-- Navigation -->
     <div class="main-navbar">
@@ -51,14 +53,14 @@
     <div class="welcome-banner">
         <h1>Welcome, <%= trainer.name %></h1>
         <p>Manage your clients and track their progress</p>
-    
-    <!-- REYNA -->
+
+        <!-- REYNA -->
         <a href="/trainer/assignment" class="btn" style="margin-top: 10px; display: inline-block;">
-        View Available Clients
-    </a>
-     <!-- END REYNA -->
+            View Available Clients
+        </a>
+        <!-- END REYNA -->
     </div>
-    
+
     <!-- Main Content Area -->
     <div class="main-content">
         <!-- Client List -->
@@ -66,17 +68,26 @@
             <h2>Client List</h2>
             <div class="client-list">
                 <% if (clients.length === 0) { %>
-                    <p>No clients assigned yet.</p>
+                <p>No clients assigned yet.</p>
                 <% } else { %>
-                    <% clients.forEach((client, index) => { %>
-                        <div class="client-item <%= index === 0 ? 'active' : '' %>" data-client="<%= client.id %>">
-                            <div class="client-name"><%= client.name %></div>
-                            <div class="client-stats">
-                                <span>Progress: <span class="progress-value"><%= client.progress %></span>%</span>
-                                <span>Next Session: <%= client.nextSession %></span>
-                            </div>
-                        </div>
-                    <% }) %>
+                <% clients.forEach((client, index) => { %>
+                <!-- In the client list section of trainer.ejs -->
+                <!-- Replace the client-item line with this: -->
+                <div class="client-item <%= selectedClient && selectedClient.id === client.id ? 'active' : '' %>"
+                    data-client="<%= client.id %>">
+                    <div class="client-name">
+                        <%= client.name %>
+                        <span
+                            class="membership-badge membership-<%= client.membershipType ? client.membershipType.toLowerCase() : 'basic' %>">
+                            <%= client.membershipType || 'Basic' %>
+                        </span>
+                    </div>
+                    <div class="client-stats">
+                        <span>Progress: <span class="progress-value"><%= client.progress %></span>%</span>
+                        <span>Next Session: <%= client.nextSession %></span>
+                    </div>
+                </div>
+                <% }) %>
                 <% } %>
             </div>
         </div>
@@ -88,80 +99,87 @@
                 <!-- Client Profile -->
                 <div class="client-profile">
                     <h2>Client Profile: <span id="clientNameDisplay">
-                        <%= selectedClient ? selectedClient.name : 'Select a client' %>
-                    </span></h2>
+                            <%= selectedClient ? selectedClient.name : 'Select a client' %>
+                        </span></h2>
                     <div class="profile-stats" id="clientProfileStats">
                         <div class="stat-item">
                             <span class="stat-label">Age:</span>
-                            <span class="stat-value" id="clientAge"><%= selectedClient ? (selectedClient.age || 'N/A') : 'N/A' %></span>
+                            <span class="stat-value"
+                                id="clientAge"><%= selectedClient ? (selectedClient.age || 'N/A') : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Weight:</span>
-                            <span class="stat-value" id="clientWeight"><%= selectedClient ? (selectedClient.weight || 'N/A') : 'N/A' %></span>
+                            <span class="stat-value"
+                                id="clientWeight"><%= selectedClient ? (selectedClient.weight || 'N/A') : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Height:</span>
-                            <span class="stat-value" id="clientHeight"><%= selectedClient ? (selectedClient.height || 'N/A') : 'N/A' %></span>
+                            <span class="stat-value"
+                                id="clientHeight"><%= selectedClient ? (selectedClient.height || 'N/A') : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Body Fat:</span>
-                            <span class="stat-value" id="clientBodyFat"><%= selectedClient ? (selectedClient.bodyFat || 'N/A') : 'N/A' %></span>
+                            <span class="stat-value"
+                                id="clientBodyFat"><%= selectedClient ? (selectedClient.bodyFat || 'N/A') : 'N/A' %></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Goal:</span>
-                            <span class="stat-value" id="clientGoal"><%= selectedClient ? (selectedClient.goal || 'N/A') : 'N/A' %></span>
+                            <span class="stat-value"
+                                id="clientGoal"><%= selectedClient ? (selectedClient.goal || 'N/A') : 'N/A' %></span>
                         </div>
-                    </div>
-                    <% if (selectedClient) { %>
-                        <button class="btn meet-button" onclick="window.open('https://meet.google.com/xyz-abcd-123', '_blank')">Join Google Meet</button>
-                    <% } else { %>
-                        <button class="btn meet-button" disabled>Join Google Meet</button>
-                    <% } %>
-                </div>
+                     </div>
+    <!-- REMOVE THE EJS CONDITION - Make button always present but hidden initially -->
+    <button class="btn meet-button" id="meetButton" style="display: none;" 
+            onclick="window.open('https://meet.google.com/xyz-abcd-123', '_blank')">
+        Join Google Meet
+    </button>
+</div>
 
                 <!-- Weekly Workout Schedule -->
                 <div class="workout-plan">
                     <h2>Weekly Workout Schedule</h2>
                     <div class="weekly-schedule" id="weeklySchedule">
                         <% if (!selectedClient) { %>
-                            <p>Select a client to view their weekly workout schedule.</p>
+                        <p>Select a client to view their weekly workout schedule.</p>
                         <% } else if (workoutData && workoutData.weeklySchedule) { %>
-                            <% const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; %>
-                            <% days.forEach(day => { %>
-                                <div class="day-schedule">
-                                    <h3><%= day %></h3>
-                                    <% if (workoutData.weeklySchedule[day].length === 0) { %>
-                                        <p>No exercises scheduled.</p>
-                                    <% } else { %>
-                                        <div class="exercises-list">
-                                            <% workoutData.weeklySchedule[day].forEach((exercise, index) => { %>
-                                                <div class="exercise-item">
-                                                    <span class="exercise-name"><%= index + 1 %>. <%= exercise.name %></span>
-                                                    <span class="exercise-details">
-                                                        <% let details = ''; %>
-                                                        <% if (exercise.sets && exercise.reps) { %>
-                                                            <%= `${exercise.sets} sets x ${exercise.reps} reps` %>
-                                                            <% details = `${exercise.sets} sets x ${exercise.reps} reps`; %>
-                                                        <% } else if (exercise.duration) { %>
-                                                            <%= `${exercise.duration} seconds` %>
-                                                            <% details = `${exercise.duration} seconds`; %>
-                                                        <% } %>
-                                                        <% if (exercise.weight) { %>
-                                                            <%= details ? `, ${exercise.weight} kg` : `${exercise.weight} kg` %>
-                                                            <% details += details ? `, ${exercise.weight} kg` : `${exercise.weight} kg`; %>
-                                                        <% } %>
-                                                    </span>
-                                                </div>
-                                            <% }) %>
-                                        </div>
-                                    <% } %>
+                        <% const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; %>
+                        <% days.forEach(day => { %>
+                        <div class="day-schedule">
+                            <h3><%= day %></h3>
+                            <% if (workoutData.weeklySchedule[day].length === 0) { %>
+                            <p>No exercises scheduled.</p>
+                            <% } else { %>
+                            <div class="exercises-list">
+                                <% workoutData.weeklySchedule[day].forEach((exercise, index) => { %>
+                                <div class="exercise-item">
+                                    <span class="exercise-name"><%= index + 1 %>. <%= exercise.name %></span>
+                                    <span class="exercise-details">
+                                        <% let details = ''; %>
+                                        <% if (exercise.sets && exercise.reps) { %>
+                                        <%= `${exercise.sets} sets x ${exercise.reps} reps` %>
+                                        <% details = `${exercise.sets} sets x ${exercise.reps} reps`; %>
+                                        <% } else if (exercise.duration) { %>
+                                        <%= `${exercise.duration} seconds` %>
+                                        <% details = `${exercise.duration} seconds`; %>
+                                        <% } %>
+                                        <% if (exercise.weight) { %>
+                                        <%= details ? `, ${exercise.weight} kg` : `${exercise.weight} kg` %>
+                                        <% details += details ? `, ${exercise.weight} kg` : `${exercise.weight} kg`; %>
+                                        <% } %>
+                                    </span>
                                 </div>
-                            <% }) %>
+                                <% }) %>
+                            </div>
+                            <% } %>
+                        </div>
+                        <% }) %>
                         <% } else { %>
-                            <p>No workout plan for this week.</p>
+                        <p>No workout plan for this week.</p>
                         <% } %>
                     </div>
-                    <a id="editWorkoutPlanLink" href="<%= selectedClient ? `/edit_workout_plan/${selectedClient.id}` : '#' %>" class="btn <%= !selectedClient ? 'disabled' : '' %>">Edit Workout Plan</a>
+                    <a id="editWorkoutPlanLink"
+                        href="<%= selectedClient ? `/edit_workout_plan/${selectedClient.id}` : '#' %>"
+                        class="btn <%= !selectedClient ? 'disabled' : '' %>">Edit Workout Plan</a>
                 </div>
             </div>
 
@@ -189,36 +207,29 @@
             </div>
 
             <!-- Nutrition Plan -->
-            <div class="nutrition-plan">
-                <h2>Food Intake</h2>
-                <% if (selectedClient) { %>
-                    <div class="nutrition-goal">
-                        <p>Today's protein goal: <span id="proteinGoal"><%= nutritionData ? (nutritionData.nutrition.protein_goal || 'N/A') : 'N/A' %></span></p>
-                        <p>Calories: <span id="calorieGoal"><%= nutritionData ? (nutritionData.nutrition.calorie_goal || 'N/A') : 'N/A' %></span></p>
-                    </div>
-                    <h3>Foods to Take:</h3>
-                    <div class="foods-to-take" id="foodsList">
-                        <% if (nutritionData && nutritionData.nutrition.foods && nutritionData.nutrition.foods.length > 0) { %>
-                            <% nutritionData.nutrition.foods.forEach(food => { %>
-                                <p><%= food.name %> (<%= food.protein %>g protein, <%= food.calories %> kcal)</p>
-                            <% }) %>
-                        <% } else { %>
-                            <p>No foods assigned yet.</p>
-                        <% } %>
-                    </div>
-                    <div class="goals-reached">
-                        <p>Food goals not set.</p>
-                    </div>
-                    <h3>Nutritional Breakdown</h3>
-                    <div class="pie-chart-container">
-                        <canvas id="nutritionChart"></canvas>
-                    </div>
-                    <a id="editNutritionPlanLink" href="/edit_nutritional_plan/<%= selectedClient ? selectedClient.id : '' %>" class="btn <%= !selectedClient ? 'disabled' : '' %>">Edit Nutrition Plan</a>
-                <% } else { %>
-                    <p>Select a client to view or edit their nutrition plan.</p>
-                    <a id="editNutritionPlanLink" href="#" class="btn disabled">Edit Nutrition Plan</a>
-                <% } %>
-            </div>
+            <!-- Nutrition Plan - Only show for Platinum & Gold -->
+            <!-- REMOVE THE EJS CONDITION - Make section always present but hidden initially -->
+<div class="nutrition-plan" id="nutritionPlanSection" style="display: none;">
+    <h2>Food Intake</h2>
+    <div class="nutrition-goal">
+        <p>Today's protein goal: <span id="proteinGoal">N/A</span></p>
+        <p>Calories: <span id="calorieGoal">N/A</span></p>
+    </div>
+    <h3>Foods to Take:</h3>
+    <div class="foods-to-take" id="foodsList">
+        <p>No foods assigned yet.</p>
+    </div>
+    <div class="goals-reached">
+        <p>Food goals not set.</p>
+    </div>
+    <h3>Nutritional Breakdown</h3>
+    <div class="pie-chart-container">
+        <canvas id="nutritionChart"></canvas>
+    </div>
+    <a id="editNutritionPlanLink" href="#" class="btn" style="display: none;">Edit Nutrition Plan</a>
+</div>
+
+
         </div>
     </div>
 
@@ -268,73 +279,143 @@
 
     <script>
         // Mobile menu functionality
-document.getElementById('menuIcon').addEventListener('click', function () {
-    document.getElementById('sideNavbar').style.width = "250px";
-});
+        document.getElementById('menuIcon').addEventListener('click', function () {
+            document.getElementById('sideNavbar').style.width = "250px";
+        });
 
-document.getElementById('closeBtn').addEventListener('click', function () {
-    document.getElementById('sideNavbar').style.width = "0";
-});
+        document.getElementById('closeBtn').addEventListener('click', function () {
+            document.getElementById('sideNavbar').style.width = "0";
+        });
 
-// Chart.js initialization
-let exerciseChart, nutritionChart;
+        // Chart.js initialization
+        let exerciseChart, nutritionChart;
 
-const exerciseCtx = document.getElementById('exerciseChart').getContext('2d');
-exerciseChart = new Chart(exerciseCtx, {
-    type: 'line',
-    data: {
-        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
-        datasets: [
-            {
-                label: 'Bicep Curls (kg)',
-                data: [0, 0, 0, 0, 0, 0],
-                borderColor: '#8A2BE2',
-                backgroundColor: 'rgba(138, 43, 226, 0.1)',
-                tension: 0.3
+        const exerciseCtx = document.getElementById('exerciseChart').getContext('2d');
+        exerciseChart = new Chart(exerciseCtx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                datasets: [{
+                        label: 'Bicep Curls (kg)',
+                        data: [0, 0, 0, 0, 0, 0],
+                        borderColor: '#8A2BE2',
+                        backgroundColor: 'rgba(138, 43, 226, 0.1)',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Deadlift (kg)',
+                        data: [0, 0, 0, 0, 0, 0],
+                        borderColor: '#20B2AA',
+                        backgroundColor: 'rgba(32, 178, 170, 0.1)',
+                        tension: 0.3
+                    }
+                ]
             },
-            {
-                label: 'Deadlift (kg)',
-                data: [0, 0, 0, 0, 0, 0],
-                borderColor: '#20B2AA',
-                backgroundColor: 'rgba(32, 178, 170, 0.1)',
-                tension: 0.3
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: '#333'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        ticks: {
+                            color: '#333'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        ticks: {
+                            color: '#333'
+                        }
+                    }
+                }
             }
-        ]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { position: 'top', labels: { color: '#333' } }
+        });
+
+// Only create nutrition chart if the canvas element exists
+const nutritionCanvas = document.getElementById('nutritionChart');
+if (nutritionCanvas) {
+    const nutritionCtx = nutritionCanvas.getContext('2d');
+    nutritionChart = new Chart(nutritionCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Protein', 'Carbs', 'Fats'],
+            datasets: [{
+                data: [
+                    <%= (nutritionData && nutritionData.nutrition && nutritionData.nutrition.macros) ? nutritionData.nutrition.macros.protein : 0 %>,
+                    <%= (nutritionData && nutritionData.nutrition && nutritionData.nutrition.macros) ? nutritionData.nutrition.macros.carbs : 0 %>,
+                    <%= (nutritionData && nutritionData.nutrition && nutritionData.nutrition.macros) ? nutritionData.nutrition.macros.fats : 0 %>
+                ],
+                backgroundColor: ['#8A2BE2', '#20B2AA', '#FF6347'],
+                borderWidth: 0
+            }]
         },
-        scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#333' } },
-            x: { grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#333' } }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#333',
+                        padding: 10
+                    }
+                }
+            }
+        }
+    });
+} else {
+    console.log('Nutrition chart not available for this client (Basic membership)');
+    nutritionChart = null; // Set to null so we can check later
+}
+
+// Update membership-based feature visibility
+function updateMembershipFeatures(clientData) {
+    console.log("Updating features for:", clientData.name, "Membership:", clientData.membershipType);
+    
+    const meetButton = document.getElementById('meetButton');
+    const nutritionPlanSection = document.getElementById('nutritionPlanSection');
+    const editNutritionPlanLink = document.getElementById('editNutritionPlanLink');
+    
+    // Google Meet button - only for Platinum
+    if (meetButton) {
+        if (clientData.membershipType === 'Platinum') {
+            meetButton.style.display = 'block';
+        } else {
+            meetButton.style.display = 'none';
         }
     }
-});
-
-const nutritionCtx = document.getElementById('nutritionChart').getContext('2d');
-nutritionChart = new Chart(nutritionCtx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Protein', 'Carbs', 'Fats'],
-        datasets: [{
-            data: [<%= nutritionData && nutritionData.nutrition.macros ? nutritionData.nutrition.macros.protein || 0 : 0 %>, <%= nutritionData && nutritionData.nutrition.macros ? nutritionData.nutrition.macros.carbs || 0 : 0 %>, <%= nutritionData && nutritionData.nutrition.macros ? nutritionData.nutrition.macros.fats || 0 : 0 %>],
-            backgroundColor: ['#8A2BE2', '#20B2AA', '#FF6347'],
-            borderWidth: 0
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { position: 'bottom', labels: { color: '#333', padding: 10 } }
+    
+    // Nutrition section - for Platinum & Gold
+    if (nutritionPlanSection) {
+        if (clientData.membershipType === 'Platinum' || clientData.membershipType === 'Gold') {
+            nutritionPlanSection.style.display = 'block';
+            if (editNutritionPlanLink) {
+                editNutritionPlanLink.href = `/edit_nutritional_plan/${clientData.id}`;
+                editNutritionPlanLink.style.display = 'inline-block';
+            }
+        } else {
+            nutritionPlanSection.style.display = 'none';
         }
     }
-});
+    
+    console.log("Meet button visible:", meetButton?.style.display === 'block');
+    console.log("Nutrition section visible:", nutritionPlanSection?.style.display === 'block');
+}
 
-// Client selection
+        // Client selection
 document.querySelectorAll('.client-item').forEach(item => {
     item.addEventListener('click', async function () {
         document.querySelectorAll('.client-item').forEach(client => {
@@ -344,15 +425,10 @@ document.querySelectorAll('.client-item').forEach(item => {
         const clientId = this.dataset.client;
         console.log("Selected client: " + clientId);
 
-        // Update edit buttons
+        // Update edit workout plan link (available for all tiers)
         const editWorkoutPlanLink = document.getElementById('editWorkoutPlanLink');
-        const editNutritionPlanLink = document.getElementById('editNutritionPlanLink');
-        const meetButton = document.querySelector('.meet-button');
         editWorkoutPlanLink.href = `/edit_workout_plan/${clientId}`;
         editWorkoutPlanLink.classList.remove('disabled');
-        editNutritionPlanLink.href = `/edit_nutritional_plan/${clientId}`;
-        editNutritionPlanLink.classList.remove('disabled');
-        meetButton.disabled = false;
 
         // Show loading state
         document.getElementById('clientNameDisplay').textContent = 'Loading...';
@@ -379,16 +455,17 @@ document.querySelectorAll('.client-item').forEach(item => {
             document.getElementById('clientHeight').textContent = clientData.height || 'N/A';
             document.getElementById('clientBodyFat').textContent = clientData.bodyFat || 'N/A';
             document.getElementById('clientGoal').textContent = clientData.goal || 'N/A';
+            updateMembershipFeatures(clientData);
 
             // Fetch weekly workout schedule
             const workoutResponse = await fetch(`/workout/${clientId}`);
             const workoutData = await workoutResponse.json();
-            console.log("DEBUG: Workout API Response:", workoutData)
+            console.log("DEBUG: Workout API Response:", workoutData);
 
             if (!workoutData.weeklySchedule) {
-    console.error("DEBUG: weeklySchedule is missing from response!");
-    console.error("DEBUG: Full response:", workoutData);
-}
+                console.error("DEBUG: weeklySchedule is missing from response!");
+                console.error("DEBUG: Full response:", workoutData);
+            }
 
             const weeklyScheduleDiv = document.getElementById('weeklySchedule');
             weeklyScheduleDiv.innerHTML = '';
@@ -430,37 +507,53 @@ document.querySelectorAll('.client-item').forEach(item => {
                 });
             }
 
-            // Fetch nutrition data
-            const nutritionResponse = await fetch(`/nutrition/${clientId}`);
-            const nutritionData = await nutritionResponse.json();
-            const proteinGoal = document.getElementById('proteinGoal');
-            const calorieGoal = document.getElementById('calorieGoal');
-            const foodsList = document.getElementById('foodsList');
-            if (nutritionData.error || !nutritionData.nutrition) {
-                proteinGoal.textContent = 'N/A';
-                calorieGoal.textContent = 'N/A';
-                foodsList.innerHTML = '<p>No foods assigned yet.</p>';
-                nutritionChart.data.datasets[0].data = [0, 0, 0];
-            } else {
-                proteinGoal.textContent = nutritionData.nutrition.protein_goal || 'N/A';
-                calorieGoal.textContent = nutritionData.nutrition.calorie_goal || 'N/A';
-                foodsList.innerHTML = '';
-                if (nutritionData.nutrition.foods && nutritionData.nutrition.foods.length > 0) {
-                    nutritionData.nutrition.foods.forEach(food => {
-                        const foodItem = document.createElement('p');
-                        foodItem.textContent = `${food.name} (${food.protein}g protein, ${food.calories} kcal)`;
-                        foodsList.appendChild(foodItem);
-                    });
+            // DECLARE nutritionData variable at a higher scope
+            let nutritionData = null;
+
+            // Fetch nutrition data only if nutrition section exists
+            const nutritionPlanSection = document.querySelector('.nutrition-plan');
+            if (nutritionPlanSection) {
+                // Only fetch and update nutrition data if the section exists
+                const nutritionResponse = await fetch(`/nutrition/${clientId}`);
+                nutritionData = await nutritionResponse.json();
+
+                const proteinGoal = document.getElementById('proteinGoal');
+                const calorieGoal = document.getElementById('calorieGoal');
+                const foodsList = document.getElementById('foodsList');
+
+                if (nutritionData.error || !nutritionData.nutrition) {
+                    if (proteinGoal) proteinGoal.textContent = 'N/A';
+                    if (calorieGoal) calorieGoal.textContent = 'N/A';
+                    if (foodsList) foodsList.innerHTML = '<p>No foods assigned yet.</p>';
+                    if (nutritionChart) {
+                        nutritionChart.data.datasets[0].data = [0, 0, 0];
+                        nutritionChart.update();
+                    }
                 } else {
-                    foodsList.innerHTML = '<p>No foods assigned yet.</p>';
+                    if (proteinGoal) proteinGoal.textContent = nutritionData.nutrition.protein_goal || 'N/A';
+                    if (calorieGoal) calorieGoal.textContent = nutritionData.nutrition.calorie_goal || 'N/A';
+                    if (foodsList) {
+                        foodsList.innerHTML = '';
+                        if (nutritionData.nutrition.foods && nutritionData.nutrition.foods.length > 0) {
+                            nutritionData.nutrition.foods.forEach(food => {
+                                const foodItem = document.createElement('p');
+                                foodItem.textContent = `${food.name} (${food.protein}g protein, ${food.calories} kcal)`;
+                                foodsList.appendChild(foodItem);
+                            });
+                        } else {
+                            foodsList.innerHTML = '<p>No foods assigned yet.</p>';
+                        }
+                    }
+                    // Update nutrition chart
+                    if (nutritionChart) {
+                        nutritionChart.data.datasets[0].data = [
+                            nutritionData.nutrition.macros.protein || 0,
+                            nutritionData.nutrition.macros.carbs || 0,
+                            nutritionData.nutrition.macros.fats || 0
+                        ];
+                        nutritionChart.update();
+                    }
                 }
-                // Update nutrition chart
-                nutritionChart.data.datasets[0].data = [
-                    nutritionData.nutrition.macros.protein || 0,
-                    nutritionData.nutrition.macros.carbs || 0,
-                    nutritionData.nutrition.macros.fats || 0
-                ];
-                nutritionChart.update();
             }
 
             // Calculate stats for the Current Stats section
@@ -474,19 +567,19 @@ document.querySelectorAll('.client-item').forEach(item => {
             }
             document.getElementById('workoutsCompletedStat').textContent = totalWorkoutsCompleted;
 
-            // 2. Average Calories Consumed (assuming nutritionData.foods is for one day)
+            // 2. Average Calories Consumed
             let totalCalories = 0;
-            if (nutritionData.nutrition && nutritionData.nutrition.foods && nutritionData.nutrition.foods.length > 0) {
+            if (nutritionData && nutritionData.nutrition && nutritionData.nutrition.foods && nutritionData.nutrition.foods.length > 0) {
                 totalCalories = nutritionData.nutrition.foods.reduce((sum, food) => sum + (food.calories || 0), 0);
             }
             document.getElementById('avgCaloriesStat').textContent = `${Math.round(totalCalories)} kcal`;
 
             // 3. Protein Intake vs Goal
             let totalProtein = 0;
-            if (nutritionData.nutrition && nutritionData.nutrition.foods && nutritionData.nutrition.foods.length > 0) {
+            if (nutritionData && nutritionData.nutrition && nutritionData.nutrition.foods && nutritionData.nutrition.foods.length > 0) {
                 totalProtein = nutritionData.nutrition.foods.reduce((sum, food) => sum + (food.protein || 0), 0);
             }
-            const proteinGoalValue = nutritionData.nutrition && nutritionData.nutrition.protein_goal && !isNaN(nutritionData.nutrition.protein_goal)
+            const proteinGoalValue = nutritionData && nutritionData.nutrition && nutritionData.nutrition.protein_goal && !isNaN(nutritionData.nutrition.protein_goal)
                 ? parseInt(nutritionData.nutrition.protein_goal)
                 : 0;
             document.getElementById('proteinVsGoalStat').textContent = `${Math.round(totalProtein)}g / ${proteinGoalValue}g`;
@@ -552,24 +645,94 @@ document.querySelectorAll('.client-item').forEach(item => {
             document.getElementById('workoutsCompletedStat').textContent = '0';
             document.getElementById('avgCaloriesStat').textContent = '0 kcal';
             document.getElementById('proteinVsGoalStat').textContent = '0g / 0g';
-            document.getElementById('proteinGoal').textContent = 'N/A';
-            document.getElementById('calorieGoal').textContent = 'N/A';
-            document.getElementById('foodsList').innerHTML = '<p>Error loading nutrition plan.</p>';
+            
+            // Only update nutrition elements if they exist
+            const proteinGoal = document.getElementById('proteinGoal');
+            const calorieGoal = document.getElementById('calorieGoal');
+            const foodsList = document.getElementById('foodsList');
+            
+            if (proteinGoal) proteinGoal.textContent = 'N/A';
+            if (calorieGoal) calorieGoal.textContent = 'N/A';
+            if (foodsList) foodsList.innerHTML = '<p>Error loading nutrition plan.</p>';
+            
             exerciseChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0];
             exerciseChart.data.datasets[1].data = [0, 0, 0, 0, 0, 0];
             exerciseChart.update();
-            nutritionChart.data.datasets[0].data = [0, 0, 0];
-            nutritionChart.update();
+            
+            if (nutritionChart) {
+                nutritionChart.data.datasets[0].data = [0, 0, 0];
+                nutritionChart.update();
+            }
         }
     });
 });
 
 // Trigger click on the first client if one exists
-const firstClient = document.querySelector('.client-item');
-if (firstClient) {
-    firstClient.click();
-}
-    </script>
+function autoSelectClient() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const clientIdFromUrl = urlParams.get('clientId');
     
+    let clientToSelect = null;
+    
+    if (clientIdFromUrl) {
+        // Try to find the client from URL parameter
+        clientToSelect = document.querySelector(`.client-item[data-client="${clientIdFromUrl}"]`);
+    }
+    
+    if (!clientToSelect) {
+        // Fallback to first active client or first client
+        clientToSelect = document.querySelector('.client-item.active') || document.querySelector('.client-item');
+    }
+    
+    if (clientToSelect) {
+        clientToSelect.click();
+    }
+}
+
+// Call this on page load instead of the old firstClient.click()
+document.addEventListener('DOMContentLoaded', function() {
+    autoSelectClient();
+});
+
+                // Trigger click on the first client if one exists
+                function autoSelectClient() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const clientIdFromUrl = urlParams.get('clientId');
+
+                    let clientToSelect = null;
+
+                    if (clientIdFromUrl) {
+                        // Try to find the client from URL parameter
+                        clientToSelect = document.querySelector(`.client-item[data-client="${clientIdFromUrl}"]`);
+                    }
+
+                    if (!clientToSelect) {
+                        // Fallback to first active client or first client
+                        clientToSelect = document.querySelector('.client-item.active') || document.querySelector(
+                            '.client-item');
+                    }
+
+                    if (clientToSelect) {
+                        clientToSelect.click();
+                    }
+
+                    // Update nutrition chart only if it exists
+if (nutritionChart) {
+    nutritionChart.data.datasets[0].data = [
+        nutritionData.nutrition.macros.protein || 0,
+        nutritionData.nutrition.macros.carbs || 0,
+        nutritionData.nutrition.macros.fats || 0
+    ];
+    nutritionChart.update();
+}
+                }
+
+                // Call this on page load instead of the old firstClient.click()
+                document.addEventListener('DOMContentLoaded', function () {
+                    autoSelectClient();
+                });
+    </script>
+
 </body>
+
 </html>
