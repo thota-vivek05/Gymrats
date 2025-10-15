@@ -52,8 +52,8 @@ const getUserProfile = async (req, res) => {
             console.log('No user session found');
             return res.redirect('/login_signup?form=login');
         }
-        
         const userId = req.session.user.id;
+        
         console.log('Fetching user profile data for:', userId);
         
         // Fetch user data and populate trainer
@@ -840,11 +840,20 @@ const getUserDashboard = async (req, res, membershipCode) => {
         if (!req.session || !req.session.user) {
             return res.redirect('/login_signup?form=login');
         }
-        
+
         const userId = req.session.user.id;
+
+        // ✅ UTC: Use UTC dates consistently
+        const today = new Date();
+        today.setUTCHours(0, 0, 0, 0);
+        console.log('✅ UTC Today:', today.toISOString());
+
+        const todaysConsumedFoods = await getTodaysFoods(userId);
+        console.log('🎯 Final todaysConsumedFoods to display:', todaysConsumedFoods.length);
+
         const user = await User.findById(userId)
-            .populate('trainer', 'name email specializations experience');
-        
+            .populate('trainer', 'name email specializations experience')
+            .populate('class_schedules.trainerId', 'name');
         if (!user) {
             return res.status(404).render('error', { message: 'User not found' });
         }
@@ -873,11 +882,9 @@ const getUserDashboard = async (req, res, membershipCode) => {
             .sort({ date: -1 })
             .limit(5);
             
-        // Get nutrition data
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // ✅ UTC: Get nutrition data
         const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setUTCDate(today.getUTCDate() + 1);
         
         // Get today's nutrition data
         const todayNutrition = await NutritionHistory.findOne({
@@ -885,10 +892,9 @@ const getUserDashboard = async (req, res, membershipCode) => {
             date: { $gte: today, $lt: tomorrow }
         }) || { calories_consumed: 0, protein_consumed: 0 };
         
-        // Get last 7 days nutrition data for weekly stats
-        const weekStartDate = new Date();
-        weekStartDate.setDate(weekStartDate.getDate() - 7);
-        weekStartDate.setHours(0, 0, 0, 0);
+        // ✅ UTC: Get last 7 days nutrition data for weekly stats
+        const weekStartDate = new Date(today);
+        weekStartDate.setUTCDate(today.getUTCDate() - 7);
         
         const weeklyNutrition = await NutritionHistory.find({
             userId: userId,
@@ -902,11 +908,11 @@ const getUserDashboard = async (req, res, membershipCode) => {
             protein: []
         };
         
-        // Create array of last 7 dates
+        // ✅ UTC: Create array of last 7 dates
         const dateLabels = [];
         for (let i = 6; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
+            const date = new Date(today);
+            date.setUTCDate(today.getUTCDate() - i);
             dateLabels.push(date);
         }
         
@@ -917,77 +923,80 @@ const getUserDashboard = async (req, res, membershipCode) => {
             
             const dayData = weeklyNutrition.find(entry => {
                 const entryDate = new Date(entry.date);
-                return entryDate.getDate() === date.getDate() && 
-                       entryDate.getMonth() === date.getMonth() && 
-                       entryDate.getFullYear() === date.getFullYear();
+                return entryDate.getUTCDate() === date.getUTCDate() && 
+                       entryDate.getUTCMonth() === date.getUTCMonth() && 
+                       entryDate.getUTCFullYear() === date.getUTCFullYear();
             });
             
             nutritionChartData.calories.push(dayData ? dayData.calories_consumed || 0 : 0);
             nutritionChartData.protein.push(dayData ? dayData.protein_consumed || 0 : 0);
         });
         
-       // ✅ IMPROVE THIS FUNCTION (inside getUserDashboard)
-const getRecentFoods = async (userId, limit = 10) => {
-    try {
-        console.log('🔍 Fetching recent foods for user:', userId);
-        
-        // Get nutrition entries from last 30 days for better coverage
-        const nutritionEntries = await NutritionHistory.find({ 
-            userId: userId,
-            date: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } // Last 30 days
-        })
-        .sort({ date: -1 })
-        .limit(10); // Get more entries to find foods
+        // ✅ IMPROVE THIS FUNCTION (inside getUserDashboard)
+        const getRecentFoods = async (userId, limit = 10) => {
+            try {
+                console.log('🔍 Fetching recent foods for user:', userId);
+                
+                // ✅ UTC: Get nutrition entries from last 30 days
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setUTCDate(thirtyDaysAgo.getUTCDate() - 30);
+                
+                const nutritionEntries = await NutritionHistory.find({ 
+                    userId: userId,
+                    date: { $gte: thirtyDaysAgo }
+                })
+                .sort({ date: -1 })
+                .limit(10);
 
-        console.log('📊 Found nutrition entries:', nutritionEntries.length);
+                console.log('📊 Found nutrition entries:', nutritionEntries.length);
 
-        let foods = [];
-        
-        nutritionEntries.forEach((entry, index) => {
-            console.log(`📅 Processing entry ${index + 1}:`, entry.date);
-            
-            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            days.forEach(day => {
-                if (entry.daily_nutrition && 
-                    entry.daily_nutrition[day] && 
-                    entry.daily_nutrition[day].foods && 
-                    entry.daily_nutrition[day].foods.length > 0) {
+                let foods = [];
+                
+                nutritionEntries.forEach((entry, index) => {
+                    console.log(`📅 Processing entry ${index + 1}:`, entry.date);
                     
-                    console.log(`🍽️ Found ${entry.daily_nutrition[day].foods.length} foods for ${day}`);
-                    
-                    entry.daily_nutrition[day].foods.forEach(food => {
-                        if (food.name && food.calories) {
-                            foods.push({
-                                name: food.name,
-                                calories: food.calories,
-                                protein: food.protein || 0,
-                                carbs: food.carbs || 0,
-                                fats: food.fats || 0,
-                                date: entry.date,
-                                day: day // Add day for debugging
+                    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                    days.forEach(day => {
+                        if (entry.daily_nutrition && 
+                            entry.daily_nutrition[day] && 
+                            entry.daily_nutrition[day].foods && 
+                            entry.daily_nutrition[day].foods.length > 0) {
+                            
+                            console.log(`🍽️ Found ${entry.daily_nutrition[day].foods.length} foods for ${day}`);
+                            
+                            entry.daily_nutrition[day].foods.forEach(food => {
+                                if (food.name && food.calories) {
+                                    foods.push({
+                                        name: food.name,
+                                        calories: food.calories,
+                                        protein: food.protein || 0,
+                                        carbs: food.carbs || 0,
+                                        fats: food.fats || 0,
+                                        date: entry.date,
+                                        day: day
+                                    });
+                                }
                             });
                         }
                     });
-                }
-            });
-        });
+                });
 
-        console.log('🎯 Total foods collected:', foods.length);
-        
-        // Sort by date (most recent first) and limit
-        const sortedFoods = foods.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, limit);
-        
-        console.log('✅ Final recent foods to display:', sortedFoods.length);
-        sortedFoods.forEach((food, index) => {
-            console.log(`${index + 1}. ${food.name} - ${food.calories} kcal - ${food.day} - ${new Date(food.date).toLocaleDateString()}`);
-        });
-        
-        return sortedFoods;
-    } catch (error) {
-        console.error('❌ Error getting recent foods:', error);
-        return [];
-    }
-};
+                console.log('🎯 Total foods collected:', foods.length);
+                
+                // Sort by date (most recent first) and limit
+                const sortedFoods = foods.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, limit);
+                
+                console.log('✅ Final recent foods to display:', sortedFoods.length);
+                sortedFoods.forEach((food, index) => {
+                    console.log(`${index + 1}. ${food.name} - ${food.calories} kcal - ${food.day} - ${new Date(food.date).toLocaleDateString()}`);
+                });
+                
+                return sortedFoods;
+            } catch (error) {
+                console.error('❌ Error getting recent foods:', error);
+                return [];
+            }
+        };
 
         const recentFoods = await getRecentFoods(userId, 10);
         
@@ -1005,7 +1014,6 @@ const getRecentFoods = async (userId, limit = 10) => {
         if (todayNutrition.macros) {
             macrosData = todayNutrition.macros;
         } else if (weeklyNutrition.length > 0) {
-            // Use average from weekly data if today's not available
             const macrosEntries = weeklyNutrition.filter(entry => entry.macros);
             if (macrosEntries.length > 0) {
                 macrosData = {
@@ -1016,16 +1024,46 @@ const getRecentFoods = async (userId, limit = 10) => {
             }
         }
 
-        // FIXED: Get today's workout from weekly schedule
+        // ✅ UTC: Get today's workout from weekly schedule
         const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
+        weekStart.setUTCDate(today.getUTCDate() - today.getUTCDay()); // Start of week (Sunday)
         const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekStart.getDate() + 7);
+        weekEnd.setUTCDate(weekStart.getUTCDate() + 7);
 
         const currentWeekWorkout = await WorkoutHistory.findOne({
             userId: userId,
             date: { $gte: weekStart, $lt: weekEnd }
         }).lean();
+
+        // ✅ UTC: Get upcoming class
+        const upcomingClass = user.class_schedules && user.class_schedules.length > 0
+            ? user.class_schedules
+                .filter(cls => {
+                    const classDate = new Date(cls.date);
+                    const now = new Date();
+                    return classDate >= now;
+                })
+                .sort((a, b) => new Date(a.date) - new Date(b.date))[0]
+            : null;
+
+        console.log('=== DEBUG UPCOMING CLASS ===');
+        console.log('Current UTC time:', new Date().toISOString());
+        console.log('Filtered upcoming class:', upcomingClass);
+        if (upcomingClass) {
+            console.log('Upcoming class UTC date:', upcomingClass.date);
+            
+            if (upcomingClass.trainerId && typeof upcomingClass.trainerId === 'object' && upcomingClass.trainerId.name) {
+                upcomingClass.trainerName = upcomingClass.trainerId.name;
+            } else {
+                try {
+                    const trainer = await Trainer.findById(upcomingClass.trainerId);
+                    upcomingClass.trainerName = trainer ? trainer.name : 'Coach';
+                } catch (error) {
+                    console.error('Error fetching trainer:', error);
+                    upcomingClass.trainerName = 'Coach';
+                }
+            }
+        }
 
         // Extract today's exercises from weekly schedule
         let todayExercises = [];
@@ -1042,7 +1080,7 @@ const getRecentFoods = async (userId, limit = 10) => {
 
         const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         if (currentWeekWorkout && currentWeekWorkout.exercises) {
-            const todayDayName = dayNames[today.getDay()];
+            const todayDayName = dayNames[today.getUTCDay()];
             
             // Filter exercises for today
             todayExercises = currentWeekWorkout.exercises.filter(exercise => 
@@ -1066,18 +1104,16 @@ const getRecentFoods = async (userId, limit = 10) => {
             }
         }
 
-        // FIXED: Update exercise progress with actual workout data
+        // Update exercise progress with actual workout data
         let exerciseProgress = [
             { name: 'Bench Press', progress: 75, currentWeight: 80, goalWeight: 100 },
             { name: 'Squat', progress: 60, currentWeight: 90, goalWeight: 120 },
             { name: 'Deadlift', progress: 85, currentWeight: 110, goalWeight: 130 }
         ];
 
-        // Use actual workout data if available
         if (currentWeekWorkout && currentWeekWorkout.exercises) {
             const exercises = currentWeekWorkout.exercises;
             
-            // Update Bench Press progress
             const benchPressExercises = exercises.filter(ex => ex.name && ex.name.toLowerCase().includes('bench'));
             if (benchPressExercises.length > 0) {
                 const maxBench = Math.max(...benchPressExercises.map(ex => ex.weight || 0));
@@ -1085,7 +1121,6 @@ const getRecentFoods = async (userId, limit = 10) => {
                 exerciseProgress[0].progress = Math.round((maxBench / 100) * 100);
             }
             
-            // Update Squat progress
             const squatExercises = exercises.filter(ex => ex.name && ex.name.toLowerCase().includes('squat'));
             if (squatExercises.length > 0) {
                 const maxSquat = Math.max(...squatExercises.map(ex => ex.weight || 0));
@@ -1093,7 +1128,6 @@ const getRecentFoods = async (userId, limit = 10) => {
                 exerciseProgress[1].progress = Math.round((maxSquat / 120) * 100);
             }
             
-            // Update Deadlift progress
             const deadliftExercises = exercises.filter(ex => ex.name && ex.name.toLowerCase().includes('deadlift'));
             if (deadliftExercises.length > 0) {
                 const maxDeadlift = Math.max(...deadliftExercises.map(ex => ex.weight || 0));
@@ -1102,25 +1136,21 @@ const getRecentFoods = async (userId, limit = 10) => {
             }
         }
 
-        // Add this debug section after the currentWeekWorkout query:
-        console.log('=== DEBUG WORKOUT DATA ===');
-        console.log('Today:', today);
-        console.log('Today Day Name:', dayNames[today.getDay()]);
-        console.log('Week Start:', weekStart);
-        console.log('Week End:', weekEnd);
+        // ✅ UTC: Debug section
+        console.log('=== DEBUG WORKOUT DATA (UTC) ===');
+        console.log('UTC Today:', today.toISOString());
+        console.log('UTC Today Day Name:', dayNames[today.getUTCDay()]);
+        console.log('UTC Week Start:', weekStart.toISOString());
+        console.log('UTC Week End:', weekEnd.toISOString());
         console.log('Current Week Workout Found:', !!currentWeekWorkout);
         if (currentWeekWorkout) {
-            console.log('Workout Exercises:', currentWeekWorkout.exercises);
-            console.log('Today Exercises:', todayExercises);
+            console.log('Workout date:', currentWeekWorkout.date);
+            console.log('Today Exercises:', todayExercises.length);
         }
 
-        // ✅ DEBUG: Check recent foods data
         console.log('=== DEBUG RECENT FOODS ===');
         console.log('Recent foods count:', recentFoods.length);
-        recentFoods.forEach((food, index) => {
-            console.log(`${index + 1}. ${food.name} - ${food.calories} kcal - ${new Date(food.date).toLocaleDateString()}`);
-        });
-        
+
         // Common data for all membership types
         const commonData = {
             user: user,
@@ -1130,41 +1160,34 @@ const getRecentFoods = async (userId, limit = 10) => {
                 completed: recentWorkouts.filter(w => w.completed).length,
                 total: recentWorkouts.length
             },
-            todayWorkout: todayWorkoutData, // Use the fixed todayWorkoutData
-            exerciseProgress: exerciseProgress, // Use the updated exercise progress 
-
-            // added new membership info - REYNA
+            todayWorkout: todayWorkoutData,
+            exerciseProgress: exerciseProgress,
             membershipInfo: {
                 months_remaining: user.membershipDuration.months_remaining,
                 end_date: user.membershipDuration.end_date,
                 auto_renew: user.membershipDuration.auto_renew,
                 is_active: user.isMembershipActive()
             },
-
             currentPage: 'dashboard'
         };
         
         // Additional data for platinum members
         if (membershipCode === 'p') {
-            // Add platinum-specific data
             const platinumData = {
                 ...commonData,
                 nutritionChartData: nutritionChartData,
-                recentFoods: recentFoods, // ✅ Now properly populated from NutritionHistory
+                recentFoods: recentFoods,
+                todaysConsumedFoods: todaysConsumedFoods,
                 nutritionStats: {
                     calorieAvg: Math.round(calorieAvg),
                     proteinAvg: Math.round(proteinAvg),
                     macros: macrosData
                 },
-                upcomingClass: user.class_schedules && user.class_schedules.length > 0 
-                    ? user.class_schedules[0] 
-                    : null
+                upcomingClass: upcomingClass
             };
             
-            // Render platinum dashboard with all features
             res.render(dashboardTemplate, platinumData);
         } else {
-            // Render gold/basic dashboard with limited features
             res.render(dashboardTemplate, commonData);
         }
         
@@ -1286,6 +1309,150 @@ const markWorkoutCompleted = async (req, res) => {
     }
 };
 
+// Add this function to userController.js
+const getTodaysFoods = async (userId) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        console.log('=== WEDNESDAY DEBUG ===');
+        console.log('📅 Today:', today);
+        console.log('📅 Today day index:', today.getDay()); // Should be 3 for Wednesday
+        console.log('📅 Today day name:', ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()]);
+
+        // Use Sunday as week start
+        const weekStart = new Date(today);
+        const dayOfWeek = today.getDay(); // 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday
+        weekStart.setDate(today.getDate() - dayOfWeek);
+        weekStart.setHours(0, 0, 0, 0);
+        
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
+        
+        console.log('📊 Week range:', weekStart, 'to', weekEnd);
+
+        // Get weekly nutrition data
+        const weeklyNutrition = await NutritionHistory.findOne({
+            userId: userId,
+            date: { $gte: weekStart, $lt: weekEnd }
+        });
+
+        if (weeklyNutrition) {
+            console.log('✅ Found weekly nutrition plan');
+            console.log('📋 Plan date:', weeklyNutrition.date);
+            
+            const todayDayName = 'Wednesday'; // Hardcode for testing
+            const todayData = weeklyNutrition.daily_nutrition[todayDayName];
+            
+            console.log('🍽️ Wednesday foods:', todayData ? todayData.foods.length : 'no data');
+            
+            if (todayData && todayData.foods) {
+                console.log('🎯 Foods found:');
+                todayData.foods.forEach((food, index) => {
+                    console.log(`${index + 1}. ${food.name} - ${food.calories} kcal`);
+                });
+                
+                return todayData.foods.map(food => ({
+                    name: food.name,
+                    calories: food.calories,
+                    protein: food.protein,
+                    carbs: food.carbs || 0,
+                    fats: food.fats || 0,
+                    consumed: food.consumed || false,
+                    consumedAt: food.consumedAt
+                }));
+            }
+        }
+        
+        return [];
+        
+    } catch (error) {
+        console.error('Error:', error);
+        return [];
+    }
+};
+
+// Add this function for testing - call it when needed
+// const addSampleFoods = async (userId) => {
+//     try {
+//         const today = new Date();
+//         today.setHours(0, 0, 0, 0);
+        
+//         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+//         const todayDayName = days[today.getDay()];
+        
+//         let nutritionEntry = await NutritionHistory.findOne({
+//             userId: userId,
+//             date: { $gte: today, $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) }
+//         });
+        
+//         if (!nutritionEntry) {
+//             const User = require('../model/User');
+//             const user = await User.findById(userId);
+            
+//             nutritionEntry = new NutritionHistory({
+//                 userId: userId,
+//                 date: today,
+//                 protein_goal: user.fitness_goals.protein_goal,
+//                 calorie_goal: user.fitness_goals.calorie_goal,
+//                 daily_nutrition: {
+//                     Monday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
+//                     Tuesday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
+//                     Wednesday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
+//                     Thursday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
+//                     Friday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
+//                     Saturday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
+//                     Sunday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } }
+//                 }
+//             });
+//         }
+        
+//         // Add sample foods if none exist
+//         if (nutritionEntry.daily_nutrition[todayDayName].foods.length === 0) {
+//             nutritionEntry.daily_nutrition[todayDayName].foods = [
+//                 {
+//                     name: "Grilled Chicken Breast",
+//                     protein: 30,
+//                     calories: 165,
+//                     carbs: 0,
+//                     fats: 3.6,
+//                     consumed: false
+//                 },
+//                 {
+//                     name: "Brown Rice",
+//                     protein: 5,
+//                     calories: 216,
+//                     carbs: 45,
+//                     fats: 1.8,
+//                     consumed: false
+//                 },
+//                 {
+//                     name: "Protein Shake",
+//                     protein: 25,
+//                     calories: 120,
+//                     carbs: 3,
+//                     fats: 1,
+//                     consumed: false
+//                 },
+//                 {
+//                     name: "Greek Yogurt",
+//                     protein: 15,
+//                     calories: 100,
+//                     carbs: 6,
+//                     fats: 0,
+//                     consumed: false
+//                 }
+//             ];
+            
+//             await nutritionEntry.save();
+//             console.log('Sample foods added for user:', userId);
+//         }
+        
+//     } catch (error) {
+//         console.error('Error adding sample foods:', error);
+//     }
+// };
+
 module.exports = {
     loginUser,
     signupUser,
@@ -1296,5 +1463,6 @@ module.exports = {
     checkMembershipActive,
     checkTrainerSubscription,
     updateUserProfile,
-    changeMembership
+    changeMembership,
+    getTodaysFoods
 };

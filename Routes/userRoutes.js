@@ -5,6 +5,8 @@ const userController = require('../controllers/userController');
 // REYNA
 const membershipController = require('../controllers/membershipController'); // ADD THIS
 
+// Add this import at the top with other imports
+const NutritionHistory = require('../model/NutritionHistory');
 
 const isAuthenticated = (req, res, next) => {
     if (req.session && req.session.user) {
@@ -436,4 +438,122 @@ router.get('/api/exercises/search', userController.checkMembershipActive, isAuth
 // Add this route to userRoutes.js
 router.put('/user/profile/update', isAuthenticated, userController.updateUserProfile);
 
+
+// brimstone
+// Mark food as consumed
+// Mark food as consumed - FIXED VERSION (uses weekly nutrition)
+router.post('/api/nutrition/mark-consumed', userController.checkMembershipActive, isAuthenticated, async (req, res) => {
+    try {
+        const { foodName, calories, protein, carbs, fats, day } = req.body;
+        const userId = req.session.user.id;
+        
+        console.log('🎯 Marking food as consumed:', { foodName, day, userId });
+        
+        // ✅ FIXED: Use WEEKLY nutrition structure (like your data)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Calculate week start (Sunday)
+        const weekStart = new Date(today);
+        const dayOfWeek = today.getDay(); // 0=Sunday, 1=Monday, etc.
+        weekStart.setDate(today.getDate() - dayOfWeek);
+        weekStart.setHours(0, 0, 0, 0);
+        
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
+
+        console.log('📅 Looking for weekly nutrition:', weekStart, 'to', weekEnd);
+
+        // ✅ FIXED: Find the WEEKLY nutrition entry (not daily)
+        let nutritionEntry = await NutritionHistory.findOne({
+            userId: userId,
+            date: { $gte: weekStart, $lt: weekEnd }
+        });
+        
+        console.log('🔍 Weekly nutrition found:', !!nutritionEntry);
+        
+        if (!nutritionEntry) {
+            console.log('❌ No weekly nutrition plan found for this week');
+            return res.status(404).json({
+                success: false,
+                message: 'No nutrition plan found for this week'
+            });
+        }
+
+        // ✅ Use the provided day (should be "Wednesday" in your case)
+        const targetDay = day || ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()];
+        
+        console.log('🎯 Target day:', targetDay);
+        console.log('📋 Available days:', Object.keys(nutritionEntry.daily_nutrition || {}));
+
+        // Get the day data from the WEEKLY nutrition
+        const dayData = nutritionEntry.daily_nutrition[targetDay];
+        if (!dayData) {
+            console.log('❌ Day not found in weekly nutrition:', targetDay);
+            return res.status(400).json({
+                success: false,
+                message: 'Day not found in nutrition plan: ' + targetDay
+            });
+        }
+
+        console.log('🍽️ Foods before update:', dayData.foods.length);
+        dayData.foods.forEach((food, idx) => {
+            console.log(`${idx + 1}. ${food.name} - consumed: ${food.consumed}`);
+        });
+
+        // ✅ FIXED: Find and update the EXISTING food in Wednesday's foods array
+        const foodIndex = dayData.foods.findIndex(food => 
+            food.name === foodName && food.consumed === false
+        );
+
+        if (foodIndex === -1) {
+            console.log('❌ Food not found or already consumed:', foodName);
+            return res.status(404).json({
+                success: false,
+                message: 'Food not found or already consumed: ' + foodName
+            });
+        }
+
+        // ✅ Update the existing food (don't create new one)
+        dayData.foods[foodIndex].consumed = true;
+        dayData.foods[foodIndex].consumedAt = new Date();
+
+        // ✅ Update daily totals (this should increase calories_consumed and protein_consumed)
+        dayData.calories_consumed += parseInt(calories);
+        dayData.protein_consumed += parseInt(protein);
+        dayData.macros.protein += parseInt(protein);
+        dayData.macros.carbs += parseInt(carbs);
+        dayData.macros.fats += parseInt(fats);
+
+        // ✅ Update overall nutrition entry totals
+        nutritionEntry.calories_consumed = dayData.calories_consumed;
+        nutritionEntry.protein_consumed = dayData.protein_consumed;
+
+        console.log('✅ After update - calories_consumed:', dayData.calories_consumed);
+        console.log('✅ After update - protein_consumed:', dayData.protein_consumed);
+        console.log('✅ Food marked as consumed:', foodName);
+
+        await nutritionEntry.save();
+        
+        console.log('💾 Saved to database successfully');
+
+        res.json({
+            success: true,
+            message: 'Food marked as consumed successfully',
+            updatedNutrition: {
+                calories_consumed: nutritionEntry.calories_consumed,
+                protein_consumed: nutritionEntry.protein_consumed,
+                calorie_goal: nutritionEntry.calorie_goal,
+                protein_goal: nutritionEntry.protein_goal
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ Error marking food as consumed:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error marking food as consumed: ' + error.message
+        });
+    }
+});
 module.exports = router;

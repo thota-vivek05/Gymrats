@@ -633,7 +633,8 @@ getExercises: async (req, res) => {
         });
     }
 },
-  createExercise: async (req, res) => {
+
+createExercise: async (req, res) => {
     try {
         if (!req.session.userId) {
             return res.status(401).json({ success: false, message: 'Unauthorized' });
@@ -696,65 +697,65 @@ getExercises: async (req, res) => {
     }
 },
 
-  deleteNutritionPlan: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
+ updateExercise: async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
 
-      const exerciseId = req.params.id;
-      const {
+    const exerciseId = req.params.id;
+    const {
+      name,
+      category,
+      difficulty,
+      targetMuscles,
+      instructions,
+      type,
+      defaultSets,
+      defaultRepsOrDuration,
+      equipment,
+      movementPattern,
+      primaryMuscle,
+      secondaryMuscles,
+      image,
+      verified
+    } = req.body;
+
+    const updatedExercise = await Exercise.findByIdAndUpdate(
+      exerciseId,
+      {
         name,
         category,
         difficulty,
-        targetMuscles,
+        targetMuscles: Array.isArray(targetMuscles) ? targetMuscles : targetMuscles.split(',').map(m => m.trim()),
         instructions,
         type,
         defaultSets,
         defaultRepsOrDuration,
-        equipment,
+        equipment: equipment ? (Array.isArray(equipment) ? equipment : equipment.split(',').map(e => e.trim())) : [],
         movementPattern,
         primaryMuscle,
-        secondaryMuscles,
+        secondaryMuscles: secondaryMuscles ? (Array.isArray(secondaryMuscles) ? secondaryMuscles : secondaryMuscles.split(',').map(m => m.trim())) : [],
         image,
-        verified
-      } = req.body;
+        verified: verified === 'true' || verified === true
+      },
+      { new: true }
+    );
 
-      const updatedExercise = await Exercise.findByIdAndUpdate(
-        exerciseId,
-        {
-          name,
-          category,
-          difficulty,
-          targetMuscles: Array.isArray(targetMuscles) ? targetMuscles : targetMuscles.split(',').map(m => m.trim()),
-          instructions,
-          type,
-          defaultSets,
-          defaultRepsOrDuration,
-          equipment: equipment ? (Array.isArray(equipment) ? equipment : equipment.split(',').map(e => e.trim())) : [],
-          movementPattern,
-          primaryMuscle,
-          secondaryMuscles: secondaryMuscles ? (Array.isArray(secondaryMuscles) ? secondaryMuscles : secondaryMuscles.split(',').map(m => m.trim())) : [],
-          image,
-          verified: verified === 'true' || verified === true
-        },
-        { new: true }
-      );
-
-      if (!updatedExercise) {
-        return res.status(404).json({ success: false, message: 'Exercise not found' });
-      }
-
-      res.status(200).json({ 
-        success: true, 
-        message: 'Exercise updated successfully', 
-        exercise: updatedExercise 
-      });
-    } catch (error) {
-      console.error('Update exercise error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
+    if (!updatedExercise) {
+      return res.status(404).json({ success: false, message: 'Exercise not found' });
     }
-  },
+
+    res.status(200).json({ 
+      success: true, 
+      message: 'Exercise updated successfully', 
+      exercise: updatedExercise 
+    });
+  } catch (error) {
+    console.error('Update exercise error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+},
 
   deleteExercise: async (req, res) => {
     try {
