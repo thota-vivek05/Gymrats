@@ -843,10 +843,10 @@ const getUserDashboard = async (req, res, membershipCode) => {
 
         const userId = req.session.user.id;
 
-        // ✅ UTC: Use UTC dates consistently
+        // ✅ PERMANENT FIX: Use local time consistently
         const today = new Date();
-        today.setUTCHours(0, 0, 0, 0);
-        console.log('✅ UTC Today:', today.toISOString());
+        today.setHours(0, 0, 0, 0);
+        console.log('✅ Local Today:', today.toString());
 
         const todaysConsumedFoods = await getTodaysFoods(userId);
         console.log('🎯 Final todaysConsumedFoods to display:', todaysConsumedFoods.length);
@@ -882,19 +882,75 @@ const getUserDashboard = async (req, res, membershipCode) => {
             .sort({ date: -1 })
             .limit(5);
             
-        // ✅ UTC: Get nutrition data
-        const tomorrow = new Date(today);
-        tomorrow.setUTCDate(today.getUTCDate() + 1);
+        // ✅ PERMANENT FIX: Use local time for day calculation
+        const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()];
         
-        // Get today's nutrition data
-        const todayNutrition = await NutritionHistory.findOne({
+        // Calculate week start (Sunday) using local time
+        const weekStart = new Date(today);
+        const dayOfWeek = today.getDay();
+        weekStart.setDate(today.getDate() - dayOfWeek);
+        weekStart.setHours(0, 0, 0, 0);
+        
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
+
+        console.log('✅ Local Week Range:', weekStart.toString(), 'to', weekEnd.toString());
+
+        // Get the weekly nutrition data
+        const weeklyNutritionEntry = await NutritionHistory.findOne({
             userId: userId,
-            date: { $gte: today, $lt: tomorrow }
-        }) || { calories_consumed: 0, protein_consumed: 0 };
+            date: { $gte: weekStart, $lt: weekEnd }
+        });
+
+        // Extract today's nutrition data from the weekly plan
+        let todayNutrition = { 
+            calories_consumed: 0, 
+            protein_consumed: 0,
+            calorie_goal: user.fitness_goals.calorie_goal,
+            protein_goal: user.fitness_goals.protein_goal,
+            macros: { protein: 0, carbs: 0, fats: 0 }
+        };
+
+        if (weeklyNutritionEntry) {
+            const todayData = weeklyNutritionEntry.daily_nutrition[todayDayName];
+            
+            if (todayData) {
+                console.log('🔍 Today Data from DB:', {
+                    calories_consumed: todayData.calories_consumed,
+                    protein_consumed: todayData.protein_consumed,
+                    foods_count: todayData.foods ? todayData.foods.length : 0,
+                    consumed_foods: todayData.foods ? todayData.foods.filter(f => f.consumed).length : 0
+                });
+                
+                // ✅ FIX: Always use the stored consumed values from the database
+                todayNutrition = {
+                    calories_consumed: todayData.calories_consumed || 0,
+                    protein_consumed: todayData.protein_consumed || 0,
+                    calorie_goal: weeklyNutritionEntry.calorie_goal || user.fitness_goals.calorie_goal,
+                    protein_goal: weeklyNutritionEntry.protein_goal || user.fitness_goals.protein_goal,
+                    macros: todayData.macros || { protein: 0, carbs: 0, fats: 0 }
+                };
+                
+                console.log('📊 Today Nutrition - Final:', {
+                    calories: todayNutrition.calories_consumed,
+                    protein: todayNutrition.protein_consumed,
+                    goalCalories: todayNutrition.calorie_goal,
+                    goalProtein: todayNutrition.protein_goal
+                });
+            } else {
+                console.log('❌ No data found for today:', todayDayName);
+                console.log('Available days:', Object.keys(weeklyNutritionEntry.daily_nutrition || {}));
+            }
+        } else {
+            console.log('❌ No weekly nutrition entry found for this week');
+        }
+
+        console.log('📊 Today Nutrition Data:', todayNutrition);
+        console.log('📅 Today Day:', todayDayName);
         
-        // ✅ UTC: Get last 7 days nutrition data for weekly stats
+        // Get last 7 days nutrition data for weekly stats (using local time)
         const weekStartDate = new Date(today);
-        weekStartDate.setUTCDate(today.getUTCDate() - 7);
+        weekStartDate.setDate(today.getDate() - 7);
         
         const weeklyNutrition = await NutritionHistory.find({
             userId: userId,
@@ -908,11 +964,11 @@ const getUserDashboard = async (req, res, membershipCode) => {
             protein: []
         };
         
-        // ✅ UTC: Create array of last 7 dates
+        // Create array of last 7 dates (local time)
         const dateLabels = [];
         for (let i = 6; i >= 0; i--) {
             const date = new Date(today);
-            date.setUTCDate(today.getUTCDate() - i);
+            date.setDate(today.getDate() - i);
             dateLabels.push(date);
         }
         
@@ -923,23 +979,23 @@ const getUserDashboard = async (req, res, membershipCode) => {
             
             const dayData = weeklyNutrition.find(entry => {
                 const entryDate = new Date(entry.date);
-                return entryDate.getUTCDate() === date.getUTCDate() && 
-                       entryDate.getUTCMonth() === date.getUTCMonth() && 
-                       entryDate.getUTCFullYear() === date.getUTCFullYear();
+                return entryDate.getDate() === date.getDate() && 
+                       entryDate.getMonth() === date.getMonth() && 
+                       entryDate.getFullYear() === date.getFullYear();
             });
             
             nutritionChartData.calories.push(dayData ? dayData.calories_consumed || 0 : 0);
             nutritionChartData.protein.push(dayData ? dayData.protein_consumed || 0 : 0);
         });
         
-        // ✅ IMPROVE THIS FUNCTION (inside getUserDashboard)
+        // Get recent foods function
         const getRecentFoods = async (userId, limit = 10) => {
             try {
                 console.log('🔍 Fetching recent foods for user:', userId);
                 
-                // ✅ UTC: Get nutrition entries from last 30 days
+                // Get nutrition entries from last 30 days (local time)
                 const thirtyDaysAgo = new Date();
-                thirtyDaysAgo.setUTCDate(thirtyDaysAgo.getUTCDate() - 30);
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
                 
                 const nutritionEntries = await NutritionHistory.find({ 
                     userId: userId,
@@ -1024,18 +1080,18 @@ const getUserDashboard = async (req, res, membershipCode) => {
             }
         }
 
-        // ✅ UTC: Get today's workout from weekly schedule
-        const weekStart = new Date(today);
-        weekStart.setUTCDate(today.getUTCDate() - today.getUTCDay()); // Start of week (Sunday)
-        const weekEnd = new Date(weekStart);
-        weekEnd.setUTCDate(weekStart.getUTCDate() + 7);
+        // Get today's workout from weekly schedule (local time)
+        const workoutWeekStart = new Date(today);
+        workoutWeekStart.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
+        const workoutWeekEnd = new Date(workoutWeekStart);
+        workoutWeekEnd.setDate(workoutWeekStart.getDate() + 7);
 
         const currentWeekWorkout = await WorkoutHistory.findOne({
             userId: userId,
-            date: { $gte: weekStart, $lt: weekEnd }
+            date: { $gte: workoutWeekStart, $lt: workoutWeekEnd }
         }).lean();
 
-        // ✅ UTC: Get upcoming class
+        // Get upcoming class (local time)
         const upcomingClass = user.class_schedules && user.class_schedules.length > 0
             ? user.class_schedules
                 .filter(cls => {
@@ -1047,10 +1103,10 @@ const getUserDashboard = async (req, res, membershipCode) => {
             : null;
 
         console.log('=== DEBUG UPCOMING CLASS ===');
-        console.log('Current UTC time:', new Date().toISOString());
+        console.log('Current Local time:', new Date().toString());
         console.log('Filtered upcoming class:', upcomingClass);
         if (upcomingClass) {
-            console.log('Upcoming class UTC date:', upcomingClass.date);
+            console.log('Upcoming class date:', upcomingClass.date);
             
             if (upcomingClass.trainerId && typeof upcomingClass.trainerId === 'object' && upcomingClass.trainerId.name) {
                 upcomingClass.trainerName = upcomingClass.trainerId.name;
@@ -1080,11 +1136,11 @@ const getUserDashboard = async (req, res, membershipCode) => {
 
         const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         if (currentWeekWorkout && currentWeekWorkout.exercises) {
-            const todayDayName = dayNames[today.getUTCDay()];
+            const todayWorkoutDayName = dayNames[today.getDay()];
             
             // Filter exercises for today
             todayExercises = currentWeekWorkout.exercises.filter(exercise => 
-                exercise.day === todayDayName
+                exercise.day === todayWorkoutDayName
             );
             
             if (todayExercises.length > 0) {
@@ -1092,7 +1148,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
                 const progress = todayExercises.length > 0 ? Math.round((completedExercises / todayExercises.length) * 100) : 0;
                 
                 todayWorkoutData = {
-                    name: `${todayDayName} Workout`,
+                    name: `${todayWorkoutDayName} Workout`,
                     exercises: todayExercises,
                     progress: progress,
                     completed: completedExercises === todayExercises.length,
@@ -1136,12 +1192,12 @@ const getUserDashboard = async (req, res, membershipCode) => {
             }
         }
 
-        // ✅ UTC: Debug section
-        console.log('=== DEBUG WORKOUT DATA (UTC) ===');
-        console.log('UTC Today:', today.toISOString());
-        console.log('UTC Today Day Name:', dayNames[today.getUTCDay()]);
-        console.log('UTC Week Start:', weekStart.toISOString());
-        console.log('UTC Week End:', weekEnd.toISOString());
+        // Debug section
+        console.log('=== DEBUG WORKOUT DATA (LOCAL) ===');
+        console.log('Local Today:', today.toString());
+        console.log('Local Today Day Name:', todayDayName);
+        console.log('Local Week Start:', weekStart.toString());
+        console.log('Local Week End:', weekEnd.toString());
         console.log('Current Week Workout Found:', !!currentWeekWorkout);
         if (currentWeekWorkout) {
             console.log('Workout date:', currentWeekWorkout.date);
@@ -1317,20 +1373,20 @@ const getTodaysFoods = async (userId) => {
         today.setHours(0, 0, 0, 0);
         
         console.log('=== GET TODAYS FOODS DEBUG ===');
-        console.log('📅 Today:', today);
-        console.log('📅 Today day index:', today.getDay()); // Should be 3 for Wednesday
+        console.log('📅 Local Today:', today.toString());
+        console.log('📅 Today day index:', today.getDay());
         console.log('📅 Today day name:', ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()]);
 
-        // Use Sunday as week start
+        // Use Sunday as week start (local time)
         const weekStart = new Date(today);
-        const dayOfWeek = today.getDay(); // 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday
+        const dayOfWeek = today.getDay();
         weekStart.setDate(today.getDate() - dayOfWeek);
         weekStart.setHours(0, 0, 0, 0);
         
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
         
-        console.log('📊 Week range:', weekStart, 'to', weekEnd);
+        console.log('📊 Local Week range:', weekStart.toString(), 'to', weekEnd.toString());
 
         // Get weekly nutrition data
         const weeklyNutrition = await NutritionHistory.findOne({
@@ -1353,6 +1409,7 @@ const getTodaysFoods = async (userId) => {
                     console.log(`${index + 1}. ${food.name} - ${food.calories} kcal - consumed: ${food.consumed}`);
                 });
                 
+                // Return foods with proper consumed status
                 return todayData.foods.map(food => ({
                     name: food.name,
                     calories: food.calories,
@@ -1362,6 +1419,9 @@ const getTodaysFoods = async (userId) => {
                     consumed: food.consumed || false,
                     consumedAt: food.consumedAt
                 }));
+            } else {
+                console.log('❌ No data found for today:', todayDayName);
+                console.log('Available days:', Object.keys(weeklyNutrition.daily_nutrition || {}));
             }
         } else {
             console.log('❌ No weekly nutrition plan found for this week');
