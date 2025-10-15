@@ -73,15 +73,7 @@
     </section>
 
 
-    <!-- Add this debug section temporarily at the top of your dashboard -->
-<!-- <div style="background: #ff4444; color: white; padding: 10px; margin: 10px; border-radius: 5px;">
-    <h3>DEBUG: Nutrition Data Check</h3>
-    <p>todayNutrition exists: <%= typeof todayNutrition !== 'undefined' %></p>
-    <p>todaysConsumedFoods exists: <%= typeof todaysConsumedFoods !== 'undefined' %></p>
-    <p>todaysConsumedFoods length: <%= todaysConsumedFoods ? todaysConsumedFoods.length : 'undefined' %></p>
-    <p>Today's calories: <%= todayNutrition ? todayNutrition.calories_consumed : 'N/A' %></p>
-    <p>Today's protein: <%= todayNutrition ? todayNutrition.protein_consumed : 'N/A' %></p>
-</div> -->
+
 
     <!-- Dashboard Content -->
     <div class="dashboard-container">
@@ -133,52 +125,54 @@
 
         <div class="dashboard-grid">
             <!-- Today's Workout Section -->
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h2>Today's Workout: <%= todayWorkout.name || 'No Workout Scheduled' %></h2>
-                    <span class="badge"><%= todayWorkout.duration || 60 %> min</span>
-                </div>
-                <div class="workout-content">
-                    <% if (todayWorkout.exercises && todayWorkout.exercises.length > 0) { %>
-                    <div class="workout-progress">
-                        <div class="progress-circle">
-                            <svg viewBox="0 0 36 36" class="circular-chart">
-                                <path class="circle-bg" d="M18 2.0845
-                                            a 15.9155 15.9155 0 0 1 0 31.831
-                                            a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <path class="circle" stroke-dasharray="<%= todayWorkout.progress || 0 %>, 100" d="M18 2.0845
-                                            a 15.9155 15.9155 0 0 1 0 31.831
-                                            a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <text x="18" y="20.35" class="percentage"><%= todayWorkout.progress || 0 %>%</text>
-                            </svg>
-                        </div>
-                        <p><%= todayWorkout.completedExercises %> of <%= todayWorkout.totalExercises %> exercises
-                            completed</p>
-                    </div>
-
-                    <h3>Exercises:</h3>
-                    <ul class="workout-list">
-                        <% todayWorkout.exercises.forEach(exercise => { %>
-                        <li class="<%= exercise.completed ? 'completed' : '' %>">
-                            <span class="exercise-name"><%= exercise.name %></span>
-                            <span class="exercise-details">
-                                <%= exercise.sets %> sets *
-                                <%= exercise.reps ? `${exercise.reps} reps` : `${exercise.duration} seconds` %>
-                                <%= exercise.weight ? `(${exercise.weight} kg)` : '' %>
-                            </span>
-                        </li>
-                        <% }); %>
-                    </ul>
-
-                    <button class="workout-btn" <%= todayWorkout.completed ? 'disabled' : '' %>
-                        data-workout-id="<%= todayWorkout.workoutPlanId %>">
-                        <%= todayWorkout.completed ? 'Completed ✓' : 'Complete Workout' %>
-                    </button>
-                    <% } else { %>
-                    <p>No exercises scheduled for today.</p>
-                    <% } %>
-                </div>
+<div class="dashboard-card">
+    <div class="card-header">
+        <h2>Today's Workout: <%= todayWorkout.name || 'No Workout Scheduled' %></h2>
+        <span class="badge"><%= todayWorkout.duration || 60 %> min</span>
+    </div>
+    <div class="workout-content">
+        <% if (todayWorkout.exercises && todayWorkout.exercises.length > 0) { %>
+        <div class="workout-progress">
+            <div class="progress-circle">
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle" stroke-dasharray="<%= todayWorkout.progress || 0 %>, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.35" class="percentage"><%= todayWorkout.progress || 0 %>%</text>
+                </svg>
             </div>
+            <p><span id="completedExercisesCount"><%= todayWorkout.completedExercises || 0 %></span> of <span id="totalExercisesCount"><%= todayWorkout.totalExercises || 0 %></span> exercises completed</p>
+        </div>
+
+        <h3>Exercises:</h3>
+        <div class="exercises-container">
+            <% todayWorkout.exercises.forEach((exercise, index) => { %>
+            <div class="exercise-item <%= exercise.completed ? 'completed' : '' %>" data-exercise-name="<%= exercise.name %>">
+                <div class="exercise-info">
+                    <strong class="exercise-name"><%= exercise.name %></strong>
+                    <div class="exercise-details">
+                        <%= exercise.sets %> sets * 
+                        <%= exercise.reps ? `${exercise.reps} reps` : `${exercise.duration} seconds` %>
+                        <% if (exercise.weight) { %> (<%= exercise.weight %> kg) <% } %>
+                    </div>
+                </div>
+                <button class="exercise-complete-btn <%= exercise.completed ? 'completed' : '' %>" 
+                        data-workout-id="<%= todayWorkout.workoutPlanId %>"
+                        data-exercise-name="<%= exercise.name %>"
+                        <%= exercise.completed ? 'disabled' : '' %>>
+                    <% if (exercise.completed) { %>
+                        <i class="fas fa-check-circle"></i> Completed
+                    <% } else { %>
+                        <i class="fas fa-check"></i> Mark as Done
+                    <% } %>
+                </button>
+            </div>
+            <% }); %>
+        </div>
+        <% } else { %>
+        <p>No exercises scheduled for today.</p>
+        <% } %>
+    </div>
+</div>
 
             <!-- Online Class Card -->
           <div class="dashboard-card">
@@ -387,170 +381,7 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Food completion functionality
-    const foodCompleteButtons = document.querySelectorAll('.food-complete-btn:not(.completed)');
-    
-    foodCompleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const foodName = this.getAttribute('data-food-name');
-            const calories = parseInt(this.getAttribute('data-calories'));
-            const protein = parseInt(this.getAttribute('data-protein'));
-            const carbs = parseInt(this.getAttribute('data-carbs'));
-            const fats = parseInt(this.getAttribute('data-fats'));
-            
-            // Get current day name
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const today = new Date();
-            const dayName = days[today.getDay()];
-            
-            // Mark food as consumed
-            markFoodAsConsumed(foodName, calories, protein, carbs, fats, dayName, this);
-        });
-    });
-    
-    // In your dashboard template JavaScript
-function markFoodAsConsumed(foodName, calories, protein, carbs, fats, day, buttonElement) {
-    // Make sure we're passing the correct day (should be "Wednesday")
-    const targetDay = day; // This should be "Wednesday" from the food item
-    
-    console.log('📤 Sending to API - Food:', foodName, 'Day:', targetDay);
-    
-    fetch('/api/nutrition/mark-consumed', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            foodName: foodName,
-            calories: calories,
-            protein: protein,
-            carbs: carbs,
-            fats: fats,
-            day: targetDay  // This is crucial - should be "Wednesday"
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('📥 API Response:', data);
-        if (data.success) {
-            // Update UI
-            buttonElement.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
-            buttonElement.classList.add('completed');
-            buttonElement.disabled = true;
-            
-            // Update consumption stats
-            updateConsumptionUI(data.updatedNutrition);
-            
-            // Add food to log table
-            addFoodToLog(foodName, calories, protein, carbs, fats);
-            
-            showNotification('Food marked as consumed!', 'success');
-        } else {
-            showNotification('Error: ' + data.message, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('❌ Network error:', error);
-        showNotification('Network error. Please try again.', 'error');
-    });
-}
-    
-function updateConsumptionUI(nutritionData) {
-        // Update calorie display
-        const todayCalories = document.getElementById('todayCalories');
-        const todayProtein = document.getElementById('todayProtein');
-        
-        if (todayCalories) todayCalories.textContent = nutritionData.calories_consumed || 0;
-        if (todayProtein) todayProtein.textContent = nutritionData.protein_consumed || 0;
-        
-        // Update progress in overview cards if they exist
-        const calorieOverview = document.querySelector('.overview-card:nth-child(1) .overview-value');
-        const proteinOverview = document.querySelector('.overview-card:nth-child(3) .overview-value');
-        
-        if (calorieOverview) {
-            calorieOverview.textContent = `${nutritionData.calories_consumed || 0} / ${nutritionData.calorie_goal || <%= user.fitness_goals.calorie_goal %>}`;
-        }
-        
-        if (proteinOverview) {
-            proteinOverview.textContent = `${nutritionData.protein_consumed || 0}g / ${nutritionData.protein_goal || <%= user.fitness_goals.protein_goal %>}g`;
-        }
-    }
-    
-    function addFoodToLog(foodName, calories, protein, carbs, fats) {
-        const consumedFoodsList = document.getElementById('consumedFoodsList');
-        const noFoodsMessage = document.getElementById('noFoodsMessage');
-        
-        // Hide "no foods" message if it exists
-        if (noFoodsMessage) {
-            noFoodsMessage.style.display = 'none';
-        }
-        
-        // Create new row
-        const newRow = document.createElement('tr');
-        newRow.className = 'consumed-food-item';
-        newRow.innerHTML = `
-            <td>${foodName}</td>
-            <td>${calories} kcal</td>
-            <td>${protein}g</td>
-            <td>${carbs}g</td>
-            <td>${fats}g</td>
-            <td>${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-            <td><span class="completed-badge">Completed</span></td>
-        `;
-        
-        // Add to top of the list
-        consumedFoodsList.insertBefore(newRow, consumedFoodsList.firstChild);
-    }
-    
-    function showNotification(message, type) {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        
-        // Add styles
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 4px;
-            color: white;
-            font-weight: bold;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        `;
-        
-        // Set background color based on type
-        if (type === 'success') {
-            notification.style.backgroundColor = '#4CAF50';
-        } else {
-            notification.style.backgroundColor = '#f44336';
-        }
-        
-        // Add to page
-        document.body.appendChild(notification);
-        
-        // Animate in
-        setTimeout(() => {
-            notification.style.opacity = '1';
-        }, 100);
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 3000);
-    }
-});
-</script>
-
-        <!-- Footer -->
+<!-- Footer -->
         <!-- <footer class="site-footer">
             <div class="footer-content">
                 <div class="footer-column">
@@ -599,266 +430,428 @@ function updateConsumptionUI(nutritionData) {
             </div>
         </footer> -->
 
-        <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Mobile menu toggle
-        document.getElementById('menuIcon').addEventListener('click', function () {
-            document.getElementById('sideNavbar').classList.add('open');
+
+<script>
+// Clean exercise completion functionality
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🏋️ Dashboard initialized');
+    
+    // Mobile menu toggle
+    document.getElementById('menuIcon').addEventListener('click', function () {
+        document.getElementById('sideNavbar').classList.add('open');
+    });
+
+    document.getElementById('closeBtn').addEventListener('click', function () {
+        document.getElementById('sideNavbar').classList.remove('open');
+    });
+
+    // Food completion functionality
+    const foodCompleteButtons = document.querySelectorAll('.food-complete-btn:not(.completed)');
+    foodCompleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const foodName = this.getAttribute('data-food-name');
+            const calories = parseInt(this.getAttribute('data-calories'));
+            const protein = parseInt(this.getAttribute('data-protein'));
+            const carbs = parseInt(this.getAttribute('data-carbs'));
+            const fats = parseInt(this.getAttribute('data-fats'));
+            
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const today = new Date();
+            const dayName = days[today.getDay()];
+            
+            markFoodAsConsumed(foodName, calories, protein, carbs, fats, dayName, this);
         });
-
-        document.getElementById('closeBtn').addEventListener('click', function () {
-            document.getElementById('sideNavbar').classList.remove('open');
+    });
+    
+    // Exercise completion functionality
+    const exerciseCompleteButtons = document.querySelectorAll('.exercise-complete-btn:not(.completed)');
+    console.log('🎯 Found exercise buttons:', exerciseCompleteButtons.length);
+    
+    exerciseCompleteButtons.forEach((button, index) => {
+        console.log(`Button ${index + 1}:`, {
+            workoutId: button.getAttribute('data-workout-id'),
+            exerciseName: button.getAttribute('data-exercise-name')
         });
-
-        // Nutrition Chart
-        const nutritionCtx = document.getElementById('nutritionChart')?.getContext('2d');
-        if (nutritionCtx) {
-            const nutritionChart = new Chart(nutritionCtx, {
-                type: 'bar',
-                data: {
-                    labels: <%- JSON.stringify(nutritionChartData?.labels || []) %>,
-                    datasets: [{
-                        label: 'Calories',
-                        data: <%- JSON.stringify(nutritionChartData?.calories || []) %>,
-                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Protein (g)',
-                        data: <%- JSON.stringify(nutritionChartData?.protein || []) %>,
-                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1,
-                        yAxisID: 'y1'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Calories'
-                            }
-                        },
-                        y1: {
-                            beginAtZero: true,
-                            position: 'right',
-                            title: {
-                                display: true,
-                                text: 'Protein (g)'
-                            },
-                            grid: {
-                                drawOnChartArea: false
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Exercise Progress Chart
-        const exerciseData = <%- JSON.stringify(exerciseProgress || []) %>;
-        const exerciseCtx = document.getElementById('exerciseChart')?.getContext('2d');
         
-        if (exerciseCtx && exerciseData.length > 0) {
-            const exerciseChart = new Chart(exerciseCtx, {
-                type: 'line',
-                data: {
-                    labels: <%- JSON.stringify(exerciseProgress[0]?.history ? exerciseProgress[0].history.map(h => h.week) : ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6']) %>,
-                    datasets: exerciseData.map(exercise => ({
-                        label: exercise.name + ' (kg)',
-                        data: exercise.history ? exercise.history.map(h => h.weight) : [],
-                        borderColor: exercise.color || '#8A2BE2',
-                        backgroundColor: (exercise.color || '#8A2BE2') + '33',
-                        tension: 0.3,
-                        fill: true
-                    }))
+        button.addEventListener('click', function() {
+            const workoutId = this.getAttribute('data-workout-id');
+            const exerciseName = this.getAttribute('data-exercise-name');
+            console.log('🖱️ Button clicked:', { workoutId, exerciseName });
+            
+            if (!workoutId || workoutId === 'null') {
+                console.error('❌ Missing workout ID');
+                showNotification('Error: Workout ID is missing', 'error');
+                return;
+            }
+            
+            markExerciseAsDone(workoutId, exerciseName, this);
+        });
+    });
+
+    // Initialize charts
+    initializeCharts();
+});
+
+// Food completion function
+function markFoodAsConsumed(foodName, calories, protein, carbs, fats, day, buttonElement) {
+    const targetDay = day;
+    
+    console.log('📤 Sending to API - Food:', foodName, 'Day:', targetDay);
+    
+    fetch('/api/nutrition/mark-consumed', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            foodName: foodName,
+            calories: calories,
+            protein: protein,
+            carbs: carbs,
+            fats: fats,
+            day: targetDay
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('📥 API Response:', data);
+        if (data.success) {
+            buttonElement.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
+            buttonElement.classList.add('completed');
+            buttonElement.disabled = true;
+            updateConsumptionUI(data.updatedNutrition);
+            addFoodToLog(foodName, calories, protein, carbs, fats);
+            showNotification('Food marked as consumed!', 'success');
+        } else {
+            showNotification('Error: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('❌ Network error:', error);
+        showNotification('Network error. Please try again.', 'error');
+    });
+}
+
+// Exercise completion function
+function markExerciseAsDone(workoutId, exerciseName, buttonElement) {
+    console.log('🎯 Sending request to mark exercise as done:', { workoutId, exerciseName });
+    
+    // Show loading state
+    const originalText = buttonElement.innerHTML;
+    buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    buttonElement.disabled = true;
+    
+    fetch('/api/exercise/complete', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            workoutPlanId: workoutId,
+            exerciseName: exerciseName
+        })
+    })
+    .then(response => {
+        console.log('📥 Response status:', response.status);
+        if (!response.ok) {
+            return response.text().then(text => {
+                console.error('❌ Response not OK:', text);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('📥 Full API response:', data);
+        
+        if (data.success) {
+            buttonElement.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
+            buttonElement.classList.add('completed');
+            buttonElement.disabled = true;
+            
+            const exerciseItem = buttonElement.closest('.exercise-item');
+            if (exerciseItem) {
+                exerciseItem.classList.add('completed');
+                console.log('✅ Exercise item marked as completed in UI');
+            }
+            
+            updateWorkoutProgressUI(data);
+            showNotification('Exercise completed! 🎉', 'success');
+        } else {
+            buttonElement.innerHTML = originalText;
+            buttonElement.disabled = false;
+            console.error('❌ API returned success: false', data);
+            showNotification('Error: ' + (data.error || 'Failed to mark exercise'), 'error');
+        }
+    })
+    .catch(error => {
+        console.error('❌ Network error:', error);
+        buttonElement.innerHTML = originalText;
+        buttonElement.disabled = false;
+        showNotification('Network error: ' + error.message, 'error');
+    });
+}
+
+// UI update functions
+function updateWorkoutProgressUI(data) {
+    const circlePath = document.querySelector('.circle');
+    if (circlePath) {
+        circlePath.setAttribute('stroke-dasharray', `${data.progress}, 100`);
+    }
+    
+    const percentageText = document.querySelector('.percentage');
+    if (percentageText) {
+        percentageText.textContent = `${data.progress}%`;
+    }
+    
+    const completedCount = document.getElementById('completedExercisesCount');
+    const totalCount = document.getElementById('totalExercisesCount');
+    
+    if (completedCount) completedCount.textContent = data.completedExercises;
+    if (totalCount) totalCount.textContent = data.totalExercises;
+}
+
+function updateConsumptionUI(nutritionData) {
+    const todayCalories = document.getElementById('todayCalories');
+    const todayProtein = document.getElementById('todayProtein');
+    
+    if (todayCalories) todayCalories.textContent = nutritionData.calories_consumed || 0;
+    if (todayProtein) todayProtein.textContent = nutritionData.protein_consumed || 0;
+    
+    const calorieOverview = document.querySelector('.overview-card:nth-child(1) .overview-value');
+    const proteinOverview = document.querySelector('.overview-card:nth-child(3) .overview-value');
+    
+    if (calorieOverview) {
+        calorieOverview.textContent = `${nutritionData.calories_consumed || 0} / ${nutritionData.calorie_goal || <%= user.fitness_goals.calorie_goal %>}`;
+    }
+    
+    if (proteinOverview) {
+        proteinOverview.textContent = `${nutritionData.protein_consumed || 0}g / ${nutritionData.protein_goal || <%= user.fitness_goals.protein_goal %>}g`;
+    }
+}
+
+function addFoodToLog(foodName, calories, protein, carbs, fats) {
+    const consumedFoodsList = document.getElementById('consumedFoodsList');
+    const noFoodsMessage = document.getElementById('noFoodsMessage');
+    
+    if (noFoodsMessage) {
+        noFoodsMessage.style.display = 'none';
+    }
+    
+    const newRow = document.createElement('tr');
+    newRow.className = 'consumed-food-item';
+    newRow.innerHTML = `
+        <td>${foodName}</td>
+        <td>${calories} kcal</td>
+        <td>${protein}g</td>
+        <td>${carbs}g</td>
+        <td>${fats}g</td>
+        <td>${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+        <td><span class="completed-badge">Completed</span></td>
+    `;
+    
+    consumedFoodsList.insertBefore(newRow, consumedFoodsList.firstChild);
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 4px;
+        color: white;
+        font-weight: bold;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        background-color: ${type === 'success' ? '#4CAF50' : '#f44336'};
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '1';
+    }, 100);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+// Chart initialization function
+function initializeCharts() {
+    // Nutrition Chart
+    const nutritionCtx = document.getElementById('nutritionChart')?.getContext('2d');
+    if (nutritionCtx) {
+        new Chart(nutritionCtx, {
+            type: 'bar',
+            data: {
+                labels: <%- JSON.stringify(nutritionChartData?.labels || []) %>,
+                datasets: [{
+                    label: 'Calories',
+                    data: <%- JSON.stringify(nutritionChartData?.calories || []) %>,
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                color: '#f1f1f1'
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Exercise Progress Over Time',
-                            color: '#f1f1f1',
-                            font: {
-                                size: 16
-                            }
-                        }
+                {
+                    label: 'Protein (g)',
+                    data: <%- JSON.stringify(nutritionChartData?.protein || []) %>,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Calories' }
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: '#f1f1f1'
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#f1f1f1'
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        }
+                    y1: {
+                        beginAtZero: true,
+                        position: 'right',
+                        title: { display: true, text: 'Protein (g)' },
+                        grid: { drawOnChartArea: false }
                     }
-                }
-            });
-        }
-
-        // Nutrition Doughnut Chart
-        const nutritionDoughnutCtx = document.getElementById('nutritionDoughnutChart')?.getContext('2d');
-        if (nutritionDoughnutCtx) {
-            const nutritionDoughnutChart = new Chart(nutritionDoughnutCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Protein', 'Carbs', 'Fats'],
-                    datasets: [{
-                        data: [
-                            <%= todayNutrition.macros?.protein || 35 %>,
-                            <%= todayNutrition.macros?.carbs || 45 %>,
-                            <%= todayNutrition.macros?.fats || 20 %>
-                        ],
-                        backgroundColor: [
-                            '#8A2BE2',
-                            '#32CD32',
-                            '#FF6347'
-                        ],
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#f1f1f1'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Calorie Chart
-        const calorieCtx = document.getElementById('calorieChart')?.getContext('2d');
-        if (calorieCtx) {
-            const calorieChart = new Chart(calorieCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Consumed', 'Remaining'],
-                    datasets: [{
-                        data: [
-                            <%= todayNutrition.calories_consumed || 0 %>,
-                            <%= Math.max(0, user.fitness_goals.calorie_goal - (todayNutrition.calories_consumed || 0)) %>
-                        ],
-                        backgroundColor: [
-                            '#8A2BE2',
-                            'rgba(255, 255, 255, 0.1)'
-                        ],
-                        borderWidth: 0,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '75%',
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            enabled: true
-                        }
-                    }
-                }
-            });
-        }
-
-        // Complete workout button
-        const workoutBtn = document.querySelector('.workout-btn');
-        if (workoutBtn && !workoutBtn.disabled) {
-            workoutBtn.addEventListener('click', function () {
-                const workoutId = this.getAttribute('data-workout-id');
-                fetch('/complete-workout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        workoutPlanId: workoutId
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message === 'Workout completed successfully') {
-                        alert('Workout completed! Great job!');
-                        // Update UI
-                        document.querySelectorAll('.workout-list li').forEach(exercise => {
-                            exercise.classList.add('completed');
-                        });
-                        const circlePath = document.querySelector('.circle');
-                        if (circlePath) {
-                            circlePath.setAttribute('stroke-dasharray', '100, 100');
-                        }
-                        const percentageText = document.querySelector('.percentage');
-                        if (percentageText) {
-                            percentageText.textContent = '100%';
-                        }
-                        this.disabled = true;
-                        this.textContent = 'Completed ✓';
-                    } else {
-                        alert('Error: ' + (data.error || 'Could not complete workout'));
-                    }
-                })
-                .catch(error => {
-                    console.error('Error completing workout:', error);
-                    alert('An error occurred. Please try again.');
-                });
-            });
-        }
-
-        // Update charts based on dropdowns
-        const exerciseSelect = document.getElementById('exerciseSelect');
-        const timeframeSelect = document.getElementById('timeframeSelect');
-
-        if (exerciseSelect && timeframeSelect) {
-            function updateCharts() {
-                const selectedExercise = exerciseSelect.value;
-                const selectedTimeframe = timeframeSelect.value;
-                
-                console.log('Update charts for:', selectedExercise, selectedTimeframe);
-                
-                // In a real app, you would fetch new data here
-                // For now, this is a placeholder
-                if (window.exerciseChart) {
-                    // Update the chart data dynamically
-                    // This would require fetching new data from the server
-                    // based on the selected filters
                 }
             }
+        });
+    }
 
-            exerciseSelect.addEventListener('change', updateCharts);
-            timeframeSelect.addEventListener('change', updateCharts);
+    // Exercise Progress Chart
+    const exerciseData = <%- JSON.stringify(exerciseProgress || []) %>;
+    const exerciseCtx = document.getElementById('exerciseChart')?.getContext('2d');
+    
+    if (exerciseCtx && exerciseData.length > 0) {
+        new Chart(exerciseCtx, {
+            type: 'line',
+            data: {
+                labels: <%- JSON.stringify(exerciseProgress[0]?.history ? exerciseProgress[0].history.map(h => h.week) : ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6']) %>,
+                datasets: exerciseData.map(exercise => ({
+                    label: exercise.name + ' (kg)',
+                    data: exercise.history ? exercise.history.map(h => h.weight) : [],
+                    borderColor: exercise.color || '#8A2BE2',
+                    backgroundColor: (exercise.color || '#8A2BE2') + '33',
+                    tension: 0.3,
+                    fill: true
+                }))
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { color: '#f1f1f1' }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Exercise Progress Over Time',
+                        color: '#f1f1f1',
+                        font: { size: 16 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#f1f1f1' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    x: {
+                        ticks: { color: '#f1f1f1' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
+                }
+            }
+        });
+    }
+
+    // Nutrition Doughnut Chart
+    const nutritionDoughnutCtx = document.getElementById('nutritionDoughnutChart')?.getContext('2d');
+    if (nutritionDoughnutCtx) {
+        new Chart(nutritionDoughnutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Protein', 'Carbs', 'Fats'],
+                datasets: [{
+                    data: [
+                        <%= todayNutrition.macros?.protein || 35 %>,
+                        <%= todayNutrition.macros?.carbs || 45 %>,
+                        <%= todayNutrition.macros?.fats || 20 %>
+                    ],
+                    backgroundColor: ['#8A2BE2', '#32CD32', '#FF6347'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#f1f1f1' }
+                    }
+                }
+            }
+        });
+    }
+
+    // Calorie Chart
+    const calorieCtx = document.getElementById('calorieChart')?.getContext('2d');
+    if (calorieCtx) {
+        new Chart(calorieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Consumed', 'Remaining'],
+                datasets: [{
+                    data: [
+                        <%= todayNutrition.calories_consumed || 0 %>,
+                        <%= Math.max(0, user.fitness_goals.calorie_goal - (todayNutrition.calories_consumed || 0)) %>
+                    ],
+                    backgroundColor: ['#8A2BE2', 'rgba(255, 255, 255, 0.1)'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true }
+                }
+            }
+        });
+    }
+
+    // Chart dropdown handlers
+    const exerciseSelect = document.getElementById('exerciseSelect');
+    const timeframeSelect = document.getElementById('timeframeSelect');
+
+    if (exerciseSelect && timeframeSelect) {
+        function updateCharts() {
+            const selectedExercise = exerciseSelect.value;
+            const selectedTimeframe = timeframeSelect.value;
+            console.log('Update charts for:', selectedExercise, selectedTimeframe);
         }
-    });
+
+        exerciseSelect.addEventListener('change', updateCharts);
+        timeframeSelect.addEventListener('change', updateCharts);
+    }
+}
 </script>
 
 </body>

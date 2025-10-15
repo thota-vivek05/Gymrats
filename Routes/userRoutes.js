@@ -32,6 +32,54 @@ router.get('/profile', userController.getUserProfile);
 router.post('/complete-workout', userController.completeWorkout);
 router.post('/api/workout/complete', userController.markWorkoutCompleted);
 
+// Individual exercise completion route
+router.post('/api/exercise/complete', userController.checkMembershipActive, isAuthenticated, userController.markExerciseCompleted);
+// Add this temporary debug route to userRoutes.js
+router.get('/api/debug/workout/:id', async (req, res) => {
+    try {
+        const workout = await WorkoutHistory.findById(req.params.id);
+        res.json({
+            workout: workout,
+            exercises: workout?.exercises?.map(ex => ({
+                name: ex.name,
+                completed: ex.completed,
+                _id: ex._id
+            }))
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+// Add to userRoutes.js
+router.get('/api/debug/workouts', userController.checkMembershipActive, isAuthenticated, async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        const workouts = await WorkoutHistory.find({ userId: userId });
+        
+        const today = new Date();
+        const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getUTCDay()];
+        
+        res.json({
+            userId: userId,
+            today: todayDayName,
+            totalWorkouts: workouts.length,
+            workouts: workouts.map(w => ({
+                id: w._id,
+                date: w.date,
+                exercises: w.exercises ? w.exercises.map(e => ({
+                    name: e.name,
+                    day: e.day,
+                    completed: e.completed
+                })) : [],
+                exercisesForToday: w.exercises ? w.exercises.filter(e => e.day === todayDayName) : []
+            }))
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 // Membership management routes
 router.post('/membership/extend', membershipController.extendMembership);
 router.get('/membership/status', membershipController.getMembershipStatus);
