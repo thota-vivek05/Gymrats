@@ -54,4 +54,4 @@ router.delete('/verifier/:id', adminController.deleteVerifier);
 router.get('/settings', adminController.getSettings);
 router.post('/settings', adminController.updateSettings);
 
-module.exports = router
+module.exports = router;

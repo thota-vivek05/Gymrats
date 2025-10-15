@@ -16,21 +16,150 @@ const adminController = {
       if (!req.session.userId) {
         return res.redirect('/admin_login');
       }
+
+      const now = new Date();
+      const oneMonthAgo = new Date(now);
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+      const twoMonthsAgo = new Date(now);
+      twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+      const oneWeekAgo = new Date(now);
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      const twoWeeksAgo = new Date(now);
+      twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
       const userCount = await User.countDocuments();
       const activeMembers = await User.countDocuments({ status: 'Active' });
       const trainerCount = await Trainer.countDocuments();
       const verifierCount = await Verifier.countDocuments();
+      const platinumMembers = await User.countDocuments({ membershipType: 'Platinum' });
+      const newSignups = await User.countDocuments({ created_at: { $gte: oneWeekAgo } });
+
+      // Calculate percentages (dynamic where possible)
+      const newUsersLastMonth = await User.countDocuments({ created_at: { $gte: oneMonthAgo } });
+      const previousTotalUsers = userCount - newUsersLastMonth;
+      let totalUsersChange = '+0% from last month';
+      if (previousTotalUsers > 0) {
+        const change = ((userCount - previousTotalUsers) / previousTotalUsers * 100).toFixed(0);
+        totalUsersChange = (change > 0 ? '+' : '') + change + '% from last month';
+      }
+
+      const newActiveLastMonth = await User.countDocuments({ status: 'Active', created_at: { $gte: oneMonthAgo } });
+      const previousActive = activeMembers - newActiveLastMonth;
+      let activeChange = '+0% from last month';
+      if (previousActive > 0) {
+        const change = ((activeMembers - previousActive) / previousActive * 100).toFixed(0);
+        activeChange = (change > 0 ? '+' : '') + change + '% from last month';
+      }
+
+      const newTrainersLastMonth = await Trainer.countDocuments({ createdAt: { $gte: oneMonthAgo } });
+      const previousTrainers = trainerCount - newTrainersLastMonth;
+      let trainersChange = '+0% from last month';
+      if (previousTrainers > 0) {
+        const change = ((trainerCount - previousTrainers) / previousTrainers * 100).toFixed(0);
+        trainersChange = (change > 0 ? '+' : '') + change + '% from last month';
+      }
+
+      const newVerifiersLastMonth = await Verifier.countDocuments({ createdAt: { $gte: oneMonthAgo } });
+      const previousVerifiers = verifierCount - newVerifiersLastMonth;
+      let verifiersChange = '+0% from last month';
+      if (previousVerifiers > 0) {
+        const change = ((verifierCount - previousVerifiers) / previousVerifiers * 100).toFixed(0);
+        verifiersChange = (change > 0 ? '+' : '') + change + '% from last month';
+      }
+
+      const newPlatinumLastMonth = await User.countDocuments({ membershipType: 'Platinum', created_at: { $gte: oneMonthAgo } });
+      const previousPlatinum = platinumMembers - newPlatinumLastMonth;
+      let platinumChange = '+0% from last month';
+      if (previousPlatinum > 0) {
+        const change = ((platinumMembers - previousPlatinum) / previousPlatinum * 100).toFixed(0);
+        platinumChange = (change > 0 ? '+' : '') + change + '% from last month';
+      }
+
+      const previousNewSignups = await User.countDocuments({ created_at: { $gte: twoWeeksAgo, $lt: oneWeekAgo } });
+      let newSignupsChange = '+0% from last week';
+      if (previousNewSignups > 0) {
+        const change = ((newSignups - previousNewSignups) / previousNewSignups * 100).toFixed(0);
+        newSignupsChange = (change > 0 ? '+' : '') + change + '% from last week';
+      }
+
+      // Revenue calculation function
+      const calculateRevenue = async (additionalMatch = {}) => {
+        const agg = await User.aggregate([
+          { 
+            $match: { 
+              status: 'Active',
+              membershipType: { $in: ['Basic', 'Gold', 'Platinum'] },
+              ...additionalMatch
+            } 
+          },
+          {
+            $addFields: {
+              months_paid: {
+                $cond: {
+                  if: { 
+                    $and: [
+                      { $ifNull: ['$membershipDuration.months_remaining', false] },
+                      { $gt: ['$membershipDuration.months_remaining', 0] }
+                    ]
+                  },
+                  then: '$membershipDuration.months_remaining',
+                  else: 1
+                }
+              },
+              monthly_price: {
+                $switch: {
+                  branches: [
+                    { case: { $eq: ['$membershipType', 'Basic'] }, then: 299 },
+                    { case: { $eq: ['$membershipType', 'Gold'] }, then: 599 },
+                    { case: { $eq: ['$membershipType', 'Platinum'] }, then: 999 },
+                  ],
+                  default: 0
+                }
+              },
+            }
+          },
+          {
+            $group: {
+              _id: null,
+              revenue: { $sum: { $multiply: ['$monthly_price', '$months_paid'] } }
+            }
+          }
+        ]);
+        return agg[0]?.revenue || 0;
+      };
+
+      const totalRevenue = await calculateRevenue();
+      const monthlyRevenue = await calculateRevenue({ 'membershipDuration.start_date': { $gte: oneMonthAgo } });
+      const previousMonthlyRevenue = await calculateRevenue({ 'membershipDuration.start_date': { $gte: twoMonthsAgo, $lt: oneMonthAgo } });
+      let monthlyChange = '+0% from last month';
+      if (previousMonthlyRevenue > 0) {
+        const change = ((monthlyRevenue - previousMonthlyRevenue) / previousMonthlyRevenue * 100).toFixed(0);
+        monthlyChange = (change > 0 ? '+' : '') + change + '% from last month';
+      }
+
       const users = await User.find().sort({ created_at: -1 }).limit(5).select('full_name email status membershipType created_at');
       const trainers = await Trainer.find().sort({ createdAt: -1 }).limit(5).select('name specializations experience status email');
       const verifiers = await Verifier.find().sort({ createdAt: -1 }).limit(5).select('name');
+
       res.render('admin_dashboard', {
         pageTitle: 'Admin Dashboard',
         user: req.session.user || null,
         stats: {
           totalUsers: userCount,
+          totalUsersChange,
           activeMembers,
+          activeChange,
           personalTrainers: trainerCount,
-          contentVerifiers: verifierCount
+          trainersChange,
+          contentVerifiers: verifierCount,
+          verifiersChange,
+          totalRevenue,
+          monthlyRevenue,
+          monthlyChange,
+          platinumMembers,
+          platinumChange,
+          newSignups,
+          newSignupsChange
         },
         users: users || [],
         trainers: trainers || [],
@@ -43,7 +172,24 @@ const adminController = {
         user: req.session.user || null,
         users: [],
         trainers: [],
-        verifiers: []
+        verifiers: [],
+        stats: {
+          totalUsers: 0,
+          totalUsersChange: '+0% from last month',
+          activeMembers: 0,
+          activeChange: '+0% from last month',
+          personalTrainers: 0,
+          trainersChange: '+0% from last month',
+          contentVerifiers: 0,
+          verifiersChange: '+0% from last month',
+          totalRevenue: 0,
+          monthlyRevenue: 0,
+          monthlyChange: '+0% from last month',
+          platinumMembers: 0,
+          platinumChange: '+0% from last month',
+          newSignups: 0,
+          newSignupsChange: '+0% from last week'
+        }
       });
     }
   },
@@ -433,159 +579,158 @@ const adminController = {
   },
 
   // Membership Management
-  // In adminController.js - getMemberships method (COMPLETE UPDATED VERSION)
-getMemberships: async (req, res) => {
-  try {
-    if (!req.session.userId) {
-      return res.redirect('/admin_login');
-    }
-    
-    const memberships = await Membership.find({ user_id: { $ne: null } })
-      .sort({ createdAt: -1 })
-      .populate('user_id', 'full_name email');
+  getMemberships: async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.redirect('/admin_login');
+      }
+      
+      const memberships = await Membership.find({ user_id: { $ne: null } })
+        .sort({ createdAt: -1 })
+        .populate('user_id', 'full_name email');
 
-    // Calculate real-time stats from MongoDB
-    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      // Calculate real-time stats from MongoDB
+      const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-    // FIXED: Aggregate for plan stats with correct pricing and months_remaining
-    const agg = await User.aggregate([
-      { 
-        $match: { 
-          status: 'Active',
-          membershipType: { $in: ['Basic', 'Gold', 'Platinum'] }
-        } 
-      },
-      {
-        $addFields: {
-          // Use months_remaining for revenue calculation, default to 1 if not set
-          months_paid: {
-            $cond: {
-              if: { 
-                $and: [
-                  { $ifNull: ['$membershipDuration.months_remaining', false] },
-                  { $gt: ['$membershipDuration.months_remaining', 0] }
-                ]
-              },
-              then: '$membershipDuration.months_remaining',
-              else: 1
-            }
-          },
-          // FIXED: Use correct pricing based on membershipType
-          monthly_price: {
-            $switch: {
-              branches: [
-                { case: { $eq: ['$membershipType', 'Basic'] }, then: 299 },    // ₹299
-                { case: { $eq: ['$membershipType', 'Gold'] }, then: 599 },     // ₹599
-                { case: { $eq: ['$membershipType', 'Platinum'] }, then: 999 }, // ₹999
-              ],
-              default: 0
-            }
-          },
-          // Calculate membership duration in months for retention
-          membership_months: {
-            $max: [
-              1,
-              {
-                $ceil: {
-                  $divide: [
-                    { 
-                      $subtract: [
-                        new Date(), 
-                        { $ifNull: ['$membershipDuration.start_date', '$created_at'] }
-                      ] 
-                    },
-                    1000 * 60 * 60 * 24 * 30 // milliseconds in a month
+      // FIXED: Aggregate for plan stats with correct pricing and months_remaining
+      const agg = await User.aggregate([
+        { 
+          $match: { 
+            status: 'Active',
+            membershipType: { $in: ['Basic', 'Gold', 'Platinum'] }
+          } 
+        },
+        {
+          $addFields: {
+            // Use months_remaining for revenue calculation, default to 1 if not set
+            months_paid: {
+              $cond: {
+                if: { 
+                  $and: [
+                    { $ifNull: ['$membershipDuration.months_remaining', false] },
+                    { $gt: ['$membershipDuration.months_remaining', 0] }
                   ]
-                }
+                },
+                then: '$membershipDuration.months_remaining',
+                else: 1
               }
-            ]
+            },
+            // FIXED: Use correct pricing based on membershipType
+            monthly_price: {
+              $switch: {
+                branches: [
+                  { case: { $eq: ['$membershipType', 'Basic'] }, then: 299 },    // ₹299
+                  { case: { $eq: ['$membershipType', 'Gold'] }, then: 599 },     // ₹599
+                  { case: { $eq: ['$membershipType', 'Platinum'] }, then: 999 }, // ₹999
+                ],
+                default: 0
+              }
+            },
+            // Calculate membership duration in months for retention
+            membership_months: {
+              $max: [
+                1,
+                {
+                  $ceil: {
+                    $divide: [
+                      { 
+                        $subtract: [
+                          new Date(), 
+                          { $ifNull: ['$membershipDuration.start_date', '$created_at'] }
+                        ] 
+                      },
+                      1000 * 60 * 60 * 24 * 30 // milliseconds in a month
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          $group: {
+            _id: '$membershipType',
+            active: { $sum: 1 },
+            // FIXED: Multiply monthly_price by months_paid for total revenue
+            revenue: { $sum: { $multiply: ['$monthly_price', '$months_paid'] } },
+            retention: { $avg: '$membership_months' }
           }
         }
-      },
-      {
-        $group: {
-          _id: '$membershipType',
-          active: { $sum: 1 },
-          // FIXED: Multiply monthly_price by months_paid for total revenue
-          revenue: { $sum: { $multiply: ['$monthly_price', '$months_paid'] } },
-          retention: { $avg: '$membership_months' }
-        }
-      }
-    ]);
+      ]);
 
-    // Process aggregate results into planStats
-    let planStats = {
-      basic: { active: 0, revenue: 0, retention: 0 },
-      gold: { active: 0, revenue: 0, retention: 0 },
-      platinum: { active: 0, revenue: 0, retention: 0 }
-    };
-
-    agg.forEach(group => {
-      const type = group._id ? group._id.toLowerCase() : 'basic';
-      if (planStats[type]) {
-        planStats[type] = {
-          active: group.active || 0,
-          revenue: group.revenue || 0,
-          retention: group.retention || 0
-        };
-      }
-    });
-
-    // Calculate top-level stats
-    const totalUsers = await User.countDocuments();
-    const activeMembers = await User.countDocuments({ status: 'Active' });
-    const premiumMembers = await User.countDocuments({ 
-      status: 'Active', 
-      membershipType: 'Platinum' 
-    });
-    const newSignups = await User.countDocuments({ 
-      created_at: { $gte: oneWeekAgo } 
-    });
-    
-    // Calculate total revenue from all plans
-    const totalRevenue = agg.reduce((sum, group) => sum + (group.revenue || 0), 0);
-
-    // Ensure all plan stats have values even if no users in that plan
-    ['basic', 'gold', 'platinum'].forEach(plan => {
-      if (!planStats[plan].active && !planStats[plan].revenue && !planStats[plan].retention) {
-        planStats[plan] = { active: 0, revenue: 0, retention: 0 };
-      }
-    });
-
-    res.render('admin_membership', {
-      pageTitle: 'Membership Management',
-      user: req.session.user || null,
-      memberships: memberships || [],
-      stats: {
-        totalUsers,
-        totalRevenue,
-        activeMembers,
-        premiumMembers,
-        newSignups
-      },
-      planStats
-    });
-  } catch (error) {
-    console.error('Membership management error:', error);
-    res.render('admin_membership', {
-      pageTitle: 'Membership Management',
-      user: req.session.user || null,
-      memberships: [],
-      stats: {
-        totalUsers: 0,
-        totalRevenue: 0,
-        activeMembers: 0,
-        premiumMembers: 0,
-        newSignups: 0
-      },
-      planStats: {
+      // Process aggregate results into planStats
+      let planStats = {
         basic: { active: 0, revenue: 0, retention: 0 },
         gold: { active: 0, revenue: 0, retention: 0 },
         platinum: { active: 0, revenue: 0, retention: 0 }
-      }
-    });
-  }
-},
+      };
+
+      agg.forEach(group => {
+        const type = group._id ? group._id.toLowerCase() : 'basic';
+        if (planStats[type]) {
+          planStats[type] = {
+            active: group.active || 0,
+            revenue: group.revenue || 0,
+            retention: group.retention || 0
+          };
+        }
+      });
+
+      // Calculate top-level stats
+      const totalUsers = await User.countDocuments();
+      const activeMembers = await User.countDocuments({ status: 'Active' });
+      const premiumMembers = await User.countDocuments({ 
+        status: 'Active', 
+        membershipType: 'Platinum' 
+      });
+      const newSignups = await User.countDocuments({ 
+        created_at: { $gte: oneWeekAgo } 
+      });
+      
+      // Calculate total revenue from all plans
+      const totalRevenue = agg.reduce((sum, group) => sum + (group.revenue || 0), 0);
+
+      // Ensure all plan stats have values even if no users in that plan
+      ['basic', 'gold', 'platinum'].forEach(plan => {
+        if (!planStats[plan].active && !planStats[plan].revenue && !planStats[plan].retention) {
+          planStats[plan] = { active: 0, revenue: 0, retention: 0 };
+        }
+      });
+
+      res.render('admin_membership', {
+        pageTitle: 'Membership Management',
+        user: req.session.user || null,
+        memberships: memberships || [],
+        stats: {
+          totalUsers,
+          totalRevenue,
+          activeMembers,
+          premiumMembers,
+          newSignups
+        },
+        planStats
+      });
+    } catch (error) {
+      console.error('Membership management error:', error);
+      res.render('admin_membership', {
+        pageTitle: 'Membership Management',
+        user: req.session.user || null,
+        memberships: [],
+        stats: {
+          totalUsers: 0,
+          totalRevenue: 0,
+          activeMembers: 0,
+          premiumMembers: 0,
+          newSignups: 0
+        },
+        planStats: {
+          basic: { active: 0, revenue: 0, retention: 0 },
+          gold: { active: 0, revenue: 0, retention: 0 },
+          platinum: { active: 0, revenue: 0, retention: 0 }
+        }
+      });
+    }
+  },
   createMembership: async (req, res) => {
     try {
       if (!req.session.userId) {
