@@ -16,7 +16,7 @@ const verifierSchema = new mongoose.Schema({
         type: String,
         match: [/^\+?[\d\s-]{10,}$/, 'Please enter a valid phone number']
     },
-    password_hash: {  // Changed from 'password' to 'password_hash'
+    password: {  
         type: String,
         required: true
     },
