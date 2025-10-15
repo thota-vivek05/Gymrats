@@ -1305,31 +1305,7 @@ const getTodaysWorkout = async (userId) => {
         // ✅ USE the function to get today's workout
         const todayWorkoutData = await getTodaysWorkout(userId);
         console.log('✅ Today workout data:', todayWorkoutData);
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        if (currentWeekWorkout && currentWeekWorkout.exercises) {
-            const todayWorkoutDayName = dayNames[today.getDay()];
-            
-            // Filter exercises for today
-            todayExercises = currentWeekWorkout.exercises.filter(exercise => 
-                exercise.day === todayWorkoutDayName
-            );
-            
-            if (todayExercises.length > 0) {
-                const completedExercises = todayExercises.filter(ex => ex.completed).length;
-                const progress = todayExercises.length > 0 ? Math.round((completedExercises / todayExercises.length) * 100) : 0;
-                
-                todayWorkoutData = {
-                    name: `${todayWorkoutDayName} Workout`,
-                    exercises: todayExercises,
-                    progress: progress,
-                    completed: completedExercises === todayExercises.length,
-                    completedExercises: completedExercises,
-                    totalExercises: todayExercises.length,
-                    duration: todayExercises.reduce((total, ex) => total + (ex.duration || 45), 0),
-                    workoutPlanId: currentWeekWorkout._id
-                };
-            }
-        }
+
 
         // Update exercise progress with actual workout data
         let exerciseProgress = [
@@ -1385,11 +1361,7 @@ const getTodaysWorkout = async (userId) => {
         console.log('Local Today Day Name:', todayDayName);
         console.log('Local Week Start:', weekStart.toString());
         console.log('Local Week End:', weekEnd.toString());
-        console.log('Current Week Workout Found:', !!currentWeekWorkout);
-        if (currentWeekWorkout) {
-            console.log('Workout date:', currentWeekWorkout.date);
-            console.log('Today Exercises:', todayExercises.length);
-        }
+        
 
         console.log('=== DEBUG RECENT FOODS ===');
         console.log('Recent foods count:', recentFoods.length);
