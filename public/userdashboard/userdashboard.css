@@ -350,6 +350,90 @@ input:focus {
     cursor: pointer;
 }
 
+/* Exercise item styles */
+.exercise-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.exercise-item.completed {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-color: #4CAF50;
+}
+
+.exercise-info {
+    flex: 1;
+}
+
+.exercise-name {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.exercise-details {
+    color: #ccc;
+    font-size: 0.9em;
+}
+
+.exercise-complete-btn {
+    background: #8A2BE2;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+}
+
+.exercise-complete-btn:hover:not(:disabled) {
+    background: #7B1FA2;
+}
+
+.exercise-complete-btn.completed {
+    background: #4CAF50;
+    cursor: not-allowed;
+}
+
+.exercise-complete-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.workout-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    background: #8A2BE2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.workout-btn:hover:not(:disabled) {
+    background: #7B1FA2;
+}
+
+.workout-btn.completed {
+    background: #4CAF50;
+    cursor: not-allowed;
+}
+
+.workout-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* Side Navbar */
 .mobile-sidebar {
     height: 100%;

@@ -6,7 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const methodOverride = require('method-override');
 const sqlite3 = require('sqlite3').verbose();
-
+process.env.TZ = 'Asia/Kolkata'; // Replace with your timezone
 
 const app = express();
 const PORT = process.env.PORT || 3000;

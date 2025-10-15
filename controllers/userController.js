@@ -553,6 +553,126 @@ const signupUser = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
+// Add this function to userController.js for individual exercise completion
+const markExerciseCompleted = async (req, res) => {
+    try {
+        console.log('🔍=== MARK EXERCISE COMPLETED START ===');
+        console.log('Request body:', req.body);
+        console.log('Session user:', req.session.user);
+        
+        if (!req.session || !req.session.user) {
+            console.log('❌ No user session');
+            return res.status(401).json({ error: 'Please log in to complete the exercise' });
+        }
+
+        const userId = req.session.user.id;
+        const { workoutPlanId, exerciseName } = req.body;
+
+        console.log('📝 Processing:', { workoutPlanId, exerciseName, userId });
+
+        if (!workoutPlanId || !exerciseName) {
+            console.log('❌ Missing required fields');
+            return res.status(400).json({ error: 'Workout ID and exercise name are required' });
+        }
+
+        // ✅ ADD THIS: Calculate today's day name
+        // In markExerciseCompleted function - add timezone handling:
+const today = new Date();
+// Convert to Asia/Kolkata timezone (UTC+5:30)
+const localDate = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][localDate.getDay()];
+console.log('📅 Today is (local):', todayDayName);
+
+        // Find the workout
+        console.log('🔍 Looking for workout:', workoutPlanId);
+        const workout = await WorkoutHistory.findOne({ _id: workoutPlanId, userId });
+        
+        if (!workout) {
+            console.log('❌ Workout not found');
+            return res.status(404).json({ error: 'Workout not found' });
+        }
+
+        console.log('✅ Workout found:', {
+            id: workout._id,
+            exerciseCount: workout.exercises.length,
+            exercises: workout.exercises.map(e => ({ name: e.name, day: e.day, completed: e.completed }))
+        });
+
+        // Find exercise by exact name match
+        const exerciseIndex = workout.exercises.findIndex(ex => ex.name === exerciseName);
+        
+        if (exerciseIndex === -1) {
+            console.log('❌ Exercise not found:', exerciseName);
+            console.log('📝 Available exercises:', workout.exercises.map(e => e.name));
+            return res.status(404).json({ error: `Exercise "${exerciseName}" not found` });
+        }
+
+        const exercise = workout.exercises[exerciseIndex];
+        console.log('✅ Found exercise:', {
+            name: exercise.name,
+            day: exercise.day,
+            currentCompleted: exercise.completed,
+            index: exerciseIndex
+        });
+
+        if (exercise.completed) {
+            console.log('⚠️ Exercise already completed');
+            return res.status(400).json({ error: 'Exercise already completed' });
+        }
+
+        // Mark as completed
+        workout.exercises[exerciseIndex].completed = true;
+        console.log('✅ Marked exercise as completed');
+
+        // ✅ FIXED: Calculate progress for TODAY'S exercises only
+        const todaysExercises = workout.exercises.filter(ex => ex.day === todayDayName);
+        const completedExercises = todaysExercises.filter(ex => ex.completed).length;
+        const totalExercises = todaysExercises.length;
+        const progress = Math.round((completedExercises / totalExercises) * 100);
+
+        console.log('📊 Progress calculated (TODAY ONLY):', { 
+            today: todayDayName,
+            completed: completedExercises, 
+            total: totalExercises, 
+            progress,
+            todaysExercises: todaysExercises.map(e => ({ name: e.name, completed: e.completed }))
+        });
+
+        workout.progress = progress;
+
+        // Save to database
+        console.log('💾 Saving to database...');
+        await workout.save();
+        
+        // Verify the save worked
+        const updatedWorkout = await WorkoutHistory.findById(workoutPlanId);
+        const savedExercise = updatedWorkout.exercises[exerciseIndex];
+        console.log('💾 After save - exercise completed:', savedExercise.completed);
+
+        console.log('✅=== MARK EXERCISE COMPLETED SUCCESS ===');
+        
+        res.json({ 
+            success: true,
+            message: 'Exercise marked as completed successfully',
+            progress: progress,
+            completedExercises: completedExercises,
+            totalExercises: totalExercises
+        });
+
+    } catch (error) {
+        console.error('❌=== MARK EXERCISE COMPLETED ERROR ===');
+        console.error('Error:', error);
+        res.status(500).json({ 
+            success: false,
+            error: 'Server error: ' + error.message 
+        });
+    }
+};
+
+
+
+
 //brimstone
 // Add this function to userController.js
 const changeMembership = async (req, res) => {
@@ -855,7 +975,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
             .populate('trainer', 'name email specializations experience')
             .populate('class_schedules.trainerId', 'name');
         if (!user) {
-            return res.status(404).render('error', { message: 'User not found' });
+            return res.status(404).send('User not found');
         }
 
         // Check if membership is active - REYNA
@@ -1024,50 +1144,82 @@ const getUserDashboard = async (req, res, membershipCode) => {
             }
         }
 
-        // ✅ UTC: Get today's workout from weekly schedule
-        const weekStart = new Date(today);
-        weekStart.setUTCDate(today.getUTCDate() - today.getUTCDay()); // Start of week (Sunday)
-        const weekEnd = new Date(weekStart);
-        weekEnd.setUTCDate(weekStart.getUTCDate() + 7);
+        // ✅ FIXED: Get today's workout (Week starts from Monday)
+       // ✅ FIXED: Get today's workout with better debugging
+// ✅ FIXED: Get today's workout with proper progress calculation for TODAY ONLY
+// ✅ FIXED: Get today's workout with proper timezone handling
+const getTodaysWorkout = async (userId) => {
+    try {
+        // ✅ Use local time instead of UTC for day calculation
+        const today = new Date();
+        // Convert to Asia/Kolkata timezone (UTC+5:30)
+        const localDate = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+        const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][localDate.getDay()];
+        
+        console.log('🔍 Looking for workouts for:', todayDayName, 'User:', userId);
+        console.log('📅 Date info:', {
+            utc: today.toISOString(),
+            local: localDate.toString(),
+            localDay: todayDayName
+        });
 
-        const currentWeekWorkout = await WorkoutHistory.findOne({
-            userId: userId,
-            date: { $gte: weekStart, $lt: weekEnd }
+        // Look for ANY workout history that has exercises for today
+        const workouts = await WorkoutHistory.find({ 
+            userId: userId 
         }).lean();
 
-        // ✅ UTC: Get upcoming class
-        const upcomingClass = user.class_schedules && user.class_schedules.length > 0
-            ? user.class_schedules
-                .filter(cls => {
-                    const classDate = new Date(cls.date);
-                    const now = new Date();
-                    return classDate >= now;
-                })
-                .sort((a, b) => new Date(a.date) - new Date(b.date))[0]
-            : null;
+        console.log('📋 Total workouts found:', workouts.length);
 
-        console.log('=== DEBUG UPCOMING CLASS ===');
-        console.log('Current UTC time:', new Date().toISOString());
-        console.log('Filtered upcoming class:', upcomingClass);
-        if (upcomingClass) {
-            console.log('Upcoming class UTC date:', upcomingClass.date);
-            
-            if (upcomingClass.trainerId && typeof upcomingClass.trainerId === 'object' && upcomingClass.trainerId.name) {
-                upcomingClass.trainerName = upcomingClass.trainerId.name;
-            } else {
-                try {
-                    const trainer = await Trainer.findById(upcomingClass.trainerId);
-                    upcomingClass.trainerName = trainer ? trainer.name : 'Coach';
-                } catch (error) {
-                    console.error('Error fetching trainer:', error);
-                    upcomingClass.trainerName = 'Coach';
+        let todaysExercises = [];
+        let workoutPlanId = null;
+        let workoutName = `${todayDayName} Workout`;
+
+        // Check each workout for today's exercises
+        for (const workout of workouts) {
+            if (workout.exercises && workout.exercises.length > 0) {
+                const exercisesForToday = workout.exercises.filter(ex => 
+                    ex.day === todayDayName
+                );
+                
+                if (exercisesForToday.length > 0) {
+                    console.log('✅ Found workout with exercises for today:', workout._id);
+                    todaysExercises = exercisesForToday;
+                    workoutPlanId = workout._id;
+                    workoutName = workout.name || `${todayDayName} Workout`;
+                    break;
                 }
             }
         }
 
-        // Extract today's exercises from weekly schedule
-        let todayExercises = [];
-        let todayWorkoutData = {
+        console.log('🎯 Today exercises found:', todaysExercises.length);
+
+        if (todaysExercises.length > 0) {
+            const completedExercises = todaysExercises.filter(ex => ex.completed).length;
+            const totalExercises = todaysExercises.length;
+            const progress = Math.round((completedExercises / totalExercises) * 100);
+            
+            console.log('📊 Progress calculation (TODAY ONLY):', {
+                completed: completedExercises,
+                total: totalExercises,
+                progress: progress,
+                todayDayName: todayDayName
+            });
+            
+            return {
+                name: workoutName,
+                exercises: todaysExercises,
+                progress: progress,
+                completed: completedExercises === totalExercises,
+                completedExercises: completedExercises,
+                totalExercises: totalExercises,
+                duration: todaysExercises.reduce((total, ex) => total + (ex.duration || 45), 0),
+                workoutPlanId: workoutPlanId
+            };
+        }
+
+        // If no workouts found, return empty
+        console.log('❌ No workouts found for today');
+        return {
             name: 'No Workout Scheduled',
             exercises: [],
             progress: 0,
@@ -1078,31 +1230,25 @@ const getUserDashboard = async (req, res, membershipCode) => {
             workoutPlanId: null
         };
 
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        if (currentWeekWorkout && currentWeekWorkout.exercises) {
-            const todayDayName = dayNames[today.getUTCDay()];
-            
-            // Filter exercises for today
-            todayExercises = currentWeekWorkout.exercises.filter(exercise => 
-                exercise.day === todayDayName
-            );
-            
-            if (todayExercises.length > 0) {
-                const completedExercises = todayExercises.filter(ex => ex.completed).length;
-                const progress = todayExercises.length > 0 ? Math.round((completedExercises / todayExercises.length) * 100) : 0;
-                
-                todayWorkoutData = {
-                    name: `${todayDayName} Workout`,
-                    exercises: todayExercises,
-                    progress: progress,
-                    completed: completedExercises === todayExercises.length,
-                    completedExercises: completedExercises,
-                    totalExercises: todayExercises.length,
-                    duration: todayExercises.reduce((total, ex) => total + (ex.duration || 45), 0),
-                    workoutPlanId: currentWeekWorkout._id
-                };
-            }
-        }
+    } catch (error) {
+        console.error('❌ Error in getTodaysWorkout:', error);
+        return {
+            name: 'No Workout Scheduled',
+            exercises: [],
+            progress: 0,
+            completed: false,
+            completedExercises: 0,
+            totalExercises: 0,
+            duration: 0,
+            workoutPlanId: null
+        };
+    }
+};
+
+
+        // ✅ USE the function to get today's workout
+        const todayWorkoutData = await getTodaysWorkout(userId);
+        console.log('✅ Today workout data:', todayWorkoutData);
 
         // Update exercise progress with actual workout data
         let exerciseProgress = [
@@ -1111,8 +1257,9 @@ const getUserDashboard = async (req, res, membershipCode) => {
             { name: 'Deadlift', progress: 85, currentWeight: 110, goalWeight: 130 }
         ];
 
-        if (currentWeekWorkout && currentWeekWorkout.exercises) {
-            const exercises = currentWeekWorkout.exercises;
+        // Use today's workout data to update exercise progress
+        if (todayWorkoutData.exercises.length > 0) {
+            const exercises = todayWorkoutData.exercises;
             
             const benchPressExercises = exercises.filter(ex => ex.name && ex.name.toLowerCase().includes('bench'));
             if (benchPressExercises.length > 0) {
@@ -1136,20 +1283,21 @@ const getUserDashboard = async (req, res, membershipCode) => {
             }
         }
 
-        // ✅ UTC: Debug section
-        console.log('=== DEBUG WORKOUT DATA (UTC) ===');
-        console.log('UTC Today:', today.toISOString());
-        console.log('UTC Today Day Name:', dayNames[today.getUTCDay()]);
-        console.log('UTC Week Start:', weekStart.toISOString());
-        console.log('UTC Week End:', weekEnd.toISOString());
-        console.log('Current Week Workout Found:', !!currentWeekWorkout);
-        if (currentWeekWorkout) {
-            console.log('Workout date:', currentWeekWorkout.date);
-            console.log('Today Exercises:', todayExercises.length);
-        }
+        // ✅ UTC: Get upcoming class
+        const upcomingClass = user.class_schedules && user.class_schedules.length > 0
+            ? user.class_schedules
+                .filter(cls => {
+                    const classDate = new Date(cls.date);
+                    const now = new Date();
+                    return classDate >= now;
+                })
+                .sort((a, b) => new Date(a.date) - new Date(b.date))[0]
+            : null;
 
-        console.log('=== DEBUG RECENT FOODS ===');
-        console.log('Recent foods count:', recentFoods.length);
+        console.log('=== DEBUG DASHBOARD DATA ===');
+        console.log('Recent workouts:', recentWorkouts.length);
+        console.log('Today workout exercises:', todayWorkoutData.exercises.length);
+        console.log('Recent foods:', recentFoods.length);
 
         // Common data for all membership types
         const commonData = {
@@ -1193,12 +1341,19 @@ const getUserDashboard = async (req, res, membershipCode) => {
         
     } catch (error) {
         console.error('Error fetching dashboard:', error);
-        res.status(500).render('error', { 
-            message: 'Error loading dashboard',
-            error: error
-        });
+        res.status(500).send(`
+            <html>
+                <body>
+                    <h1>Error Loading Dashboard</h1>
+                    <p>There was an error loading your dashboard. Please try again.</p>
+                    <p>Error: ${error.message}</p>
+                    <a href="/userdashboard_${membershipCode}">Try Again</a>
+                </body>
+            </html>
+        `);
     }
 };
+
 
 const completeWorkout = async (req, res) => {
     try {
@@ -1386,5 +1541,6 @@ module.exports = {
     checkTrainerSubscription,
     updateUserProfile,
     changeMembership,
-    getTodaysFoods
+    getTodaysFoods,
+    markExerciseCompleted // Add this line
 };
