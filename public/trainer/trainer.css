@@ -378,50 +378,43 @@ input:focus {
     border-bottom: none;
 }
 
+/* Enhanced Membership badges */
 .membership-badge {
-    font-size: 0.7em;
-    padding: 2px 8px;
-    border-radius: 12px;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.75em;
+    font-weight: 700;
     margin-left: 8px;
-    font-weight: 600;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .membership-basic {
-    background: #6c757d;
+    background: linear-gradient(135deg, #6c757d, #495057);
     color: white;
+    border-color: #495057;
 }
 
 .membership-gold {
-    background: linear-gradient(135deg, #FFD700, #FFA500);
+    background: linear-gradient(135deg, #ffd700, #daa520);
     color: #333;
+    border-color: #daa520;
 }
 
 .membership-platinum {
-    background: linear-gradient(135deg, #E5E4E2, #C0C0C0);
+    background: linear-gradient(135deg, #e5e4e2, #c0c0c0);
     color: #333;
+    border-color: #c0c0c0;
 }
 
-/* Membership-based section styling */
-.disabled-section {
-    opacity: 0.7;
-    background-color: #f8f9fa;
-    border: 1px dashed #dee2e6;
-}
-
-.upgrade-message {
-    text-align: center;
-    padding: 20px;
-    color: #6c757d;
-}
-
-.upgrade-message p {
-    margin: 5px 0;
-}
-
-.upgrade-info {
-    font-size: 0.9em;
-    color: #495057;
+/* Make sure badges are visible in both pages */
+.client-name .membership-badge,
+.user-name .membership-badge {
+    font-size: 0.7em;
+    padding: 3px 8px;
 }
 
 

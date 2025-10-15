@@ -431,86 +431,93 @@
         });
         
         // Form submission
-        const workoutPlanForm = document.getElementById('workoutPlanForm');
+        // Form submission - FIXED VERSION
+const workoutPlanForm = document.getElementById('workoutPlanForm');
 
-        workoutPlanForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+workoutPlanForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Prepare data structure for current week only
+    const workoutData = {
+        clientId: document.getElementById('clientId').value,
+        notes: document.getElementById('plan-notes').value,
+        currentWeek: {}
+    };
+
+    // Process current week data
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    
+    days.forEach((day, index) => {
+        const dayContainer = document.getElementById(`exercises-day-${index}`);
+        if (!dayContainer) return;
+        
+        const exerciseItems = dayContainer.querySelectorAll('.exercise-item');
+        workoutData.currentWeek[day] = [];
+        
+        exerciseItems.forEach(item => {
+            const nameInput = item.querySelector('input.exercise-name-input');
+            const setsInput = item.querySelector('input.sets-input');
+            const repsInput = item.querySelector('input.reps-input');
+            const weightInput = item.querySelector('input.weight-input');
             
-            // Prepare data structure for current week only
-            const workoutData = {
-                clientId: document.getElementById('clientId').value,
-                notes: document.getElementById('plan-notes').value,
-                currentWeek: {}
-            };
-
-            // Process current week data
-            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            
-            days.forEach((day, index) => {
-                const dayContainer = document.getElementById(`exercises-day-${index}`);
-                if (!dayContainer) return;
+            if (nameInput && nameInput.value) {
+                const exerciseData = {
+                    name: nameInput.value,
+                    day: day
+                };
                 
-                const exerciseItems = dayContainer.querySelectorAll('.exercise-item');
-                workoutData.currentWeek[day] = [];
+                // Only add fields that have actual values
+                if (setsInput && setsInput.value && setsInput.value.trim() !== '') {
+                    exerciseData.sets = setsInput.value;
+                }
+                if (repsInput && repsInput.value && repsInput.value.trim() !== '') {
+                    exerciseData.reps = repsInput.value;
+                }
+                if (weightInput && weightInput.value && weightInput.value.trim() !== '') {
+                    exerciseData.weight = weightInput.value;
+                }
                 
-                exerciseItems.forEach(item => {
-                    const nameInput = item.querySelector('input.exercise-name-input');
-                    const setsInput = item.querySelector('input.sets-input');
-                    const repsInput = item.querySelector('input.reps-input');
-                    const weightInput = item.querySelector('input.weight-input');
-                    
-                    if (nameInput && nameInput.value) {
-                        const exerciseData = {
-                            name: nameInput.value,
-                            day: day
-                        };
-                        
-                        // Only add fields that have actual values
-                        if (setsInput && setsInput.value && setsInput.value.trim() !== '') {
-                            exerciseData.sets = setsInput.value;
-                        }
-                        if (repsInput && repsInput.value && repsInput.value.trim() !== '') {
-                            exerciseData.reps = repsInput.value;
-                        }
-                        if (weightInput && weightInput.value && weightInput.value.trim() !== '') {
-                            exerciseData.weight = weightInput.value;
-                        }
-                        
-                        workoutData.currentWeek[day].push(exerciseData);
-                    }
-                });
-            });
-
-            console.log('Sending workout data:', workoutData);
-
-            // Send data to server via fetch API
-            fetch('/save-workout-plan', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(workoutData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                
-                // Show success message
-                const successToast = document.getElementById('successToast');
-                successToast.classList.add('show');
-                
-                // Hide toast after 3 seconds
-                setTimeout(() => {
-                    successToast.classList.remove('show');
-                    // Redirect to trainer dashboard
-                    window.location.href = '/trainer';
-                }, 3000);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                alert('There was an error saving the workout plan.');
-            });
+                workoutData.currentWeek[day].push(exerciseData);
+            }
         });
+    });
+
+    console.log('Sending workout data:', workoutData);
+
+    // Send data to server via fetch API
+    fetch('/save-workout-plan', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(workoutData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+        
+        // Show success message
+        const successToast = document.getElementById('successToast');
+        successToast.classList.add('show');
+        
+        // Hide toast after 3 seconds
+        setTimeout(() => {
+            successToast.classList.remove('show');
+            // FIX: Use the redirect URL from server response instead of hardcoding
+            if (data.redirect) {
+                window.location.href = data.redirect; // This will include the clientId
+            } else {
+                // Fallback to hardcoded URL if no redirect provided
+                window.location.href = '/trainer';
+            }
+        }, 3000);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        alert('There was an error saving the workout plan.');
+    });
+});
+
     </script>
 </body>
 </html>

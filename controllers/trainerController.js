@@ -212,62 +212,80 @@ const renderTrainerDashboard = async (req, res) => {
         }
 
         const trainerId = req.session.trainer.id;
-        console.log('Fetching users for trainer:', trainerId);
+        console.log('Fetching ALL users for trainer:', trainerId);
 
         // Fetch trainer details
         const trainer = await Trainer.findById(trainerId);
       
-        // Fetch Platinum users assigned to this trainer
+        // Fetch ALL users assigned to this trainer (Basic, Gold, Platinum)
         const users = await User.find({ 
-    trainer: trainerId, 
-    status: 'Active'
-    // REMOVE: membershipType: 'Platinum' - This line prevents Basic/Gold from showing
-})
-.select('full_name dob weight height BMI fitness_goals class_schedules membershipType membershipDuration')
-.lean();
+            trainer: trainerId, 
+            status: 'Active'
+        })
+            .select('full_name dob weight height BMI fitness_goals class_schedules membershipType') // ADD membershipType here
+            .lean();
 
-        console.log('Found clients:', users.length);
+        console.log('Found users:', users.length);
+        console.log('Membership breakdown:', users.map(u => u.membershipType));
+        // Add this console.log in both functions to debug
+console.log('User membership data:', users.map(u => ({
+    name: u.full_name,
+    membership: u.membershipType
+})));
 
-       const clients = users.map(user => {
-    const progress = 0; // We'll fetch this dynamically on client selection
+        const clients = users.map(user => {
+            const progress = 0;
 
-    const nextSession = user.class_schedules && user.class_schedules.length > 0
-        ? user.class_schedules.find(schedule => new Date(schedule.date) >= new Date())
-        : null;
-    const nextSessionDate = nextSession
-        ? new Date(nextSession.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-        : 'None';
+            const nextSession = user.class_schedules && user.class_schedules.length > 0
+                ? user.class_schedules.find(schedule => new Date(schedule.date) >= new Date())
+                : null;
+            const nextSessionDate = nextSession
+                ? new Date(nextSession.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                : 'None';
 
-    const dob = new Date(user.dob);
-    const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const monthDiff = today.getMonth() - dob.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-        age--;
-    }
+            const dob = new Date(user.dob);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
 
-    const fitnessGoal = user.fitness_goals?.weight_goal
-        ? `${user.fitness_goals.weight_goal} kg`
-        : user.fitness_goals?.calorie_goal
-        ? `${user.fitness_goals.calorie_goal} kcal`
-        : 'Not set';
+            const fitnessGoal = user.fitness_goals?.weight_goal
+                ? `${user.fitness_goals.weight_goal} kg`
+                : user.fitness_goals?.calorie_goal
+                ? `${user.fitness_goals.calorie_goal} kcal`
+                : 'Not set';
 
-    return {
-        id: user._id,
-        name: user.full_name || 'Unknown',
-        progress,
-        nextSession: nextSessionDate,
-        age: isNaN(age) ? 'N/A' : age,
-        weight: user.weight ? `${user.weight} kg` : 'N/A',
-        height: user.height ? `${user.height} cm` : 'N/A',
-        bodyFat: user.BMI ? `${user.BMI.toFixed(1)} (BMI)` : 'N/A',
-        goal: fitnessGoal,
-        membershipType: user.membershipType || 'Basic' // ADD THIS LINE
-    };
-});
+            return {
+                id: user._id,
+                name: user.full_name || 'Unknown',
+                membershipType: user.membershipType || 'Basic', // FIX: Use actual membershipType
+                progress,
+                nextSession: nextSessionDate,
+                age: isNaN(age) ? 'N/A' : age,
+                weight: user.weight ? `${user.weight} kg` : 'N/A',
+                height: user.height ? `${user.height} cm` : 'N/A',
+                bodyFat: user.BMI ? `${user.BMI.toFixed(1)} (BMI)` : 'N/A',
+                goal: fitnessGoal
+            };
+        });
+
+         const requestedClientId = req.query.clientId;
+
+         let selectedClient = null;
+        if (requestedClientId) {
+            selectedClient = clients.find(client => client.id === requestedClientId);
+        }
+        if (!selectedClient && clients.length > 0) {
+            selectedClient = clients[0]; // Fallback to first client
+        }
+
+
+        // ... rest of the function remains the same
 
         // Fetch data for the first client (if available) - FIXED VERSION
-        let selectedClient = clients.length > 0 ? clients[0] : null;
+        // let selectedClient = clients.length > 0 ? clients[0] : null;
         let nutritionData = null;
         let workoutData = null;
 
@@ -348,6 +366,7 @@ const renderEditWorkoutPlan = async (req, res) => {
             _id: userId, 
             trainer: trainerId,
             // membershipType: 'Platinum'
+            membershipType: { $in: ['Platinum', 'Gold', 'Basic'] }
         })
             .select('full_name fitness_goals')
             .lean();
@@ -431,6 +450,7 @@ const saveWorkoutPlan = async (req, res) => {
             _id: clientId, 
             trainer: trainerId,
             // membershipType: 'Platinum'
+            membershipType: { $in: ['Platinum', 'Gold', 'Basic'] }
         });
         if (!user) {
             console.log('Platinum user not found or not assigned to trainer:', clientId);
@@ -479,31 +499,63 @@ const saveWorkoutPlan = async (req, res) => {
             });
         }
 
-        // ✅ NEW: Always create a NEW workout document for the current week
-        // This ensures each week gets its own object in MongoDB
-        const newWorkout = new WorkoutHistory({
+        // ✅ FIXED: Find existing workout for this week and UPDATE it instead of creating new
+        let workout = await WorkoutHistory.findOne({
             userId: clientId,
-            date: weekStart, // Use week start as the date
-            exercises: currentWeekExercises,
-            progress: 0,
-            completed: false,
-            notes: notes || ''
+            date: { $gte: weekStart, $lt: weekEnd }
         });
 
-        await newWorkout.save();
-        console.log('✅ NEW workout document created for week:', weekStart);
-        console.log('Workout saved successfully:', newWorkout._id);
+        if (workout) {
+            // ✅ UPDATE existing workout document
+            workout.exercises = currentWeekExercises;
+            workout.notes = notes || '';
+            workout.updatedAt = new Date();
+            await workout.save();
+            console.log('✅ EXISTING workout document UPDATED for week:', weekStart);
+        } else {
+            // ✅ CREATE new workout document only if it doesn't exist for this week
+            workout = new WorkoutHistory({
+                userId: clientId,
+                date: weekStart, // Use week start as the date
+                exercises: currentWeekExercises,
+                progress: 0,
+                completed: false,
+                notes: notes || ''
+            });
+            await workout.save();
+            console.log('✅ NEW workout document CREATED for week:', weekStart);
+        }
 
-        // ✅ Link to user's workout history
-        // ✅ FIXED: REPLACE the workout_history with only the current week's workout
-// This removes old workout IDs and keeps only the current week
-user.workout_history = [newWorkout._id];
-await user.save();
-console.log('User workout history updated - only current week workout kept');
+        console.log('Workout saved successfully:', workout._id);
 
-        console.log('Workout linked to user');
+        // ✅ FIXED: Update user's workout_history to include only the current week's workout
+        // Remove any old workout history entries for the same week
+        const userWorkoutHistory = await WorkoutHistory.find({
+            userId: clientId,
+            date: { $gte: weekStart, $lt: weekEnd },
+            _id: { $ne: workout._id } // Exclude current workout
+        });
 
-        res.json({ message: 'Workout plan saved successfully', redirect: '/trainer' });
+        // Delete duplicate workouts for the same week
+        if (userWorkoutHistory.length > 0) {
+            await WorkoutHistory.deleteMany({
+                userId: clientId,
+                date: { $gte: weekStart, $lt: weekEnd },
+                _id: { $ne: workout._id }
+            });
+            console.log(`Deleted ${userWorkoutHistory.length} duplicate workout entries for the same week`);
+        }
+
+        // Update user's workout_history array to include only current week workout
+        user.workout_history = [workout._id];
+        await user.save();
+        console.log('User workout history updated - only current week workout kept');
+
+        res.json({ 
+            message: 'Workout plan saved successfully',  
+            redirect: `/trainer?clientId=${clientId}` 
+        });
+
     } catch (error) {
         console.error('Error saving workout plan:', error);
         res.status(500).json({ error: 'Server error: ' + error.message });
@@ -523,9 +575,10 @@ const renderEditNutritionPlan = async (req, res) => {
         const user = await User.findOne({ 
             _id: userId, 
             trainer: trainerId,
-            // membershipType: 'Platinum'
+           // membershipType: 'Platinum'
+           membershipType: { $in: ['Platinum', 'Gold'] }
         })
-            .select('full_name fitness_goals membershipType')
+            .select('full_name fitness_goals')
             .lean();
 
         if (!user) {
@@ -585,9 +638,8 @@ const editNutritionPlan = async (req, res) => {
             _id: userId, 
             trainer: trainerId,
             // membershipType: 'Platinum'
-        })
-        .select('membershipType');
-
+            membershipType: { $in: ['Platinum', 'Gold'] }
+        });
         if (!user) {
             console.log('Platinum user not found or not assigned to trainer:', userId);
             return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
@@ -699,7 +751,7 @@ const editNutritionPlan = async (req, res) => {
         
         console.log('Nutrition plan and goals saved for Platinum user:', userId);
 
-        res.json({ message: 'Nutrition plan saved successfully', redirect: '/trainer' });
+        res.json({ message: 'Nutrition plan saved successfully', redirect: `/trainer?clientId=${userId}` });
     } catch (error) {
         console.error('Error saving nutrition plan:', error);
         res.status(500).json({ error: 'Server error: ' + error.message });
@@ -710,18 +762,15 @@ const getClientData = async (req, res) => {
     try {
         const userId = req.params.id;
         const trainerId = req.session.trainer.id;
-        
         const user = await User.findOne({ 
             _id: userId, 
-            trainer: trainerId 
+            trainer: trainerId
         })
-        .select('full_name dob weight height BMI fitness_goals membershipType') // ✅ ADD membershipType
-        .lean();
-        
+            .select('full_name dob weight height BMI fitness_goals membershipType') // ADD membershipType here
+            .lean();
         if (!user) {
             return res.status(404).json({ error: 'Client not found' });
         }
-
         const dob = new Date(user.dob);
         const today = new Date();
         let age = today.getFullYear() - dob.getFullYear();
@@ -729,14 +778,12 @@ const getClientData = async (req, res) => {
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
             age--;
         }
-
-        const fitnessGoal = user.fitness_goals?.weight_goal
+        const fitnessGoal = user.fitness_goals.weight_goal
             ? `${user.fitness_goals.weight_goal} kg`
-            : user.fitness_goals?.calorie_goal
+            : user.fitness_goals.calorie_goal
             ? `${user.fitness_goals.calorie_goal} kcal`
             : 'Not set';
-
-        // ✅ FIXED: Return membershipType
+        
         res.json({
             name: user.full_name,
             age: isNaN(age) ? 'N/A' : age,
@@ -744,7 +791,8 @@ const getClientData = async (req, res) => {
             height: user.height ? `${user.height} cm` : 'N/A',
             bodyFat: user.BMI ? `${user.BMI.toFixed(1)} (BMI)` : 'N/A',
             goal: fitnessGoal,
-            membershipType: user.membershipType || 'Basic' // ✅ CRITICAL: Add this line
+            membershipType: user.membershipType || 'Basic', // ADD this line
+            id: user._id // ADD this too for the edit links
         });
     } catch (error) {
         console.error('Error fetching client data:', error);
@@ -765,14 +813,16 @@ const getWorkoutData = async (req, res) => {
         const user = await User.findOne({ 
             _id: userId, 
             trainer: trainerId,
+            // membershipType: 'Platinum'
+            membershipType: { $in: ['Platinum', 'Gold', 'Basic'] }
         }).lean();
 
         if (!user) {
-            console.log('User not found or not assigned to trainer:', userId);
-            return res.status(404).json({ error: 'Client not found or not assigned to you' });
+            console.log('Platinum user not found or not assigned to trainer:', userId);
+            return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
         }
 
-        // Use same Monday-start week calculation
+        // ✅ FIXED: Use same Monday-start week calculation as saveWorkoutPlan
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
@@ -790,7 +840,7 @@ const getWorkoutData = async (req, res) => {
             date: { $gte: weekStart, $lt: weekEnd }
         }).lean() || null;
 
-        // ✅ FIXED: Return the EXACT structure frontend expects
+        // ✅ FIXED: Ensure consistent weeklySchedule structure
         const weeklySchedule = {
             Monday: [],
             Tuesday: [],
@@ -810,23 +860,20 @@ const getWorkoutData = async (req, res) => {
                         reps: exercise.reps,
                         weight: exercise.weight,
                         duration: exercise.duration,
-                        completed: exercise.completed || false
+                        completed: exercise.completed
                     });
                 }
             });
         }
 
-        // ✅ CRITICAL FIX: Return ONLY the weeklySchedule object
-        // Remove the wrapper object that was causing the issue
-        res.json(weeklySchedule);
-        
+        // ✅ FIXED: Return the exact structure expected by frontend
+        res.json({ 
+            weeklySchedule: weeklySchedule,
+            success: true 
+        });
     } catch (error) {
         console.error('Error fetching workout data:', error);
-        // ✅ Return proper error structure
-        res.status(500).json({ 
-            Monday: [], Tuesday: [], Wednesday: [], Thursday: [], 
-            Friday: [], Saturday: [], Sunday: [] 
-        });
+        res.status(500).json({ error: 'Server error' });
     }
 };
 
@@ -844,8 +891,9 @@ const getNutritionData = async (req, res) => {
             _id: userId, 
             trainer: trainerId,
             // membershipType: 'Platinum'
+            membershipType: { $in: ['Platinum', 'Gold'] }
         })
-            .select('fitness_goals membershipType')
+            .select('fitness_goals')
             .lean();
 
         if (!user) {
@@ -914,14 +962,21 @@ const renderTrainerAssignment = async (req, res) => {
         }
 
         // Find unassigned users (trainer field is null) that match trainer's specializations
-        // In renderTrainerAssignment function - Update the user query
-const unassignedUsers = await User.find({
-    trainer: null,
-    workout_type: { $in: trainer.specializations },
-    status: 'Active'
-}).select('full_name email workout_type dob weight height BMI fitness_goals created_at membershipType membershipDuration');
-        
-res.render('trainer_assignment', {
+        const unassignedUsers = await User.find({
+            trainer: null,
+            workout_type: { $in: trainer.specializations },
+            status: 'Active'
+        }).select('full_name email workout_type dob weight height BMI fitness_goals created_at membershipType'); // ADD membershipType
+
+        console.log('Unassigned users found:', unassignedUsers.length);
+        console.log('Membership types:', unassignedUsers.map(u => u.membershipType));
+        // Add this console.log in both functions to debug
+console.log('User membership data:', unassignedUsers.map(u => ({
+    name: u.full_name,
+    membership: u.membershipType
+})));
+
+        res.render('trainer_assignment', {
             trainer: req.session.trainer,
             unassignedUsers: unassignedUsers || [],
             trainerSpecializations: trainer.specializations
@@ -1003,6 +1058,7 @@ const assignUserToTrainer = async (req, res) => {
 };
 
 // Get unassigned users by workout type
+
 const getUnassignedUsers = async (req, res) => {
     try {
         if (!req.session.trainer) {
@@ -1019,17 +1075,18 @@ const getUnassignedUsers = async (req, res) => {
         const { workoutType } = req.query;
         let query = { trainer: null, status: 'Active' };
 
-        // Filter by workout type if provided, otherwise show all matching trainer's specializations
         if (workoutType && workoutType !== 'all') {
             query.workout_type = workoutType;
         } else {
             query.workout_type = { $in: trainer.specializations };
         }
 
-        // In getUnassignedUsers function - Update the query
-const unassignedUsers = await User.find(query)
-    .select('full_name email workout_type dob weight height BMI fitness_goals created_at membershipType membershipDuration')
-    .sort({ created_at: -1 });
+        const unassignedUsers = await User.find(query)
+            .select('full_name email workout_type dob weight height BMI fitness_goals created_at membershipType') // ADD membershipType
+            .sort({ created_at: -1 });
+
+        console.log('API - Unassigned users:', unassignedUsers.length);
+        console.log('API - Membership types:', unassignedUsers.map(u => u.membershipType));
 
         res.json({ success: true, users: unassignedUsers });
     } catch (error) {
@@ -1037,6 +1094,7 @@ const unassignedUsers = await User.find(query)
         res.status(500).json({ error: 'Server error' });
     }
 };
+
 // END REYNA
 
 module.exports = { 
