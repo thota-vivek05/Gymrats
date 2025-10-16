@@ -10,42 +10,201 @@ const bcrypt = require('bcryptjs');
 
 const adminController = {
   // Dashboard
-  getDashboard: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.redirect('/admin_login');
-      }
-      const userCount = await User.countDocuments();
-      const activeMembers = await User.countDocuments({ status: 'Active' });
-      const trainerCount = await Trainer.countDocuments();
-      const verifierCount = await Verifier.countDocuments();
-      const users = await User.find().sort({ created_at: -1 }).limit(5).select('full_name email status membershipType created_at');
-      const trainers = await Trainer.find().sort({ createdAt: -1 }).limit(5).select('name specializations experience status email');
-      const verifiers = await Verifier.find().sort({ createdAt: -1 }).limit(5).select('name');
-      res.render('admin_dashboard', {
-        pageTitle: 'Admin Dashboard',
-        user: req.session.user || null,
-        stats: {
-          totalUsers: userCount,
-          activeMembers,
-          personalTrainers: trainerCount,
-          contentVerifiers: verifierCount
-        },
-        users: users || [],
-        trainers: trainers || [],
-        verifiers: verifiers || []
-      });
-    } catch (error) {
-      console.error('Dashboard error:', error);
-      res.render('admin_dashboard', {
-        pageTitle: 'Admin Dashboard',
-        user: req.session.user || null,
-        users: [],
-        trainers: [],
-        verifiers: []
-      });
+getDashboard: async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/admin_login');
     }
-  },
+
+    const now = new Date();
+    const oneMonthAgo = new Date(now);
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    const twoMonthsAgo = new Date(now);
+    twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+    const oneWeekAgo = new Date(now);
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const twoWeeksAgo = new Date(now);
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+    const userCount = await User.countDocuments();
+    const activeMembers = await User.countDocuments({ status: 'Active' });
+    const trainerCount = await Trainer.countDocuments();
+    const verifierCount = await Verifier.countDocuments();
+    const platinumMembers = await User.countDocuments({ membershipType: 'Platinum' });
+    const newSignups = await User.countDocuments({ created_at: { $gte: oneWeekAgo } });
+
+    // Calculate percentages (dynamic where possible)
+    const newUsersLastMonth = await User.countDocuments({ created_at: { $gte: oneMonthAgo } });
+    const previousTotalUsers = userCount - newUsersLastMonth;
+    let totalUsersChange = '+0% from last month';
+    if (previousTotalUsers > 0) {
+      const change = ((userCount - previousTotalUsers) / previousTotalUsers * 100).toFixed(0);
+      totalUsersChange = (change > 0 ? '+' : '') + change + '% from last month';
+    }
+
+    const newActiveLastMonth = await User.countDocuments({ status: 'Active', created_at: { $gte: oneMonthAgo } });
+    const previousActive = activeMembers - newActiveLastMonth;
+    let activeChange = '+0% from last month';
+    if (previousActive > 0) {
+      const change = ((activeMembers - previousActive) / previousActive * 100).toFixed(0);
+      activeChange = (change > 0 ? '+' : '') + change + '% from last month';
+    }
+
+    const newTrainersLastMonth = await Trainer.countDocuments({ createdAt: { $gte: oneMonthAgo } });
+    const previousTrainers = trainerCount - newTrainersLastMonth;
+    let trainersChange = '+0% from last month';
+    if (previousTrainers > 0) {
+      const change = ((trainerCount - previousTrainers) / previousTrainers * 100).toFixed(0);
+      trainersChange = (change > 0 ? '+' : '') + change + '% from last month';
+    }
+
+    const newVerifiersLastMonth = await Verifier.countDocuments({ createdAt: { $gte: oneMonthAgo } });
+    const previousVerifiers = verifierCount - newVerifiersLastMonth;
+    let verifiersChange = '+0% from last month';
+    if (previousVerifiers > 0) {
+      const change = ((verifierCount - previousVerifiers) / previousVerifiers * 100).toFixed(0);
+      verifiersChange = (change > 0 ? '+' : '') + change + '% from last month';
+    }
+
+    const newPlatinumLastMonth = await User.countDocuments({ membershipType: 'Platinum', created_at: { $gte: oneMonthAgo } });
+    const previousPlatinum = platinumMembers - newPlatinumLastMonth;
+    let platinumChange = '+0% from last month';
+    if (previousPlatinum > 0) {
+      const change = ((platinumMembers - previousPlatinum) / previousPlatinum * 100).toFixed(0);
+      platinumChange = (change > 0 ? '+' : '') + change + '% from last month';
+    }
+
+    const previousNewSignups = await User.countDocuments({ created_at: { $gte: twoWeeksAgo, $lt: oneWeekAgo } });
+    let newSignupsChange = '+0% from last week';
+    if (previousNewSignups > 0) {
+      const change = ((newSignups - previousNewSignups) / previousNewSignups * 100).toFixed(0);
+      newSignupsChange = (change > 0 ? '+' : '') + change + '% from last week';
+    }
+
+    // Revenue calculation function
+    const calculateRevenue = async (additionalMatch = {}) => {
+      const agg = await User.aggregate([
+        { 
+          $match: { 
+            status: 'Active',
+            membershipType: { $in: ['Basic', 'Gold', 'Platinum'] },
+            ...additionalMatch
+          } 
+        },
+        {
+          $addFields: {
+            months_paid: {
+              $cond: {
+                if: { 
+                  $and: [
+                    { $ifNull: ['$membershipDuration.months_remaining', false] },
+                    { $gt: ['$membershipDuration.months_remaining', 0] }
+                  ]
+                },
+                then: '$membershipDuration.months_remaining',
+                else: 1
+              }
+            },
+            monthly_price: {
+              $switch: {
+                branches: [
+                  { case: { $eq: ['$membershipType', 'Basic'] }, then: 299 },
+                  { case: { $eq: ['$membershipType', 'Gold'] }, then: 599 },
+                  { case: { $eq: ['$membershipType', 'Platinum'] }, then: 999 },
+                ],
+                default: 0
+              }
+            },
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            revenue: { $sum: { $multiply: ['$monthly_price', '$months_paid'] } }
+          }
+        }
+      ]);
+      return agg[0]?.revenue || 0;
+    };
+
+    const totalRevenue = await calculateRevenue();
+    const monthlyRevenue = await calculateRevenue({ 'membershipDuration.start_date': { $gte: oneMonthAgo } });
+    const previousMonthlyRevenue = await calculateRevenue({ 'membershipDuration.start_date': { $gte: twoMonthsAgo, $lt: oneMonthAgo } });
+    let monthlyChange = '+0% from last month';
+    if (previousMonthlyRevenue > 0) {
+      const change = ((monthlyRevenue - previousMonthlyRevenue) / previousMonthlyRevenue * 100).toFixed(0);
+      monthlyChange = (change > 0 ? '+' : '') + change + '% from last month';
+    }
+
+    const users = await User.find().sort({ created_at: -1 }).limit(5).select('full_name email status membershipType created_at');
+    const trainers = await Trainer.find().sort({ createdAt: -1 }).limit(5).select('name specializations experience status email');
+    const verifiers = await Verifier.find().sort({ createdAt: -1 }).limit(5).select('name');
+
+    // SAFE DATA FORMATTING - ADD THIS SECTION
+    const safeTrainers = trainers.map(trainer => ({
+      name: trainer.name || 'Unknown Trainer',
+      specializations: trainer.specializations || [],
+      experience: trainer.experience || 0,
+      status: trainer.status || 'Unknown',
+      email: trainer.email || 'No email'
+    }));
+
+    const safeVerifiers = verifiers.map(verifier => ({
+      name: verifier.name || 'Unknown Verifier'
+    }));
+
+    res.render('admin_dashboard', {
+      pageTitle: 'Admin Dashboard',
+      user: req.session.user || null,
+      stats: {
+        totalUsers: userCount,
+        totalUsersChange,
+        activeMembers,
+        activeChange,
+        personalTrainers: trainerCount,
+        trainersChange,
+        contentVerifiers: verifierCount,
+        verifiersChange,
+        totalRevenue,
+        monthlyRevenue,
+        monthlyChange,
+        platinumMembers,
+        platinumChange,
+        newSignups,
+        newSignupsChange
+      },
+      users: users || [],
+      trainers: safeTrainers || [], // Use safe formatted trainers
+      verifiers: safeVerifiers || [] // Use safe formatted verifiers
+    });
+  } catch (error) {
+    console.error('Dashboard error:', error);
+    res.render('admin_dashboard', {
+      pageTitle: 'Admin Dashboard',
+      user: req.session.user || null,
+      users: [],
+      trainers: [],
+      verifiers: [],
+      stats: {
+        totalUsers: 0,
+        totalUsersChange: '+0% from last month',
+        activeMembers: 0,
+        activeChange: '+0% from last month',
+        personalTrainers: 0,
+        trainersChange: '+0% from last month',
+        contentVerifiers: 0,
+        verifiersChange: '+0% from last month',
+        totalRevenue: 0,
+        monthlyRevenue: 0,
+        monthlyChange: '+0% from last month',
+        platinumMembers: 0,
+        platinumChange: '+0% from last month',
+        newSignups: 0,
+        newSignupsChange: '+0% from last week'
+      }
+    });
+  }
+},
 
   // User Management
   getUsers: async (req, res) => {
@@ -252,6 +411,30 @@ const adminController = {
     }
   },
 
+  // getTrainersApi: async (req, res) => {
+  //     try {
+  //       if (!req.session.userId) {
+  //         return res.status(401).json({ success: false, message: 'Unauthorized' });
+  //       }
+  //       const { search } = req.query;
+  //       let query = {};
+  //       if (search) {
+  //         query = {
+  //           $or: [
+  //             { name: { $regex: search, $options: 'i' } },
+  //             { email: { $regex: search, $options: 'i' } },
+  //             { specializations: { $regex: search, $options: 'i' } }
+  //           ]
+  //         };
+  //       }
+  //       const trainers = await Trainer.find(query).sort({ createdAt: -1 }).select('name email specializations experience status');
+  //       res.status(200).json({ success: true, trainers });
+  //     } catch (error) {
+  //       console.error('Get trainers API error:', error);
+  //       res.status(500).json({ success: false, message: 'Internal server error' });
+  //     }
+  //   },
+
   createTrainer: async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -330,21 +513,22 @@ const adminController = {
   },
 
   // Membership Management
-  // In adminController.js - getMemberships method (COMPLETE UPDATED VERSION)
+  // Membership Management - UPDATED TO WORK WITH USER MODEL
 getMemberships: async (req, res) => {
   try {
     if (!req.session.userId) {
       return res.redirect('/admin_login');
     }
     
-    const memberships = await Membership.find({ user_id: { $ne: null } })
-      .sort({ createdAt: -1 })
-      .populate('user_id', 'full_name email');
+    // Get ALL USERS with membership information
+    const users = await User.find()
+      .sort({ created_at: -1 })
+      .select('full_name email membershipType created_at membershipDuration status weight height BMI goal');
 
-    // Calculate real-time stats from MongoDB
+    // Calculate real-time stats from User data
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-    // FIXED: Aggregate for plan stats with correct pricing and months_remaining
+    // Calculate stats using User aggregation
     const agg = await User.aggregate([
       { 
         $match: { 
@@ -354,7 +538,7 @@ getMemberships: async (req, res) => {
       },
       {
         $addFields: {
-          // Use months_remaining for revenue calculation, default to 1 if not set
+          // Use months_remaining for revenue calculation
           months_paid: {
             $cond: {
               if: { 
@@ -367,35 +551,31 @@ getMemberships: async (req, res) => {
               else: 1
             }
           },
-          // FIXED: Use correct pricing based on membershipType
+          // Pricing based on membershipType
           monthly_price: {
             $switch: {
               branches: [
-                { case: { $eq: ['$membershipType', 'Basic'] }, then: 299 },    // ₹299
-                { case: { $eq: ['$membershipType', 'Gold'] }, then: 599 },     // ₹599
-                { case: { $eq: ['$membershipType', 'Platinum'] }, then: 999 }, // ₹999
+                { case: { $eq: ['$membershipType', 'Basic'] }, then: 299 },
+                { case: { $eq: ['$membershipType', 'Gold'] }, then: 599 },
+                { case: { $eq: ['$membershipType', 'Platinum'] }, then: 999 },
               ],
               default: 0
             }
           },
-          // Calculate membership duration in months for retention
+          // Calculate membership duration in months
           membership_months: {
-            $max: [
-              1,
-              {
+            $cond: {
+              if: { $ifNull: ['$membershipDuration.start_date', false] },
+              then: {
                 $ceil: {
                   $divide: [
-                    { 
-                      $subtract: [
-                        new Date(), 
-                        { $ifNull: ['$membershipDuration.start_date', '$created_at'] }
-                      ] 
-                    },
+                    { $subtract: [new Date(), '$membershipDuration.start_date'] },
                     1000 * 60 * 60 * 24 * 30 // milliseconds in a month
                   ]
                 }
-              }
-            ]
+              },
+              else: 1
+            }
           }
         }
       },
@@ -403,7 +583,6 @@ getMemberships: async (req, res) => {
         $group: {
           _id: '$membershipType',
           active: { $sum: 1 },
-          // FIXED: Multiply monthly_price by months_paid for total revenue
           revenue: { $sum: { $multiply: ['$monthly_price', '$months_paid'] } },
           retention: { $avg: '$membership_months' }
         }
@@ -423,7 +602,7 @@ getMemberships: async (req, res) => {
         planStats[type] = {
           active: group.active || 0,
           revenue: group.revenue || 0,
-          retention: group.retention || 0
+          retention: Math.round((group.retention || 1) * 10) / 10 // Round to 1 decimal
         };
       }
     });
@@ -439,20 +618,30 @@ getMemberships: async (req, res) => {
       created_at: { $gte: oneWeekAgo } 
     });
     
-    // Calculate total revenue from all plans
+    // Calculate total revenue
     const totalRevenue = agg.reduce((sum, group) => sum + (group.revenue || 0), 0);
 
-    // Ensure all plan stats have values even if no users in that plan
+    // Ensure all plan stats have default values
     ['basic', 'gold', 'platinum'].forEach(plan => {
       if (!planStats[plan].active && !planStats[plan].revenue && !planStats[plan].retention) {
         planStats[plan] = { active: 0, revenue: 0, retention: 0 };
       }
     });
 
+    console.log('Membership Stats:', {
+      totalUsers,
+      activeMembers,
+      premiumMembers,
+      newSignups,
+      totalRevenue,
+      planStats,
+      userCount: users.length
+    });
+
     res.render('admin_membership', {
       pageTitle: 'Membership Management',
       user: req.session.user || null,
-      memberships: memberships || [],
+      memberships: users || [], // Passing users as memberships
       stats: {
         totalUsers,
         totalRevenue,
@@ -633,8 +822,7 @@ getExercises: async (req, res) => {
         });
     }
 },
-
-createExercise: async (req, res) => {
+  createExercise: async (req, res) => {
     try {
         if (!req.session.userId) {
             return res.status(401).json({ success: false, message: 'Unauthorized' });
@@ -697,65 +885,65 @@ createExercise: async (req, res) => {
     }
 },
 
- updateExercise: async (req, res) => {
-  try {
-    if (!req.session.userId) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
+  updateExercise: async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+      }
 
-    const exerciseId = req.params.id;
-    const {
-      name,
-      category,
-      difficulty,
-      targetMuscles,
-      instructions,
-      type,
-      defaultSets,
-      defaultRepsOrDuration,
-      equipment,
-      movementPattern,
-      primaryMuscle,
-      secondaryMuscles,
-      image,
-      verified
-    } = req.body;
-
-    const updatedExercise = await Exercise.findByIdAndUpdate(
-      exerciseId,
-      {
+      const exerciseId = req.params.id;
+      const {
         name,
         category,
         difficulty,
-        targetMuscles: Array.isArray(targetMuscles) ? targetMuscles : targetMuscles.split(',').map(m => m.trim()),
+        targetMuscles,
         instructions,
         type,
         defaultSets,
         defaultRepsOrDuration,
-        equipment: equipment ? (Array.isArray(equipment) ? equipment : equipment.split(',').map(e => e.trim())) : [],
+        equipment,
         movementPattern,
         primaryMuscle,
-        secondaryMuscles: secondaryMuscles ? (Array.isArray(secondaryMuscles) ? secondaryMuscles : secondaryMuscles.split(',').map(m => m.trim())) : [],
+        secondaryMuscles,
         image,
-        verified: verified === 'true' || verified === true
-      },
-      { new: true }
-    );
+        verified
+      } = req.body;
 
-    if (!updatedExercise) {
-      return res.status(404).json({ success: false, message: 'Exercise not found' });
+      const updatedExercise = await Exercise.findByIdAndUpdate(
+        exerciseId,
+        {
+          name,
+          category,
+          difficulty,
+          targetMuscles: Array.isArray(targetMuscles) ? targetMuscles : targetMuscles.split(',').map(m => m.trim()),
+          instructions,
+          type,
+          defaultSets,
+          defaultRepsOrDuration,
+          equipment: equipment ? (Array.isArray(equipment) ? equipment : equipment.split(',').map(e => e.trim())) : [],
+          movementPattern,
+          primaryMuscle,
+          secondaryMuscles: secondaryMuscles ? (Array.isArray(secondaryMuscles) ? secondaryMuscles : secondaryMuscles.split(',').map(m => m.trim())) : [],
+          image,
+          verified: verified === 'true' || verified === true
+        },
+        { new: true }
+      );
+
+      if (!updatedExercise) {
+        return res.status(404).json({ success: false, message: 'Exercise not found' });
+      }
+
+      res.status(200).json({ 
+        success: true, 
+        message: 'Exercise updated successfully', 
+        exercise: updatedExercise 
+      });
+    } catch (error) {
+      console.error('Update exercise error:', error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
     }
-
-    res.status(200).json({ 
-      success: true, 
-      message: 'Exercise updated successfully', 
-      exercise: updatedExercise 
-    });
-  } catch (error) {
-    console.error('Update exercise error:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-},
+  },
 
   deleteExercise: async (req, res) => {
     try {
@@ -943,33 +1131,6 @@ getVerifiers: async (req, res) => {
       res.status(200).json({ success: true, message: 'Verifier deleted successfully' });
     } catch (error) {
       console.error('Delete verifier error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
-  getSettings: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.redirect('/admin_login');
-      }
-      res.render('admin_settings', {
-        pageTitle: 'Admin Settings',
-        user: req.session.user || null
-      });
-    } catch (error) {
-      console.error('Settings error:', error);
-      res.render('admin_settings', {
-        pageTitle: 'Admin Settings',
-        user: req.session.user || null
-      });
-    }
-  },
-
-  updateSettings: async (req, res) => {
-    try {
-      res.status(501).json({ success: false, message: 'Not implemented yet' });
-    } catch (error) {
-      console.error('Update settings error:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   },

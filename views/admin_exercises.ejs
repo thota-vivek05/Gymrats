@@ -38,11 +38,7 @@
                         <span>Memberships</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/admin_nutrition" class="nav-link">
-                        <span>Nutrition Plans</span>
-                    </a>
-                </li>
+                
                 <li class="nav-item">
                     <a href="/admin_exercises" class="nav-link active">
                         <span>Exercises</span>
@@ -52,11 +48,6 @@
                 <li class="nav-item">
                     <a href="/admin_verifier" class="nav-link">
                         <span>Verifiers</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/admin_settings" class="nav-link">
-                        <span>Settings</span>
                     </a>
                 </li>
             </ul>
@@ -83,7 +74,6 @@
                     <h3>Total Exercises</h3>
                 </div>
                 <div class="stats-number"><%= stats.totalExercises %></div>
-                <div class="stats-label"><%= stats.verifiedExercises %> verified</div>
             </div>
         </div>
     </div>
@@ -94,7 +84,6 @@
                     <h3>Most Popular</h3>
                 </div>
                 <div class="stats-number" style="font-size: 1.1rem;"><%= stats.mostPopular %></div>
-                <div class="stats-label"><%= stats.mostPopularCount.toLocaleString() %> uses</div>
             </div>
         </div>
     </div>
@@ -105,7 +94,6 @@
                     <h3>Muscle Groups</h3>
                 </div>
                 <div class="stats-number"><%= stats.totalMuscleGroups %></div>
-                <div class="stats-label">Unique muscles targeted</div>
             </div>
         </div>
     </div>
@@ -116,7 +104,6 @@
                     <h3>Verification Rate</h3>
                 </div>
                 <div class="stats-number"><%= stats.verificationRate %>%</div>
-                <div class="stats-label"><%= stats.unverifiedExercises %> pending</div>
             </div>
         </div>
     </div>

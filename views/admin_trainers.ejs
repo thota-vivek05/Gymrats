@@ -37,11 +37,7 @@
                         <span>Memberships</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/admin_nutrition" class="nav-link">
-                        <span>Nutrition Plans</span>
-                    </a>
-                </li>
+                
                 <li class="nav-item">
                     <a href="/admin_exercises" class="nav-link">
                         <span>Exercises</span>
@@ -50,11 +46,6 @@
                 <li class="nav-item">
                     <a href="/admin_verifier" class="nav-link">
                         <span>Verifiers</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/admin_settings" class="nav-link">
-                        <span>Settings</span>
                     </a>
                 </li>
             </ul>
@@ -81,7 +72,6 @@
                     <h3>Total Trainers</h3>
                 </div>
                 <div class="stats-number" id="totalTrainers"><%= stats.totalTrainers %></div>
-                <div class="stats-label">Active trainers</div>
             </div>
         </div>
     </div>
@@ -92,7 +82,6 @@
                     <h3>Revenue Generated</h3>
                 </div>
                 <div class="stats-number" id="revenue">₹<%= stats.revenue.toLocaleString() %></div>
-                <div class="stats-label">Total revenue from memberships</div>
             </div>
         </div>
     </div>
@@ -103,7 +92,6 @@
                     <h3>Specializations</h3>
                 </div>
                 <div class="stats-number" id="specializationCount"><%= stats.specializationCount %></div>
-                <div class="stats-label">Unique workout types</div>
             </div>
         </div>
     </div>
@@ -114,7 +102,6 @@
                     <h3>Pending Approvals</h3>
                 </div>
                 <div class="stats-number" id="pendingApprovals"><%= stats.pendingApprovals %></div>
-                <div class="stats-label">Trainer applications pending</div>
             </div>
         </div>
     </div>

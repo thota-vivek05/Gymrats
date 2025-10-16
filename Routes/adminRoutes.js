@@ -30,11 +30,6 @@ router.post('/memberships', adminController.createMembership);
 router.put('/memberships/:id', adminController.updateMembership);
 router.delete('/memberships/:id', adminController.deleteMembership);
 
-// Nutrition Plan Routes
-// router.get('/nutrition-plans', adminController.getNutritionPlans);
-// router.post('/nutrition-plans', adminController.createNutritionPlan);
-// router.put('/nutrition-plans/:id', adminController.updateNutritionPlan);
-// router.delete('/nutrition-plans/:id', adminController.deleteNutritionPlan);
 
 // Exercise Routes
 router.get('/exercises', adminController.getExercises);
@@ -53,9 +48,6 @@ router.post('/verifier', adminController.createVerifier);
 router.put('/verifier/:id', adminController.updateVerifier);
 router.delete('/verifier/:id', adminController.deleteVerifier);
 
-// Settings Routes
-router.get('/settings', adminController.getSettings);
-router.post('/settings', adminController.updateSettings);
 
 // Debug route to check data
 router.get('/debug/trainer-stats', async (req, res) => {
