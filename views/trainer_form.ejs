@@ -193,6 +193,12 @@ function validatePassword(password) {
     return password.length >= 3; // At least 3 characters
 }
 
+function validatePhoneNumber(phone) {
+    // Remove all non-digit characters and check if it's exactly 10 digits
+    const cleanedPhone = phone.replace(/\D/g, '');
+    return /^\d{10}$/.test(cleanedPhone);
+}
+
 function validatePasswordStrength(password) {
     // Optional: Add strength requirements
     const hasUpperCase = /[A-Z]/.test(password);
@@ -238,6 +244,11 @@ if (!validatePassword(formData.password)) {
     alert('Password must be at least 3 characters long');
     return;
 }
+
+ if (!validatePhoneNumber(phoneNumber)) {
+        showErrorModal('Please enter a valid 10-digit phone number');
+        return;
+    }
 
 if (formData.password !== formData.confirmPassword) {
     alert('Passwords do not match');

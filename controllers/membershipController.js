@@ -5,12 +5,12 @@ const Trainer = require('../model/Trainer');
 // Extend user membership
 const extendMembership = async (req, res) => {
     try {
-        console.log('=== MEMBERSHIP EXTENSION DEBUG ===');
+        // console.log('=== MEMBERSHIP EXTENSION DEBUG ===');
         const { additionalMonths, cardType, cardNumber, expiryDate, cvv, cardholderName, autoRenew } = req.body;
         const userId = req.session.user.id;
         
-        console.log('1. User ID:', userId);
-        console.log('2. Additional months:', additionalMonths);
+        // console.log('1. User ID:', userId);
+        // console.log('2. Additional months:', additionalMonths);
 
         const user = await User.findById(userId);
         if (!user) {

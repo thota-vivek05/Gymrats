@@ -332,6 +332,12 @@ function validatePasswords(password, confirmPassword) {
     return password === confirmPassword;
 }
 
+function validatePhoneNumber(phone) {
+    // Remove all non-digit characters and check if it's exactly 10 digits
+    const cleanedPhone = phone.replace(/\D/g, '');
+    return /^\d{10}$/.test(cleanedPhone);
+}
+
         // Close modal when clicking outside
         window.onclick = function (event) {
             const errorModal = document.getElementById('errorModal');
@@ -493,6 +499,12 @@ function validatePasswords(password, confirmPassword) {
                     showErrorModal('Password must be at least 8 characters long');
                     return;
                 }
+
+                 if (!validatePhoneNumber(phoneNumber)) {
+                    showErrorModal('Please enter a valid 10-digit phone number');
+                    return;
+                }
+
                 // Brimstone
                 if (!workoutType) {
                     showErrorModal('Please select your preferred workout type');
@@ -588,6 +600,7 @@ function validatePasswords(password, confirmPassword) {
                     });
             });
         
+            
             const membershipPlan = document.getElementById('membershipPlan');
             const membershipDuration = document.getElementById('membershipDuration');
 

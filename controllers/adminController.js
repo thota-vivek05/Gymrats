@@ -628,15 +628,15 @@ getMemberships: async (req, res) => {
       }
     });
 
-    console.log('Membership Stats:', {
-      totalUsers,
-      activeMembers,
-      premiumMembers,
-      newSignups,
-      totalRevenue,
-      planStats,
-      userCount: users.length
-    });
+    // console.log('Membership Stats:', {
+    //   totalUsers,
+    //   activeMembers,
+    //   premiumMembers,
+    //   newSignups,
+    //   totalRevenue,
+    //   planStats,
+    //   userCount: users.length
+    // });
 
     res.render('admin_membership', {
       pageTitle: 'Membership Management',
@@ -1219,7 +1219,7 @@ createVerifier: async (req, res) => {
       const { search } = req.query;
       let query = {};
       
-      console.log('Search query received:', search);
+// console.log('Search query received:', search);
       
       // Build search query
       if (search && search.trim() !== '') {
@@ -1237,7 +1237,7 @@ createVerifier: async (req, res) => {
         .select('name email experience specializations status')
         .sort({ createdAt: -1 });
       
-      console.log(`Found ${trainers.length} trainers for search: ${search}`);
+      // console.log(`Found ${trainers.length} trainers for search: ${search}`);
       
       res.json({
         success: true,
