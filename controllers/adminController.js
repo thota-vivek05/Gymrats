@@ -330,21 +330,22 @@ const adminController = {
   },
 
   // Membership Management
-  // In adminController.js - getMemberships method (COMPLETE UPDATED VERSION)
+  // Membership Management - UPDATED TO WORK WITH USER MODEL
 getMemberships: async (req, res) => {
   try {
     if (!req.session.userId) {
       return res.redirect('/admin_login');
     }
     
-    const memberships = await Membership.find({ user_id: { $ne: null } })
-      .sort({ createdAt: -1 })
-      .populate('user_id', 'full_name email');
+    // Get ALL USERS with membership information
+    const users = await User.find()
+      .sort({ created_at: -1 })
+      .select('full_name email membershipType created_at membershipDuration status weight height BMI goal');
 
-    // Calculate real-time stats from MongoDB
+    // Calculate real-time stats from User data
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-    // FIXED: Aggregate for plan stats with correct pricing and months_remaining
+    // Calculate stats using User aggregation
     const agg = await User.aggregate([
       { 
         $match: { 
@@ -354,7 +355,7 @@ getMemberships: async (req, res) => {
       },
       {
         $addFields: {
-          // Use months_remaining for revenue calculation, default to 1 if not set
+          // Use months_remaining for revenue calculation
           months_paid: {
             $cond: {
               if: { 
@@ -367,35 +368,31 @@ getMemberships: async (req, res) => {
               else: 1
             }
           },
-          // FIXED: Use correct pricing based on membershipType
+          // Pricing based on membershipType
           monthly_price: {
             $switch: {
               branches: [
-                { case: { $eq: ['$membershipType', 'Basic'] }, then: 299 },    // ₹299
-                { case: { $eq: ['$membershipType', 'Gold'] }, then: 599 },     // ₹599
-                { case: { $eq: ['$membershipType', 'Platinum'] }, then: 999 }, // ₹999
+                { case: { $eq: ['$membershipType', 'Basic'] }, then: 299 },
+                { case: { $eq: ['$membershipType', 'Gold'] }, then: 599 },
+                { case: { $eq: ['$membershipType', 'Platinum'] }, then: 999 },
               ],
               default: 0
             }
           },
-          // Calculate membership duration in months for retention
+          // Calculate membership duration in months
           membership_months: {
-            $max: [
-              1,
-              {
+            $cond: {
+              if: { $ifNull: ['$membershipDuration.start_date', false] },
+              then: {
                 $ceil: {
                   $divide: [
-                    { 
-                      $subtract: [
-                        new Date(), 
-                        { $ifNull: ['$membershipDuration.start_date', '$created_at'] }
-                      ] 
-                    },
+                    { $subtract: [new Date(), '$membershipDuration.start_date'] },
                     1000 * 60 * 60 * 24 * 30 // milliseconds in a month
                   ]
                 }
-              }
-            ]
+              },
+              else: 1
+            }
           }
         }
       },
@@ -403,7 +400,6 @@ getMemberships: async (req, res) => {
         $group: {
           _id: '$membershipType',
           active: { $sum: 1 },
-          // FIXED: Multiply monthly_price by months_paid for total revenue
           revenue: { $sum: { $multiply: ['$monthly_price', '$months_paid'] } },
           retention: { $avg: '$membership_months' }
         }
@@ -423,7 +419,7 @@ getMemberships: async (req, res) => {
         planStats[type] = {
           active: group.active || 0,
           revenue: group.revenue || 0,
-          retention: group.retention || 0
+          retention: Math.round((group.retention || 1) * 10) / 10 // Round to 1 decimal
         };
       }
     });
@@ -439,20 +435,30 @@ getMemberships: async (req, res) => {
       created_at: { $gte: oneWeekAgo } 
     });
     
-    // Calculate total revenue from all plans
+    // Calculate total revenue
     const totalRevenue = agg.reduce((sum, group) => sum + (group.revenue || 0), 0);
 
-    // Ensure all plan stats have values even if no users in that plan
+    // Ensure all plan stats have default values
     ['basic', 'gold', 'platinum'].forEach(plan => {
       if (!planStats[plan].active && !planStats[plan].revenue && !planStats[plan].retention) {
         planStats[plan] = { active: 0, revenue: 0, retention: 0 };
       }
     });
 
+    console.log('Membership Stats:', {
+      totalUsers,
+      activeMembers,
+      premiumMembers,
+      newSignups,
+      totalRevenue,
+      planStats,
+      userCount: users.length
+    });
+
     res.render('admin_membership', {
       pageTitle: 'Membership Management',
       user: req.session.user || null,
-      memberships: memberships || [],
+      memberships: users || [], // Passing users as memberships
       stats: {
         totalUsers,
         totalRevenue,

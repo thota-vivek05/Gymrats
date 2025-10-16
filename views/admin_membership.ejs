@@ -57,10 +57,6 @@
             <div class="header">
                 <h2>Membership Management</h2>
                 <div class="right-container">
-                    <div class="search-container">
-                        <img src="https://img.icons8.com/ios/250/8A2BE2/search--v1.png" height="18px" alt="Search Icon" />
-                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-                    </div>
                     <div class="user-info">
                         <div class="avatar">A</div>
                         <span>Admin</span>
@@ -365,12 +361,12 @@
                 </div>
                 
                 <!-- Search Bar -->
-                <div class="search-container">
-                    <div class="search-bar">
-                        <input type="text" id="memberSearchInput" placeholder="Search by name...">
+                    <div class="search-container">
+                        <div class="search-bar">
+                            <input type="text" id="memberSearchInput" placeholder="Search by name, email, or plan...">
+                            <img src="https://img.icons8.com/ios/250/8A2BE2/search--v1.png" height="18px" alt="Search Icon" />
+                        </div>
                     </div>
-                    <button class="filter-btn" id="filterBtn">Filter Options</button>
-                </div>
                 
                 <!-- Member Table -->
                 <div class="table-responsive">
@@ -381,34 +377,42 @@
                                 <th>Email</th>
                                 <th>Plan</th>
                                 <th>Join Date</th>
-                                <th>Renewal Date</th>
                                 <th>Status</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
-                        <!-- In admin_membership.ejs - around line 415 -->
+            <!-- REPLACE THE ENTIRE TBODY SECTION -->
 <tbody id="memberTableBody">
   <% if (memberships && memberships.length > 0) { %>
-  <% memberships.forEach(mem => { %>
-    <% if (mem.user_id) { %> <!-- Add this null check -->
-    <tr>
-      <td><%= mem.user_id.full_name %></td>
-      <td><%= mem.user_id.email %></td>
-      <td><%= mem.type %></td>
-      <td><%= new Date(mem.start_date).toLocaleDateString() %></td>
-      <td><%= new Date(mem.end_date).toLocaleDateString() %></td>
-      <td><span class="status <%= mem.status.toLowerCase() %>"><%= mem.status %></span></td>
-      <td>
-        <button class="action-btn">View</button>
-        <button class="action-btn"><%= mem.status === 'Active' ? 'Edit' : 'Renew' %></button>
-      </td>
-    </tr>
-    <% } %> <!-- End of null check -->
-  <% }); %>
+    <% memberships.forEach(user => { %>
+      <% if (user && user.full_name) { %>
+        <tr>
+          <td><%= user.full_name %></td>
+          <td><%= user.email %></td>
+          <td>
+            <span class="plan-badge <%= user.membershipType ? user.membershipType.toLowerCase() : 'basic' %>">
+              <%= user.membershipType || 'Basic' %>
+            </span>
+          </td>
+          <td>
+            <% if (user.created_at) { %>
+              <%= new Date(user.created_at).toLocaleDateString('en-IN') %>
+            <% } else { %>
+              N/A
+            <% } %>
+          </td>
+          <td>
+            <span class="status <%= user.status ? user.status.toLowerCase() : 'active' %>">
+              <%= user.status || 'Active' %>
+            </span>
+          </td>
+          <!-- Renewal Date and Actions columns removed -->
+        </tr>
+      <% } %>
+    <% }); %>
   <% } else { %>
-  <tr>
-    <td colspan="7" class="no-data">No memberships found</td>
-  </tr>
+    <tr>
+      <td colspan="5" class="no-data">No users found in database</td>
+    </tr>
   <% } %>
 </tbody>
                     </table>
@@ -480,43 +484,44 @@
             setupSearch();
         });
 
-        function setupTabNavigation() {
-            const tabs = document.querySelectorAll('.tab');
-            const userRows = document.querySelectorAll('#memberTableBody tr');
+       function setupTabNavigation() {
+    const tabs = document.querySelectorAll('.tab');
+    const userRows = document.querySelectorAll('#memberTableBody tr');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
             
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const tabType = this.getAttribute('data-tab');
-                    
-                    userRows.forEach(row => {
-                        const planType = row.children[2]?.textContent.toLowerCase() || '';
-                        const status = row.querySelector('.status')?.textContent.toLowerCase() || '';
-                        
-                        switch(tabType) {
-                            case 'all-members':
-                                row.style.display = '';
-                                break;
-                            case 'basic-members':
-                                row.style.display = (planType === 'basic') ? '' : 'none';
-                                break;
-                            case 'gold-members':
-                                row.style.display = (planType === 'gold') ? '' : 'none';
-                                break;
-                            case 'platinum-members':
-                                row.style.display = (planType === 'platinum') ? '' : 'none';
-                                break;
-                            case 'expired-members':
-                                row.style.display = (status === 'expired') ? '' : 'none';
-                                break;
-                        }
-                    });
-                });
+            const tabType = this.getAttribute('data-tab');
+            
+            userRows.forEach(row => {
+                if (row.classList.contains('no-data')) return;
+                
+                const planType = row.children[2]?.textContent.toLowerCase().trim() || '';
+                const status = row.children[4]?.textContent.toLowerCase().trim() || ''; // Updated index (now 4 instead of 5)
+                
+                switch(tabType) {
+                    case 'all-members':
+                        row.style.display = '';
+                        break;
+                    case 'basic-members':
+                        row.style.display = (planType === 'basic') ? '' : 'none';
+                        break;
+                    case 'gold-members':
+                        row.style.display = (planType === 'gold') ? '' : 'none';
+                        break;
+                    case 'platinum-members':
+                        row.style.display = (planType === 'platinum') ? '' : 'none';
+                        break;
+                    case 'expired-members':
+                        row.style.display = (status === 'expired' || status === 'inactive') ? '' : 'none';
+                        break;
+                }
             });
-        }
-
+        });
+    });
+}
         function setupModalFunctionality() {
             const modal = document.getElementById('editPlanModal');
             const editButtons = document.querySelectorAll('.edit-btn');
@@ -634,7 +639,12 @@
                                         label += ': ';
                                     }
                                     if (context.parsed !== null) {
-                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed);
+                                        // FIXED: Use Indian Rupee format
+                                        label += new Intl.NumberFormat('en-IN', { 
+                                            style: 'currency', 
+                                            currency: 'INR',
+                                            maximumFractionDigits: 0
+                                        }).format(context.parsed);
                                     }
                                     return label;
                                 }
@@ -858,36 +868,54 @@
             }
         }
 
-        function setupSearch() {
-            const searchInput = document.getElementById('memberSearchInput');
-            const userTableBody = document.getElementById('memberTableBody');
-            const userRows = document.querySelectorAll('#memberTableBody tr');
-            const noDataRow = userTableBody.querySelector('.no-data');
-
-            if (searchInput) {
-                searchInput.addEventListener('input', function () {
-                    const searchTerm = this.value.trim().toLowerCase();
-                    let visibleRows = 0;
-
-                    userRows.forEach(row => {
-                        if (row.classList.contains('no-data')) return;
-
-                        const userName = row.querySelector('td:first-child')?.textContent.toLowerCase() || '';
-
-                        if (searchTerm === '' || userName.includes(searchTerm)) {
-                            row.style.display = '';
-                            visibleRows++;
-                        } else {
-                            row.style.display = 'none';
-                        }
-                    });
-
-                    if (noDataRow) {
-                        noDataRow.style.display = visibleRows === 0 && searchTerm !== '' ? '' : 'none';
-                    }
-                });
+function setupSearch() {
+    const searchInput = document.getElementById('memberSearchInput');
+    const userRows = document.querySelectorAll('#memberTableBody tr');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.trim().toLowerCase();
+            let visibleRows = 0;
+            
+            userRows.forEach(row => {
+                if (row.classList.contains('no-data')) {
+                    row.style.display = searchTerm === '' ? '' : 'none';
+                    return;
+                }
+                
+                const name = row.children[0]?.textContent.toLowerCase() || '';
+                const email = row.children[1]?.textContent.toLowerCase() || '';
+                const plan = row.children[2]?.textContent.toLowerCase() || '';
+                const status = row.children[4]?.textContent.toLowerCase() || ''; // Updated index (now 4 instead of 5)
+                
+                if (searchTerm === '' || 
+                    name.includes(searchTerm) || 
+                    email.includes(searchTerm) || 
+                    plan.includes(searchTerm) ||
+                    status.includes(searchTerm)) {
+                    row.style.display = '';
+                    visibleRows++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Show no-data message if no rows visible
+            const noDataRow = document.querySelector('.no-data');
+            if (noDataRow) {
+                if (searchTerm !== '' && visibleRows === 0) {
+                    noDataRow.textContent = 'No users found matching your search';
+                    noDataRow.style.display = '';
+                } else if (searchTerm === '' && visibleRows === 0) {
+                    noDataRow.textContent = 'No users found in database';
+                    noDataRow.style.display = '';
+                } else {
+                    noDataRow.style.display = 'none';
+                }
             }
-        }
+        });
+    }
+}
     </script>
 </body>
 </html>
