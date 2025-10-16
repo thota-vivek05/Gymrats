@@ -245,7 +245,7 @@ if (!validatePassword(formData.password)) {
     return;
 }
 
- if (!validatePhoneNumber(phoneNumber)) {
+ if (!validatePhoneNumber(formData.phone)) {
     alert('Please enter a valid 10-digit phone number');
         return;
     }
