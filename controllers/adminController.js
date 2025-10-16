@@ -946,33 +946,6 @@ getVerifiers: async (req, res) => {
     }
   },
 
-  getSettings: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.redirect('/admin_login');
-      }
-      res.render('admin_settings', {
-        pageTitle: 'Admin Settings',
-        user: req.session.user || null
-      });
-    } catch (error) {
-      console.error('Settings error:', error);
-      res.render('admin_settings', {
-        pageTitle: 'Admin Settings',
-        user: req.session.user || null
-      });
-    }
-  },
-
-  updateSettings: async (req, res) => {
-    try {
-      res.status(501).json({ success: false, message: 'Not implemented yet' });
-    } catch (error) {
-      console.error('Update settings error:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-  },
-
   // Get Trainer Statistics API
   getTrainerStats: async (req, res) => {
     try {

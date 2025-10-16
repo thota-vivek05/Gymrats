@@ -48,9 +48,6 @@ router.post('/verifier', adminController.createVerifier);
 router.put('/verifier/:id', adminController.updateVerifier);
 router.delete('/verifier/:id', adminController.deleteVerifier);
 
-// Settings Routes
-router.get('/settings', adminController.getSettings);
-router.post('/settings', adminController.updateSettings);
 
 // Debug route to check data
 router.get('/debug/trainer-stats', async (req, res) => {

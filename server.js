@@ -146,8 +146,6 @@ app.get('/admin_membership', (req, res) => res.redirect('/admin/memberships'));
 
 app.get('/admin_exercises', (req, res) => res.redirect('/admin/exercises'));
 app.get('/admin_verifier', (req, res) => res.redirect('/admin/verifier'));
-app.get('/admin_settings', (req, res) => res.redirect('/admin/settings'));
-
 // Add this to your routes section
 app.get('/debug/create-workout-history', async (req, res) => {
     try {
