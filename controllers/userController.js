@@ -49,19 +49,19 @@ const checkTrainerSubscription = async (req, res, next) => {
 const getUserProfile = async (req, res) => {
     try {
         if (!req.session || !req.session.user) {
-            console.log('No user session found');
+            //  console.log('No user session found');
             return res.redirect('/login_signup?form=login');
         }
         const userId = req.session.user.id;
         
-        console.log('Fetching user profile data for:', userId);
+        //  console.log('Fetching user profile data for:', userId);
         
         // Fetch user data and populate trainer
         const user = await User.findById(userId)
             .populate('trainer');
             
         if (!user) {
-            console.log('User not found:', userId);
+            //  console.log('User not found:', userId);
             return res.status(404).json({ error: 'User not found' });
         }
         req.session.user.membershipDuration = {
@@ -269,27 +269,27 @@ const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        console.log('Login request received:', { email});
+        //  console.log('Login request received:', { email});
 
         if (!email || !password) {
-            console.log('Validation failed: Missing fields');
+            //  console.log('Validation failed: Missing fields');
             return res.status(400).json({ error: 'All fields are required' });
         }
 
         const user = await User.findOne({ email });
         if (!user) {
-            console.log('User not found:', email);
+            //  console.log('User not found:', email);
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
-            console.log('Password mismatch for:', email);
+            //  console.log('Password mismatch for:', email);
             return res.status(401).json({ error: 'Invalid email or password' });
         }
         //brimstone 1
         // if (user.membershipType.toLowerCase() !== loginMembershipPlan.toLowerCase()) {
-        //     console.log('Membership plan mismatch:', { user: user.membershipType, input: loginMembershipPlan });
+        //     //  console.log('Membership plan mismatch:', { user: user.membershipType, input: loginMembershipPlan });
         //     return res.status(400).json({ error: 'Selected membership plan does not match user membership' });
         // }
         // brimstone
@@ -340,10 +340,10 @@ const loginUser = async (req, res) => {
                 redirectUrl = '/userdashboard_p';
                 break;
             default:
-                console.log('Unknown membership type:', user.membershipType);
+                //  console.log('Unknown membership type:', user.membershipType);
                 redirectUrl = '/userdashboard_b'; // Default to basic dashboard
         }
-        console.log('Redirecting to:', redirectUrl);
+        //  console.log('Redirecting to:', redirectUrl);
 
         res.status(200).json({ message: 'Login successful', redirect: redirectUrl });
     } catch (error) {
@@ -376,11 +376,11 @@ const signupUser = async (req, res) => {
             weightGoal
         } = req.body;
 
-        console.log('Signup request received:', {
-            userFullName, dateOfBirth, gender, userEmail, phoneNumber,
-            membershipPlan, membershipDuration, cardType, cardNumber,
-            expirationDate, cvv, terms, weight, height,workoutType, weightGoal
-        });
+        //  console.log('Signup request received:', {
+        //     userFullName, dateOfBirth, gender, userEmail, phoneNumber,
+        //     membershipPlan, membershipDuration, cardType, cardNumber,
+        //     expirationDate, cvv, terms, weight, height,workoutType, weightGoal
+        // });
 
         if (
             !userFullName ||
@@ -401,82 +401,82 @@ const signupUser = async (req, res) => {
             !workoutType ||        // ADD THIS VALIDATION
             weightGoal === undefined
         ) {
-            console.log('Validation failed: Missing fields');
+            //  console.log('Validation failed: Missing fields');
             return res.status(400).json({ error: 'All fields are required, including weight' });
         }
 
         if (userPassword !== userConfirmPassword) {
-            console.log('Validation failed: Passwords do not match');
+            //  console.log('Validation failed: Passwords do not match');
             return res.status(400).json({ error: 'Passwords do not match' });
         }
 
         const emailRegex = /^\S+@\S+\.\S+$/;
         if (!emailRegex.test(userEmail)) {
-            console.log('Validation failed: Invalid email:', userEmail);
+            //  console.log('Validation failed: Invalid email:', userEmail);
             return res.status(400).json({ error: 'Invalid email address' });
         }
 
         const phoneRegex = /^\+?[\d\s-]{10,}$/;
         if (!phoneRegex.test(phoneNumber)) {
-            console.log('Validation failed: Invalid phone number:', phoneNumber);
+            //  console.log('Validation failed: Invalid phone number:', phoneNumber);
             return res.status(400).json({ error: 'Invalid phone number' });
         }
 
         if (isNaN(weight) || weight < 0) {
-            console.log('Validation failed: Invalid weight:', weight);
+            //  console.log('Validation failed: Invalid weight:', weight);
             return res.status(400).json({ error: 'Weight must be a non-negative number' });
         }
         const validWorkoutTypes = ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding'];
         if (!validWorkoutTypes.includes(workoutType)) {
-            console.log('Validation failed: Invalid workout type:', workoutType);
+            //  console.log('Validation failed: Invalid workout type:', workoutType);
             return res.status(400).json({ error: 'Please select a valid workout type' });
         }
 
         if (isNaN(weightGoal) || weightGoal < 20 || weightGoal > 300) {
-            console.log('Validation failed: Invalid weight goal:', weightGoal);
+            //  console.log('Validation failed: Invalid weight goal:', weightGoal);
             return res.status(400).json({ error: 'Weight goal must be between 20 and 300 kg' });
         }
         let calculatedBMI = null;
         if (height !== undefined) {
             if (isNaN(height) || height < 0) {
-                console.log('Validation failed: Invalid height:', height);
+                //  console.log('Validation failed: Invalid height:', height);
                 return res.status(400).json({ error: 'Height must be a non-negative number' });
             }
             const heightInMeters = Number(height) / 100;
             if (heightInMeters > 0) {
                 calculatedBMI = Number(weight) / (heightInMeters * heightInMeters);
                 calculatedBMI = Math.round(calculatedBMI * 10) / 10;
-                console.log('Calculated BMI:', calculatedBMI);
+                //  console.log('Calculated BMI:', calculatedBMI);
             }
         }
 
         // REYNA
         // Add validation for workoutType
         if (!workoutType) {
-            console.log('Validation failed: Workout type is required');
+            //  console.log('Validation failed: Workout type is required');
             return res.status(400).json({ error: 'Please select your preferred workout type' });
         }
 
         if (weightGoal === undefined) {
-            console.log('Validation failed: Weight goal is required');
+            //  console.log('Validation failed: Weight goal is required');
             return res.status(400).json({ error: 'Weight goal is required' });
         }
 
         if (isNaN(weightGoal) || weightGoal < 20 || weightGoal > 300) {
-            console.log('Validation failed: Invalid weight goal:', weightGoal);
+            //  console.log('Validation failed: Invalid weight goal:', weightGoal);
             return res.status(400).json({ error: 'Weight goal must be between 20 and 300 kg' });
         }
         // end REYNA
 
         const existingUser = await User.findOne({ email: userEmail });
         if (existingUser) {
-            console.log('Validation failed: Email already registered:', userEmail);
+            //  console.log('Validation failed: Email already registered:', userEmail);
             return res.status(400).json({ error: 'Email already registered' });
         }
 
         const saltRounds = 10;
         const password_hash = await bcrypt.hash(userPassword, saltRounds);
-        console.log('Password hashed for:', userEmail);
+        //  console.log('Password hashed for:', userEmail);
 
 
         // Calculate end date based on membership duration           REYNA
@@ -518,14 +518,14 @@ const signupUser = async (req, res) => {
             //REYNA
             workout_type: workoutType 
         });
-        console.log('New user object created:', newUser);
+        //  console.log('New user object created:', newUser);
 
         await newUser.save();
-        console.log('User saved to MongoDB:', userEmail);
+        //  console.log('User saved to MongoDB:', userEmail);
 
         if (!req.session) {
             console.error('Session middleware not initialized');
-            console.log('Proceeding without session for user:', userEmail);
+            //  console.log('Proceeding without session for user:', userEmail);
         } else {
             req.session.user = {
                 id: newUser._id,
@@ -535,19 +535,19 @@ const signupUser = async (req, res) => {
                 membershipType: newUser.membershipType,
                 membership: newUser.membershipType.toLowerCase()
             };
-            console.log('Session set for user:', userEmail);
+            //  console.log('Session set for user:', userEmail);
         }
 
         res.status(201).json({ message: 'Signup successful', redirect: '/login_signup' });
     } catch (error) {
         console.error('Signup error:', error);
         if (error.code === 11000) {
-            console.log('MongoDB error: Duplicate email:', userEmail);
+            //  console.log('MongoDB error: Duplicate email:', userEmail);
             return res.status(400).json({ error: 'Email already registered' });
         }
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
-            console.log('MongoDB validation errors:', messages);
+            //  console.log('MongoDB validation errors:', messages);
             return res.status(400).json({ error: messages.join(', ') });
         }
         res.status(500).json({ error: 'Server error' });
@@ -557,22 +557,22 @@ const signupUser = async (req, res) => {
 // Add this function to userController.js for individual exercise completion
 const markExerciseCompleted = async (req, res) => {
     try {
-        console.log('🔍=== MARK EXERCISE COMPLETED START ===');
-        console.log('Request body:', req.body);
-        console.log('Session user:', req.session.user);
+        //  console.log('🔍=== MARK EXERCISE COMPLETED START ===');
+        //  console.log('Request body:', req.body);
+        //  console.log('Session user:', req.session.user);
         
         if (!req.session || !req.session.user) {
-            console.log('❌ No user session');
+            //  console.log('❌ No user session');
             return res.status(401).json({ error: 'Please log in to complete the exercise' });
         }
 
         const userId = req.session.user.id;
         const { workoutPlanId, exerciseName } = req.body;
 
-        console.log('📝 Processing:', { workoutPlanId, exerciseName, userId });
+        //  console.log('📝 Processing:', { workoutPlanId, exerciseName, userId });
 
         if (!workoutPlanId || !exerciseName) {
-            console.log('❌ Missing required fields');
+            //  console.log('❌ Missing required fields');
             return res.status(400).json({ error: 'Workout ID and exercise name are required' });
         }
 
@@ -582,48 +582,48 @@ const today = new Date();
 // Convert to Asia/Kolkata timezone (UTC+5:30)
 const localDate = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
 const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][localDate.getDay()];
-console.log('📅 Today is (local):', todayDayName);
+//  console.log('📅 Today is (local):', todayDayName);
 
         // Find the workout
-        console.log('🔍 Looking for workout:', workoutPlanId);
+        //  console.log('🔍 Looking for workout:', workoutPlanId);
         const workout = await WorkoutHistory.findOne({ _id: workoutPlanId, userId });
         
         if (!workout) {
-            console.log('❌ Workout not found');
+            //  console.log('❌ Workout not found');
             return res.status(404).json({ error: 'Workout not found' });
         }
 
-        console.log('✅ Workout found:', {
-            id: workout._id,
-            exerciseCount: workout.exercises.length,
-            exercises: workout.exercises.map(e => ({ name: e.name, day: e.day, completed: e.completed }))
-        });
+        //  console.log('✅ Workout found:', {
+        //     id: workout._id,
+        //     exerciseCount: workout.exercises.length,
+        //     exercises: workout.exercises.map(e => ({ name: e.name, day: e.day, completed: e.completed }))
+        // });
 
         // Find exercise by exact name match
         const exerciseIndex = workout.exercises.findIndex(ex => ex.name === exerciseName);
         
         if (exerciseIndex === -1) {
-            console.log('❌ Exercise not found:', exerciseName);
-            console.log('📝 Available exercises:', workout.exercises.map(e => e.name));
+            //  console.log('❌ Exercise not found:', exerciseName);
+            //  console.log('📝 Available exercises:', workout.exercises.map(e => e.name));
             return res.status(404).json({ error: `Exercise "${exerciseName}" not found` });
         }
 
         const exercise = workout.exercises[exerciseIndex];
-        console.log('✅ Found exercise:', {
-            name: exercise.name,
-            day: exercise.day,
-            currentCompleted: exercise.completed,
-            index: exerciseIndex
-        });
+        //  console.log('✅ Found exercise:', {
+        //     name: exercise.name,
+        //     day: exercise.day,
+        //     currentCompleted: exercise.completed,
+        //     index: exerciseIndex
+        // });
 
         if (exercise.completed) {
-            console.log('⚠️ Exercise already completed');
+            //  console.log('⚠️ Exercise already completed');
             return res.status(400).json({ error: 'Exercise already completed' });
         }
 
         // Mark as completed
         workout.exercises[exerciseIndex].completed = true;
-        console.log('✅ Marked exercise as completed');
+        //  console.log('✅ Marked exercise as completed');
 
         // ✅ FIXED: Calculate progress for TODAY'S exercises only
         const todaysExercises = workout.exercises.filter(ex => ex.day === todayDayName);
@@ -631,26 +631,26 @@ console.log('📅 Today is (local):', todayDayName);
         const totalExercises = todaysExercises.length;
         const progress = Math.round((completedExercises / totalExercises) * 100);
 
-        console.log('📊 Progress calculated (TODAY ONLY):', { 
-            today: todayDayName,
-            completed: completedExercises, 
-            total: totalExercises, 
-            progress,
-            todaysExercises: todaysExercises.map(e => ({ name: e.name, completed: e.completed }))
-        });
+        //  console.log('📊 Progress calculated (TODAY ONLY):', { 
+        //     today: todayDayName,
+        //     completed: completedExercises, 
+        //     total: totalExercises, 
+        //     progress,
+        //     todaysExercises: todaysExercises.map(e => ({ name: e.name, completed: e.completed }))
+        // });
 
         workout.progress = progress;
 
         // Save to database
-        console.log('💾 Saving to database...');
+        //  console.log('💾 Saving to database...');
         await workout.save();
         
         // Verify the save worked
         const updatedWorkout = await WorkoutHistory.findById(workoutPlanId);
         const savedExercise = updatedWorkout.exercises[exerciseIndex];
-        console.log('💾 After save - exercise completed:', savedExercise.completed);
+        //  console.log('💾 After save - exercise completed:', savedExercise.completed);
 
-        console.log('✅=== MARK EXERCISE COMPLETED SUCCESS ===');
+        //  console.log('✅=== MARK EXERCISE COMPLETED SUCCESS ===');
         
         res.json({ 
             success: true,
@@ -687,7 +687,7 @@ const changeMembership = async (req, res) => {
         const userId = req.session.user.id;
         const { newMembershipType, duration, amount, cardLastFour } = req.body;
 
-        console.log('Changing membership for user:', userId, 'Data:', req.body);
+        //  console.log('Changing membership for user:', userId, 'Data:', req.body);
 
         // Validate input
         if (!newMembershipType || !duration || !amount) {
@@ -780,7 +780,7 @@ const changeMembership = async (req, res) => {
             auto_renew: user.membershipDuration.auto_renew
         };
 
-        console.log('Membership changed successfully for user:', userId);
+        //  console.log('Membership changed successfully for user:', userId);
 
         res.json({
             success: true,
@@ -824,7 +824,7 @@ const updateUserProfile = async (req, res) => {
         const userId = req.session.user.id;
         const { full_name, email, phone, dob, height, weight } = req.body;
 
-        console.log('Updating profile for user:', userId, 'Data:', req.body);
+        //  console.log('Updating profile for user:', userId, 'Data:', req.body);
 
         // Validate required fields
         if (!full_name || !email) {
@@ -884,7 +884,7 @@ const updateUserProfile = async (req, res) => {
             }
         });
 
-        console.log('Update data:', updateData);
+        //  console.log('Update data:', updateData);
 
         // Update user in database
         const updatedUser = await User.findByIdAndUpdate(
@@ -915,7 +915,7 @@ const updateUserProfile = async (req, res) => {
             BMI: updatedUser.BMI
         };
 
-        console.log('Profile updated successfully for user:', userId);
+        //  console.log('Profile updated successfully for user:', userId);
 
         res.json({
             success: true,
@@ -966,10 +966,10 @@ const getUserDashboard = async (req, res, membershipCode) => {
         // ✅ PERMANENT FIX: Use local time consistently
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        console.log('✅ Local Today:', today.toString());
+        //  console.log('✅ Local Today:', today.toString());
 
         const todaysConsumedFoods = await getTodaysFoods(userId);
-        console.log('🎯 Final todaysConsumedFoods to display:', todaysConsumedFoods.length);
+        //  console.log('🎯 Final todaysConsumedFoods to display:', todaysConsumedFoods.length);
 
         const user = await User.findById(userId)
             .populate('trainer', 'name email specializations experience')
@@ -1014,7 +1014,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
 
-        console.log('✅ Local Week Range:', weekStart.toString(), 'to', weekEnd.toString());
+        //  console.log('✅ Local Week Range:', weekStart.toString(), 'to', weekEnd.toString());
 
         // Get the weekly nutrition data
         const weeklyNutritionEntry = await NutritionHistory.findOne({
@@ -1035,12 +1035,12 @@ const getUserDashboard = async (req, res, membershipCode) => {
             const todayData = weeklyNutritionEntry.daily_nutrition[todayDayName];
             
             if (todayData) {
-                console.log('🔍 Today Data from DB:', {
-                    calories_consumed: todayData.calories_consumed,
-                    protein_consumed: todayData.protein_consumed,
-                    foods_count: todayData.foods ? todayData.foods.length : 0,
-                    consumed_foods: todayData.foods ? todayData.foods.filter(f => f.consumed).length : 0
-                });
+                //  console.log('🔍 Today Data from DB:', {
+                //     calories_consumed: todayData.calories_consumed,
+                //     protein_consumed: todayData.protein_consumed,
+                //     foods_count: todayData.foods ? todayData.foods.length : 0,
+                //     consumed_foods: todayData.foods ? todayData.foods.filter(f => f.consumed).length : 0
+                // });
                 
                 // ✅ FIX: Always use the stored consumed values from the database
                 todayNutrition = {
@@ -1051,22 +1051,22 @@ const getUserDashboard = async (req, res, membershipCode) => {
                     macros: todayData.macros || { protein: 0, carbs: 0, fats: 0 }
                 };
                 
-                console.log('📊 Today Nutrition - Final:', {
-                    calories: todayNutrition.calories_consumed,
-                    protein: todayNutrition.protein_consumed,
-                    goalCalories: todayNutrition.calorie_goal,
-                    goalProtein: todayNutrition.protein_goal
-                });
+                //  console.log('📊 Today Nutrition - Final:', {
+                //     calories: todayNutrition.calories_consumed,
+                //     protein: todayNutrition.protein_consumed,
+                //     goalCalories: todayNutrition.calorie_goal,
+                //     goalProtein: todayNutrition.protein_goal
+                // });
             } else {
-                console.log('❌ No data found for today:', todayDayName);
-                console.log('Available days:', Object.keys(weeklyNutritionEntry.daily_nutrition || {}));
+                //  console.log('❌ No data found for today:', todayDayName);
+                //  console.log('Available days:', Object.keys(weeklyNutritionEntry.daily_nutrition || {}));
             }
         } else {
-            console.log('❌ No weekly nutrition entry found for this week');
+            //  console.log('❌ No weekly nutrition entry found for this week');
         }
 
-        console.log('📊 Today Nutrition Data:', todayNutrition);
-        console.log('📅 Today Day:', todayDayName);
+        //  console.log('📊 Today Nutrition Data:', todayNutrition);
+        //  console.log('📅 Today Day:', todayDayName);
         
         // Get last 7 days nutrition data for weekly stats (using local time)
         const weekStartDate = new Date(today);
@@ -1111,7 +1111,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
         // Get recent foods function
         const getRecentFoods = async (userId, limit = 10) => {
             try {
-                console.log('🔍 Fetching recent foods for user:', userId);
+                //  console.log('🔍 Fetching recent foods for user:', userId);
                 
                 // Get nutrition entries from last 30 days (local time)
                 const thirtyDaysAgo = new Date();
@@ -1124,12 +1124,12 @@ const getUserDashboard = async (req, res, membershipCode) => {
                 .sort({ date: -1 })
                 .limit(10);
 
-                console.log('📊 Found nutrition entries:', nutritionEntries.length);
+                //  console.log('📊 Found nutrition entries:', nutritionEntries.length);
 
                 let foods = [];
                 
                 nutritionEntries.forEach((entry, index) => {
-                    console.log(`📅 Processing entry ${index + 1}:`, entry.date);
+                    //  console.log(`📅 Processing entry ${index + 1}:`, entry.date);
                     
                     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
                     days.forEach(day => {
@@ -1138,7 +1138,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
                             entry.daily_nutrition[day].foods && 
                             entry.daily_nutrition[day].foods.length > 0) {
                             
-                            console.log(`🍽️ Found ${entry.daily_nutrition[day].foods.length} foods for ${day}`);
+                            //  console.log(`🍽️ Found ${entry.daily_nutrition[day].foods.length} foods for ${day}`);
                             
                             entry.daily_nutrition[day].foods.forEach(food => {
                                 if (food.name && food.calories) {
@@ -1157,14 +1157,14 @@ const getUserDashboard = async (req, res, membershipCode) => {
                     });
                 });
 
-                console.log('🎯 Total foods collected:', foods.length);
+                //  console.log('🎯 Total foods collected:', foods.length);
                 
                 // Sort by date (most recent first) and limit
                 const sortedFoods = foods.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, limit);
                 
-                console.log('✅ Final recent foods to display:', sortedFoods.length);
+                //  console.log('✅ Final recent foods to display:', sortedFoods.length);
                 sortedFoods.forEach((food, index) => {
-                    console.log(`${index + 1}. ${food.name} - ${food.calories} kcal - ${food.day} - ${new Date(food.date).toLocaleDateString()}`);
+                    //  console.log(`${index + 1}. ${food.name} - ${food.calories} kcal - ${food.day} - ${new Date(food.date).toLocaleDateString()}`);
                 });
                 
                 return sortedFoods;
@@ -1212,19 +1212,19 @@ const getTodaysWorkout = async (userId) => {
         const localDate = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
         const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][localDate.getDay()];
         
-        console.log('🔍 Looking for workouts for:', todayDayName, 'User:', userId);
-        console.log('📅 Date info:', {
-            utc: today.toISOString(),
-            local: localDate.toString(),
-            localDay: todayDayName
-        });
+        //  console.log('🔍 Looking for workouts for:', todayDayName, 'User:', userId);
+        //  console.log('📅 Date info:', {
+        //     utc: today.toISOString(),
+        //     local: localDate.toString(),
+        //     localDay: todayDayName
+        // });
 
         // Look for ANY workout history that has exercises for today
         const workouts = await WorkoutHistory.find({ 
             userId: userId 
         }).lean();
 
-        console.log('📋 Total workouts found:', workouts.length);
+        //  console.log('📋 Total workouts found:', workouts.length);
 
         let todaysExercises = [];
         let workoutPlanId = null;
@@ -1238,7 +1238,7 @@ const getTodaysWorkout = async (userId) => {
                 );
                 
                 if (exercisesForToday.length > 0) {
-                    console.log('✅ Found workout with exercises for today:', workout._id);
+                    //  console.log('✅ Found workout with exercises for today:', workout._id);
                     todaysExercises = exercisesForToday;
                     workoutPlanId = workout._id;
                     workoutName = workout.name || `${todayDayName} Workout`;
@@ -1247,19 +1247,19 @@ const getTodaysWorkout = async (userId) => {
             }
         }
 
-        console.log('🎯 Today exercises found:', todaysExercises.length);
+        //  console.log('🎯 Today exercises found:', todaysExercises.length);
 
         if (todaysExercises.length > 0) {
             const completedExercises = todaysExercises.filter(ex => ex.completed).length;
             const totalExercises = todaysExercises.length;
             const progress = Math.round((completedExercises / totalExercises) * 100);
             
-            console.log('📊 Progress calculation (TODAY ONLY):', {
-                completed: completedExercises,
-                total: totalExercises,
-                progress: progress,
-                todayDayName: todayDayName
-            });
+            //  console.log('📊 Progress calculation (TODAY ONLY):', {
+            //     completed: completedExercises,
+            //     total: totalExercises,
+            //     progress: progress,
+            //     todayDayName: todayDayName
+            // });
             
             return {
                 name: workoutName,
@@ -1274,7 +1274,7 @@ const getTodaysWorkout = async (userId) => {
         }
 
         // If no workouts found, return empty
-        console.log('❌ No workouts found for today');
+        //  console.log('❌ No workouts found for today');
         return {
             name: 'No Workout Scheduled',
             exercises: [],
@@ -1304,7 +1304,7 @@ const getTodaysWorkout = async (userId) => {
 
         // ✅ USE the function to get today's workout
         const todayWorkoutData = await getTodaysWorkout(userId);
-        console.log('✅ Today workout data:', todayWorkoutData);
+        //  console.log('✅ Today workout data:', todayWorkoutData);
 
 
         // Update exercise progress with actual workout data
@@ -1353,7 +1353,7 @@ try {
         }
     });
     
-    console.log('🏋️ Found max weights:', exerciseMaxWeights);
+    //  console.log('🏋️ Found max weights:', exerciseMaxWeights);
     
     // Update exercise progress with real data
     exerciseProgress = exerciseProgress.map(exercise => {
@@ -1367,7 +1367,7 @@ try {
         };
     });
     
-    console.log('📊 Final exercise progress:', exerciseProgress);
+    //  console.log('📊 Final exercise progress:', exerciseProgress);
     
 } catch (error) {
     console.error('❌ Error calculating exercise progress:', error);
@@ -1410,20 +1410,20 @@ try {
                 .sort((a, b) => new Date(a.date) - new Date(b.date))[0]
             : null;
 
-        console.log('=== DEBUG DASHBOARD DATA ===');
-        console.log('Recent workouts:', recentWorkouts.length);
-        console.log('Today workout exercises:', todayWorkoutData.exercises.length);
-        console.log('Recent foods:', recentFoods.length);
+        //  console.log('=== DEBUG DASHBOARD DATA ===');
+        //  console.log('Recent workouts:', recentWorkouts.length);
+        //  console.log('Today workout exercises:', todayWorkoutData.exercises.length);
+        //  console.log('Recent foods:', recentFoods.length);
         // Debug section
-        console.log('=== DEBUG WORKOUT DATA (LOCAL) ===');
-        console.log('Local Today:', today.toString());
-        console.log('Local Today Day Name:', todayDayName);
-        console.log('Local Week Start:', weekStart.toString());
-        console.log('Local Week End:', weekEnd.toString());
+        //  console.log('=== DEBUG WORKOUT DATA (LOCAL) ===');
+        //  console.log('Local Today:', today.toString());
+        //  console.log('Local Today Day Name:', todayDayName);
+        //  console.log('Local Week Start:', weekStart.toString());
+        //  console.log('Local Week End:', weekEnd.toString());
         
 
-        console.log('=== DEBUG RECENT FOODS ===');
-        console.log('Recent foods count:', recentFoods.length);
+        //  console.log('=== DEBUG RECENT FOODS ===');
+        //  console.log('Recent foods count:', recentFoods.length);
 
         // Common data for all membership types
         const commonData = {
@@ -1484,7 +1484,7 @@ try {
 const completeWorkout = async (req, res) => {
     try {
         if (!req.session || !req.session.user) {
-            console.log('No user session found');
+            //  console.log('No user session found');
             return res.status(401).json({ error: 'Please log in to complete the workout' });
         }
 
@@ -1492,20 +1492,20 @@ const completeWorkout = async (req, res) => {
         const { workoutPlanId } = req.body; // This is WorkoutHistory _id
 
         if (!workoutPlanId) {
-            console.log('Missing workoutPlanId');
+            //  console.log('Missing workoutPlanId');
             return res.status(400).json({ error: 'Workout ID is required' });
         }
 
-        console.log('Completing workout for user:', userId, 'Workout ID:', workoutPlanId);
+        //  console.log('Completing workout for user:', userId, 'Workout ID:', workoutPlanId);
 
         const workout = await WorkoutHistory.findOne({ _id: workoutPlanId, userId });
         if (!workout) {
-            console.log('Workout not found:', workoutPlanId);
+            //  console.log('Workout not found:', workoutPlanId);
             return res.status(404).json({ error: 'Workout not found' });
         }
 
         if (workout.completed) {
-            console.log('Workout already completed:', workoutPlanId);
+            //  console.log('Workout already completed:', workoutPlanId);
             return res.status(400).json({ error: 'Workout already completed' });
         }
 
@@ -1516,7 +1516,7 @@ const completeWorkout = async (req, res) => {
         });
 
         await workout.save();
-        console.log('Workout completed successfully:', workoutPlanId);
+        //  console.log('Workout completed successfully:', workoutPlanId);
 
         res.status(200).json({ message: 'Workout completed successfully' });
     } catch (error) {
@@ -1597,10 +1597,10 @@ const getTodaysFoods = async (userId) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
-        console.log('=== GET TODAYS FOODS DEBUG ===');
-        console.log('📅 Local Today:', today.toString());
-        console.log('📅 Today day index:', today.getDay());
-        console.log('📅 Today day name:', ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()]);
+        //  console.log('=== GET TODAYS FOODS DEBUG ===');
+        //  console.log('📅 Local Today:', today.toString());
+        //  console.log('📅 Today day index:', today.getDay());
+        //  console.log('📅 Today day name:', ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()]);
 
         // Use Sunday as week start (local time)
         const weekStart = new Date(today);
@@ -1611,7 +1611,7 @@ const getTodaysFoods = async (userId) => {
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
         
-        console.log('📊 Local Week range:', weekStart.toString(), 'to', weekEnd.toString());
+        //  console.log('📊 Local Week range:', weekStart.toString(), 'to', weekEnd.toString());
 
         // Get weekly nutrition data
         const weeklyNutrition = await NutritionHistory.findOne({
@@ -1620,18 +1620,18 @@ const getTodaysFoods = async (userId) => {
         });
 
         if (weeklyNutrition) {
-            console.log('✅ Found weekly nutrition plan');
-            console.log('📋 Plan date:', weeklyNutrition.date);
+            //  console.log('✅ Found weekly nutrition plan');
+            //  console.log('📋 Plan date:', weeklyNutrition.date);
             
             const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()];
             const todayData = weeklyNutrition.daily_nutrition[todayDayName];
             
-            console.log('🍽️', todayDayName, 'foods:', todayData ? todayData.foods.length : 'no data');
+            //  console.log('🍽️', todayDayName, 'foods:', todayData ? todayData.foods.length : 'no data');
             
             if (todayData && todayData.foods) {
-                console.log('🎯 Foods found:');
+                //  console.log('🎯 Foods found:');
                 todayData.foods.forEach((food, index) => {
-                    console.log(`${index + 1}. ${food.name} - ${food.calories} kcal - consumed: ${food.consumed}`);
+                    //  console.log(`${index + 1}. ${food.name} - ${food.calories} kcal - consumed: ${food.consumed}`);
                 });
                 
                 // Return foods with proper consumed status
@@ -1645,11 +1645,11 @@ const getTodaysFoods = async (userId) => {
                     consumedAt: food.consumedAt
                 }));
             } else {
-                console.log('❌ No data found for today:', todayDayName);
-                console.log('Available days:', Object.keys(weeklyNutrition.daily_nutrition || {}));
+                //  console.log('❌ No data found for today:', todayDayName);
+                //  console.log('Available days:', Object.keys(weeklyNutrition.daily_nutrition || {}));
             }
         } else {
-            console.log('❌ No weekly nutrition plan found for this week');
+            //  console.log('❌ No weekly nutrition plan found for this week');
         }
         
         return [];

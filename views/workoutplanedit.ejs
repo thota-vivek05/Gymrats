@@ -482,7 +482,7 @@ workoutPlanForm.addEventListener('submit', function(e) {
         });
     });
 
-    console.log('Sending workout data:', workoutData);
+    //  console.log('Sending workout data:', workoutData);
 
     // Send data to server via fetch API
     fetch('/save-workout-plan', {
@@ -494,7 +494,7 @@ workoutPlanForm.addEventListener('submit', function(e) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Success:', data);
+        //  console.log('Success:', data);
         
         // Show success message
         const successToast = document.getElementById('successToast');

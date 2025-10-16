@@ -395,14 +395,14 @@ router.get('/api/exercises/:exerciseId', userController.checkMembershipActive, i
 // Add this route for debugging
 router.get('/api/debug/exercises-test', userController.checkMembershipActive, isAuthenticated, async (req, res) => {
     try {
-        console.log('=== DEBUG EXERCISES API ===');
+        //  console.log('=== DEBUG EXERCISES API ===');
         
         const userId = req.session.user.id;
-        console.log('User ID:', userId);
+        //  console.log('User ID:', userId);
         
         const User = require('../model/User');
         const user = await User.findById(userId);
-        console.log('User workout_type:', user?.workout_type);
+        //  console.log('User workout_type:', user?.workout_type);
         
         // Test the exact query
         let query = { verified: true };
@@ -410,11 +410,11 @@ router.get('/api/debug/exercises-test', userController.checkMembershipActive, is
             query.category = user.workout_type;
         }
         
-        console.log('Query:', query);
+        //  console.log('Query:', query);
         
         const exercises = await Exercise.find(query).sort({ name: 1 });
-        console.log('Found exercises:', exercises.length);
-        console.log('Exercise names:', exercises.map(e => e.name));
+        //  console.log('Found exercises:', exercises.length);
+        //  console.log('Exercise names:', exercises.map(e => e.name));
         
         res.json({
             success: true,
@@ -495,7 +495,7 @@ router.post('/api/nutrition/mark-consumed', userController.checkMembershipActive
         const { foodName, calories, protein, carbs, fats, day } = req.body;
         const userId = req.session.user.id;
         
-        console.log('🎯 Marking food as consumed:', { foodName, day, userId });
+        //  console.log('🎯 Marking food as consumed:', { foodName, day, userId });
         
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -509,7 +509,7 @@ router.post('/api/nutrition/mark-consumed', userController.checkMembershipActive
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
 
-        console.log('📅 Local Week range:', weekStart.toString(), 'to', weekEnd.toString());
+        //  console.log('📅 Local Week range:', weekStart.toString(), 'to', weekEnd.toString());
 
         // Find the WEEKLY nutrition entry
         let nutritionEntry = await NutritionHistory.findOne({
@@ -517,10 +517,10 @@ router.post('/api/nutrition/mark-consumed', userController.checkMembershipActive
             date: { $gte: weekStart, $lt: weekEnd }
         });
         
-        console.log('🔍 Weekly nutrition found:', !!nutritionEntry);
+        //  console.log('🔍 Weekly nutrition found:', !!nutritionEntry);
         
         if (!nutritionEntry) {
-            console.log('❌ No weekly nutrition plan found for this week');
+            //  console.log('❌ No weekly nutrition plan found for this week');
             return res.status(404).json({
                 success: false,
                 message: 'No nutrition plan found for this week'
@@ -529,20 +529,20 @@ router.post('/api/nutrition/mark-consumed', userController.checkMembershipActive
 
         const targetDay = day || ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()];
         
-        console.log('🎯 Target day:', targetDay);
-        console.log('📋 Available days:', Object.keys(nutritionEntry.daily_nutrition || {}));
+        //  console.log('🎯 Target day:', targetDay);
+        //  console.log('📋 Available days:', Object.keys(nutritionEntry.daily_nutrition || {}));
 
         // Get the day data
         const dayData = nutritionEntry.daily_nutrition[targetDay];
         if (!dayData) {
-            console.log('❌ Day not found in weekly nutrition:', targetDay);
+            //  console.log('❌ Day not found in weekly nutrition:', targetDay);
             return res.status(400).json({
                 success: false,
                 message: 'Day not found in nutrition plan: ' + targetDay
             });
         }
 
-        console.log('🍽️ Foods before update:', dayData.foods.length);
+        //  console.log('🍽️ Foods before update:', dayData.foods.length);
         
         // Find and update the food
         const foodIndex = dayData.foods.findIndex(food => 
@@ -550,7 +550,7 @@ router.post('/api/nutrition/mark-consumed', userController.checkMembershipActive
         );
 
         if (foodIndex === -1) {
-            console.log('❌ Food not found or already consumed:', foodName);
+            //  console.log('❌ Food not found or already consumed:', foodName);
             return res.status(404).json({
                 success: false,
                 message: 'Food not found or already consumed: ' + foodName
@@ -570,16 +570,16 @@ router.post('/api/nutrition/mark-consumed', userController.checkMembershipActive
         dayData.macros.carbs = (dayData.macros.carbs || 0) + parseInt(carbs);
         dayData.macros.fats = (dayData.macros.fats || 0) + parseInt(fats);
 
-        console.log('✅ After update - calories_consumed:', dayData.calories_consumed);
-        console.log('✅ After update - protein_consumed:', dayData.protein_consumed);
-        console.log('✅ Food marked as consumed:', foodName);
+        //  console.log('✅ After update - calories_consumed:', dayData.calories_consumed);
+        //  console.log('✅ After update - protein_consumed:', dayData.protein_consumed);
+        //  console.log('✅ Food marked as consumed:', foodName);
 
         // Mark the document as modified to ensure Mongoose saves the nested changes
         nutritionEntry.markModified('daily_nutrition');
         
         await nutritionEntry.save();
         
-        console.log('💾 Saved to database successfully');
+        //  console.log('💾 Saved to database successfully');
 
         res.json({
             success: true,

@@ -85,13 +85,13 @@ exports.loginVerifier = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    console.log("=== LOGIN ATTEMPT ===");
-    console.log("Email:", email);
+    //  console.log("=== LOGIN ATTEMPT ===");
+    //  console.log("Email:", email);
     
     const verifier = await Verifier.findOne({ email });
 
     if (!verifier) {
-      console.log("Verifier not found");
+      //  console.log("Verifier not found");
       return res.status(401).render('verifier_login', {
         errorMessage: 'Invalid email or password.',
         successMessage: null,
@@ -101,7 +101,7 @@ exports.loginVerifier = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, verifier.password);
     if (!isMatch) {
-      console.log("Password mismatch");
+      //  console.log("Password mismatch");
       return res.status(401).render('verifier_login', {
         errorMessage: 'Incorrect password.',
         successMessage: null,
@@ -110,11 +110,11 @@ exports.loginVerifier = async (req, res) => {
     }
 
     // Set session
-    console.log("Setting session for verifier:", verifier._id);
+    //  console.log("Setting session for verifier:", verifier._id);
     req.session.verifierId = verifier._id;
     
     // Verify session was set
-    console.log("Session after setting:", req.session);
+    //  console.log("Session after setting:", req.session);
     
     res.redirect('/verifier');
   } catch (err) {
@@ -130,13 +130,13 @@ exports.loginVerifier = async (req, res) => {
 //REYNA
 exports.getDashboard = async (req, res) => {
   try {
-    console.log("=== GET DASHBOARD ===");
-    console.log("Session:", req.session);
-    console.log("Session verifierId:", req.session.verifierId);
+    //  console.log("=== GET DASHBOARD ===");
+    //  console.log("Session:", req.session);
+    //  console.log("Session verifierId:", req.session.verifierId);
     
     const verifier = await Verifier.findById(req.session.verifierId);
     if (!verifier) {
-      console.log("No verifier found, redirecting to login");
+      //  console.log("No verifier found, redirecting to login");
       return res.redirect('/verifier/login');
     }
 
@@ -176,13 +176,13 @@ exports.getDashboard = async (req, res) => {
       .limit(3)
       .select('firstName lastName email specializations updatedAt');
 
-    console.log("Rendering dashboard with:", {
-      verifier: verifier.name,
-      pendingCount,
-      completedCount,
-      recentApplicationsCount: recentApplications.length,
-      recentApprovedTrainersCount: recentApprovedTrainers.length
-    });
+    //  console.log("Rendering dashboard with:", {
+    //   verifier: verifier.name,
+    //   pendingCount,
+    //   completedCount,
+    //   recentApplicationsCount: recentApplications.length,
+    //   recentApprovedTrainersCount: recentApprovedTrainers.length
+    // });
 
     res.render('verifier', {
       verifier: {
@@ -213,7 +213,7 @@ exports.getRegistrationPage = (req, res) => {
 // Add this to your verifierController.js
 exports.requireAuth = (req, res, next) => {
   if (!req.session.verifierId) {
-    console.log("Auth required - redirecting to login");
+    //  console.log("Auth required - redirecting to login");
     return res.redirect('/verifier/login');
   }
   next();
@@ -268,34 +268,34 @@ exports.registerVerifier = async (req, res) => {
 
 exports.showPendingVerifications = async (req, res) => {
   try {
-    console.log("=== showPendingVerifications START ===");
+    //  console.log("=== showPendingVerifications START ===");
     
     // Verify the user is logged in
     const verifierId = req.session.verifierId;
-    console.log("Session verifierId:", verifierId);
+    //  console.log("Session verifierId:", verifierId);
     
     const verifier = await Verifier.findById(verifierId);
-    console.log("Verifier found:", verifier ? verifier.name : "NO VERIFIER");
+    //  console.log("Verifier found:", verifier ? verifier.name : "NO VERIFIER");
     
     if (!verifier) {
-      console.log("No verifier found, redirecting to login");
+      //  console.log("No verifier found, redirecting to login");
       return res.redirect('/verifier/login');
     }
     
     // Get pending AND in-progress applications
-    console.log("Searching for applications with status: ['Pending', 'In Progress']");
+    //  console.log("Searching for applications with status: ['Pending', 'In Progress']");
     const applications = await TrainerApplication.find({ 
       status: { $in: ['Pending', 'In Progress'] }
     }).sort({ createdAt: -1 });
     
-    console.log("Found applications:", applications.length);
+    //  console.log("Found applications:", applications.length);
     
     const pendingCount = await TrainerApplication.countDocuments({ 
       status: { $in: ['Pending', 'In Progress'] }
     });
     
-    console.log("Total pending count:", pendingCount);
-    console.log("=== showPendingVerifications END ===");
+    //  console.log("Total pending count:", pendingCount);
+    //  console.log("=== showPendingVerifications END ===");
     
     return res.render('pendingverifications', { 
       applications: applications || [],
@@ -322,33 +322,33 @@ exports.showPendingVerifications = async (req, res) => {
 // Show approved verifications
 exports.showApprovedVerifications = async (req, res) => {
   try {
-    console.log("=== showApprovedVerifications START ===");
+    //  console.log("=== showApprovedVerifications START ===");
     
     const verifierId = req.session.verifierId;
-    console.log("Session verifierId:", verifierId);
+    //  console.log("Session verifierId:", verifierId);
     
     const verifier = await Verifier.findById(verifierId);
-    console.log("Verifier found:", verifier ? verifier.name : "NO VERIFIER");
+    //  console.log("Verifier found:", verifier ? verifier.name : "NO VERIFIER");
     
     if (!verifier) {
-      console.log("No verifier found, redirecting to login");
+      //  console.log("No verifier found, redirecting to login");
       return res.redirect('/verifier/login');
     }
     
     // Get approved applications
-    console.log("Searching for applications with status: 'Approved'");
+    //  console.log("Searching for applications with status: 'Approved'");
     const applications = await TrainerApplication.find({ 
       status: 'Approved'
     }).sort({ updatedAt: -1 });
     
-    console.log("Found approved applications:", applications.length);
+    //  console.log("Found approved applications:", applications.length);
     
     const approvedCount = await TrainerApplication.countDocuments({ 
       status: 'Approved'
     });
     
-    console.log("Total approved count:", approvedCount);
-    console.log("=== showApprovedVerifications END ===");
+    //  console.log("Total approved count:", approvedCount);
+    //  console.log("=== showApprovedVerifications END ===");
     
     return res.render('approvedverifications', { 
       applications: applications || [],
@@ -377,33 +377,33 @@ exports.showApprovedVerifications = async (req, res) => {
 // Show rejected verifications
 exports.showRejectedVerifications = async (req, res) => {
   try {
-    console.log("=== showRejectedVerifications START ===");
+    //  console.log("=== showRejectedVerifications START ===");
     
     const verifierId = req.session.verifierId;
-    console.log("Session verifierId:", verifierId);
+    //  console.log("Session verifierId:", verifierId);
     
     const verifier = await Verifier.findById(verifierId);
-    console.log("Verifier found:", verifier ? verifier.name : "NO VERIFIER");
+    //  console.log("Verifier found:", verifier ? verifier.name : "NO VERIFIER");
     
     if (!verifier) {
-      console.log("No verifier found, redirecting to login");
+      //  console.log("No verifier found, redirecting to login");
       return res.redirect('/verifier/login');
     }
     
     // Get rejected applications
-    console.log("Searching for applications with status: 'Rejected'");
+    //  console.log("Searching for applications with status: 'Rejected'");
     const applications = await TrainerApplication.find({ 
       status: 'Rejected'
     }).sort({ updatedAt: -1 });
     
-    console.log("Found rejected applications:", applications.length);
+    //  console.log("Found rejected applications:", applications.length);
     
     const rejectedCount = await TrainerApplication.countDocuments({ 
       status: 'Rejected'
     });
     
-    console.log("Total rejected count:", rejectedCount);
-    console.log("=== showRejectedVerifications END ===");
+    //  console.log("Total rejected count:", rejectedCount);
+    //  console.log("=== showRejectedVerifications END ===");
     
     return res.render('rejectedverifications', { 
       applications: applications || [],

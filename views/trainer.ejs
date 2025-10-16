@@ -389,13 +389,13 @@ if (nutritionCanvas) {
         }
     });
 } else {
-    console.log('Nutrition chart not available for this client (Basic membership)');
+    //  //  console.log('Nutrition chart not available for this client (Basic membership)');
     nutritionChart = null; // Set to null so we can check later
 }
 
 // Update membership-based feature visibility
 function updateMembershipFeatures(clientData) {
-    console.log("Updating features for:", clientData.name, "Membership:", clientData.membershipType);
+    //  console.log("Updating features for:", clientData.name, "Membership:", clientData.membershipType);
     
     const meetButton = document.getElementById('meetButton');
     const nutritionPlanSection = document.getElementById('nutritionPlanSection');
@@ -423,8 +423,8 @@ function updateMembershipFeatures(clientData) {
         }
     }
     
-    console.log("Meet button visible:", meetButton?.style.display === 'block');
-    console.log("Nutrition section visible:", nutritionPlanSection?.style.display === 'block');
+    //  console.log("Meet button visible:", meetButton?.style.display === 'block');
+    //  console.log("Nutrition section visible:", nutritionPlanSection?.style.display === 'block');
 }
 
         // Client selection
@@ -435,7 +435,7 @@ document.querySelectorAll('.client-item').forEach(item => {
         });
         this.classList.add('active');
         const clientId = this.dataset.client;
-        console.log("Selected client: " + clientId);
+        //  console.log("Selected client: " + clientId);
 
         // Update edit workout plan link (available for all tiers)
         const editWorkoutPlanLink = document.getElementById('editWorkoutPlanLink');
@@ -472,7 +472,7 @@ document.querySelectorAll('.client-item').forEach(item => {
             // Fetch weekly workout schedule
             const workoutResponse = await fetch(`/workout/${clientId}`);
             const workoutData = await workoutResponse.json();
-            console.log("DEBUG: Workout API Response:", workoutData);
+            //  console.log("DEBUG: Workout API Response:", workoutData);
 
             if (!workoutData.weeklySchedule) {
                 console.error("DEBUG: weeklySchedule is missing from response!");
@@ -721,11 +721,11 @@ async function loadExerciseRatings(clientId) {
     try {
         ratingsContainer.innerHTML = '<div class="loading-ratings"><p>Loading exercise ratings...</p></div>';
         
-        console.log('Fetching exercise ratings for client:', clientId);
+        //  console.log('Fetching exercise ratings for client:', clientId);
         
         const response = await fetch(`/trainer/exercise-ratings/${clientId}`);
         
-        console.log('Response status:', response.status);
+        //  console.log('Response status:', response.status);
         
         if (!response.ok) {
             if (response.status === 404) {
@@ -735,7 +735,7 @@ async function loadExerciseRatings(clientId) {
         }
         
         const data = await response.json();
-        console.log('Exercise ratings response:', data);
+        //  console.log('Exercise ratings response:', data);
         
         if (data.success && data.ratings && data.ratings.length > 0) {
             // Show the section
@@ -829,7 +829,7 @@ function generateStars(rating) {
 
 // Update the membership features function to handle exercise ratings section
 function updateMembershipFeatures(clientData) {
-    console.log("Updating features for:", clientData.name, "Membership:", clientData.membershipType);
+    //  console.log("Updating features for:", clientData.name, "Membership:", clientData.membershipType);
     
     const meetButton = document.getElementById('meetButton');
     const nutritionPlanSection = document.getElementById('nutritionPlanSection');
@@ -863,9 +863,9 @@ function updateMembershipFeatures(clientData) {
         exerciseRatingsSection.style.display = 'block';
     }
     
-    console.log("Meet button visible:", meetButton?.style.display === 'block');
-    console.log("Nutrition section visible:", nutritionPlanSection?.style.display === 'block');
-    console.log("Exercise ratings visible:", exerciseRatingsSection?.style.display === 'block');
+    //  console.log("Meet button visible:", meetButton?.style.display === 'block');
+    //  console.log("Nutrition section visible:", nutritionPlanSection?.style.display === 'block');
+    //  console.log("Exercise ratings visible:", exerciseRatingsSection?.style.display === 'block');
 }
 
 // Trigger click on the first client if one exists

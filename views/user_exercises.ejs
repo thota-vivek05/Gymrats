@@ -410,34 +410,34 @@
 
         // Load exercises from API
         async function loadExercises(category = 'all') {
-    console.log('=== LOAD EXERCISES START ===');
+    //  console.log('=== LOAD EXERCISES START ===');
     showLoading();
     try {
-        console.log('Making API request to /api/exercises...');
+        //  console.log('Making API request to /api/exercises...');
         const response = await fetch('/api/exercises');
-        console.log('Response status:', response.status);
-        console.log('Response ok:', response.ok);
+        //  console.log('Response status:', response.status);
+        //  console.log('Response ok:', response.ok);
         
         const data = await response.json();
-        console.log('API Response data:', data);
-        console.log('Data success:', data.success);
-        console.log('Exercises count:', data.exercises ? data.exercises.length : 'no exercises');
+        //  console.log('API Response data:', data);
+        //  console.log('Data success:', data.success);
+        //  console.log('Exercises count:', data.exercises ? data.exercises.length : 'no exercises');
         
         if (data.success) {
-    console.log('SUCCESS: Rendering exercises');
+    //  console.log('SUCCESS: Rendering exercises');
     currentExercises = data.exercises;
     userWorkoutType = data.userWorkoutType; // ADD THIS LINE
     renderExercises(category);
     updateExercisesTitle(category, data.userWorkoutType);
 } else {
-            console.log('ERROR: Data.success is false');
+            //  console.log('ERROR: Data.success is false');
             showError('Failed to load exercises');
         }
     } catch (error) {
         console.error('CATCH ERROR loading exercises:', error);
         showError('Error loading exercises. Please try again.');
     } finally {
-        console.log('=== LOAD EXERCISES END ===');
+        //  console.log('=== LOAD EXERCISES END ===');
     }
 }
 
