@@ -123,7 +123,7 @@
             </div>
         </div>
 
-        <div class="dashboard-grid">
+<div class="dashboard-grid">
             <!-- Today's Workout Section -->
 <div class="dashboard-card">
     <div class="card-header">
@@ -282,104 +282,104 @@
 
         <!-- Nutrition Section in userdashboard_p.ejs -->
         <!-- Nutrition Section -->
-<div class="dashboard-wide-card">
-    <div class="card-header">
-        <h2>Nutrition Tracking</h2>
-    </div>
-    
-    <!-- Food Completion Section -->
-    <div class="nutrition-food-completion">
-        <h3>Today's Food Goals</h3>
-        <div class="food-goals-container">
-            <% if (todaysConsumedFoods && todaysConsumedFoods.length > 0) { %>
-                <% todaysConsumedFoods.forEach((food, index) => { %>
-                    <div class="food-goal-item" data-food-id="<%= index %>">
-                        <div class="food-info">
-                            <h4><%= food.name %></h4>
-                            <div class="food-macros">
-                                <span class="calories"><%= food.calories %> kcal</span>
-                                <span class="protein"><%= food.protein %>g protein</span>
-                                <% if (food.carbs) { %>
-                                    <span class="carbs"><%= food.carbs %>g carbs</span>
-                                <% } %>
-                                <% if (food.fats) { %>
-                                    <span class="fats"><%= food.fats %>g fats</span>
-                                <% } %>
-                            </div>
-                        </div>
-                        <button class="food-complete-btn <%= food.consumed ? 'completed' : '' %>" 
-                                data-food-name="<%= food.name %>"
-                                data-calories="<%= food.calories %>"
-                                data-protein="<%= food.protein %>"
-                                data-carbs="<%= food.carbs || 0 %>"
-                                data-fats="<%= food.fats || 0 %>"
-                                <%= food.consumed ? 'disabled' : '' %>>
-                            <% if (food.consumed) { %>
-                                <i class="fas fa-check-circle"></i> Completed
-                            <% } else { %>
-                                <i class="fas fa-check"></i> Mark as Eaten
-                            <% } %>
-                        </button>
-                    </div>
-                <% }); %>
-            <% } else { %>
-                <p>No food goals set for today. Add some foods to your nutrition plan.</p>
-            <% } %>
-        </div>
-    </div>
-
-    <!-- Food Log Section -->
-    <div class="nutrition-food-log">
-        <h3>Today's Food Log</h3>
-        <div class="todays-consumption">
-            <div class="consumption-stats">
-                <div class="stat">
-                    <span class="label">Calories:</span>
-                    <span class="value" id="todayCalories"><%= todayNutrition.calories_consumed || 0 %></span>
-                    <span class="goal">/ <%= user.fitness_goals.calorie_goal %></span>
-                </div>
-                <div class="stat">
-                    <span class="label">Protein:</span>
-                    <span class="value" id="todayProtein"><%= todayNutrition.protein_consumed || 0 %></span>
-                    <span class="goal">/ <%= user.fitness_goals.protein_goal %>g</span>
-                </div>
-            </div>
+    <div class="dashboard-wide-card">
+        <div class="card-header">
+            <h2>Nutrition Tracking</h2>
         </div>
         
-        <table class="food-log-table">
-            <thead>
-                <tr>
-                    <th>Food</th>
-                    <th>Calories</th>
-                    <th>Protein</th>
-                    <th>Carbs</th>
-                    <th>Fats</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="consumedFoodsList">
+        <!-- Food Completion Section -->
+        <div class="nutrition-food-completion">
+            <h3>Today's Food Goals</h3>
+            <div class="food-goals-container">
                 <% if (todaysConsumedFoods && todaysConsumedFoods.length > 0) { %>
-                    <% todaysConsumedFoods.filter(food => food.consumed).forEach(food => { %>
-                        <tr class="consumed-food-item">
-                            <td><%= food.name %></td>
-                            <td><%= food.calories %> kcal</td>
-                            <td><%= food.protein %>g</td>
-                            <td><%= food.carbs || 0 %>g</td>
-                            <td><%= food.fats || 0 %>g</td>
-                            <td><%= food.consumedAt ? new Date(food.consumedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Today' %></td>
-                            <td><span class="completed-badge">Completed</span></td>
-                        </tr>
+                    <% todaysConsumedFoods.forEach((food, index) => { %>
+                        <div class="food-goal-item" data-food-id="<%= index %>">
+                            <div class="food-info">
+                                <h4><%= food.name %></h4>
+                                <div class="food-macros">
+                                    <span class="calories"><%= food.calories %> kcal</span>
+                                    <span class="protein"><%= food.protein %>g protein</span>
+                                    <% if (food.carbs) { %>
+                                        <span class="carbs"><%= food.carbs %>g carbs</span>
+                                    <% } %>
+                                    <% if (food.fats) { %>
+                                        <span class="fats"><%= food.fats %>g fats</span>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <button class="food-complete-btn <%= food.consumed ? 'completed' : '' %>" 
+                                    data-food-name="<%= food.name %>"
+                                    data-calories="<%= food.calories %>"
+                                    data-protein="<%= food.protein %>"
+                                    data-carbs="<%= food.carbs || 0 %>"
+                                    data-fats="<%= food.fats || 0 %>"
+                                    <%= food.consumed ? 'disabled' : '' %>>
+                                <% if (food.consumed) { %>
+                                    <i class="fas fa-check-circle"></i> Completed
+                                <% } else { %>
+                                    <i class="fas fa-check"></i> Mark as Eaten
+                                <% } %>
+                            </button>
+                        </div>
                     <% }); %>
                 <% } else { %>
-                    <tr id="noFoodsMessage">
-                        <td colspan="7">No foods consumed today yet</td>
-                    </tr>
+                    <p>No food goals set for today. Add some foods to your nutrition plan.</p>
                 <% } %>
-            </tbody>
-        </table>
+            </div>
+        </div>
+
+        <!-- Food Log Section -->
+        <div class="nutrition-food-log">
+            <h3>Today's Food Log</h3>
+            <div class="todays-consumption">
+                <div class="consumption-stats">
+                    <div class="stat">
+                        <span class="label">Calories:</span>
+                        <span class="value" id="todayCalories"><%= todayNutrition.calories_consumed || 0 %></span>
+                        <span class="goal">/ <%= user.fitness_goals.calorie_goal %></span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Protein:</span>
+                        <span class="value" id="todayProtein"><%= todayNutrition.protein_consumed || 0 %></span>
+                        <span class="goal">/ <%= user.fitness_goals.protein_goal %>g</span>
+                    </div>
+                </div>
+            </div>
+            
+            <table class="food-log-table">
+                <thead>
+                    <tr>
+                        <th>Food</th>
+                        <th>Calories</th>
+                        <th>Protein</th>
+                        <th>Carbs</th>
+                        <th>Fats</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="consumedFoodsList">
+                    <% if (todaysConsumedFoods && todaysConsumedFoods.length > 0) { %>
+                        <% todaysConsumedFoods.filter(food => food.consumed).forEach(food => { %>
+                            <tr class="consumed-food-item">
+                                <td><%= food.name %></td>
+                                <td><%= food.calories %> kcal</td>
+                                <td><%= food.protein %>g</td>
+                                <td><%= food.carbs || 0 %>g</td>
+                                <td><%= food.fats || 0 %>g</td>
+                                <td><%= food.consumedAt ? new Date(food.consumedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Today' %></td>
+                                <td><span class="completed-badge">Completed</span></td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr id="noFoodsMessage">
+                            <td colspan="7">No foods consumed today yet</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 
 <!-- Footer -->
         <!-- <footer class="site-footer">
