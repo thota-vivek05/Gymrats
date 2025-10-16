@@ -54,81 +54,184 @@
     </section>
 
     <script>
-        document.getElementById('verifierForm').addEventListener('submit', async function (event) {
-            event.preventDefault();
-            
-            const submitBtn = this.querySelector('.submit-btn');
-            const messageDiv = document.getElementById('message');
-            const originalText = submitBtn.textContent;
-            
-            // Show loading state
-            submitBtn.textContent = 'Creating...';
-            submitBtn.disabled = true;
-            messageDiv.style.display = 'none';
-            
-            try {
-                const formData = new FormData(this);
-                
-                const response = await fetch('/admin/verifier', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams(formData)
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Show success message
-                    messageDiv.textContent = 'Verifier created successfully!';
-                    messageDiv.className = 'message success';
-                    messageDiv.style.display = 'block';
-                    
-                    // Reset form
-                    this.reset();
-                    
-                    // Refresh parent page after delay
-                    setTimeout(() => {
-                        if (window.parent && window.parent.refreshVerifierList) {
-                            window.parent.refreshVerifierList();
-                        }
-                        // Close modal
-                        if (window.parent && window.parent.document) {
-                            const modal = window.parent.document.getElementById('addVerifierModal');
-                            if (modal) {
-                                modal.style.display = 'none';
-                            }
-                        }
-                    }, 1500);
-                    
-                } else {
-                    throw new Error(data.message || 'Failed to create verifier');
-                }
-                
-            } catch (error) {
-                console.error('Error:', error);
-                messageDiv.textContent = error.message || 'Error creating verifier. Please try again.';
-                messageDiv.className = 'message error';
-                messageDiv.style.display = 'block';
-            } finally {
-                // Reset button state
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            }
-        });
 
-        // Basic form validation
-        document.getElementById('verifierForm').addEventListener('input', function() {
-            const experience = document.getElementById('experienceYears').value;
-            const submitBtn = this.querySelector('.submit-btn');
-            
-            if (experience && experience < 1) {
-                document.getElementById('experienceYears').setCustomValidity('Experience must be at least 1 year');
-            } else {
-                document.getElementById('experienceYears').setCustomValidity('');
-            }
+        // Add these validation functions at the top of your script
+function validateName(name) {
+    return /^[A-Za-z\s]{2,50}$/.test(name); // 2-50 letters and spaces only
+}
+
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); // Basic email format
+}
+
+function validatePassword(password) {
+    return password.length >= 3; // At least 3 characters
+}
+
+function validatePhone(phone) {
+    return /^\+?[\d\s-]{10}$/.test(phone); // Exactly 10 digits, may include +, spaces, or hyphens
+}
+
+function validateExperience(experience) {
+    return experience >= 1 && experience <= 50; // 1-50 years
+}
+
+
+document.getElementById('verifierForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    
+    const submitBtn = this.querySelector('.submit-btn');
+    const messageDiv = document.getElementById('message');
+    const originalText = submitBtn.textContent;
+    
+    // Show loading state
+    submitBtn.textContent = 'Creating...';
+    submitBtn.disabled = true;
+    messageDiv.style.display = 'none';
+    
+    try {
+        // Get form values directly from inputs
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const password = document.getElementById('password').value;
+        const experienceYears = document.getElementById('experienceYears').value;
+        
+        console.log('Form values:', { name, email, phone, password, experienceYears }); // Debug log
+        
+        // Validate form data
+        if (!validateName(name)) {
+            throw new Error('Please enter a valid full name (2-50 letters and spaces only)');
+        }
+        
+        if (!validateEmail(email)) {
+            throw new Error('Please enter a valid email address');
+        }
+        
+        if (!validatePhone(phone)) {
+            throw new Error('Please enter a valid phone number (at least 10 digits)');
+        }
+        
+        if (!validatePassword(password)) {
+            throw new Error('Password must be at least 8 characters long');
+        }
+        
+        if (!validateExperience(experienceYears)) {
+            throw new Error('Experience must be between 1 and 50 years');
+        }
+        
+        // Send as JSON instead of FormData to ensure all fields are included
+        const response = await fetch('/admin/verifier', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                phone: phone,
+                password: password,
+                experienceYears: experienceYears
+            })
         });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Show success message
+            messageDiv.textContent = 'Verifier created successfully!';
+            messageDiv.className = 'message success';
+            messageDiv.style.display = 'block';
+            
+            // Reset form
+            this.reset();
+            
+            // Refresh parent page after delay
+            setTimeout(() => {
+                if (window.parent && window.parent.refreshVerifierList) {
+                    window.parent.refreshVerifierList();
+                }
+                // Close modal
+                if (window.parent && window.parent.document) {
+                    const modal = window.parent.document.getElementById('addVerifierModal');
+                    if (modal) {
+                        modal.style.display = 'none';
+                    }
+                }
+            }, 1500);
+
+        } else {
+            throw new Error(data.message || 'Failed to create verifier');
+        }
+        
+    } catch (error) {
+        console.error('Error:', error);
+        messageDiv.textContent = error.message || 'Error creating verifier. Please try again.';
+        messageDiv.className = 'message error';
+        messageDiv.style.display = 'block';
+    } finally {
+        // Reset button state
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+});
+
+
+        // Real-time validation feedback
+document.querySelectorAll('#verifierForm input').forEach(input => {
+    input.addEventListener('blur', function() {
+        validateField(this);
+    });
+});
+
+function validateField(field) {
+    const value = field.value.trim();
+    let isValid = true;
+    let errorMessage = '';
+    
+    switch(field.id) {
+        case 'name':
+            isValid = validateName(value);
+            errorMessage = 'Name must be 2-50 letters and spaces only';
+            break;
+        case 'email':
+            isValid = validateEmail(value);
+            errorMessage = 'Please enter a valid email address';
+            break;
+        case 'phone':
+            isValid = validatePhone(value);
+            errorMessage = 'Please enter a valid phone number (10 digits)';
+            break;
+        case 'password':
+            isValid = validatePassword(value);
+            errorMessage = 'Password must be at least 3 characters';
+            break;
+        case 'experienceYears':
+            isValid = validateExperience(value);
+            errorMessage = 'Experience must be 1-50 years';
+            break;
+    }
+    
+    // Remove existing error styling
+    field.classList.remove('error');
+    const existingError = field.parentNode.querySelector('.field-error');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    // Add error styling and message if invalid
+    if (!isValid && value) {
+        field.classList.add('error');
+        const errorElement = document.createElement('div');
+        errorElement.className = 'field-error';
+        errorElement.textContent = errorMessage;
+        errorElement.style.color = '#ff4444';
+        errorElement.style.fontSize = '12px';
+        errorElement.style.marginTop = '5px';
+        field.parentNode.appendChild(errorElement);
+    }
+}
+
     </script>
 </body>
 </html>

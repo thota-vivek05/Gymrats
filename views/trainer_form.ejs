@@ -179,6 +179,30 @@
   </div>
 
   <script>
+    
+    // Validation functions
+function validateName(name) {
+    return /^[A-Za-z\s]{2,50}$/.test(name); // 2-50 letters and spaces only
+}
+
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); // Basic email format
+}
+
+function validatePassword(password) {
+    return password.length >= 3; // At least 3 characters
+}
+
+function validatePasswordStrength(password) {
+    // Optional: Add strength requirements
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    return password.length >= 8 && hasUpperCase && hasLowerCase && hasNumbers;
+}
+
     document.getElementById('trainerSignupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -198,6 +222,28 @@
         specializations,
         termsAgree: document.getElementById('termsAgree').checked
       };
+
+      // Add this validation check after collecting formData
+if (!validateName(formData.firstName) || !validateName(formData.lastName)) {
+    alert('Please enter valid names (2-50 letters only, no numbers or special characters)');
+    return;
+}
+
+if (!validateEmail(formData.email)) {
+    alert('Please enter a valid email address');
+    return;
+}
+
+if (!validatePassword(formData.password)) {
+    alert('Password must be at least 3 characters long');
+    return;
+}
+
+if (formData.password !== formData.confirmPassword) {
+    alert('Passwords do not match');
+    return;
+}
+
 
       try {
         const response = await fetch('/trainer-signup', {

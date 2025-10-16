@@ -1017,12 +1017,12 @@ getVerifiers: async (req, res) => {
     const pendingTrainers = await TrainerApplication.countDocuments({ status: 'Pending' });
     const rejectedTrainers = await TrainerApplication.countDocuments({ status: 'Rejected' });
 
-    console.log('Verifier Stats:', {
-      totalVerifiers,
-      approvedTrainers,
-      pendingTrainers,
-      rejectedTrainers
-    });
+    // console.log('Verifier Stats:', {
+    //   totalVerifiers,
+    //   approvedTrainers,
+    //   pendingTrainers,
+    //   rejectedTrainers
+    // });
 
     res.render('admin_verifier', {
       pageTitle: 'Verifier Management',
@@ -1048,21 +1048,34 @@ getVerifiers: async (req, res) => {
   }
 },
 
-  createVerifier: async (req, res) => {
+createVerifier: async (req, res) => {
   try {
     if (!req.session.userId) {
       return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
+        
+    const { name, email, password, phone, experienceYears } = req.body;
     
-    const { name, email, password, phone, experienceYears } = req.body; // Added experienceYears
-    
-    console.log('Received verifier data:', { name, email, phone, experienceYears }); // Debug log
-    
-    if (!name || !email || !password || !phone || !experienceYears) { // Added experienceYears check
+    // Enhanced validation with better error messages
+    if (!name || !email || !phone || !experienceYears) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Missing required fields',
-        received: { name, email, phone, experienceYears } // Debug info
+        message: 'Missing required fields: name, email, phone, and experience are required',
+        missing: {
+          name: !name,
+          email: !email,
+          phone: !phone,
+          experienceYears: !experienceYears,
+          password: !password
+        }
+      });
+    }
+    
+    // Check if password exists
+    if (!password) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Password is required' 
       });
     }
     
@@ -1075,13 +1088,24 @@ getVerifiers: async (req, res) => {
     const newVerifier = new Verifier({
       name,
       email,
-      password_hash: hashedPassword,
+      password: hashedPassword,
       phone,
-      experienceYears: parseInt(experienceYears) // Make sure it's a number
+      experienceYears: parseInt(experienceYears)
     });
     
     await newVerifier.save();
-    res.status(201).json({ success: true, message: 'Verifier created successfully', verifier: newVerifier });
+    
+    // console.log('Verifier created successfully:', { name, email });
+    
+    res.status(201).json({ 
+      success: true, 
+      message: 'Verifier created successfully', 
+      verifier: {
+        id: newVerifier._id,
+        name: newVerifier.name,
+        email: newVerifier.email
+      }
+    });
   } catch (error) {
     console.error('Create verifier error:', error);
     res.status(500).json({ 

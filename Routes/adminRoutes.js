@@ -41,6 +41,7 @@ router.get('/api/exercises', adminController.searchExercises);
 // Verifier Routes
 router.get('/verifier', adminController.getVerifiers);
 // router.get('/verifier', adminController.getVerifierPage);
+// Add this before your routes in adminRoutes.js or server.js
 router.get('/verifier_form', (req, res) => {
     res.render('verifier_form'); // You might need to create this view
 });

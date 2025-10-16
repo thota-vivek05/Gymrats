@@ -315,6 +315,23 @@
             document.body.style.overflow = 'auto';
         }
 
+        // Add these validation functions after modal functions
+function validateName(name) {
+    return /^[A-Za-z\s]{2,50}$/.test(name); // 2-50 letters and spaces only
+}
+
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); // Basic email format
+}
+
+function validatePassword(password) {
+    return password.length >= 3; // At least 3 characters
+}
+// Add this function after the other validation functions
+function validatePasswords(password, confirmPassword) {
+    return password === confirmPassword;
+}
+
         // Close modal when clicking outside
         window.onclick = function (event) {
             const errorModal = document.getElementById('errorModal');
@@ -375,58 +392,57 @@
                 });
             }
 
-            // Handle login form submission
+            // Handle login form submission - UPDATE THIS SECTION
             document.getElementById('loginForm').addEventListener('submit', function (e) {
-                e.preventDefault();
+    e.preventDefault();
 
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                //brimstone 3
-                // const loginMembershipPlan = document.getElementById('loginMembershipPlan').value;
-                // brimstone 3
-                if (!email || !password) {
-                    showErrorModal('Please fill in all fields');
-                    return;
-                }
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    if (!email || !password) {
+        showErrorModal('Please fill in all fields');
+        return;
+    }
 
-                fetch('/login', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            email,
-                            password
+    // ADD THESE VALIDATIONS
+    if (!validateEmail(email)) {
+        showErrorModal('Please enter a valid email address');
+        return;
+    }
 
-                        }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.message === 'Login successful') {
-                            showSuccessModal('Login successful! Redirecting...');
-                            setTimeout(() => {
-                                window.location.href = data.redirect;
-                            }, 1000);
-                            this.reset();
-                        } else {
-                            showErrorModal(data.error || 'Login failed. Please try again.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showErrorModal('An error occurred. Please try again later.');
-                    });
-            });
+    if (!validatePassword(password)) {
+        showErrorModal('Password must be at least 8 characters long');
+        return;
+    }
 
-            // Validate phone number
-            function validatePhone(phone) {
-                return /^\+?[\d\s-]{10,}$/.test(phone);
+    fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email,
+                password
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Login successful') {
+                showSuccessModal('Login successful! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 1000);
+                this.reset();
+            } else {
+                showErrorModal(data.error || 'Login failed. Please try again.');
             }
-
-            // Validate matching passwords
-            function validatePasswords(password, confirmPassword) {
-                return password === confirmPassword;
-            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorModal('An error occurred. Please try again later.');
+        });
+});
+            
 
             // Handle signup form submission
             document.getElementById('signupForm').addEventListener('submit', function (e) {
@@ -452,7 +468,7 @@
                 const workoutType = document.getElementById('workoutType').value;
                 const weightGoal = document.getElementById('weightGoal').value;
                 // Brimstone
-                // Validate form data
+                // In the signup form validation section - UPDATE THIS PART
                 if (!userFullName || !dateOfBirth || !gender || !userEmail || !phoneNumber || !
                     userPassword ||
                     !userConfirmPassword || !membershipPlan || !membershipDuration || !cardType ||
@@ -461,17 +477,20 @@
                     return;
                 }
 
-                if (!/^[A-Za-z]+$/.test(userFullName)) {
-                    showErrorModal(
-                        'Full name should contain only letters.'
-                    );
+                // REPLACE the current name validation with this:
+                if (!validateName(userFullName)) {
+                    showErrorModal('Please enter a valid full name (2-50 letters and spaces only)');
                     return;
                 }
 
-                if (!validatePhone(phoneNumber)) {
-                    showErrorModal(
-                        'Please enter a valid phone number (at least 10 digits, may include +, spaces, or hyphens)'
-                    );
+                // ADD these email and password validations:
+                if (!validateEmail(userEmail)) {
+                    showErrorModal('Please enter a valid email address');
+                    return;
+                }
+
+                if (!validatePassword(userPassword)) {
+                    showErrorModal('Password must be at least 8 characters long');
                     return;
                 }
                 // Brimstone
@@ -568,6 +587,21 @@
                         showErrorModal('An error occurred. Please try again later.');
                     });
             });
+        
+            const membershipPlan = document.getElementById('membershipPlan');
+            const membershipDuration = document.getElementById('membershipDuration');
+
+            if (membershipPlan) {
+                membershipPlan.addEventListener('change', calculatePrice);
+            }
+
+            if (membershipDuration) {
+                membershipDuration.addEventListener('change', calculatePrice);
+            }
+
+            // Initialize price display
+            calculatePrice();
+
         });
 
         // Function to toggle between login and signup forms
@@ -709,24 +743,9 @@
             }
         }
 
-        // Add event listeners to membership plan and duration dropdowns
-        document.addEventListener('DOMContentLoaded', function () {
-            const membershipPlan = document.getElementById('membershipPlan');
-            const membershipDuration = document.getElementById('membershipDuration');
-
-            if (membershipPlan) {
-                membershipPlan.addEventListener('change', calculatePrice);
-            }
-
-            if (membershipDuration) {
-                membershipDuration.addEventListener('change', calculatePrice);
-            }
-
-            // Initialize price display
-            calculatePrice();
-        });
+      
         //brimstone
     </script>
 </body>
-     <!-- TRYING TO ADD ANVESH CODE -->
+    
 </html>
