@@ -219,14 +219,28 @@
     <div class="foods-to-take" id="foodsList">
         <p>No foods assigned yet.</p>
     </div>
-    <div class="goals-reached">
-        <p>Food goals not set.</p>
-    </div>
+    <div class="goals-reached" id="goalsReachedSection">
+    <p id="goalsMessage">Food goals not set.</p>
+</div>
     <h3>Nutritional Breakdown</h3>
     <div class="pie-chart-container">
         <canvas id="nutritionChart"></canvas>
     </div>
     <a id="editNutritionPlanLink" href="#" class="btn" style="display: none;">Edit Nutrition Plan</a>
+</div>
+
+<!-- Exercise Ratings Section -->
+<div class="exercise-ratings" id="exerciseRatingsSection" style="display: none;">
+    <h2>Exercise Preferences & Ratings</h2>
+    <div class="ratings-header">
+        <p>Sorted by user's highest rated exercises first</p>
+    </div>
+    
+    <div class="ratings-container" id="ratingsContainer">
+        <div class="loading-ratings">
+            <p>Loading exercise ratings...</p>
+        </div>
+    </div>
 </div>
 
 
@@ -318,7 +332,7 @@
                     legend: {
                         position: 'top',
                         labels: {
-                            color: '#333'
+                            color: '#f1f1f1'
                         }
                     }
                 },
@@ -329,7 +343,7 @@
                             color: 'rgba(0, 0, 0, 0.1)'
                         },
                         ticks: {
-                            color: '#333'
+                            color: '#f1f1f1'
                         }
                     },
                     x: {
@@ -337,7 +351,7 @@
                             color: 'rgba(0, 0, 0, 0.1)'
                         },
                         ticks: {
-                            color: '#333'
+                            color: '#f1f1f1'
                         }
                     }
                 }
@@ -369,7 +383,7 @@ if (nutritionCanvas) {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        color: '#333',
+                        color: '#f1f1f1',
                         padding: 10
                     }
                 }
@@ -553,8 +567,39 @@ document.querySelectorAll('.client-item').forEach(item => {
                         ];
                         nutritionChart.update();
                     }
+
+                    // Update goals reached message
+const goalsReachedSection = document.getElementById('goalsReachedSection');
+const goalsMessage = document.getElementById('goalsMessage');
+
+if (nutritionData && nutritionData.nutrition && 
+    nutritionData.nutrition.protein_goal && nutritionData.nutrition.calorie_goal &&
+    nutritionData.nutrition.protein_goal !== 'N/A' && nutritionData.nutrition.calorie_goal !== 'N/A') {
+    
+    // Calculate if goals are met
+    const proteinGoal = parseInt(nutritionData.nutrition.protein_goal);
+    const calorieGoal = parseInt(nutritionData.nutrition.calorie_goal);
+    const currentProtein = nutritionData.nutrition.foods ? 
+        nutritionData.nutrition.foods.reduce((sum, food) => sum + (food.protein || 0), 0) : 0;
+    const currentCalories = nutritionData.nutrition.foods ? 
+        nutritionData.nutrition.foods.reduce((sum, food) => sum + (food.calories || 0), 0) : 0;
+
+    if (currentProtein >= proteinGoal && currentCalories >= calorieGoal) {
+        goalsMessage.textContent = 'All food goals reached for today! 🎉';
+        goalsReachedSection.style.backgroundColor = 'rgba(46, 139, 87, 0.3)'; // Green background
+    } else {
+        goalsMessage.textContent = `Working towards goals: ${Math.round(currentProtein)}/${proteinGoal}g protein, ${Math.round(currentCalories)}/${calorieGoal} calories`;
+        goalsReachedSection.style.backgroundColor = 'rgba(255, 165, 0, 0.3)'; // Orange background
+    }
+} else {
+    goalsMessage.textContent = 'Food goals not set.';
+    goalsReachedSection.style.backgroundColor = 'rgba(128, 128, 128, 0.3)'; // Gray background
+}
                 }
             }
+
+            // Add this line after fetching workout and nutrition data
+await loadExerciseRatings(clientId);
 
             // Calculate stats for the Current Stats section
             // 1. Total Workouts Completed
@@ -666,6 +711,164 @@ document.querySelectorAll('.client-item').forEach(item => {
         }
     });
 });
+
+// Function to fetch and display exercise ratings
+// Function to fetch and display exercise ratings
+async function loadExerciseRatings(clientId) {
+    const ratingsSection = document.getElementById('exerciseRatingsSection');
+    const ratingsContainer = document.getElementById('ratingsContainer');
+    
+    if (!ratingsSection || !ratingsContainer) return;
+    
+    try {
+        ratingsContainer.innerHTML = '<div class="loading-ratings"><p>Loading exercise ratings...</p></div>';
+        
+        console.log('Fetching exercise ratings for client:', clientId);
+        
+        const response = await fetch(`/trainer/exercise-ratings/${clientId}`);
+        
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error('Exercise ratings API endpoint not found. Please check server routes.');
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Exercise ratings response:', data);
+        
+        if (data.success && data.ratings && data.ratings.length > 0) {
+            // Show the section
+            ratingsSection.style.display = 'block';
+            
+            // Generate ratings HTML
+            ratingsContainer.innerHTML = data.ratings.map(rating => `
+                <div class="rating-item">
+                    <div class="rating-header">
+                        <h4 class=".rating-exercise-name">${rating.exerciseName}</h4>
+                        <div class="rating-stars">
+                            ${generateStars(rating.rating)}
+                            <span class="rating-value">${rating.rating}/5</span>
+                        </div>
+                    </div>
+                    
+                    <div class="rating-meta">
+                        <span class="meta-item">
+                            <span class="meta-badge">${rating.category}</span>
+                        </span>
+                        <span class="meta-item">
+                            <span class="meta-badge">${rating.difficulty}</span>
+                        </span>
+                        <span class="meta-item">
+                            <span class="meta-badge effectiveness-badge">${rating.effectiveness}</span>
+                        </span>
+                        <span class="meta-item">
+                            <span class="meta-badge workout-type-badge">${rating.workoutType}</span>
+                        </span>
+                    </div>
+                    
+                    ${rating.targetMuscles && rating.targetMuscles.length > 0 ? `
+                    <div class="target-muscles">
+                        <div class="muscles-label">Target Muscles:</div>
+                        <div class="muscles-list">
+                            ${rating.targetMuscles.map(muscle => `
+                                <span class="muscle-tag">${muscle}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${rating.notes ? `
+                    <div class="rating-notes">
+                        <div class="notes-label">User Notes:</div>
+                        <div class="notes-content">${rating.notes}</div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="rating-meta">
+                        <span class="meta-item">
+                            Last rated: ${new Date(rating.lastRated).toLocaleDateString()}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            ratingsSection.style.display = 'block';
+            ratingsContainer.innerHTML = `
+                <div class="no-ratings">
+                    <p>No exercise ratings available for this client yet.</p>
+                    <p style="font-size: 12px; margin-top: 8px;">Ratings will appear here once the client rates exercises.</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading exercise ratings:', error);
+        ratingsSection.style.display = 'block';
+        ratingsContainer.innerHTML = `
+            <div class="no-ratings">
+                <p>Error loading exercise ratings: ${error.message}</p>
+                <p style="font-size: 12px; margin-top: 8px;">Please check the console for more details.</p>
+            </div>
+        `;
+    }
+}
+
+
+// Helper function to generate star ratings
+function generateStars(rating) {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+            stars += '★';
+        } else {
+            stars += '☆';
+        }
+    }
+    return stars;
+}
+
+// Update the membership features function to handle exercise ratings section
+function updateMembershipFeatures(clientData) {
+    console.log("Updating features for:", clientData.name, "Membership:", clientData.membershipType);
+    
+    const meetButton = document.getElementById('meetButton');
+    const nutritionPlanSection = document.getElementById('nutritionPlanSection');
+    const exerciseRatingsSection = document.getElementById('exerciseRatingsSection');
+    const editNutritionPlanLink = document.getElementById('editNutritionPlanLink');
+    
+    // Google Meet button - only for Platinum
+    if (meetButton) {
+        if (clientData.membershipType === 'Platinum') {
+            meetButton.style.display = 'block';
+        } else {
+            meetButton.style.display = 'none';
+        }
+    }
+    
+    // Nutrition section - for Platinum & Gold
+    if (nutritionPlanSection) {
+        if (clientData.membershipType === 'Platinum' || clientData.membershipType === 'Gold') {
+            nutritionPlanSection.style.display = 'block';
+            if (editNutritionPlanLink) {
+                editNutritionPlanLink.href = `/edit_nutritional_plan/${clientData.id}`;
+                editNutritionPlanLink.style.display = 'inline-block';
+            }
+        } else {
+            nutritionPlanSection.style.display = 'none';
+        }
+    }
+    
+    // Exercise Ratings section - available for ALL membership types
+    if (exerciseRatingsSection) {
+        exerciseRatingsSection.style.display = 'block';
+    }
+    
+    console.log("Meet button visible:", meetButton?.style.display === 'block');
+    console.log("Nutrition section visible:", nutritionPlanSection?.style.display === 'block');
+    console.log("Exercise ratings visible:", exerciseRatingsSection?.style.display === 'block');
+}
 
 // Trigger click on the first client if one exists
 function autoSelectClient() {

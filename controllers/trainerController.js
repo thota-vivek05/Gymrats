@@ -5,6 +5,7 @@ const User = require('../model/User');
 const WorkoutHistory = require('../model/WorkoutHistory');
 const NutritionHistory = require('../model/NutritionHistory');
 const Exercise = require('../model/Exercise'); 
+const UserExerciseRating = require('../model/UserExerciseRating'); // ADD THIS LINE
 
 const signupTrainer = async (req, res) => {
     try {
@@ -877,6 +878,59 @@ const getWorkoutData = async (req, res) => {
     }
 };
 
+// Add this function to trainerController.js
+// Add this function to trainerController.js
+const getClientExerciseRatings = async (req, res) => {
+    try {
+        if (!req.session.trainer) {
+            console.log('Unauthorized access to exercise ratings');
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        const userId = req.params.userId;
+        const trainerId = req.session.trainer.id;
+
+        const user = await User.findOne({ 
+            _id: userId, 
+            trainer: trainerId
+        }).lean();
+
+        if (!user) {
+            console.log('User not found or not assigned to trainer:', userId);
+            return res.status(404).json({ error: 'Client not found or not assigned to you' });
+        }
+
+        // Fetch exercise ratings for this user, sorted by rating descending
+        const exerciseRatings = await UserExerciseRating.find({ userId: userId })
+            .populate('exerciseId', 'name category difficulty targetMuscles')
+            .sort({ rating: -1, createdAt: -1 })
+            .lean();
+
+        console.log(`Found ${exerciseRatings.length} exercise ratings for user:`, userId);
+
+        // Format the response
+        const formattedRatings = exerciseRatings.map(rating => ({
+            exerciseName: rating.exerciseId?.name || 'Unknown Exercise',
+            category: rating.exerciseId?.category || 'Unknown',
+            difficulty: rating.exerciseId?.difficulty || 'Unknown',
+            targetMuscles: rating.exerciseId?.targetMuscles || [],
+            rating: rating.rating,
+            effectiveness: rating.effectiveness,
+            workoutType: rating.workoutType,
+            notes: rating.notes,
+            lastRated: rating.updatedAt
+        }));
+
+        res.json({
+            success: true,
+            ratings: formattedRatings
+        });
+    } catch (error) {
+        console.error('Error fetching exercise ratings:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
 const getNutritionData = async (req, res) => {
     try {
         if (!req.session.trainer) {
@@ -1111,5 +1165,6 @@ module.exports = {
     getNutritionData,
     renderTrainerAssignment,    // REYNA
     assignUserToTrainer,        // REYNA
-    getUnassignedUsers          // REYNA
+    getUnassignedUsers,          // REYNA
+    getClientExerciseRatings 
 };
