@@ -47,48 +47,30 @@
     <!-- Navigation Bar -->
     <div class="main-navbar">
         <header>
-            <!-- Header Branding -->
             <div class="brand-logo">
-                <a href="/home" class="brand-name">GymRats</a>
+                <a href="/trainer" class="brand-name">GymRats</a>
             </div>
-            
             <div class="nav-menu">
-                <a href="/home">Home</a>
-                <a href="/isolation">Exercises</a>
-                <a href="/nutrition">Nutrition</a>
-                <a href="/blog">Blog</a>
-                <a href="/about">About</a>
+                <a href="/trainer">Home</a>
             </div>
-            
             <div class="right-container">
-                <div class="search-container">
-                    <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
-                    <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-                </div>
-                
-                <div class="user-profile">
-                    <a href="/trainer" class="active">
-                        <span><%= trainer.name %></span>
-                    </a>
+                <div class="login-button">
+                    <a href="/trainer_login">Logout</a>
                 </div>
             </div>
-
             <div class="mobile-menu-icon" id="menuIcon">
-                <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
-            </div>
-
-            <div class="mobile-sidebar" id="sideNavbar">
-                <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
-                <a href="/home">Home</a>
-                <a href="/isolation">Exercises</a>
-                <a href="/nutrition">Nutrition</a>
-                <a href="/blog">Blog</a>
-                <a href="/about">About</a>
-                <div class="sidebar-profile">
-                    <span><%= trainer.name %></span>
-                </div>
+                <img src="/trainer/menu.jpg" alt="Menu" height="25px" />
             </div>
         </header>
+    </div>
+
+    <!-- Mobile Side Navigation -->
+    <div class="mobile-sidebar" id="sideNavbar">
+        <a href="javascript:void(0)" class="close-button" id="closeBtn">×</a>
+        <a href="/trainer">Home</a>
+        <a href="/trainer_login">Logout</a>
+    </div>
+        
     </div>
     <!-- Page Header -->
     <div class="page-header">
@@ -181,15 +163,16 @@
                     <input type="text" id="exerciseSearch" placeholder="Search exercises...">
                 </div>
                 <div class="exercise-categories">
-                    <button class="category-btn active" data-category="all">All</button>
-                    <button class="category-btn" data-category="chest">Chest</button>
-                    <button class="category-btn" data-category="back">Back</button>
-                    <button class="category-btn" data-category="legs">Legs</button>
-                    <button class="category-btn" data-category="shoulders">Shoulders</button>
-                    <button class="category-btn" data-category="arms">Arms</button>
-                    <button class="category-btn" data-category="core">Core</button>
-                    <button class="category-btn" data-category="cardio">Cardio</button>
-                </div>
+    <button class="category-btn active" data-category="all">All</button>
+    <button class="category-btn" data-category="calisthenics">Calisthenics</button>
+    <button class="category-btn" data-category="strength training">Strength Training</button>
+    <button class="category-btn" data-category="hiit">HIIT</button>
+    <button class="category-btn" data-category="cardio">Cardio</button>
+    <button class="category-btn" data-category="bodybuilding">Bodybuilding</button>
+    <button class="category-btn" data-category="weight loss">Weight Loss</button>
+    <button class="category-btn" data-category="flexibility">Flexibility</button>
+    <button class="category-btn" data-category="competitive">Competitive</button>
+</div>
                 <div class="exercise-list">
                     <div class="exercise-grid" id="exerciseGrid">
                         <!-- Dynamic exercises from database -->
@@ -386,26 +369,33 @@
         });
         
         // Category filtering
-        const categoryBtns = document.querySelectorAll('.category-btn');
+        // Category filtering - UPDATED for exercise types
+const categoryBtns = document.querySelectorAll('.category-btn');
+
+categoryBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+        const category = this.getAttribute('data-category');
         
-        categoryBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const category = this.getAttribute('data-category');
-                
-                // Update active button
-                categoryBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Filter exercises
-                exerciseItems.forEach(item => {
-                    if (category === 'all' || item.getAttribute('data-category') === category) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
+        // Update active button
+        categoryBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Filter exercises
+        exerciseItems.forEach(item => {
+            if (category === 'all') {
+                item.style.display = 'block';
+            } else {
+                const itemCategory = item.getAttribute('data-category');
+                // Handle case-insensitive matching
+                if (itemCategory && itemCategory.toLowerCase() === category.toLowerCase()) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            }
         });
+    });
+});
         
         // Exercise search functionality
         const exerciseSearch = document.getElementById('exerciseSearch');
