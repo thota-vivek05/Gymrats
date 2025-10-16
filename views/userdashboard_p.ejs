@@ -434,7 +434,7 @@
 <script>
 // Clean exercise completion functionality
 document.addEventListener('DOMContentLoaded', function() {
-    //  console.log('🏋️ Dashboard initialized');
+    console.log('🏋️ Dashboard initialized');
     
     // Mobile menu toggle
     document.getElementById('menuIcon').addEventListener('click', function () {
@@ -465,10 +465,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Exercise completion functionality
     const exerciseCompleteButtons = document.querySelectorAll('.exercise-complete-btn:not(.completed)');
-    //  console.log('🎯 Found exercise buttons:', exerciseCompleteButtons.length);
+    console.log('🎯 Found exercise buttons:', exerciseCompleteButtons.length);
     
     exerciseCompleteButtons.forEach((button, index) => {
-        //  console.log(`Button ${index + 1}:`, {
+        console.log(`Button ${index + 1}:`, {
             workoutId: button.getAttribute('data-workout-id'),
             exerciseName: button.getAttribute('data-exercise-name')
         });
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const workoutId = this.getAttribute('data-workout-id');
             const exerciseName = this.getAttribute('data-exercise-name');
-            //  console.log('🖱️ Button clicked:', { workoutId, exerciseName });
+            console.log('🖱️ Button clicked:', { workoutId, exerciseName });
             
             if (!workoutId || workoutId === 'null') {
                 console.error('❌ Missing workout ID');
@@ -496,7 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function markFoodAsConsumed(foodName, calories, protein, carbs, fats, day, buttonElement) {
     const targetDay = day;
     
-    //  console.log('📤 Sending to API - Food:', foodName, 'Day:', targetDay);
+    console.log('📤 Sending to API - Food:', foodName, 'Day:', targetDay);
     
     fetch('/api/nutrition/mark-consumed', {
         method: 'POST',
@@ -514,7 +514,7 @@ function markFoodAsConsumed(foodName, calories, protein, carbs, fats, day, butto
     })
     .then(response => response.json())
     .then(data => {
-        //  console.log('📥 API Response:', data);
+        console.log('📥 API Response:', data);
         if (data.success) {
             buttonElement.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
             buttonElement.classList.add('completed');
@@ -534,7 +534,7 @@ function markFoodAsConsumed(foodName, calories, protein, carbs, fats, day, butto
 
 // Exercise completion function
 function markExerciseAsDone(workoutId, exerciseName, buttonElement) {
-    //  console.log('🎯 Sending request to mark exercise as done:', { workoutId, exerciseName });
+    console.log('🎯 Sending request to mark exercise as done:', { workoutId, exerciseName });
     
     // Show loading state
     const originalText = buttonElement.innerHTML;
@@ -552,7 +552,7 @@ function markExerciseAsDone(workoutId, exerciseName, buttonElement) {
         })
     })
     .then(response => {
-        //  console.log('📥 Response status:', response.status);
+        console.log('📥 Response status:', response.status);
         if (!response.ok) {
             return response.text().then(text => {
                 console.error('❌ Response not OK:', text);
@@ -562,7 +562,7 @@ function markExerciseAsDone(workoutId, exerciseName, buttonElement) {
         return response.json();
     })
     .then(data => {
-        //  console.log('📥 Full API response:', data);
+        console.log('📥 Full API response:', data);
         
         if (data.success) {
             buttonElement.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
@@ -572,7 +572,7 @@ function markExerciseAsDone(workoutId, exerciseName, buttonElement) {
             const exerciseItem = buttonElement.closest('.exercise-item');
             if (exerciseItem) {
                 exerciseItem.classList.add('completed');
-                //  console.log('✅ Exercise item marked as completed in UI');
+                console.log('✅ Exercise item marked as completed in UI');
             }
             
             updateWorkoutProgressUI(data);
@@ -845,7 +845,7 @@ function initializeCharts() {
         function updateCharts() {
             const selectedExercise = exerciseSelect.value;
             const selectedTimeframe = timeframeSelect.value;
-            //  console.log('Update charts for:', selectedExercise, selectedTimeframe);
+            console.log('Update charts for:', selectedExercise, selectedTimeframe);
         }
 
         exerciseSelect.addEventListener('change', updateCharts);
