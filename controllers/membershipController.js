@@ -17,8 +17,8 @@ const extendMembership = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        console.log('3. Before extension - months_remaining:', user.membershipDuration.months_remaining);
-        console.log('4. Before extension - status:', user.status);
+        // console.log('3. Before extension - months_remaining:', user.membershipDuration.months_remaining);
+        // console.log('4. Before extension - status:', user.status);
 
         await user.extendMembership(parseInt(additionalMonths));
         user.membershipDuration.auto_renew = autoRenew;
@@ -26,8 +26,8 @@ const extendMembership = async (req, res) => {
 
         // Refresh user data from database
         const updatedUser = await User.findById(userId);
-        console.log('5. After extension - months_remaining:', updatedUser.membershipDuration.months_remaining);
-        console.log('6. After extension - status:', updatedUser.status);
+        // console.log('5. After extension - months_remaining:', updatedUser.membershipDuration.months_remaining);
+        // console.log('6. After extension - status:', updatedUser.status);
 
         // Update session
         req.session.user = {
@@ -36,7 +36,7 @@ const extendMembership = async (req, res) => {
             membershipDuration: updatedUser.membershipDuration
         };
 
-        console.log('7. Session updated - months_remaining:', req.session.user.membershipDuration.months_remaining);
+        // console.log('7. Session updated - months_remaining:', req.session.user.membershipDuration.months_remaining);
 
         // ✅ RETURN JSON RESPONSE (instead of redirect)
         res.json({ 

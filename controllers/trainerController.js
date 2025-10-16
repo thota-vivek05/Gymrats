@@ -21,14 +21,14 @@ const signupTrainer = async (req, res) => {
             termsAgree
         } = req.body;
 
-        console.log('Trainer signup request received:', {
-            firstName,
-            lastName,
-            email,
-            phone,
-            experience,
-            specializations
-        });
+        // console.log('Trainer signup request received:', {
+        //     firstName,
+        //     lastName,
+        //     email,
+        //     phone,
+        //     experience,
+        //     specializations
+        // });
 
         if (
             !firstName ||
@@ -41,30 +41,30 @@ const signupTrainer = async (req, res) => {
             !specializations ||
             !termsAgree
         ) {
-            console.log('Validation failed: Missing fields');
+            // console.log('Validation failed: Missing fields');
             return res.status(400).json({ error: 'All fields are required, including terms agreement' });
         }
 
         if (password !== confirmPassword) {
-            console.log('Validation failed: Passwords do not match');
+            // console.log('Validation failed: Passwords do not match');
             return res.status(400).json({ error: 'Passwords do not match' });
         }
 
         const emailRegex = /^\S+@\S+\.\S+$/;
         if (!emailRegex.test(email)) {
-            console.log('Validation failed: Invalid email:', email);
+            // console.log('Validation failed: Invalid email:', email);
             return res.status(400).json({ error: 'Invalid email address' });
         }
 
         const phoneRegex = /^\+?[\d\s-]{10,}$/;
         if (!phoneRegex.test(phone)) {
-            console.log('Validation failed: Invalid phone number:', phone);
+            // console.log('Validation failed: Invalid phone number:', phone);
             return res.status(400).json({ error: 'Invalid phone number' });
         }
 
         const validExperience = ['1-2', '3-5', '5-10', '10+'];
         if (!validExperience.includes(experience)) {
-            console.log('Validation failed: Invalid experience:', experience);
+            // console.log('Validation failed: Invalid experience:', experience);
             return res.status(400).json({ error: 'Invalid experience selection' });
         }
 
@@ -79,25 +79,25 @@ const signupTrainer = async (req, res) => {
             'Bodybuilding'
         ];
         if (!Array.isArray(specializations) || specializations.length === 0) {
-            console.log('Validation failed: No specializations selected');
+            // console.log('Validation failed: No specializations selected');
             return res.status(400).json({ error: 'At least one specialization must be selected' });
         }
         for (const spec of specializations) {
             if (!validSpecializations.includes(spec)) {
-                console.log('Validation failed: Invalid specialization:', spec);
+                // console.log('Validation failed: Invalid specialization:', spec);
                 return res.status(400).json({ error: `Invalid specialization: ${spec}` });
             }
         }
 
         const existingApplication = await TrainerApplication.findOne({ email });
         if (existingApplication) {
-            console.log('Validation failed: Email already registered:', email);
+            // console.log('Validation failed: Email already registered:', email);
             return res.status(400).json({ error: 'Email already registered' });
         }
 
         const saltRounds = 10;
         const password_hash = await bcrypt.hash(password, saltRounds);
-        console.log('Password hashed for:', email);
+        // console.log('Password hashed for:', email);
 
         const newApplication = new TrainerApplication({
             firstName,
@@ -109,10 +109,10 @@ const signupTrainer = async (req, res) => {
             specializations,
             status: 'Pending'
         });
-        console.log('New trainer application created:', newApplication);
+        // console.log('New trainer application created:', newApplication);
 
         await newApplication.save();
-        console.log('Trainer application saved to MongoDB:', email);
+        // console.log('Trainer application saved to MongoDB:', email);
 
         if (req.session) {
             req.session.trainerApplication = {
@@ -121,19 +121,19 @@ const signupTrainer = async (req, res) => {
                 firstName: newApplication.firstName,
                 lastName: newApplication.lastName
             };
-            console.log('Session set for trainer application:', email);
+            // console.log('Session set for trainer application:', email);
         }
 
         res.status(201).json({ message: 'Trainer application submitted successfully', redirect: '/trainer_login' });
     } catch (error) {
         console.error('Trainer signup error:', error);
         if (error.code === 11000) {
-            console.log('MongoDB error: Duplicate email:', email);
+            // console.log('MongoDB error: Duplicate email:', email);
             return res.status(400).json({ error: 'Email already registered' });
         }
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
-            console.log('MongoDB validation errors:', messages);
+            // console.log('MongoDB validation errors:', messages);
             return res.status(400).json({ error: messages.join(', ') });
         }
         res.status(500).json({ error: 'Server error' });
@@ -144,10 +144,10 @@ const loginTrainer = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        console.log('Trainer login request received:', { email });
+        // console.log('Trainer login request received:', { email });
 
         if (!email || !password) {
-            console.log('Validation failed: Missing email or password');
+            // console.log('Validation failed: Missing email or password');
             return res.status(400).render('trainer_login', {
                 errorMessage: 'Email and password are required',
                 email
@@ -156,7 +156,7 @@ const loginTrainer = async (req, res) => {
 
         const trainer = await Trainer.findOne({ email });
         if (!trainer) {
-            console.log('Trainer not found:', email);
+            // console.log('Trainer not found:', email);
             return res.status(401).render('trainer_login', {
                 errorMessage: 'Invalid email or password',
                 email
@@ -164,7 +164,7 @@ const loginTrainer = async (req, res) => {
         }
 
         if (trainer.status !== 'Active') {
-            console.log('Trainer account not active:', email, trainer.status);
+            // console.log('Trainer account not active:', email, trainer.status);
             return res.status(403).render('trainer_login', {
                 errorMessage: `Your account is ${trainer.status.toLowerCase()}. Please contact support.`,
                 email
@@ -173,7 +173,7 @@ const loginTrainer = async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, trainer.password_hash);
         if (!isMatch) {
-            console.log('Invalid password for:', email);
+            // console.log('Invalid password for:', email);
             return res.status(401).render('trainer_login', {
                 errorMessage: 'Invalid email or password',
                 email
@@ -185,7 +185,7 @@ const loginTrainer = async (req, res) => {
             email: trainer.email,
             name: trainer.full_name || 'Trainer'
         };
-        console.log('Session set for trainer:', email);
+        //  console.log('Session set for trainer:', email);
 
         res.redirect('/trainer');
     } catch (error) {
@@ -208,12 +208,12 @@ const renderTrainerLogin = (req, res) => {
 const renderTrainerDashboard = async (req, res) => {
     try {
         if (!req.session.trainer) {
-            console.log('Unauthorized access to trainer dashboard');
+            //  console.log('Unauthorized access to trainer dashboard');
             return res.redirect('/trainer_login');
         }
 
         const trainerId = req.session.trainer.id;
-        console.log('Fetching ALL users for trainer:', trainerId);
+        //  console.log('Fetching ALL users for trainer:', trainerId);
 
         // Fetch trainer details
         const trainer = await Trainer.findById(trainerId);
@@ -226,10 +226,10 @@ const renderTrainerDashboard = async (req, res) => {
             .select('full_name dob weight height BMI fitness_goals class_schedules membershipType') // ADD membershipType here
             .lean();
 
-        console.log('Found users:', users.length);
-        console.log('Membership breakdown:', users.map(u => u.membershipType));
-        // Add this console.log in both functions to debug
-console.log('User membership data:', users.map(u => ({
+        //  console.log('Found users:', users.length);
+        //  console.log('Membership breakdown:', users.map(u => u.membershipType));
+        // Add this //  console.log in both functions to debug
+//  console.log('User membership data:', users.map(u => ({
     name: u.full_name,
     membership: u.membershipType
 })));
@@ -356,7 +356,7 @@ if (selectedClient) {
 const renderEditWorkoutPlan = async (req, res) => {
     try {
         if (!req.session.trainer) {
-            console.log('Unauthorized access to edit workout plan');
+            //  console.log('Unauthorized access to edit workout plan');
             return res.redirect('/trainer_login');
         }
 
@@ -373,7 +373,7 @@ const renderEditWorkoutPlan = async (req, res) => {
             .lean();
 
         if (!user) {
-            console.log('Platinum user not found or not assigned to trainer:', userId);
+            //  console.log('Platinum user not found or not assigned to trainer:', userId);
             return res.status(404).render('trainer', {
                 errorMessage: 'Client not found, not a Platinum member, or not assigned to you'
             });
@@ -431,19 +431,19 @@ const renderEditWorkoutPlan = async (req, res) => {
 const saveWorkoutPlan = async (req, res) => {
     try {
         if (!req.session.trainer) {
-            console.log('Unauthorized access to save workout plan');
+            //  console.log('Unauthorized access to save workout plan');
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
         const { clientId, notes, currentWeek } = req.body;
         const trainerId = req.session.trainer.id;
 
-        console.log('Saving workout plan for Platinum user:', clientId);
-        console.log('=== DEBUG: Received currentWeek data ===');
-        console.log(JSON.stringify(currentWeek, null, 2));
+        //  console.log('Saving workout plan for Platinum user:', clientId);
+        //  console.log('=== DEBUG: Received currentWeek data ===');
+        //  console.log(JSON.stringify(currentWeek, null, 2));
 
         if (!clientId || !currentWeek) {
-            console.log('Validation failed: Missing required fields');
+            //  console.log('Validation failed: Missing required fields');
             return res.status(400).json({ error: 'Client ID and current week data are required' });
         }
 
@@ -454,7 +454,7 @@ const saveWorkoutPlan = async (req, res) => {
             membershipType: { $in: ['Platinum', 'Gold', 'Basic'] }
         });
         if (!user) {
-            console.log('Platinum user not found or not assigned to trainer:', clientId);
+            //  console.log('Platinum user not found or not assigned to trainer:', clientId);
             return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
         }
 
@@ -473,16 +473,16 @@ const saveWorkoutPlan = async (req, res) => {
         weekEnd.setDate(weekStart.getDate() + 7);
         weekEnd.setHours(23, 59, 59, 999);
 
-        console.log('=== DEBUG: Date Range ===');
-        console.log('Week Start:', weekStart);
-        console.log('Week End:', weekEnd);
-        console.log('Today:', today);
+        //  console.log('=== DEBUG: Date Range ===');
+        //  console.log('Week Start:', weekStart);
+        //  console.log('Week End:', weekEnd);
+        //  console.log('Today:', today);
 
         const currentWeekExercises = [];
         for (const [day, exercises] of Object.entries(currentWeek)) {
-            console.log(`=== DEBUG: Processing ${day} ===`);
+            //  console.log(`=== DEBUG: Processing ${day} ===`);
             exercises.forEach(ex => {
-                console.log('Exercise data:', ex);
+                //  console.log('Exercise data:', ex);
                 
                 if (ex.name && ex.name.trim()) {
                     const processedExercise = {
@@ -494,7 +494,7 @@ const saveWorkoutPlan = async (req, res) => {
                         duration: ex.duration ? parseInt(ex.duration) : null,
                         completed: false
                     };
-                    console.log('Processed exercise:', processedExercise);
+                    //  console.log('Processed exercise:', processedExercise);
                     currentWeekExercises.push(processedExercise);
                 }
             });
@@ -512,7 +512,7 @@ const saveWorkoutPlan = async (req, res) => {
             workout.notes = notes || '';
             workout.updatedAt = new Date();
             await workout.save();
-            console.log('✅ EXISTING workout document UPDATED for week:', weekStart);
+            //  console.log('✅ EXISTING workout document UPDATED for week:', weekStart);
         } else {
             // ✅ CREATE new workout document only if it doesn't exist for this week
             workout = new WorkoutHistory({
@@ -524,10 +524,10 @@ const saveWorkoutPlan = async (req, res) => {
                 notes: notes || ''
             });
             await workout.save();
-            console.log('✅ NEW workout document CREATED for week:', weekStart);
+            //  console.log('✅ NEW workout document CREATED for week:', weekStart);
         }
 
-        console.log('Workout saved successfully:', workout._id);
+        //  console.log('Workout saved successfully:', workout._id);
 
         // ✅ FIXED: Update user's workout_history to include only the current week's workout
         // Remove any old workout history entries for the same week
@@ -544,13 +544,13 @@ const saveWorkoutPlan = async (req, res) => {
                 date: { $gte: weekStart, $lt: weekEnd },
                 _id: { $ne: workout._id }
             });
-            console.log(`Deleted ${userWorkoutHistory.length} duplicate workout entries for the same week`);
+            //  console.log(`Deleted ${userWorkoutHistory.length} duplicate workout entries for the same week`);
         }
 
         // Update user's workout_history array to include only current week workout
         user.workout_history = [workout._id];
         await user.save();
-        console.log('User workout history updated - only current week workout kept');
+        //  console.log('User workout history updated - only current week workout kept');
 
         res.json({ 
             message: 'Workout plan saved successfully',  
@@ -566,7 +566,7 @@ const saveWorkoutPlan = async (req, res) => {
 const renderEditNutritionPlan = async (req, res) => {
     try {
         if (!req.session.trainer) {
-            console.log('Unauthorized access to edit nutrition plan');
+            //  console.log('Unauthorized access to edit nutrition plan');
             return res.redirect('/trainer_login');
         }
 
@@ -583,7 +583,7 @@ const renderEditNutritionPlan = async (req, res) => {
             .lean();
 
         if (!user) {
-            console.log('Platinum user not found or not assigned to trainer:', userId);
+            //  console.log('Platinum user not found or not assigned to trainer:', userId);
             return res.status(404).render('trainer', {
                 errorMessage: 'Client not found, not a Platinum member, or not assigned to you'
             });
@@ -620,18 +620,18 @@ const renderEditNutritionPlan = async (req, res) => {
 const editNutritionPlan = async (req, res) => {
     try {
         if (!req.session.trainer) {
-            console.log('Unauthorized access to save nutrition plan');
+            //  console.log('Unauthorized access to save nutrition plan');
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
         const { userId, proteinGoal, calorieGoal, foods, day } = req.body; // ✅ ADDED 'day' parameter
         const trainerId = req.session.trainer.id;
 
-        console.log('Saving nutrition plan for Platinum user:', userId);
-        console.log('Day:', day); // ✅ Log which day we're saving for
+        //  console.log('Saving nutrition plan for Platinum user:', userId);
+        //  console.log('Day:', day); // ✅ Log which day we're saving for
 
         if (!userId || !proteinGoal || !calorieGoal || !Array.isArray(foods) || !day) {
-            console.log('Validation failed: Missing required fields');
+            //  console.log('Validation failed: Missing required fields');
             return res.status(400).json({ error: 'All fields are required, including day' });
         }
 
@@ -642,7 +642,7 @@ const editNutritionPlan = async (req, res) => {
             membershipType: { $in: ['Platinum', 'Gold'] }
         });
         if (!user) {
-            console.log('Platinum user not found or not assigned to trainer:', userId);
+            //  console.log('Platinum user not found or not assigned to trainer:', userId);
             return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
         }
 
@@ -659,10 +659,10 @@ const editNutritionPlan = async (req, res) => {
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
 
-        console.log('=== NUTRITION DEBUG: Week Range ===');
-        console.log('Week Start:', weekStart);
-        console.log('Week End:', weekEnd);
-        console.log('Saving for day:', day);
+        //  console.log('=== NUTRITION DEBUG: Week Range ===');
+        //  console.log('Week Start:', weekStart);
+        //  console.log('Week End:', weekEnd);
+        //  console.log('Saving for day:', day);
 
         // ✅ FIXED: Always create NEW weekly nutrition document (like workouts)
         let weeklyNutrition = await NutritionHistory.findOne({
@@ -696,7 +696,7 @@ const editNutritionPlan = async (req, res) => {
         if (weeklyNutrition) {
             // Update existing weekly nutrition - only update the specific day
             weeklyNutrition.daily_nutrition[day] = dayNutritionData;
-            console.log(`Updated nutrition for ${day} in existing weekly document`);
+            //  console.log(`Updated nutrition for ${day} in existing weekly document`);
         } else {
             // Create new weekly nutrition document
             weeklyNutrition = new NutritionHistory({
@@ -714,7 +714,7 @@ const editNutritionPlan = async (req, res) => {
                     Sunday: day === 'Sunday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } }
                 }
             });
-            console.log('✅ NEW weekly nutrition document created for week:', weekStart);
+            //  console.log('✅ NEW weekly nutrition document created for week:', weekStart);
         }
 
         // Calculate weekly averages for macros
@@ -738,19 +738,19 @@ const editNutritionPlan = async (req, res) => {
         };
 
         await weeklyNutrition.save();
-        console.log('Weekly nutrition saved successfully:', weeklyNutrition._id);
+        //  console.log('Weekly nutrition saved successfully:', weeklyNutrition._id);
 
         // ✅ FIXED: REPLACE user's nutrition_history with only current week's nutrition
         user.nutrition_history = [weeklyNutrition._id];
         await user.save();
-        console.log('User nutrition history updated - only current week nutrition kept');
+        //  console.log('User nutrition history updated - only current week nutrition kept');
 
         // Update user fitness goals
         user.fitness_goals.protein_goal = parseInt(proteinGoal);
         user.fitness_goals.calorie_goal = parseInt(calorieGoal);
         await user.save();
         
-        console.log('Nutrition plan and goals saved for Platinum user:', userId);
+        //  console.log('Nutrition plan and goals saved for Platinum user:', userId);
 
         res.json({ message: 'Nutrition plan saved successfully', redirect: `/trainer?clientId=${userId}` });
     } catch (error) {
@@ -804,7 +804,7 @@ const getClientData = async (req, res) => {
 const getWorkoutData = async (req, res) => {
     try {
         if (!req.session.trainer) {
-            console.log('Unauthorized access to workout data');
+            //  console.log('Unauthorized access to workout data');
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
@@ -819,7 +819,7 @@ const getWorkoutData = async (req, res) => {
         }).lean();
 
         if (!user) {
-            console.log('Platinum user not found or not assigned to trainer:', userId);
+            //  console.log('Platinum user not found or not assigned to trainer:', userId);
             return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
         }
 
@@ -883,7 +883,7 @@ const getWorkoutData = async (req, res) => {
 const getClientExerciseRatings = async (req, res) => {
     try {
         if (!req.session.trainer) {
-            console.log('Unauthorized access to exercise ratings');
+            //  console.log('Unauthorized access to exercise ratings');
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
@@ -896,7 +896,7 @@ const getClientExerciseRatings = async (req, res) => {
         }).lean();
 
         if (!user) {
-            console.log('User not found or not assigned to trainer:', userId);
+            //  console.log('User not found or not assigned to trainer:', userId);
             return res.status(404).json({ error: 'Client not found or not assigned to you' });
         }
 
@@ -906,7 +906,7 @@ const getClientExerciseRatings = async (req, res) => {
             .sort({ rating: -1, createdAt: -1 })
             .lean();
 
-        console.log(`Found ${exerciseRatings.length} exercise ratings for user:`, userId);
+        //  console.log(`Found ${exerciseRatings.length} exercise ratings for user:`, userId);
 
         // Format the response
         const formattedRatings = exerciseRatings.map(rating => ({
@@ -934,7 +934,7 @@ const getClientExerciseRatings = async (req, res) => {
 const getNutritionData = async (req, res) => {
     try {
         if (!req.session.trainer) {
-            console.log('Unauthorized access to nutrition data');
+            //  console.log('Unauthorized access to nutrition data');
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
@@ -951,7 +951,7 @@ const getNutritionData = async (req, res) => {
             .lean();
 
         if (!user) {
-            console.log('Platinum user not found or not assigned to trainer:', userId);
+            //  console.log('Platinum user not found or not assigned to trainer:', userId);
             return res.status(404).json({ error: 'Client not found, not a Platinum member, or not assigned to you' });
         }
 
@@ -1001,7 +1001,7 @@ const getNutritionData = async (req, res) => {
 const renderTrainerAssignment = async (req, res) => {
     try {
         if (!req.session.trainer) {
-            console.log('Unauthorized access to trainer assignment');
+            //  console.log('Unauthorized access to trainer assignment');
             return res.redirect('/trainer_login');
         }
 
@@ -1009,7 +1009,7 @@ const renderTrainerAssignment = async (req, res) => {
         const trainer = await Trainer.findById(trainerId);
         
         if (!trainer) {
-            console.log('Trainer not found:', trainerId);
+            //  console.log('Trainer not found:', trainerId);
             return res.status(404).render('trainer', {
                 errorMessage: 'Trainer not found'
             });
@@ -1022,10 +1022,10 @@ const renderTrainerAssignment = async (req, res) => {
             status: 'Active'
         }).select('full_name email workout_type dob weight height BMI fitness_goals created_at membershipType'); // ADD membershipType
 
-        console.log('Unassigned users found:', unassignedUsers.length);
-        console.log('Membership types:', unassignedUsers.map(u => u.membershipType));
-        // Add this console.log in both functions to debug
-console.log('User membership data:', unassignedUsers.map(u => ({
+        //  console.log('Unassigned users found:', unassignedUsers.length);
+        //  console.log('Membership types:', unassignedUsers.map(u => u.membershipType));
+        // Add this //  console.log in both functions to debug
+//  console.log('User membership data:', unassignedUsers.map(u => ({
     name: u.full_name,
     membership: u.membershipType
 })));
@@ -1047,7 +1047,7 @@ console.log('User membership data:', unassignedUsers.map(u => ({
 const assignUserToTrainer = async (req, res) => {
     try {
         if (!req.session.trainer) {
-            console.log('Unauthorized access to assign user');
+            //  console.log('Unauthorized access to assign user');
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
@@ -1055,7 +1055,7 @@ const assignUserToTrainer = async (req, res) => {
         const trainerId = req.session.trainer.id;
 
         if (!userId) {
-            console.log('Validation failed: User ID is required');
+            //  console.log('Validation failed: User ID is required');
             return res.status(400).json({ error: 'User ID is required' });
         }
 
@@ -1064,24 +1064,24 @@ const assignUserToTrainer = async (req, res) => {
         const trainer = await Trainer.findById(trainerId);
 
         if (!user) {
-            console.log('User not found:', userId);
+            //  console.log('User not found:', userId);
             return res.status(404).json({ error: 'User not found' });
         }
 
         if (!trainer) {
-            console.log('Trainer not found:', trainerId);
+            //  console.log('Trainer not found:', trainerId);
             return res.status(404).json({ error: 'Trainer not found' });
         }
 
         // Check if user is already assigned
         if (user.trainer) {
-            console.log('User already assigned to a trainer:', userId);
+            //  console.log('User already assigned to a trainer:', userId);
             return res.status(400).json({ error: 'User is already assigned to a trainer' });
         }
 
         // Check if workout type matches trainer's specializations
         if (!trainer.specializations.includes(user.workout_type)) {
-            console.log('Workout type mismatch:', user.workout_type, trainer.specializations);
+            //  console.log('Workout type mismatch:', user.workout_type, trainer.specializations);
             return res.status(400).json({ error: 'User workout type does not match your specializations' });
         }
 
@@ -1095,7 +1095,7 @@ const assignUserToTrainer = async (req, res) => {
             await trainer.save();
         }
 
-        console.log('User assigned to trainer successfully:', userId, trainerId);
+        //  console.log('User assigned to trainer successfully:', userId, trainerId);
         res.json({ 
             success: true, 
             message: 'User assigned successfully',
@@ -1139,8 +1139,8 @@ const getUnassignedUsers = async (req, res) => {
             .select('full_name email workout_type dob weight height BMI fitness_goals created_at membershipType') // ADD membershipType
             .sort({ created_at: -1 });
 
-        console.log('API - Unassigned users:', unassignedUsers.length);
-        console.log('API - Membership types:', unassignedUsers.map(u => u.membershipType));
+        //  console.log('API - Unassigned users:', unassignedUsers.length);
+        //  console.log('API - Membership types:', unassignedUsers.map(u => u.membershipType));
 
         res.json({ success: true, users: unassignedUsers });
     } catch (error) {
