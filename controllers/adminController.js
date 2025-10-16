@@ -10,42 +10,201 @@ const bcrypt = require('bcryptjs');
 
 const adminController = {
   // Dashboard
-  getDashboard: async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.redirect('/admin_login');
-      }
-      const userCount = await User.countDocuments();
-      const activeMembers = await User.countDocuments({ status: 'Active' });
-      const trainerCount = await Trainer.countDocuments();
-      const verifierCount = await Verifier.countDocuments();
-      const users = await User.find().sort({ created_at: -1 }).limit(5).select('full_name email status membershipType created_at');
-      const trainers = await Trainer.find().sort({ createdAt: -1 }).limit(5).select('name specializations experience status email');
-      const verifiers = await Verifier.find().sort({ createdAt: -1 }).limit(5).select('name');
-      res.render('admin_dashboard', {
-        pageTitle: 'Admin Dashboard',
-        user: req.session.user || null,
-        stats: {
-          totalUsers: userCount,
-          activeMembers,
-          personalTrainers: trainerCount,
-          contentVerifiers: verifierCount
-        },
-        users: users || [],
-        trainers: trainers || [],
-        verifiers: verifiers || []
-      });
-    } catch (error) {
-      console.error('Dashboard error:', error);
-      res.render('admin_dashboard', {
-        pageTitle: 'Admin Dashboard',
-        user: req.session.user || null,
-        users: [],
-        trainers: [],
-        verifiers: []
-      });
+getDashboard: async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.redirect('/admin_login');
     }
-  },
+
+    const now = new Date();
+    const oneMonthAgo = new Date(now);
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    const twoMonthsAgo = new Date(now);
+    twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+    const oneWeekAgo = new Date(now);
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const twoWeeksAgo = new Date(now);
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+    const userCount = await User.countDocuments();
+    const activeMembers = await User.countDocuments({ status: 'Active' });
+    const trainerCount = await Trainer.countDocuments();
+    const verifierCount = await Verifier.countDocuments();
+    const platinumMembers = await User.countDocuments({ membershipType: 'Platinum' });
+    const newSignups = await User.countDocuments({ created_at: { $gte: oneWeekAgo } });
+
+    // Calculate percentages (dynamic where possible)
+    const newUsersLastMonth = await User.countDocuments({ created_at: { $gte: oneMonthAgo } });
+    const previousTotalUsers = userCount - newUsersLastMonth;
+    let totalUsersChange = '+0% from last month';
+    if (previousTotalUsers > 0) {
+      const change = ((userCount - previousTotalUsers) / previousTotalUsers * 100).toFixed(0);
+      totalUsersChange = (change > 0 ? '+' : '') + change + '% from last month';
+    }
+
+    const newActiveLastMonth = await User.countDocuments({ status: 'Active', created_at: { $gte: oneMonthAgo } });
+    const previousActive = activeMembers - newActiveLastMonth;
+    let activeChange = '+0% from last month';
+    if (previousActive > 0) {
+      const change = ((activeMembers - previousActive) / previousActive * 100).toFixed(0);
+      activeChange = (change > 0 ? '+' : '') + change + '% from last month';
+    }
+
+    const newTrainersLastMonth = await Trainer.countDocuments({ createdAt: { $gte: oneMonthAgo } });
+    const previousTrainers = trainerCount - newTrainersLastMonth;
+    let trainersChange = '+0% from last month';
+    if (previousTrainers > 0) {
+      const change = ((trainerCount - previousTrainers) / previousTrainers * 100).toFixed(0);
+      trainersChange = (change > 0 ? '+' : '') + change + '% from last month';
+    }
+
+    const newVerifiersLastMonth = await Verifier.countDocuments({ createdAt: { $gte: oneMonthAgo } });
+    const previousVerifiers = verifierCount - newVerifiersLastMonth;
+    let verifiersChange = '+0% from last month';
+    if (previousVerifiers > 0) {
+      const change = ((verifierCount - previousVerifiers) / previousVerifiers * 100).toFixed(0);
+      verifiersChange = (change > 0 ? '+' : '') + change + '% from last month';
+    }
+
+    const newPlatinumLastMonth = await User.countDocuments({ membershipType: 'Platinum', created_at: { $gte: oneMonthAgo } });
+    const previousPlatinum = platinumMembers - newPlatinumLastMonth;
+    let platinumChange = '+0% from last month';
+    if (previousPlatinum > 0) {
+      const change = ((platinumMembers - previousPlatinum) / previousPlatinum * 100).toFixed(0);
+      platinumChange = (change > 0 ? '+' : '') + change + '% from last month';
+    }
+
+    const previousNewSignups = await User.countDocuments({ created_at: { $gte: twoWeeksAgo, $lt: oneWeekAgo } });
+    let newSignupsChange = '+0% from last week';
+    if (previousNewSignups > 0) {
+      const change = ((newSignups - previousNewSignups) / previousNewSignups * 100).toFixed(0);
+      newSignupsChange = (change > 0 ? '+' : '') + change + '% from last week';
+    }
+
+    // Revenue calculation function
+    const calculateRevenue = async (additionalMatch = {}) => {
+      const agg = await User.aggregate([
+        { 
+          $match: { 
+            status: 'Active',
+            membershipType: { $in: ['Basic', 'Gold', 'Platinum'] },
+            ...additionalMatch
+          } 
+        },
+        {
+          $addFields: {
+            months_paid: {
+              $cond: {
+                if: { 
+                  $and: [
+                    { $ifNull: ['$membershipDuration.months_remaining', false] },
+                    { $gt: ['$membershipDuration.months_remaining', 0] }
+                  ]
+                },
+                then: '$membershipDuration.months_remaining',
+                else: 1
+              }
+            },
+            monthly_price: {
+              $switch: {
+                branches: [
+                  { case: { $eq: ['$membershipType', 'Basic'] }, then: 299 },
+                  { case: { $eq: ['$membershipType', 'Gold'] }, then: 599 },
+                  { case: { $eq: ['$membershipType', 'Platinum'] }, then: 999 },
+                ],
+                default: 0
+              }
+            },
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            revenue: { $sum: { $multiply: ['$monthly_price', '$months_paid'] } }
+          }
+        }
+      ]);
+      return agg[0]?.revenue || 0;
+    };
+
+    const totalRevenue = await calculateRevenue();
+    const monthlyRevenue = await calculateRevenue({ 'membershipDuration.start_date': { $gte: oneMonthAgo } });
+    const previousMonthlyRevenue = await calculateRevenue({ 'membershipDuration.start_date': { $gte: twoMonthsAgo, $lt: oneMonthAgo } });
+    let monthlyChange = '+0% from last month';
+    if (previousMonthlyRevenue > 0) {
+      const change = ((monthlyRevenue - previousMonthlyRevenue) / previousMonthlyRevenue * 100).toFixed(0);
+      monthlyChange = (change > 0 ? '+' : '') + change + '% from last month';
+    }
+
+    const users = await User.find().sort({ created_at: -1 }).limit(5).select('full_name email status membershipType created_at');
+    const trainers = await Trainer.find().sort({ createdAt: -1 }).limit(5).select('name specializations experience status email');
+    const verifiers = await Verifier.find().sort({ createdAt: -1 }).limit(5).select('name');
+
+    // SAFE DATA FORMATTING - ADD THIS SECTION
+    const safeTrainers = trainers.map(trainer => ({
+      name: trainer.name || 'Unknown Trainer',
+      specializations: trainer.specializations || [],
+      experience: trainer.experience || 0,
+      status: trainer.status || 'Unknown',
+      email: trainer.email || 'No email'
+    }));
+
+    const safeVerifiers = verifiers.map(verifier => ({
+      name: verifier.name || 'Unknown Verifier'
+    }));
+
+    res.render('admin_dashboard', {
+      pageTitle: 'Admin Dashboard',
+      user: req.session.user || null,
+      stats: {
+        totalUsers: userCount,
+        totalUsersChange,
+        activeMembers,
+        activeChange,
+        personalTrainers: trainerCount,
+        trainersChange,
+        contentVerifiers: verifierCount,
+        verifiersChange,
+        totalRevenue,
+        monthlyRevenue,
+        monthlyChange,
+        platinumMembers,
+        platinumChange,
+        newSignups,
+        newSignupsChange
+      },
+      users: users || [],
+      trainers: safeTrainers || [], // Use safe formatted trainers
+      verifiers: safeVerifiers || [] // Use safe formatted verifiers
+    });
+  } catch (error) {
+    console.error('Dashboard error:', error);
+    res.render('admin_dashboard', {
+      pageTitle: 'Admin Dashboard',
+      user: req.session.user || null,
+      users: [],
+      trainers: [],
+      verifiers: [],
+      stats: {
+        totalUsers: 0,
+        totalUsersChange: '+0% from last month',
+        activeMembers: 0,
+        activeChange: '+0% from last month',
+        personalTrainers: 0,
+        trainersChange: '+0% from last month',
+        contentVerifiers: 0,
+        verifiersChange: '+0% from last month',
+        totalRevenue: 0,
+        monthlyRevenue: 0,
+        monthlyChange: '+0% from last month',
+        platinumMembers: 0,
+        platinumChange: '+0% from last month',
+        newSignups: 0,
+        newSignupsChange: '+0% from last week'
+      }
+    });
+  }
+},
 
   // User Management
   getUsers: async (req, res) => {
@@ -251,6 +410,30 @@ const adminController = {
       });
     }
   },
+
+  // getTrainersApi: async (req, res) => {
+  //     try {
+  //       if (!req.session.userId) {
+  //         return res.status(401).json({ success: false, message: 'Unauthorized' });
+  //       }
+  //       const { search } = req.query;
+  //       let query = {};
+  //       if (search) {
+  //         query = {
+  //           $or: [
+  //             { name: { $regex: search, $options: 'i' } },
+  //             { email: { $regex: search, $options: 'i' } },
+  //             { specializations: { $regex: search, $options: 'i' } }
+  //           ]
+  //         };
+  //       }
+  //       const trainers = await Trainer.find(query).sort({ createdAt: -1 }).select('name email specializations experience status');
+  //       res.status(200).json({ success: true, trainers });
+  //     } catch (error) {
+  //       console.error('Get trainers API error:', error);
+  //       res.status(500).json({ success: false, message: 'Internal server error' });
+  //     }
+  //   },
 
   createTrainer: async (req, res) => {
     try {
