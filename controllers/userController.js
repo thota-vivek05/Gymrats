@@ -1308,11 +1308,70 @@ const getTodaysWorkout = async (userId) => {
 
 
         // Update exercise progress with actual workout data
-        let exerciseProgress = [
-            { name: 'Bench Press', progress: 75, currentWeight: 80, goalWeight: 100 },
-            { name: 'Squat', progress: 60, currentWeight: 90, goalWeight: 120 },
-            { name: 'Deadlift', progress: 85, currentWeight: 110, goalWeight: 130 }
-        ];
+let exerciseProgress = [
+    { name: 'Bench Press', progress: 0, currentWeight: 0, goalWeight: 100 },
+    { name: 'Squat', progress: 0, currentWeight: 0, goalWeight: 120 },
+    { name: 'Deadlift', progress: 0, currentWeight: 0, goalWeight: 130 }
+];
+
+// Get actual workout data to populate the progress
+// Get actual workout data to populate the progress
+try {
+    // Get all workout history to find max weights for each exercise
+    const allWorkouts = await WorkoutHistory.find({ userId: userId });
+    
+    // Find maximum weights for each exercise - with flexible name matching
+    const exerciseMaxWeights = {
+        'Bench Press': 0,
+        'Squat': 0,
+        'Deadlift': 0
+    };
+    
+    allWorkouts.forEach(workout => {
+        if (workout.exercises && workout.exercises.length > 0) {
+            workout.exercises.forEach(exercise => {
+                const exerciseName = exercise.name.toLowerCase();
+                const weight = exercise.weight || 0;
+                
+                // Flexible name matching for different exercise variations
+                if (exerciseName.includes('bench') || exerciseName.includes('press')) {
+                    if (weight > exerciseMaxWeights['Bench Press']) {
+                        exerciseMaxWeights['Bench Press'] = weight;
+                    }
+                }
+                else if (exerciseName.includes('squat')) {
+                    if (weight > exerciseMaxWeights['Squat']) {
+                        exerciseMaxWeights['Squat'] = weight;
+                    }
+                }
+                else if (exerciseName.includes('deadlift')) {
+                    if (weight > exerciseMaxWeights['Deadlift']) {
+                        exerciseMaxWeights['Deadlift'] = weight;
+                    }
+                }
+            });
+        }
+    });
+    
+    console.log('🏋️ Found max weights:', exerciseMaxWeights);
+    
+    // Update exercise progress with real data
+    exerciseProgress = exerciseProgress.map(exercise => {
+        const maxWeight = exerciseMaxWeights[exercise.name] || 0;
+        const progress = exercise.goalWeight > 0 ? Math.round((maxWeight / exercise.goalWeight) * 100) : 0;
+        
+        return {
+            ...exercise,
+            currentWeight: maxWeight,
+            progress: progress
+        };
+    });
+    
+    console.log('📊 Final exercise progress:', exerciseProgress);
+    
+} catch (error) {
+    console.error('❌ Error calculating exercise progress:', error);
+}
 
         // Use today's workout data to update exercise progress
         if (todayWorkoutData.exercises.length > 0) {
