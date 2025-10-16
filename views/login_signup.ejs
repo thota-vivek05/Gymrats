@@ -461,6 +461,13 @@
                     return;
                 }
 
+                if (!/^[A-Za-z]+$/.test(userFullName)) {
+                    showErrorModal(
+                        'Full name should contain only letters.'
+                    );
+                    return;
+                }
+
                 if (!validatePhone(phoneNumber)) {
                     showErrorModal(
                         'Please enter a valid phone number (at least 10 digits, may include +, spaces, or hyphens)'
