@@ -229,10 +229,10 @@ const renderTrainerDashboard = async (req, res) => {
         //  console.log('Found users:', users.length);
         //  console.log('Membership breakdown:', users.map(u => u.membershipType));
         // Add this //  console.log in both functions to debug
-//  console.log('User membership data:', users.map(u => ({
-    name: u.full_name,
-    membership: u.membershipType
-})));
+//         console.log('User membership data:', users.map(u => ({
+//     name: u.full_name,
+//     membership: u.membershipType
+// })));
 
         const clients = users.map(user => {
             const progress = 0;
@@ -1026,9 +1026,9 @@ const renderTrainerAssignment = async (req, res) => {
         //  console.log('Membership types:', unassignedUsers.map(u => u.membershipType));
         // Add this //  console.log in both functions to debug
 //  console.log('User membership data:', unassignedUsers.map(u => ({
-    name: u.full_name,
-    membership: u.membershipType
-})));
+//     name: u.full_name,
+//     membership: u.membershipType
+// })));
 
         res.render('trainer_assignment', {
             trainer: req.session.trainer,
