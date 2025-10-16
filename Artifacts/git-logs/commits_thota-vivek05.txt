@@ -1,0 +1,162 @@
+﻿f248b8d | thota-vivek05 | 2025-10-12 | artifacts
+d1974b8 | thota-vivek05 | 2025-10-12 | adding admin verifier flow
+9334c2c | thota-vivek05 | 2025-10-12 | video call
+52e1a01 | thota-vivek05 | 2025-10-12 | remove workoutplans
+c8bc3dc | thota-vivek05 | 2025-10-12 | Merge branch 'combination' of https://github.com/NeverConquered/Gymrats into combination merged
+3a86e9e | thota-vivek05 | 2025-10-12 | admin total
+04c95c4 | thota-vivek05 | 2025-10-12 | admin exercise and verifier pages
+ff8b2ab | thota-vivek05 | 2025-10-12 | Merge branch 'jayanth2.0' into vivek
+bd88336 | thota-vivek05 | 2025-10-12 | no change
+d4e3948 | thota-vivek05 | 2025-10-12 | Merge branch 'combination' into vivek
+904b3fc | thota-vivek05 | 2025-10-12 | admin verifier done
+3bf6c23 | thota-vivek05 | 2025-10-12 | admin verifier done
+0b34fc5 | thota-vivek05 | 2025-10-12 | made the verification dashboard new functionalities to veiw their approved trainers and rejected trainers also next should do the trainerapplication document uploading
+781c85f | thota-vivek05 | 2025-10-12 | Merge branch 'combination' into vivek
+3e7e365 | thota-vivek05 | 2025-10-11 | admin workout successfully deleted
+b0d5505 | thota-vivek05 | 2025-10-11 | Merge branch 'combination' into vivek
+0c04e64 | thota-vivek05 | 2025-10-11 | admin trainer is now dynamic and the stats also
+2067a3f | thota-vivek05 | 2025-10-11 | changed few errors
+8c5708e | thota-vivek05 | 2025-10-11 | made all the enums of specilizations same
+14ce1aa | thota-vivek05 | 2025-10-11 | removed nutrition specilization
+5964096 | thota-vivek05 | 2025-10-11 | fixed route error
+795dc25 | thota-vivek05 | 2025-10-11 | Merge remote-tracking branch 'origin/Anvesh' into combination only  needed are added
+24fd517 | thota-vivek05 | 2025-10-11 | styling change
+dfac20b | thota-vivek05 | 2025-10-11 | commment
+79f5d0b | thota-vivek05 | 2025-10-11 | daynames error is fixed by keeping the const daynames as global
+9321c80 | thota-vivek05 | 2025-10-11 | working login and unassigned user shown in trainer
+ae85c22 | thota-vivek05 | 2025-10-10 | assign user to trainer
+bc6a2e8 | thota-vivek05 | 2025-10-10 | Merge branch 'main' into vivek
+ec36175 | thota-vivek05 | 2025-10-10 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+8a8f1e2 | thota-vivek05 | 2025-10-10 | made changes to ucontrol tdata udata and login page for the workout type
+848437b | thota-vivek05 | 2025-10-10 | update package json
+f27a008 | thota-vivek05 | 2025-10-10 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+d3435de | thota-vivek05 | 2025-10-10 | added git ignore for node_modules
+d2009ec | thota-vivek05 | 2025-10-10 | update package-lock.json to upgrade brace-expansion, express-session, on-headers, and tar-fs versions
+1042f7b | thota-vivek05 | 2025-10-10 | removed node modules
+32c8883 | thota-vivek05 | 2025-10-09 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+c7caf2e | thota-vivek05 | 2025-10-09 | removed error created by trainer months
+3b5e0ac | thota-vivek05 | 2025-10-09 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+a169d49 | thota-vivek05 | 2025-10-09 | made changes to database for correct workout , nutrition and months
+72d9618 | thota-vivek05 | 2025-10-11 | test
+3042ad0 | thota-vivek05 | 2025-10-11 | edit to make it work
+de5c551 | thota-vivek05 | 2025-10-11 | Merge remote-tracking branch 'origin/Anvesh' into combo trying if both the user and trainer edits work together
+dfac20b | thota-vivek05 | 2025-10-11 | commment
+79f5d0b | thota-vivek05 | 2025-10-11 | daynames error is fixed by keeping the const daynames as global
+9321c80 | thota-vivek05 | 2025-10-11 | working login and unassigned user shown in trainer
+ae85c22 | thota-vivek05 | 2025-10-10 | assign user to trainer
+bc6a2e8 | thota-vivek05 | 2025-10-10 | Merge branch 'main' into vivek
+ec36175 | thota-vivek05 | 2025-10-10 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+8a8f1e2 | thota-vivek05 | 2025-10-10 | made changes to ucontrol tdata udata and login page for the workout type
+848437b | thota-vivek05 | 2025-10-10 | update package json
+f27a008 | thota-vivek05 | 2025-10-10 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+d3435de | thota-vivek05 | 2025-10-10 | added git ignore for node_modules
+d2009ec | thota-vivek05 | 2025-10-10 | update package-lock.json to upgrade brace-expansion, express-session, on-headers, and tar-fs versions
+1042f7b | thota-vivek05 | 2025-10-10 | removed node modules
+32c8883 | thota-vivek05 | 2025-10-09 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+c7caf2e | thota-vivek05 | 2025-10-09 | removed error created by trainer months
+3b5e0ac | thota-vivek05 | 2025-10-09 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+a169d49 | thota-vivek05 | 2025-10-09 | made changes to database for correct workout , nutrition and months
+74c3e6e | thota-vivek05 | 2025-10-12 | user g profile link
+ff8b2ab | thota-vivek05 | 2025-10-12 | Merge branch 'jayanth2.0' into vivek
+bd88336 | thota-vivek05 | 2025-10-12 | no change
+d4e3948 | thota-vivek05 | 2025-10-12 | Merge branch 'combination' into vivek
+904b3fc | thota-vivek05 | 2025-10-12 | admin verifier done
+3bf6c23 | thota-vivek05 | 2025-10-12 | admin verifier done
+0b34fc5 | thota-vivek05 | 2025-10-12 | made the verification dashboard new functionalities to veiw their approved trainers and rejected trainers also next should do the trainerapplication document uploading
+781c85f | thota-vivek05 | 2025-10-12 | Merge branch 'combination' into vivek
+3e7e365 | thota-vivek05 | 2025-10-11 | admin workout successfully deleted
+b0d5505 | thota-vivek05 | 2025-10-11 | Merge branch 'combination' into vivek
+0c04e64 | thota-vivek05 | 2025-10-11 | admin trainer is now dynamic and the stats also
+2067a3f | thota-vivek05 | 2025-10-11 | changed few errors
+8c5708e | thota-vivek05 | 2025-10-11 | made all the enums of specilizations same
+14ce1aa | thota-vivek05 | 2025-10-11 | removed nutrition specilization
+5964096 | thota-vivek05 | 2025-10-11 | fixed route error
+795dc25 | thota-vivek05 | 2025-10-11 | Merge remote-tracking branch 'origin/Anvesh' into combination only  needed are added
+24fd517 | thota-vivek05 | 2025-10-11 | styling change
+dfac20b | thota-vivek05 | 2025-10-11 | commment
+79f5d0b | thota-vivek05 | 2025-10-11 | daynames error is fixed by keeping the const daynames as global
+9321c80 | thota-vivek05 | 2025-10-11 | working login and unassigned user shown in trainer
+ae85c22 | thota-vivek05 | 2025-10-10 | assign user to trainer
+bc6a2e8 | thota-vivek05 | 2025-10-10 | Merge branch 'main' into vivek
+ec36175 | thota-vivek05 | 2025-10-10 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+8a8f1e2 | thota-vivek05 | 2025-10-10 | made changes to ucontrol tdata udata and login page for the workout type
+848437b | thota-vivek05 | 2025-10-10 | update package json
+f27a008 | thota-vivek05 | 2025-10-10 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+d3435de | thota-vivek05 | 2025-10-10 | added git ignore for node_modules
+d2009ec | thota-vivek05 | 2025-10-10 | update package-lock.json to upgrade brace-expansion, express-session, on-headers, and tar-fs versions
+1042f7b | thota-vivek05 | 2025-10-10 | removed node modules
+32c8883 | thota-vivek05 | 2025-10-09 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+c7caf2e | thota-vivek05 | 2025-10-09 | removed error created by trainer months
+3b5e0ac | thota-vivek05 | 2025-10-09 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+a169d49 | thota-vivek05 | 2025-10-09 | made changes to database for correct workout , nutrition and months
+0c04e64 | thota-vivek05 | 2025-10-11 | admin trainer is now dynamic and the stats also
+8c5708e | thota-vivek05 | 2025-10-11 | made all the enums of specilizations same
+14ce1aa | thota-vivek05 | 2025-10-11 | removed nutrition specilization
+5964096 | thota-vivek05 | 2025-10-11 | fixed route error
+795dc25 | thota-vivek05 | 2025-10-11 | Merge remote-tracking branch 'origin/Anvesh' into combination only  needed are added
+24fd517 | thota-vivek05 | 2025-10-11 | styling change
+dfac20b | thota-vivek05 | 2025-10-11 | commment
+79f5d0b | thota-vivek05 | 2025-10-11 | daynames error is fixed by keeping the const daynames as global
+9321c80 | thota-vivek05 | 2025-10-11 | working login and unassigned user shown in trainer
+ae85c22 | thota-vivek05 | 2025-10-10 | assign user to trainer
+bc6a2e8 | thota-vivek05 | 2025-10-10 | Merge branch 'main' into vivek
+ec36175 | thota-vivek05 | 2025-10-10 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+8a8f1e2 | thota-vivek05 | 2025-10-10 | made changes to ucontrol tdata udata and login page for the workout type
+848437b | thota-vivek05 | 2025-10-10 | update package json
+f27a008 | thota-vivek05 | 2025-10-10 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+d3435de | thota-vivek05 | 2025-10-10 | added git ignore for node_modules
+d2009ec | thota-vivek05 | 2025-10-10 | update package-lock.json to upgrade brace-expansion, express-session, on-headers, and tar-fs versions
+1042f7b | thota-vivek05 | 2025-10-10 | removed node modules
+32c8883 | thota-vivek05 | 2025-10-09 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+c7caf2e | thota-vivek05 | 2025-10-09 | removed error created by trainer months
+3b5e0ac | thota-vivek05 | 2025-10-09 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+a169d49 | thota-vivek05 | 2025-10-09 | made changes to database for correct workout , nutrition and months
+79f5d0b | thota-vivek05 | 2025-10-11 | daynames error is fixed by keeping the const daynames as global
+9321c80 | thota-vivek05 | 2025-10-11 | working login and unassigned user shown in trainer
+ae85c22 | thota-vivek05 | 2025-10-10 | assign user to trainer
+bc6a2e8 | thota-vivek05 | 2025-10-10 | Merge branch 'main' into vivek
+ec36175 | thota-vivek05 | 2025-10-10 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+8a8f1e2 | thota-vivek05 | 2025-10-10 | made changes to ucontrol tdata udata and login page for the workout type
+848437b | thota-vivek05 | 2025-10-10 | update package json
+f27a008 | thota-vivek05 | 2025-10-10 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+d3435de | thota-vivek05 | 2025-10-10 | added git ignore for node_modules
+d2009ec | thota-vivek05 | 2025-10-10 | update package-lock.json to upgrade brace-expansion, express-session, on-headers, and tar-fs versions
+1042f7b | thota-vivek05 | 2025-10-10 | removed node modules
+32c8883 | thota-vivek05 | 2025-10-09 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+c7caf2e | thota-vivek05 | 2025-10-09 | removed error created by trainer months
+3b5e0ac | thota-vivek05 | 2025-10-09 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+a169d49 | thota-vivek05 | 2025-10-09 | made changes to database for correct workout , nutrition and months
+b24d8f7 | thota-vivek05 | 2025-10-12 | verifier login
+04c95c4 | thota-vivek05 | 2025-10-12 | admin exercise and verifier pages
+ff8b2ab | thota-vivek05 | 2025-10-12 | Merge branch 'jayanth2.0' into vivek
+bd88336 | thota-vivek05 | 2025-10-12 | no change
+d4e3948 | thota-vivek05 | 2025-10-12 | Merge branch 'combination' into vivek
+904b3fc | thota-vivek05 | 2025-10-12 | admin verifier done
+3bf6c23 | thota-vivek05 | 2025-10-12 | admin verifier done
+0b34fc5 | thota-vivek05 | 2025-10-12 | made the verification dashboard new functionalities to veiw their approved trainers and rejected trainers also next should do the trainerapplication document uploading
+781c85f | thota-vivek05 | 2025-10-12 | Merge branch 'combination' into vivek
+3e7e365 | thota-vivek05 | 2025-10-11 | admin workout successfully deleted
+b0d5505 | thota-vivek05 | 2025-10-11 | Merge branch 'combination' into vivek
+0c04e64 | thota-vivek05 | 2025-10-11 | admin trainer is now dynamic and the stats also
+2067a3f | thota-vivek05 | 2025-10-11 | changed few errors
+8c5708e | thota-vivek05 | 2025-10-11 | made all the enums of specilizations same
+14ce1aa | thota-vivek05 | 2025-10-11 | removed nutrition specilization
+5964096 | thota-vivek05 | 2025-10-11 | fixed route error
+795dc25 | thota-vivek05 | 2025-10-11 | Merge remote-tracking branch 'origin/Anvesh' into combination only  needed are added
+24fd517 | thota-vivek05 | 2025-10-11 | styling change
+dfac20b | thota-vivek05 | 2025-10-11 | commment
+79f5d0b | thota-vivek05 | 2025-10-11 | daynames error is fixed by keeping the const daynames as global
+9321c80 | thota-vivek05 | 2025-10-11 | working login and unassigned user shown in trainer
+ae85c22 | thota-vivek05 | 2025-10-10 | assign user to trainer
+bc6a2e8 | thota-vivek05 | 2025-10-10 | Merge branch 'main' into vivek
+ec36175 | thota-vivek05 | 2025-10-10 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+8a8f1e2 | thota-vivek05 | 2025-10-10 | made changes to ucontrol tdata udata and login page for the workout type
+848437b | thota-vivek05 | 2025-10-10 | update package json
+f27a008 | thota-vivek05 | 2025-10-10 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+d3435de | thota-vivek05 | 2025-10-10 | added git ignore for node_modules
+d2009ec | thota-vivek05 | 2025-10-10 | update package-lock.json to upgrade brace-expansion, express-session, on-headers, and tar-fs versions
+1042f7b | thota-vivek05 | 2025-10-10 | removed node modules
+32c8883 | thota-vivek05 | 2025-10-09 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+c7caf2e | thota-vivek05 | 2025-10-09 | removed error created by trainer months
+3b5e0ac | thota-vivek05 | 2025-10-09 | Merge branch 'main' of https://github.com/NeverConquered/Gymrats
+a169d49 | thota-vivek05 | 2025-10-09 | made changes to database for correct workout , nutrition and months

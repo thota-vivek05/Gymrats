@@ -843,8 +843,8 @@ const getUserDashboard = async (req, res, membershipCode) => {
         
         const userId = req.session.user.id;
         const user = await User.findById(userId)
-            .populate('trainer', 'name email specializations experience');
-        
+            .populate('trainer', 'name email specializations experience')
+        .populate('class_schedules.trainerId', 'name');
         if (!user) {
             return res.status(404).render('error', { message: 'User not found' });
         }
@@ -974,7 +974,50 @@ const getUserDashboard = async (req, res, membershipCode) => {
             userId: userId,
             date: { $gte: weekStart, $lt: weekEnd }
         }).lean();
+        // FIXED: Get upcoming class (only future classes, sorted by date)
+// FIXED: Get upcoming class (only future classes, sorted by date)
+// FIXED: Get upcoming class (only future classes, sorted by date)
+const upcomingClass = user.class_schedules && user.class_schedules.length > 0 
+    ? user.class_schedules
+        .filter(cls => {
+            const classDate = new Date(cls.date);
+            const now = new Date();
+            return classDate >= now; // Only future classes
+        })
+        .sort((a, b) => new Date(a.date) - new Date(b.date))[0] // Get the soonest one
+    : null;
 
+console.log('=== DEBUG UPCOMING CLASS ===');
+console.log('All class schedules:', user.class_schedules);
+console.log('Filtered upcoming class:', upcomingClass);
+if (upcomingClass) {
+    console.log('Upcoming class details:', {
+        name: upcomingClass.name,
+        date: upcomingClass.date,
+        meetLink: upcomingClass.meetLink,
+        time: upcomingClass.time,
+        description: upcomingClass.description,
+        trainerId: upcomingClass.trainerId
+    });
+    
+    // Ensure trainer name is properly populated
+    if (upcomingClass.trainerId && typeof upcomingClass.trainerId === 'object' && upcomingClass.trainerId.name) {
+        upcomingClass.trainerName = upcomingClass.trainerId.name;
+    } else {
+        // If trainerId is just an ObjectId, we need to fetch the trainer name
+        try {
+            const trainer = await Trainer.findById(upcomingClass.trainerId);
+            upcomingClass.trainerName = trainer ? trainer.name : 'Coach';
+        } catch (error) {
+            console.error('Error fetching trainer:', error);
+            upcomingClass.trainerName = 'Coach';
+        }
+    }
+} else {
+    console.log('No upcoming classes found after filtering');
+    console.log('Current date:', new Date());
+    console.log('All class schedules dates:', user.class_schedules ? user.class_schedules.map(cls => new Date(cls.date)) : 'No schedules');
+}
 
         
 
@@ -1064,7 +1107,13 @@ if (currentWeekWorkout) {
     console.log('Workout Exercises:', currentWeekWorkout.exercises);
     console.log('Today Exercises:', todayExercises);
 }
-        
+        console.log('=== FINAL UPCOMING CLASS DATA ===');
+console.log('Upcoming class:', upcomingClass);
+if (upcomingClass) {
+    console.log('Meet link exists:', !!upcomingClass.meetLink);
+    console.log('Meet link value:', upcomingClass.meetLink);
+    console.log('Trainer name:', upcomingClass.trainerName);
+}
         // Common data for all membership types
         const commonData = {
             user: user,
@@ -1090,25 +1139,24 @@ if (currentWeekWorkout) {
         };
         
         // Additional data for platinum members
-        if (membershipCode === 'p') {
-            // Add platinum-specific data
-            const platinumData = {
-                ...commonData,
-                nutritionChartData: nutritionChartData,
-                recentFoods: recentFoods,
-                nutritionStats: {
-                    calorieAvg: Math.round(calorieAvg),
-                    proteinAvg: Math.round(proteinAvg),
-                    macros: macrosData
-                },
-                upcomingClass: user.class_schedules && user.class_schedules.length > 0 
-                    ? user.class_schedules[0] 
-                    : null
-            };
-            
-            // Render platinum dashboard with all features
-            res.render(dashboardTemplate, platinumData);
-        } else {
+        // Additional data for platinum members
+if (membershipCode === 'p') {
+    // Add platinum-specific data
+    const platinumData = {
+        ...commonData,
+        nutritionChartData: nutritionChartData,
+        recentFoods: recentFoods,
+        nutritionStats: {
+            calorieAvg: Math.round(calorieAvg),
+            proteinAvg: Math.round(proteinAvg),
+            macros: macrosData
+        },
+        upcomingClass: upcomingClass // Use the filtered upcoming class
+    };
+    
+    // Render platinum dashboard with all features
+    res.render(dashboardTemplate, platinumData);
+}else {
             // Render gold/basic dashboard with limited features
             res.render(dashboardTemplate, commonData);
         }
