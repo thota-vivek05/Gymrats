@@ -40,6 +40,13 @@ router.get('/client/:id', trainerController.getClientData);
 // Fetch nutrition data
 router.get('/nutrition/:userId', trainerController.getNutritionData);
 
+// Add this route to trainerRoutes.js
+// BEFORE:
+router.get('/exercise-ratings/:userId', trainerController.getClientExerciseRatings);
+
+// AFTER:
+router.get('/trainer/exercise-ratings/:userId', trainerController.getClientExerciseRatings);
+
 // REYNA
 
 
