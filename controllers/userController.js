@@ -10,6 +10,7 @@ const Membership = require('../model/Membership'); // Add this line
 const Trainer = require('../model/Trainer');
 
 const checkMembershipActive = async (req, res, next) => {
+// ... (omitted for brevity)
     try {
         if (!req.session.user) {
             return next();
@@ -29,6 +30,7 @@ const checkMembershipActive = async (req, res, next) => {
 };
 
 const checkTrainerSubscription = async (req, res, next) => {
+// ... (omitted for brevity)
     try {
         if (!req.session.trainer) {
             return next();
@@ -47,6 +49,7 @@ const checkTrainerSubscription = async (req, res, next) => {
 };
 
 const getUserProfile = async (req, res) => {
+// ... (omitted for brevity)
     try {
         if (!req.session || !req.session.user) {
             //  console.log('No user session found');
@@ -266,6 +269,7 @@ const getUserProfile = async (req, res) => {
 
 
 const loginUser = async (req, res) => {
+// ... (omitted for brevity)
     try {
         const { email, password } = req.body;
 
@@ -353,6 +357,7 @@ const loginUser = async (req, res) => {
 };
 
 const signupUser = async (req, res) => {
+// ... (omitted for brevity)
     try {
         const {
             userFullName,
@@ -593,21 +598,30 @@ const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'F
             return res.status(404).json({ error: 'Workout not found' });
         }
 
-        //  console.log('✅ Workout found:', {
-        //     id: workout._id,
-        //     exerciseCount: workout.exercises.length,
-        //     exercises: workout.exercises.map(e => ({ name: e.name, day: e.day, completed: e.completed }))
-        // });
-
-        // Find exercise by exact name match
-        const exerciseIndex = workout.exercises.findIndex(ex => ex.name === exerciseName);
+        console.log('✅ Workout found:', {
+            id: workout._id,
+            exerciseCount: workout.exercises.length,
+            exercises: workout.exercises.map(e => ({ name: e.name, day: e.day, completed: e.completed }))
+        });
         
-        if (exerciseIndex === -1) {
-            //  console.log('❌ Exercise not found:', exerciseName);
-            //  console.log('📝 Available exercises:', workout.exercises.map(e => e.name));
-            return res.status(404).json({ error: `Exercise "${exerciseName}" not found` });
-        }
+        // --- START FIX FOR DAY MISMATCH ---
+        let exerciseIndex = -1;
+        
+        // 1. Strict Find: Match by name AND today's expected day
+        exerciseIndex = workout.exercises.findIndex(ex => ex.name === exerciseName && ex.day === todayDayName);
 
+        if (exerciseIndex === -1) {
+             // 2. Fallback Find: If strict match fails (due to data error), match by name only
+             exerciseIndex = workout.exercises.findIndex(ex => ex.name === exerciseName && ex.completed === false);
+             
+             if (exerciseIndex !== -1) {
+                console.log(`⚠️ Fallback used! Exercise found at index ${exerciseIndex} by name, but day mismatch or already completed. Proceeding to mark.`);
+             } else {
+                 console.log('❌ Exercise not found or already completed by name:', exerciseName);
+                 return res.status(404).json({ error: `Exercise "${exerciseName}" not found in today's plan or already completed.` });
+             }
+        }
+        
         const exercise = workout.exercises[exerciseIndex];
         //  console.log('✅ Found exercise:', {
         //     name: exercise.name,
@@ -629,7 +643,9 @@ const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'F
         const todaysExercises = workout.exercises.filter(ex => ex.day === todayDayName);
         const completedExercises = todaysExercises.filter(ex => ex.completed).length;
         const totalExercises = todaysExercises.length;
-        const progress = Math.round((completedExercises / totalExercises) * 100);
+        
+        // Handle division by zero for safety, though totalExercises should be > 0 if there are buttons
+        const progress = totalExercises > 0 ? Math.round((completedExercises / totalExercises) * 100) : 100;
 
         //  console.log('📊 Progress calculated (TODAY ONLY):', { 
         //     today: todayDayName,
@@ -640,17 +656,18 @@ const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'F
         // });
 
         workout.progress = progress;
+        // Optionally mark the entire workout as completed if all today's exercises are done
+        if (progress === 100) {
+            workout.completed = true; 
+        }
 
         // Save to database
-        //  console.log('💾 Saving to database...');
+        console.log('💾 Saving to database...');
+        // Mark the entire document as modified to ensure nested changes are saved
+        workout.markModified('exercises'); 
         await workout.save();
         
-        // Verify the save worked
-        const updatedWorkout = await WorkoutHistory.findById(workoutPlanId);
-        const savedExercise = updatedWorkout.exercises[exerciseIndex];
-        //  console.log('💾 After save - exercise completed:', savedExercise.completed);
-
-        //  console.log('✅=== MARK EXERCISE COMPLETED SUCCESS ===');
+        console.log('✅=== MARK EXERCISE COMPLETED SUCCESS ===');
         
         res.json({ 
             success: true,
@@ -676,6 +693,7 @@ const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'F
 //brimstone
 // Add this function to userController.js
 const changeMembership = async (req, res) => {
+// ... (omitted for brevity)
     try {
         if (!req.session || !req.session.user) {
             return res.status(401).json({
@@ -813,6 +831,7 @@ const changeMembership = async (req, res) => {
 // brimstone
 // Add this function to userController.js
 const updateUserProfile = async (req, res) => {
+// ... (omitted for brevity)
     try {
         if (!req.session || !req.session.user) {
             return res.status(401).json({
@@ -956,6 +975,7 @@ const updateUserProfile = async (req, res) => {
 // brimstone
 // Get user dashboard based on membership type
 const getUserDashboard = async (req, res, membershipCode) => {
+// ... (omitted for brevity)
     try {
         if (!req.session || !req.session.user) {
             return res.redirect('/login_signup?form=login');
@@ -996,7 +1016,33 @@ const getUserDashboard = async (req, res, membershipCode) => {
                 dashboardTemplate = 'userdashboard_b';
         }
         
-        // Get last 5 workouts
+        // --- START WORKOUTS COMPLETED FIX ---
+        // 1. Define the current week range (Sunday to Saturday)
+        const dayOfWeek = today.getDay();
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - dayOfWeek);
+        weekStart.setHours(0, 0, 0, 0);
+        
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
+
+        console.log('✅ Local Week Range (Sunday to Saturday):', weekStart.toString(), 'to', weekEnd.toString());
+
+        // 2. Query WorkoutHistory for the current week
+        const weeklyWorkoutHistory = await WorkoutHistory.find({
+            userId: userId,
+            date: { $gte: weekStart, $lt: weekEnd }
+        });
+        
+        // 3. Calculate completed and total for the overview card
+        const workoutsCompletedCount = weeklyWorkoutHistory.filter(w => w.completed).length;
+        const workoutsTotalCount = weeklyWorkoutHistory.length;
+        
+        const weeklyWorkouts = {
+            completed: workoutsCompletedCount,
+            total: workoutsTotalCount // This now represents the number of plans set for the week
+        };
+        
         const recentWorkouts = await WorkoutHistory.find({ userId: userId })
             .populate('workoutPlanId')
             .sort({ date: -1 })
@@ -1005,17 +1051,6 @@ const getUserDashboard = async (req, res, membershipCode) => {
         // ✅ PERMANENT FIX: Use local time for day calculation
         const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()];
         
-        // Calculate week start (Sunday) using local time
-        const weekStart = new Date(today);
-        const dayOfWeek = today.getDay();
-        weekStart.setDate(today.getDate() - dayOfWeek);
-        weekStart.setHours(0, 0, 0, 0);
-        
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekStart.getDate() + 7);
-
-        //  console.log('✅ Local Week Range:', weekStart.toString(), 'to', weekEnd.toString());
-
         // Get the weekly nutrition data
         const weeklyNutritionEntry = await NutritionHistory.findOne({
             userId: userId,
@@ -1219,16 +1254,16 @@ const getTodaysWorkout = async (userId) => {
         //     localDay: todayDayName
         // });
 
-        // Look for ANY workout history that has exercises for today
-        const workouts = await WorkoutHistory.find({ 
-            userId: userId 
-        }).lean();
+                // Look for ANY workout history that has exercises for today
+                const workouts = await WorkoutHistory.find({ 
+                    userId: userId 
+                }).lean();
 
         //  console.log('📋 Total workouts found:', workouts.length);
 
-        let todaysExercises = [];
-        let workoutPlanId = null;
-        let workoutName = `${todayDayName} Workout`;
+                let todaysExercises = [];
+                let workoutPlanId = null;
+                let workoutName = `${todayDayName} Workout`;
 
         // Check each workout for today's exercises
         for (const workout of workouts) {
@@ -1286,20 +1321,20 @@ const getTodaysWorkout = async (userId) => {
             workoutPlanId: null
         };
 
-    } catch (error) {
-        console.error('❌ Error in getTodaysWorkout:', error);
-        return {
-            name: 'No Workout Scheduled',
-            exercises: [],
-            progress: 0,
-            completed: false,
-            completedExercises: 0,
-            totalExercises: 0,
-            duration: 0,
-            workoutPlanId: null
+            } catch (error) {
+                console.error('❌ Error in getTodaysWorkout:', error);
+                return {
+                    name: 'No Workout Scheduled',
+                    exercises: [],
+                    progress: 0,
+                    completed: false,
+                    completedExercises: 0,
+                    totalExercises: 0,
+                    duration: 0,
+                    workoutPlanId: null
+                };
+            }
         };
-    }
-};
 
 
         // ✅ USE the function to get today's workout
@@ -1430,6 +1465,7 @@ try {
             user: user,
             recentWorkouts: recentWorkouts,
             todayNutrition: todayNutrition,
+            
             weeklyWorkouts: {
     completed: recentWorkouts.reduce((total, workout) => {
         return total + workout.exercises.filter(exercise => exercise.completed).length;
@@ -1446,7 +1482,8 @@ try {
                 auto_renew: user.membershipDuration.auto_renew,
                 is_active: user.isMembershipActive()
             },
-            currentPage: 'dashboard'
+            currentPage: 'dashboard',
+            todaysConsumedFoods: todaysConsumedFoods
         };
         
         // Additional data for platinum members
@@ -1455,7 +1492,6 @@ try {
                 ...commonData,
                 nutritionChartData: nutritionChartData,
                 recentFoods: recentFoods,
-                todaysConsumedFoods: todaysConsumedFoods,
                 nutritionStats: {
                     calorieAvg: Math.round(calorieAvg),
                     proteinAvg: Math.round(proteinAvg),
@@ -1466,7 +1502,17 @@ try {
             
             res.render(dashboardTemplate, platinumData);
         } else {
-            res.render(dashboardTemplate, commonData);
+            // FIX: Ensure todaysConsumedFoods is explicitly added to the data object for Gold/Basic
+            const basicGoldData = {
+                ...commonData,
+                nutritionChartData: nutritionChartData,
+                nutritionStats: {
+                    calorieAvg: Math.round(calorieAvg),
+                    proteinAvg: Math.round(proteinAvg),
+                    macros: macrosData
+                },
+            };
+            res.render(dashboardTemplate, basicGoldData);
         }
         
     } catch (error) {
@@ -1486,6 +1532,7 @@ try {
 
 
 const completeWorkout = async (req, res) => {
+// ... (omitted for brevity)
     try {
         if (!req.session || !req.session.user) {
             //  console.log('No user session found');
@@ -1530,6 +1577,7 @@ const completeWorkout = async (req, res) => {
 };
 
 const markWorkoutCompleted = async (req, res) => {
+// ... (omitted for brevity)
     try {
         const { workoutId } = req.body;
         
@@ -1597,6 +1645,7 @@ const markWorkoutCompleted = async (req, res) => {
 // Add this function to userController.js
 // Replace the getTodaysFoods function in userController.js with this corrected version:
 const getTodaysFoods = async (userId) => {
+// ... (omitted for brevity)
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
