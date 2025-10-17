@@ -17,6 +17,12 @@ router.get('/register', verifierController.getRegistrationPage);
 // POST registration
 router.post('/register', verifierController.registerVerifier);
 
+// Add these routes to your verifierRoutes.js
+
+// API routes
+router.get('/api/dashboard', verifierController.requireAuth, verifierController.getDashboardData);
+router.post('/api/quick-action', verifierController.requireAuth, verifierController.quickAction);
+
 router.get('/pendingverifications', verifierController.showPendingVerifications);
 
 //REYNA

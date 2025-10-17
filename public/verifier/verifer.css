@@ -840,3 +840,18 @@ button {
         font-size: 1.5rem;
     }
 }
+
+
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.loading-indicator i {
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+}

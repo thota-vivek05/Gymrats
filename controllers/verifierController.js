@@ -507,3 +507,134 @@ exports.rejectTrainer = async (req, res) => {
     return res.status(500).redirect('/verifier/pendingverifications');
   }
 };
+
+
+// fetch
+
+// Add these to your verifierController.js
+
+// API endpoint for dashboard data
+exports.getDashboardData = async (req, res) => {
+  try {
+    const verifier = await Verifier.findById(req.session.verifierId);
+    if (!verifier) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    // FIX: Update pendingCount to include both statuses
+    const pendingCount = await TrainerApplication.countDocuments({ 
+      status: { $in: ['Pending', 'In Progress'] }
+    });
+    const completedCount = await TrainerApplication.countDocuments({ 
+      status: { $in: ['Approved', 'Rejected'] }
+    });
+
+    // Fetch recent verification requests (limit to 4 for display)
+    const recentApplications = await TrainerApplication.find({
+      status: { $in: ['Pending', 'In Progress'] }
+    })
+      .sort({ createdAt: -1 })
+      .limit(4)
+      .select('firstName lastName email specializations createdAt status _id');
+
+    // Mock earnings and rating (since not in schema)
+    const totalEarnings = 1250;
+    const rating = 4.8;
+
+    // Fetch upcoming verifications
+    const upcomingVerifications = await TrainerApplication.find({
+      status: { $in: ['Pending', 'In Progress'] }
+    })
+      .sort({ createdAt: 1 })
+      .limit(3)
+      .select('firstName lastName createdAt');
+
+    // Fetch recent approved trainers
+    const recentApprovedTrainers = await TrainerApplication.find({
+      status: 'Approved'
+    })
+      .sort({ updatedAt: -1 })
+      .limit(3)
+      .select('firstName lastName email specializations updatedAt');
+
+    res.json({
+      verifier: {
+        name: verifier.name,
+        email: verifier.email
+      },
+      stats: {
+        pendingCount,
+        completedCount,
+        totalEarnings,
+        rating
+      },
+      recentApplications: recentApplications || [],
+      upcomingVerifications,
+      recentApprovedTrainers: recentApprovedTrainers || []
+    });
+  } catch (err) {
+    console.error("Dashboard API error:", err);
+    res.status(500).json({ error: 'Failed to load dashboard data' });
+  }
+};
+
+// API endpoint for quick actions (approve/reject)
+exports.quickAction = async (req, res) => {
+  try {
+    const { action, applicationId } = req.body;
+    const verifierId = req.session.verifierId;
+    
+    if (!['approve', 'reject'].includes(action)) {
+      return res.status(400).json({ error: 'Invalid action' });
+    }
+    
+    const verifier = await Verifier.findById(verifierId);
+    if (!verifier) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+    
+    const application = await TrainerApplication.findById(applicationId);
+    if (!application) {
+      return res.status(404).json({ error: 'Application not found' });
+    }
+    
+    if (action === 'approve') {
+      // Check if trainer already exists
+      const existingTrainer = await Trainer.findOne({ email: application.email });
+      if (existingTrainer) {
+        return res.status(400).json({ error: 'A trainer with this email already exists' });
+      }
+      
+      // Update application status
+      application.status = 'Approved';
+      application.verifierId = verifierId;
+      await application.save();
+      
+      // Create new trainer from application
+      const newTrainer = new Trainer({
+        name: `${application.firstName} ${application.lastName}`,
+        email: application.email,
+        password_hash: application.password_hash,
+        phone: application.phone,
+        experience: application.experience,
+        specializations: application.specializations,
+        verificationStatus: 'Approved',
+        verifierId: verifierId,
+        certifications: ['Other'],
+        status: 'Active'
+      });
+      
+      await newTrainer.save();
+    } else {
+      // Reject action
+      application.status = 'Rejected';
+      application.verifierId = verifierId;
+      await application.save();
+    }
+    
+    res.json({ success: true, newStatus: action === 'approve' ? 'Approved' : 'Rejected' });
+  } catch (err) {
+    console.error("Quick action error:", err);
+    res.status(500).json({ error: 'Failed to process action' });
+  }
+};

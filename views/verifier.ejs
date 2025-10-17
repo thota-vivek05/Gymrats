@@ -57,34 +57,34 @@
             <div class="sidebar-header">
                 <a href="/home" class="brand-logo">GymRats</a>
             </div>
-    <div class="sidebar-menu">
-    <ul>
-        <li class="active">
-            <a href="/verifier">
-                <i class="fas fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </a>
-        </li>
-        <li>
-            <a href="/verifier/pendingverifications">
-                <i class="fas fa-clipboard-list"></i>
-                <span>Pending Verifications</span>
-            </a>
-        </li>
-        <li>
-            <a href="/verifier/approvedverifications">
-                <i class="fas fa-check-circle"></i>
-                <span>Approved Verifications</span>
-            </a>
-        </li>
-        <li>
-            <a href="/verifier/rejectedverifications">
-                <i class="fas fa-times-circle"></i>
-                <span>Rejected Verifications</span>
-            </a>
-        </li>
-    </ul>
-</div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li class="active">
+                        <a href="/verifier">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/verifier/pendingverifications">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Pending Verifications</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/verifier/approvedverifications">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Approved Verifications</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/verifier/rejectedverifications">
+                            <i class="fas fa-times-circle"></i>
+                            <span>Rejected Verifications</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
             <div class="sidebar-footer">
                 <a href="/home">
                     <i class="fas fa-sign-out-alt"></i>
@@ -102,28 +102,34 @@
                 </div>
                 
                 <div class="navbar-right">
-    <div class="user-profile">
-        <span><%= verifier.name %></span>
-    </div>
-</div>
+                    <div class="user-profile">
+                        <span id="verifierName">Loading...</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Dashboard Content -->
             <div class="dashboard-content">
                 <div class="page-header">
                     <h1>Verifier Dashboard</h1>
-                    <p>Welcome back, <%= verifier.name %>! Here's your verification overview.</p>
+                    <p id="welcomeMessage">Loading dashboard...</p>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="loadingIndicator" class="loading-indicator">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading dashboard data...</span>
                 </div>
 
                 <!-- Stats Cards -->
-                <div class="stats-container">
+                <div class="stats-container" id="statsContainer" style="display: none;">
                     <div class="stat-card">
                         <div class="stat-icon pending">
                             <i class="fas fa-clipboard-list"></i>
                         </div>
                         <div class="stat-details">
                             <h3>Pending Verifications</h3>
-                            <p class="stat-count"><%= stats.pendingCount %></p>
+                            <p class="stat-count" id="pendingCount">0</p>
                             <p class="stat-trend up">
                                 <i class="fas fa-arrow-up"></i> 8% from last week
                             </p>
@@ -136,14 +142,12 @@
                         </div>
                         <div class="stat-details">
                             <h3>Completed Verifications</h3>
-                            <p class="stat-count"><%= stats.completedCount %></p>
+                            <p class="stat-count" id="completedCount">0</p>
                             <p class="stat-trend up">
                                 <i class="fas fa-arrow-up"></i> 12% from last month
                             </p>
                         </div>
                     </div>
-
-
 
                     <div class="stat-card">
                         <div class="stat-icon rating">
@@ -151,7 +155,7 @@
                         </div>
                         <div class="stat-details">
                             <h3>Rating</h3>
-                            <p class="stat-count"><%= stats.rating %>/5</p>
+                            <p class="stat-count" id="ratingCount">0/5</p>
                             <p class="stat-trend same">
                                 <i class="fas fa-minus"></i> Same as last month
                             </p>
@@ -160,7 +164,7 @@
                 </div>
 
                 <!-- Recent Verifications -->
-                <div class="section-container">
+                <div class="section-container" id="recentVerificationsSection" style="display: none;">
                     <div class="section-header">
                         <h2>Recent Verification Requests</h2>
                         <a href="/verifier/pendingverifications" class="view-all">View All</a>
@@ -176,52 +180,8 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <% if (recentApplications && recentApplications.length > 0) { %>
-                                <% recentApplications.forEach(app => { %>
-                                <tr>
-                                    <td>
-                                        <div class="user-info">
-                                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=40&h=40&fit=crop&auto=format"
-                                                alt="<%= app.firstName %> <%= app.lastName %>" />
-                                            <div>
-                                                <p class="user-name"><%= app.firstName %> <%= app.lastName %></p>
-                                                <p class="user-email"><%= app.email %></p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><%= app.specializations.join(', ') %></td>
-                                    <td><%= app.createdAt ? new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown' %>
-                                    </td>
-                                    <td><span
-                                            class="status <%= app.status.toLowerCase().replace(' ', '-') %>"><%= app.status %></span>
-                                    </td>
-                                    <td>
-                                        <% if (app.status === 'Pending') { %>
-                                        <div class="action-buttons">
-                                            <a href="/verifier/approve/<%= app._id %>" class="btn-approve"
-                                                onclick="return confirm('Are you sure you want to approve this trainer?')">Approve</a>
-                                            <a href="/verifier/reject/<%= app._id %>" class="btn-reject"
-                                                onclick="return confirm('Are you sure you want to reject this trainer?')">Reject</a>
-                                        </div>
-                                        <% } else if (app.status === 'In Progress') { %>
-                                        <div class="action-buttons">
-                                            <a href="/verifier/approve/<%= app._id %>" class="btn-approve"
-                                                onclick="return confirm('Are you sure you want to approve this trainer?')">Approve</a>
-                                            <a href="/verifier/reject/<%= app._id %>" class="btn-reject"
-                                                onclick="return confirm('Are you sure you want to reject this trainer?')">Reject</a>
-                                        </div>
-                                        <% } else { %>
-                                        <button class="btn-view">View Details</button>
-                                        <% } %>
-                                    </td>
-                                </tr>
-                                <% }); %>
-                                <% } else { %>
-                                <tr>
-                                    <td colspan="5">No recent verification requests.</td>
-                                </tr>
-                                <% } %>
+                            <tbody id="recentApplicationsTable">
+                                <!-- Will be populated by JavaScript -->
                             </tbody>
                         </table>
                     </div>
@@ -229,58 +189,20 @@
 
                 <!-- Calendar and Messages -->
                 <div class="split-section">
-                   
-                    <!-- REYNA  -->
                     <!-- Recent Approved Trainers -->
-<div class="messages-container">
-    <div class="section-header">
-        <h2>Recently Approved Trainers</h2>
-        <a href="/verifier/approvedverifications" class="view-all">View All</a>
-    </div>
-    <div class="message-list">
-        <% if (recentApprovedTrainers && recentApprovedTrainers.length > 0) { %>
-        <% recentApprovedTrainers.forEach(trainer => { %>
-        <div class="message-item">
-            <div class="message-avatar">
-                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=40&h=40&fit=crop&auto=format" 
-                     alt="<%= trainer.firstName %> <%= trainer.lastName %>" />
-            </div>
-            <div class="message-content">
-                <div class="message-header">
-                    <h4><%= trainer.firstName %> <%= trainer.lastName %></h4>
-                    <span class="message-time">
-                        <%= trainer.updatedAt ? new Date(trainer.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recently' %>
-                    </span>
-                </div>
-                <p class="message-text">
-                    <strong>Specializations:</strong> <%= trainer.specializations ? trainer.specializations.join(', ') : 'Not specified' %>
-                </p>
-                <p class="message-text">
-                    <strong>Email:</strong> <%= trainer.email %>
-                </p>
-            </div>
-        </div>
-        <% }); %>
-        <% } else { %>
-        <div class="message-item">
-            <div class="message-content">
-                <p>No recently approved trainers.</p>
-            </div>
-        </div>
-        <% } %>
-    </div>
-</div>
+                    <div class="messages-container" id="approvedTrainersSection" style="display: none;">
+                        <div class="section-header">
+                            <h2>Recently Approved Trainers</h2>
+                            <a href="/verifier/approvedverifications" class="view-all">View All</a>
+                        </div>
+                        <div class="message-list" id="recentApprovedTrainersList">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-        // Toggle sidebar menu
-        document.querySelector('.toggle-menu').addEventListener('click', function () {
-            document.querySelector('.dashboard-container').classList.toggle('sidebar-collapsed');
-        });
-    </script>
 
     <!-- Footer -->
     <footer class="site-footer">
@@ -329,6 +251,11 @@
     </footer>
 
     <script>
+        // Toggle sidebar menu
+        document.querySelector('.toggle-menu').addEventListener('click', function () {
+            document.querySelector('.dashboard-container').classList.toggle('sidebar-collapsed');
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('menuIcon').addEventListener('click', function () {
                 document.getElementById('sideNavbar').classList.add('open');
@@ -337,7 +264,175 @@
             document.getElementById('closeBtn').addEventListener('click', function () {
                 document.getElementById('sideNavbar').classList.remove('open');
             });
+
+            // Load dashboard data using fetch
+            loadDashboardData();
         });
+
+        // Function to load dashboard data
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/verifier/api/dashboard');
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = '/verifier/login';
+                        return;
+                    }
+                    throw new Error('Failed to load dashboard data');
+                }
+                
+                const data = await response.json();
+                
+                // Hide loading indicator
+                document.getElementById('loadingIndicator').style.display = 'none';
+                
+                // Update UI with fetched data
+                updateDashboardUI(data);
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                document.getElementById('loadingIndicator').innerHTML = 
+                    '<i class="fas fa-exclamation-triangle"></i><span>Error loading dashboard data</span>';
+            }
+        }
+
+        // Function to update UI with fetched data
+        function updateDashboardUI(data) {
+            // Update verifier info
+            document.getElementById('verifierName').textContent = data.verifier.name;
+            document.getElementById('welcomeMessage').textContent = 
+                `Welcome back, ${data.verifier.name}! Here's your verification overview.`;
+            
+            // Update stats
+            document.getElementById('pendingCount').textContent = data.stats.pendingCount;
+            document.getElementById('completedCount').textContent = data.stats.completedCount;
+            document.getElementById('ratingCount').textContent = `${data.stats.rating}/5`;
+            
+            // Show stats container
+            document.getElementById('statsContainer').style.display = 'flex';
+            
+            // Update recent applications table
+            updateRecentApplicationsTable(data.recentApplications);
+            
+            // Update recent approved trainers
+            updateRecentApprovedTrainers(data.recentApprovedTrainers);
+            
+            // Show sections
+            document.getElementById('recentVerificationsSection').style.display = 'block';
+            document.getElementById('approvedTrainersSection').style.display = 'block';
+        }
+
+        // Function to update recent applications table
+        function updateRecentApplicationsTable(applications) {
+            const tableBody = document.getElementById('recentApplicationsTable');
+            
+            if (!applications || applications.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5">No recent verification requests.</td></tr>';
+                return;
+            }
+            
+            tableBody.innerHTML = applications.map(app => `
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=40&h=40&fit=crop&auto=format"
+                                alt="${app.firstName} ${app.lastName}" />
+                            <div>
+                                <p class="user-name">${app.firstName} ${app.lastName}</p>
+                                <p class="user-email">${app.email}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${app.specializations ? app.specializations.join(', ') : 'Not specified'}</td>
+                    <td>${app.createdAt ? new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown'}</td>
+                    <td><span class="status ${app.status.toLowerCase().replace(' ', '-')}">${app.status}</span></td>
+                    <td>
+                        ${app.status === 'Pending' || app.status === 'In Progress' ? 
+                            `<div class="action-buttons">
+                                <button class="btn-approve" onclick="quickAction('approve', '${app._id}')">Approve</button>
+                                <button class="btn-reject" onclick="quickAction('reject', '${app._id}')">Reject</button>
+                            </div>` : 
+                            `<button class="btn-view">View Details</button>`
+                        }
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Function to update recent approved trainers
+        function updateRecentApprovedTrainers(trainers) {
+            const trainersList = document.getElementById('recentApprovedTrainersList');
+            
+            if (!trainers || trainers.length === 0) {
+                trainersList.innerHTML = `
+                    <div class="message-item">
+                        <div class="message-content">
+                            <p>No recently approved trainers.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            trainersList.innerHTML = trainers.map(trainer => `
+                <div class="message-item">
+                    <div class="message-avatar">
+                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=40&h=40&fit=crop&auto=format" 
+                             alt="${trainer.firstName} ${trainer.lastName}" />
+                    </div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <h4>${trainer.firstName} ${trainer.lastName}</h4>
+                            <span class="message-time">
+                                ${trainer.updatedAt ? new Date(trainer.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recently'}
+                            </span>
+                        </div>
+                        <p class="message-text">
+                            <strong>Specializations:</strong> ${trainer.specializations ? trainer.specializations.join(', ') : 'Not specified'}
+                        </p>
+                        <p class="message-text">
+                            <strong>Email:</strong> ${trainer.email}
+                        </p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Function to handle quick actions (approve/reject)
+        async function quickAction(action, applicationId) {
+            if (!confirm(`Are you sure you want to ${action} this trainer?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/verifier/api/quick-action', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: action,
+                        applicationId: applicationId
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to process action');
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Reload dashboard data to reflect changes
+                    loadDashboardData();
+                } else {
+                    alert('Failed to process action');
+                }
+            } catch (error) {
+                console.error('Error processing action:', error);
+                alert('Error processing action');
+            }
+        }
     </script>
 </body>
 
