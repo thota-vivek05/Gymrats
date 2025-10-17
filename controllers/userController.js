@@ -1310,12 +1310,13 @@ const markWorkoutCompleted = async (req, res) => {
 };
 
 // Add this function to userController.js
+// Replace the getTodaysFoods function in userController.js with this corrected version:
 const getTodaysFoods = async (userId) => {
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
-        console.log('=== WEDNESDAY DEBUG ===');
+        console.log('=== GET TODAYS FOODS DEBUG ===');
         console.log('📅 Today:', today);
         console.log('📅 Today day index:', today.getDay()); // Should be 3 for Wednesday
         console.log('📅 Today day name:', ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()]);
@@ -1341,15 +1342,15 @@ const getTodaysFoods = async (userId) => {
             console.log('✅ Found weekly nutrition plan');
             console.log('📋 Plan date:', weeklyNutrition.date);
             
-            const todayDayName = 'Wednesday'; // Hardcode for testing
+            const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today.getDay()];
             const todayData = weeklyNutrition.daily_nutrition[todayDayName];
             
-            console.log('🍽️ Wednesday foods:', todayData ? todayData.foods.length : 'no data');
+            console.log('🍽️', todayDayName, 'foods:', todayData ? todayData.foods.length : 'no data');
             
             if (todayData && todayData.foods) {
                 console.log('🎯 Foods found:');
                 todayData.foods.forEach((food, index) => {
-                    console.log(`${index + 1}. ${food.name} - ${food.calories} kcal`);
+                    console.log(`${index + 1}. ${food.name} - ${food.calories} kcal - consumed: ${food.consumed}`);
                 });
                 
                 return todayData.foods.map(food => ({
@@ -1362,96 +1363,17 @@ const getTodaysFoods = async (userId) => {
                     consumedAt: food.consumedAt
                 }));
             }
+        } else {
+            console.log('❌ No weekly nutrition plan found for this week');
         }
         
         return [];
         
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error in getTodaysFoods:', error);
         return [];
     }
 };
-
-// Add this function for testing - call it when needed
-// const addSampleFoods = async (userId) => {
-//     try {
-//         const today = new Date();
-//         today.setHours(0, 0, 0, 0);
-        
-//         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-//         const todayDayName = days[today.getDay()];
-        
-//         let nutritionEntry = await NutritionHistory.findOne({
-//             userId: userId,
-//             date: { $gte: today, $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000) }
-//         });
-        
-//         if (!nutritionEntry) {
-//             const User = require('../model/User');
-//             const user = await User.findById(userId);
-            
-//             nutritionEntry = new NutritionHistory({
-//                 userId: userId,
-//                 date: today,
-//                 protein_goal: user.fitness_goals.protein_goal,
-//                 calorie_goal: user.fitness_goals.calorie_goal,
-//                 daily_nutrition: {
-//                     Monday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
-//                     Tuesday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
-//                     Wednesday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
-//                     Thursday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
-//                     Friday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
-//                     Saturday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
-//                     Sunday: { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } }
-//                 }
-//             });
-//         }
-        
-//         // Add sample foods if none exist
-//         if (nutritionEntry.daily_nutrition[todayDayName].foods.length === 0) {
-//             nutritionEntry.daily_nutrition[todayDayName].foods = [
-//                 {
-//                     name: "Grilled Chicken Breast",
-//                     protein: 30,
-//                     calories: 165,
-//                     carbs: 0,
-//                     fats: 3.6,
-//                     consumed: false
-//                 },
-//                 {
-//                     name: "Brown Rice",
-//                     protein: 5,
-//                     calories: 216,
-//                     carbs: 45,
-//                     fats: 1.8,
-//                     consumed: false
-//                 },
-//                 {
-//                     name: "Protein Shake",
-//                     protein: 25,
-//                     calories: 120,
-//                     carbs: 3,
-//                     fats: 1,
-//                     consumed: false
-//                 },
-//                 {
-//                     name: "Greek Yogurt",
-//                     protein: 15,
-//                     calories: 100,
-//                     carbs: 6,
-//                     fats: 0,
-//                     consumed: false
-//                 }
-//             ];
-            
-//             await nutritionEntry.save();
-//             console.log('Sample foods added for user:', userId);
-//         }
-        
-//     } catch (error) {
-//         console.error('Error adding sample foods:', error);
-//     }
-// };
 
 module.exports = {
     loginUser,
