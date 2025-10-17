@@ -1431,9 +1431,13 @@ try {
             recentWorkouts: recentWorkouts,
             todayNutrition: todayNutrition,
             weeklyWorkouts: {
-                completed: recentWorkouts.filter(w => w.completed).length,
-                total: recentWorkouts.length
-            },
+    completed: recentWorkouts.reduce((total, workout) => {
+        return total + workout.exercises.filter(exercise => exercise.completed).length;
+    }, 0),
+    total: recentWorkouts.reduce((total, workout) => {
+        return total + workout.exercises.length;
+    }, 0)
+},
             todayWorkout: todayWorkoutData,
             exerciseProgress: exerciseProgress,
             membershipInfo: {

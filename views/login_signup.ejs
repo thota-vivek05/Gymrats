@@ -338,6 +338,35 @@ function validatePhoneNumber(phone) {
     return /^\d{10}$/.test(cleanedPhone);
 }
 
+// Add this function after the other validation functions
+function validateExpiryDate(expiryDate) {
+    if (!expiryDate) return false;
+    
+    // Get current date
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
+    
+    // Parse expiry date (format: YYYY-MM)
+    const [year, month] = expiryDate.split('-').map(Number);
+    
+    // Check if date is in the future
+    if (year < currentYear) {
+        return false; // Expired - year in past
+    }
+    
+    if (year === currentYear && month < currentMonth) {
+        return false; // Expired - same year but month in past
+    }
+    
+    // Check if month is valid (1-12)
+    if (month < 1 || month > 12) {
+        return false;
+    }
+    
+    return true;
+}
+
         // Close modal when clicking outside
         window.onclick = function (event) {
             const errorModal = document.getElementById('errorModal');
@@ -531,6 +560,11 @@ function validatePhoneNumber(phone) {
 
                 if (!validateCardNumber(cardNumber)) {
                     showErrorModal('Please enter a valid 16-digit card number');
+                    return;
+                }
+
+                 if (!validateExpiryDate(expirationDate)) {
+                    showErrorModal('Please enter a valid expiration date that is not in the past');
                     return;
                 }
 
