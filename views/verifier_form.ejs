@@ -4,177 +4,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymRats - Verifier Registration</title>
+    <title>Add New Verifier</title>
     <link rel="stylesheet" type="text/css" href="/verifier_form/verifier_form.css" />
 </head>
 
 <body>
-    <div class="main-navbar">
-        <header>
-            <!-- Header Branding -->
-            <div class="brand-logo">
-                <a href="/home" class="brand-name">GymRats</a>
-            </div>
-
-            <div class="nav-menu">
-                <a href="/home">Home</a>
-                <a href="/isolation">Exercises</a>
-                <a href="/nutrition">Nutrition</a>
-                <a href="/about">About</a>
-                <a href="/contact">Contact</a>
-            </div>
-
-            <div class="right-container">
-                <div class="search-container">
-                    <img src="/verifier_form/icons8-search.svg" height="18px" alt="Search Icon" />
-                    <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-                </div>
-
-                <div class="login-button">
-                    <a href="/verifier/login">Login</a>
-                </div>
-            </div>
-
-            <div class="mobile-menu-icon" id="menuIcon">
-                <img src="/verifier_form/menu.jpg" alt="Menu" height="25px" />
-            </div>
-        </header>
-    </div>
-
-    <!-- Mobile Side Navigation -->
-    <div class="mobile-sidebar" id="sideNavbar">
-        <a href="javascript:void(0)" class="close-button" id="closeBtn">×</a>
-        <a href="/home">Home</a>
-        <a href="/isolation">Exercises</a>
-        <a href="/nutrition">Nutrition</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
-        <a href="/login_signup">Login / Signup</a>
-    </div>
-
     <!-- Registration Section -->
     <section class="registration-section">
-        <div class="section-header">
-            <h2>Become a Trainer Verifier</h2>
-            <p>Help us maintain high-quality fitness training standards by verifying trainer credentials and
-                qualifications.</p>
-        </div>
-
         <div class="registration-container">
             <div class="form-card">
-                <div class="requirements-info">
-                    <h3>Verifier Requirements</h3>
-                    <ul>
-                        <li>Minimum 5 years of experience in the fitness industry</li>
-                        <li>Professional certification in relevant fitness fields</li>
-                        <li>Strong understanding of fitness training standards</li>
-                        <li>Available to review trainer applications regularly</li>
-                    </ul>
+                <div class="form-header">
+                    <h2>Add New Verifier</h2>
+                    <p>Create a new content verifier account</p>
                 </div>
+                
+                <div id="message" class="message"></div>
+                
+                <form id="verifierForm" class="registration-form">
+    <div class="form-group">
+        <label for="name">Full Name *</label>
+        <input type="text" id="name" name="name" placeholder="Enter full name" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="email">Email Address *</label>
+        <input type="email" id="email" name="email" placeholder="Enter email address" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="phone">Phone Number *</label>
+        <input type="tel" id="phone" name="phone" placeholder="Enter phone number" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="password">Password *</label>
+        <input type="password" id="password" name="password" placeholder="Enter password" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="experienceYears">Years of Experience *</label>
+        <input type="number" id="experienceYears" name="experienceYears" min="1" 
+               placeholder="Enter years of experience" required>
+    </div>
 
-                <form id="verifierForm" class="registration-form" action="/verifier/register" method="POST">
-                    <div class="form-group">
-                        <label for="fullName">Full Name</label>
-                        <input type="text" id="fullName" name="fullName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="experienceYears">Years of Experience</label>
-                        <input type="number" id="experienceYears" name="experienceYears" min="1" required>
-                    </div>
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="termsConditions" name="termsConditions" required>
-                        <label for="termsConditions">I agree to the <a href="/terms">Terms and Services</a></label>
-                    </div>
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="privacyPolicy" name="privacyPolicy" required>
-                        <label for="privacyPolicy">I have read the <a href="/privacy_policy">Privacy Policy</a></label>
-                    </div>
-
-                    <button type="submit" class="btn submit-btn">Submit Application</button>
-                </form>
+    <button type="submit" class="submit-btn">Create Verifier</button>
+</form>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="site-footer">
-        <div class="footer-content">
-            <div class="footer-column">
-                <h3>GymRats</h3>
-                <ul>
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="/trainers">Our Trainers</a></li>
-                    <li><a href="/testimonial">Testimonials</a></li>
-                    <li><a href="/blog">Blog</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column">
-                <h3>Resources</h3>
-                <ul>
-                    <li><a href="/isolation">Exercise Guide</a></li>
-                    <li><a href="/nutrition">Nutrition Tips</a></li>
-                    <li><a href="/workout_plans">Workout Plans</a></li>
-                    <li><a href="/calculators">Calculators</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column">
-                <h3>Support</h3>
-                <ul>
-                    <li><a href="/contact">Contact Us</a></li>
-                    <li><a href="/about">About us</a></li>
-                    <li><a href="/terms">Terms of Service</a></li>
-                    <li><a href="/privacy_policy">Privacy Policy</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-column">
-                <h3>Connect With Us</h3>
-                <ul>
-                    <li><a href="/trainer_form">Become a Trainer</a></li>
-                    <li><a href="/verifier_form">Become a Verifier</a></li>
-                </ul>
-                <div class="social-icons">
-                    <a href="#"><img src="/verifier_form/icons8-facebook.svg" alt="Facebook" height="24"></a>
-                    <a href="#"><img src="/verifier_form/icons8-instagram.svg" alt="Instagram" height="24"></a>
-                    <a href="#"><img src="/verifier_form/icons8-youtube.svg" alt="YouTube" height="24"></a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
     <script>
-        // Mobile menu functionality
-        document.getElementById('menuIcon').addEventListener('click', function () {
-            document.getElementById('sideNavbar').style.width = "250px";
-        });
 
-        document.getElementById('closeBtn').addEventListener('click', function () {
-            document.getElementById('sideNavbar').style.width = "0";
-        });
+        // Add these validation functions at the top of your script
+function validateName(name) {
+    return /^[A-Za-z\s]{2,50}$/.test(name); // 2-50 letters and spaces only
+}
 
-        // Client-side form validation
-        document.getElementById('verifierForm').addEventListener('submit', function (event) {
-            const experience = document.getElementById('experienceYears').value;
-            if (experience < 5) {
-                event.preventDefault();
-                alert('You need a minimum of 5 years of experience to be a verifier.');
-            }
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); // Basic email format
+}
+
+function validatePassword(password) {
+    return password.length >= 3; // At least 3 characters
+}
+
+function validatePhone(phone) {
+    return /^\+?[\d\s-]{10}$/.test(phone); // Exactly 10 digits, may include +, spaces, or hyphens
+}
+
+function validateExperience(experience) {
+    return experience >= 1 && experience <= 50; // 1-50 years
+}
+
+
+document.getElementById('verifierForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    
+    const submitBtn = this.querySelector('.submit-btn');
+    const messageDiv = document.getElementById('message');
+    const originalText = submitBtn.textContent;
+    
+    // Show loading state
+    submitBtn.textContent = 'Creating...';
+    submitBtn.disabled = true;
+    messageDiv.style.display = 'none';
+    
+    try {
+        // Get form values directly from inputs
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const password = document.getElementById('password').value;
+        const experienceYears = document.getElementById('experienceYears').value;
+        
+        //  console.log('Form values:', { name, email, phone, password, experienceYears }); // Debug log
+        
+        // Validate form data
+        if (!validateName(name)) {
+            throw new Error('Please enter a valid full name (2-50 letters and spaces only)');
+        }
+        
+        if (!validateEmail(email)) {
+            throw new Error('Please enter a valid email address');
+        }
+        
+        if (!validatePhone(phone)) {
+            throw new Error('Please enter a valid phone number (at least 10 digits)');
+        }
+        
+        if (!validatePassword(password)) {
+            throw new Error('Password must be at least 8 characters long');
+        }
+        
+        if (!validateExperience(experienceYears)) {
+            throw new Error('Experience must be between 1 and 50 years');
+        }
+        
+        // Send as JSON instead of FormData to ensure all fields are included
+        const response = await fetch('/admin/verifier', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                phone: phone,
+                password: password,
+                experienceYears: experienceYears
+            })
         });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Show success message
+            messageDiv.textContent = 'Verifier created successfully!';
+            messageDiv.className = 'message success';
+            messageDiv.style.display = 'block';
+            
+            // Reset form
+            this.reset();
+            
+            // Refresh parent page after delay
+            setTimeout(() => {
+                if (window.parent && window.parent.refreshVerifierList) {
+                    window.parent.refreshVerifierList();
+                }
+                // Close modal
+                if (window.parent && window.parent.document) {
+                    const modal = window.parent.document.getElementById('addVerifierModal');
+                    if (modal) {
+                        modal.style.display = 'none';
+                    }
+                }
+            }, 1500);
+
+        } else {
+            throw new Error(data.message || 'Failed to create verifier');
+        }
+        
+    } catch (error) {
+        console.error('Error:', error);
+        messageDiv.textContent = error.message || 'Error creating verifier. Please try again.';
+        messageDiv.className = 'message error';
+        messageDiv.style.display = 'block';
+    } finally {
+        // Reset button state
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+});
+
+
+        // Real-time validation feedback
+document.querySelectorAll('#verifierForm input').forEach(input => {
+    input.addEventListener('blur', function() {
+        validateField(this);
+    });
+});
+
+function validateField(field) {
+    const value = field.value.trim();
+    let isValid = true;
+    let errorMessage = '';
+    
+    switch(field.id) {
+        case 'name':
+            isValid = validateName(value);
+            errorMessage = 'Name must be 2-50 letters and spaces only';
+            break;
+        case 'email':
+            isValid = validateEmail(value);
+            errorMessage = 'Please enter a valid email address';
+            break;
+        case 'phone':
+            isValid = validatePhone(value);
+            errorMessage = 'Please enter a valid phone number (10 digits)';
+            break;
+        case 'password':
+            isValid = validatePassword(value);
+            errorMessage = 'Password must be at least 3 characters';
+            break;
+        case 'experienceYears':
+            isValid = validateExperience(value);
+            errorMessage = 'Experience must be 1-50 years';
+            break;
+    }
+    
+    // Remove existing error styling
+    field.classList.remove('error');
+    const existingError = field.parentNode.querySelector('.field-error');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    // Add error styling and message if invalid
+    if (!isValid && value) {
+        field.classList.add('error');
+        const errorElement = document.createElement('div');
+        errorElement.className = 'field-error';
+        errorElement.textContent = errorMessage;
+        errorElement.style.color = '#ff4444';
+        errorElement.style.fontSize = '12px';
+        errorElement.style.marginTop = '5px';
+        field.parentNode.appendChild(errorElement);
+    }
+}
+
     </script>
 </body>
-
 </html>

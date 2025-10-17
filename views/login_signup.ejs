@@ -50,7 +50,7 @@
         <header>
             <a href="/home" class="badge">GymRats</a>
             <div class="menu">
-                <a href="/">Home</a>
+                <a href="/home">Home</a>
                 <a href="/isolation">Exercises</a>
                 <a href="/nutrition">Nutrition</a>
                 <a href="/about">About</a>
@@ -79,16 +79,16 @@
                     <input type="password" class="form-control" id="password" placeholder="Enter your password"
                         required>
                 </div>
-
-                <div class="form-group">
+                <!-- Brimstone 2 -->
+                <!-- <div class="form-group">
                     <label for="loginMembershipPlan">Membership Plan</label>
                     <select class="form-control" id="loginMembershipPlan" name="loginMembershipPlan">
                         <option value="basic">Basic Plan</option>
                         <option value="gold">Gold Plan</option>
                         <option value="platinum">Platinum Plan</option>
                     </select>
-                </div>
-
+                </div> -->
+                <!-- Brimstone 2 -->
                 <button type="submit" class="btn">Login</button>
 
                 <div class="alternate-action">
@@ -193,9 +193,9 @@
                         <label for="membershipPlan">Membership Plan</label>
                         <select class="form-control" id="membershipPlan" name="membershipPlan" required>
                             <option value="">Select a plan</option>
-                            <option value="basic">Basic Plan - $29/month</option>
-                            <option value="gold">Gold Plan - $59/month</option>
-                            <option value="platinum">Platinum Plan - $99/month</option>
+                            <option value="basic">Basic Plan </option>
+                            <option value="gold">Gold Plan </option>
+                            <option value="platinum">Platinum Plan</option>
                         </select>
                     </div>
 
@@ -207,6 +207,14 @@
                             <option value="6">6 Months</option>
                             <option value="12">12 Months</option>
                         </select>
+                    </div>
+                    <!-- Add this after the Membership Duration form group -->
+                    <div class="form-group">
+                        <label for="membershipPrice">Membership Price</label>
+                        <div class="price-display" id="priceDisplay">
+                            <p class="price-amount"></p>
+                            <p class="save-info" id="saveInfo"></p>
+                        </div>
                     </div>
 
                     <h3>Payment Information</h3>
@@ -267,16 +275,13 @@
                 <h4>Verifier</h4>
                 <ul>
                     <li><a href="/verifier_login">Verifier Login</a></li>
-                    <li><a href="/verifier_form">Become a Verifier</a></li>
                 </ul>
             </div>
             <div class="footer-column">
                 <h4>Connect</h4>
-                <div class="social-icons">
-                    <a href="#"><img src="/home/icons8-facebook.svg" alt="Facebook"></a>
-                    <a href="#"><img src="/home/icons8-instagram.svg" alt="Instagram"></a>
-                    <a href="#"><img src="/home/icons8-youtube.svg" alt="YouTube"></a>
-                </div>
+                <ul>
+                    <li><a href="/contact">Contact Us</a></li>
+                </ul>
                 <p class="copyright">GymRats © 2025. All rights reserved.</p>
             </div>
         </div>
@@ -309,6 +314,58 @@
             document.getElementById('successModal').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
+
+        // Add these validation functions after modal functions
+function validateName(name) {
+    return /^[A-Za-z\s]{2,50}$/.test(name); // 2-50 letters and spaces only
+}
+
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); // Basic email format
+}
+
+function validatePassword(password) {
+    return password.length >= 3; // At least 3 characters
+}
+// Add this function after the other validation functions
+function validatePasswords(password, confirmPassword) {
+    return password === confirmPassword;
+}
+
+function validatePhoneNumber(phone) {
+    // Remove all non-digit characters and check if it's exactly 10 digits
+    const cleanedPhone = phone.replace(/\D/g, '');
+    return /^\d{10}$/.test(cleanedPhone);
+}
+
+// Add this function after the other validation functions
+function validateExpiryDate(expiryDate) {
+    if (!expiryDate) return false;
+    
+    // Get current date
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
+    
+    // Parse expiry date (format: YYYY-MM)
+    const [year, month] = expiryDate.split('-').map(Number);
+    
+    // Check if date is in the future
+    if (year < currentYear) {
+        return false; // Expired - year in past
+    }
+    
+    if (year === currentYear && month < currentMonth) {
+        return false; // Expired - same year but month in past
+    }
+    
+    // Check if month is valid (1-12)
+    if (month < 1 || month > 12) {
+        return false;
+    }
+    
+    return true;
+}
 
         // Close modal when clicking outside
         window.onclick = function (event) {
@@ -370,57 +427,57 @@
                 });
             }
 
-            // Handle login form submission
+            // Handle login form submission - UPDATE THIS SECTION
             document.getElementById('loginForm').addEventListener('submit', function (e) {
-                e.preventDefault();
+    e.preventDefault();
 
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                const loginMembershipPlan = document.getElementById('loginMembershipPlan').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    if (!email || !password) {
+        showErrorModal('Please fill in all fields');
+        return;
+    }
 
-                if (!email || !password || !loginMembershipPlan) {
-                    showErrorModal('Please fill in all fields');
-                    return;
-                }
+    // ADD THESE VALIDATIONS
+    if (!validateEmail(email)) {
+        showErrorModal('Please enter a valid email address');
+        return;
+    }
 
-                fetch('/login', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            email,
-                            password,
-                            loginMembershipPlan
-                        }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.message === 'Login successful') {
-                            showSuccessModal('Login successful! Redirecting...');
-                            setTimeout(() => {
-                                window.location.href = data.redirect;
-                            }, 1000);
-                            this.reset();
-                        } else {
-                            showErrorModal(data.error || 'Login failed. Please try again.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showErrorModal('An error occurred. Please try again later.');
-                    });
-            });
+    if (!validatePassword(password)) {
+        showErrorModal('Password must be at least 8 characters long');
+        return;
+    }
 
-            // Validate phone number
-            function validatePhone(phone) {
-                return /^\+?[\d\s-]{10,}$/.test(phone);
+    fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email,
+                password
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Login successful') {
+                showSuccessModal('Login successful! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 1000);
+                this.reset();
+            } else {
+                showErrorModal(data.error || 'Login failed. Please try again.');
             }
-
-            // Validate matching passwords
-            function validatePasswords(password, confirmPassword) {
-                return password === confirmPassword;
-            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorModal('An error occurred. Please try again later.');
+        });
+});
+            
 
             // Handle signup form submission
             document.getElementById('signupForm').addEventListener('submit', function (e) {
@@ -446,7 +503,7 @@
                 const workoutType = document.getElementById('workoutType').value;
                 const weightGoal = document.getElementById('weightGoal').value;
                 // Brimstone
-                // Validate form data
+                // In the signup form validation section - UPDATE THIS PART
                 if (!userFullName || !dateOfBirth || !gender || !userEmail || !phoneNumber || !
                     userPassword ||
                     !userConfirmPassword || !membershipPlan || !membershipDuration || !cardType ||
@@ -455,12 +512,28 @@
                     return;
                 }
 
-                if (!validatePhone(phoneNumber)) {
-                    showErrorModal(
-                        'Please enter a valid phone number (at least 10 digits, may include +, spaces, or hyphens)'
-                    );
+                // REPLACE the current name validation with this:
+                if (!validateName(userFullName)) {
+                    showErrorModal('Please enter a valid full name (2-50 letters and spaces only)');
                     return;
                 }
+
+                // ADD these email and password validations:
+                if (!validateEmail(userEmail)) {
+                    showErrorModal('Please enter a valid email address');
+                    return;
+                }
+
+                if (!validatePassword(userPassword)) {
+                    showErrorModal('Password must be at least 8 characters long');
+                    return;
+                }
+
+                 if (!validatePhoneNumber(phoneNumber)) {
+                    showErrorModal('Please enter a valid 10-digit phone number');
+                    return;
+                }
+
                 // Brimstone
                 if (!workoutType) {
                     showErrorModal('Please select your preferred workout type');
@@ -487,6 +560,11 @@
 
                 if (!validateCardNumber(cardNumber)) {
                     showErrorModal('Please enter a valid 16-digit card number');
+                    return;
+                }
+
+                 if (!validateExpiryDate(expirationDate)) {
+                    showErrorModal('Please enter a valid expiration date that is not in the past');
                     return;
                 }
 
@@ -555,6 +633,22 @@
                         showErrorModal('An error occurred. Please try again later.');
                     });
             });
+        
+            
+            const membershipPlan = document.getElementById('membershipPlan');
+            const membershipDuration = document.getElementById('membershipDuration');
+
+            if (membershipPlan) {
+                membershipPlan.addEventListener('change', calculatePrice);
+            }
+
+            if (membershipDuration) {
+                membershipDuration.addEventListener('change', calculatePrice);
+            }
+
+            // Initialize price display
+            calculatePrice();
+
         });
 
         // Function to toggle between login and signup forms
@@ -590,8 +684,115 @@
             const heightInMeters = height / 100;
             const bmi = weight / (heightInMeters * heightInMeters);
             bmiField.value = bmi.toFixed(1);
+        }//brimstone
+        // Add this JavaScript code to your existing script section
+
+        // Price configuration based on your renewal options
+        const priceConfig = {
+            basic: {
+                1: {
+                    price: 299,
+                    save: ''
+                },
+                3: {
+                    price: 750,
+                    save: 'Save 15%'
+                },
+                6: {
+                    price: 1350,
+                    save: 'Save 25%'
+                },
+                12: {
+                    price: 2400,
+                    save: 'Save 33%'
+                } // Assuming 12 months for annual
+            },
+            gold: {
+                1: {
+                    price: 599,
+                    save: ''
+                },
+                3: {
+                    price: 1550,
+                    save: 'Save 15%'
+                },
+                6: {
+                    price: 2700,
+                    save: 'Save 25%'
+                },
+                12: {
+                    price: 4800,
+                    save: 'Save 33%'
+                } // Assuming 12 months for annual
+            },
+            platinum: {
+                1: {
+                    price: 999,
+                    save: ''
+                },
+                3: {
+                    price: 2500,
+                    save: 'Save 15%'
+                },
+                6: {
+                    price: 4500,
+                    save: 'Save 25%'
+                },
+                12: {
+                    price: 8000,
+                    save: 'Save 33%'
+                } // Assuming 12 months for annual
+            }
+        };
+
+        // Function to calculate and display price
+        // Updated calculatePrice function with enhanced styling
+        function calculatePrice() {
+            const membershipPlan = document.getElementById('membershipPlan').value;
+            const membershipDuration = document.getElementById('membershipDuration').value;
+            const priceDisplay = document.getElementById('priceDisplay');
+            const saveInfo = document.getElementById('saveInfo');
+
+            if (!membershipPlan || !membershipDuration) {
+                priceDisplay.innerHTML = '<p class="price-amount">Select membership plan and duration to see price</p>';
+                priceDisplay.classList.remove('has-price');
+                saveInfo.textContent = '';
+                return;
+            }
+
+            const duration = parseInt(membershipDuration);
+            const planData = priceConfig[membershipPlan];
+
+            if (planData && planData[duration]) {
+                const priceInfo = planData[duration];
+                priceDisplay.innerHTML = `
+            <p class="price-amount">₹${priceInfo.price}</p>
+        `;
+                priceDisplay.classList.add('has-price');
+
+                // Add animation for price update
+                priceDisplay.classList.add('price-update');
+                setTimeout(() => {
+                    priceDisplay.classList.remove('price-update');
+                }, 300);
+
+                saveInfo.textContent = priceInfo.save;
+
+                // Style savings information
+                if (priceInfo.save) {
+                    saveInfo.style.color = '#4ecdc4';
+                    saveInfo.style.fontWeight = '600';
+                    saveInfo.style.marginTop = '8px';
+                    saveInfo.style.textShadow = '0 0 5px rgba(78, 205, 196, 0.3)';
+                } else {
+                    saveInfo.textContent = '';
+                }
+            }
         }
+
+      
+        //brimstone
     </script>
 </body>
-
+    
 </html>

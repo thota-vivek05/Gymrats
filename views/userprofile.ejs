@@ -1,81 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>GymRats - User Profile</title>
-        <link rel="stylesheet" type="text/css" href="/userdashboard/userdashboard.css" />
-        <link rel="stylesheet" type="text/css" href="/userprofile/userprofile.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
-        <style>
-            
-        </style>
-    </head>
-    <body>
-        <div class="main-navbar">
-            <header>
-                <!-- Header Branding -->
-                <div class="brand-logo">
-                    <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>" class="brand-name">GymRats</a>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymRats - User Profile</title>
+    <link rel="stylesheet" type="text/css" href="/userdashboard/userdashboard.css" />
+    <link rel="stylesheet" type="text/css" href="/userprofile/userprofile.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+
+</head>
+
+<body>
+    <div class="main-navbar">
+        <header>
+            <!-- Header Branding -->
+            <div class="brand-logo">
+                <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>"
+                    class="brand-name">GymRats</a>
+            </div>
+
+            <div class="nav-menu">
+                <a
+                    href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>">Home</a>
+                <a href="/user_exercises">Exercises</a>
+                <a href="/user_nutrition">Nutrition</a>
+            </div>
+
+            <div class="right-container">
+                <!--brimstone-->
+                <div class="change-membership-nav">
+                    <button class="change-membership-btn-nav" onclick="openChangeMembershipModal()">
+                        <i class="fas fa-exchange-alt"></i>
+                        Change Membership
+                    </button>
                 </div>
-                
-                <div class="nav-menu">
-                    <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>">Home</a>
-                    <a href="/user_exercises">Exercises</a>
-                    <a href="/user_nutrition">Nutrition</a>
+                <!--brimstone-->
+                <!-- Add Logout Button -->
+                <div class="logout-container">
+                    <a href="/logout" class="logout-btn">
+                        <span>Logout</span>
+                    </a>
                 </div>
-                
-                <div class="right-container">
-                    <div class="search-container">
-                        <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
-                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-                    </div>
-                    
-                    <div class="user-profile">
-                        <a href="/userprofile" class="active">
-                            <% if (user && user.full_name) { %>
-                                <span><%= user.full_name %></span>
-                            <% } else { %>
-                                <span>User</span>
-                            <% } %>
-                        </a>
-                    </div>
-                    
-                    <!-- Add Logout Button -->
-                    <div class="logout-container">
-                        <a href="/logout" class="logout-btn">
-                            <span>Logout</span>
-                        </a>
-                    </div>
+            </div>
+
+            <div class="mobile-sidebar" id="sideNavbar">
+                <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
+                <a
+                    href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>">Home</a>
+                <a href="/user_exercises">Exercises</a>
+                <a href="/user_nutrition">Nutrition</a>
+                <div class="sidebar-profile">
+                    <a href="/userprofile" class="active">
+                        <% if (user && user.full_name) { %>
+                        <span><%= user.full_name %></span>
+                        <% } else { %>
+                        <span>User</span>
+                        <% } %>
+                    </a>
                 </div>
-                <div class="mobile-menu-icon" id="menuIcon">
-                    <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
+
+                <!-- Add Logout Button in Mobile Sidebar -->
+                <div class="sidebar-logout">
+                    <a href="/logout" class="logout-btn">
+                        <span>Logout</span>
+                    </a>
                 </div>
-                <div class="mobile-sidebar" id="sideNavbar">
-                    <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
-                    <a href="/userdashboard_<%= user && user.membershipType ? user.membershipType.charAt(0).toLowerCase() : 'b' %>">Home</a>
-                    <a href="/user_exercises">Exercises</a>
-                    <a href="/user_nutrition">Nutrition</a>
-                    <div class="sidebar-profile">
-                        <a href="/userprofile" class="active">
-                            <% if (user && user.full_name) { %>
-                                <span><%= user.full_name %></span>
-                            <% } else { %>
-                                <span>User</span>
-                            <% } %>
-                        </a>
-                    </div>
-                    <!-- Add Logout Button in Mobile Sidebar -->
-                    <div class="sidebar-logout">
-                        <a href="/logout" class="logout-btn">
-                            <span>Logout</span>
-                        </a>
-                    </div>
-                </div>
-            </header>
-        </div>
-    
+            </div>
+        </header>
+    </div>
+
     <!-- Profile Hero Section -->
     <section class="profile-hero">
         <div class="profile-hero-content">
@@ -100,7 +95,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Modal for Workout Details -->
         <div id="workoutDetailsModal" class="modal">
             <div class="modal-content">
@@ -113,12 +108,16 @@
                 </div>
             </div>
         </div>
-        <!-- Profile Overview -->
-        <div class="profile-grid">
+
+        <!-- Profile Overview - Side by Side Layout -->
+        <div class="profile-grid-2col">
             <!-- User Information Card -->
             <div class="profile-card user-info-card">
                 <div class="card-header">
                     <h2>Personal Information</h2>
+                    <button class="edit-profile-btn" id="editProfileBtn">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
                 </div>
                 <div class="profile-content">
                     <div class="profile-status-container">
@@ -127,40 +126,49 @@
                     <div class="profile-details">
                         <div class="profile-item">
                             <span class="profile-label">Name:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="nameValue">
                                 <% if (user && typeof user === 'object') { %>
-                                    <%= user.full_name || user.name || 'Not provided' %>
+                                <%= user.full_name || user.name || 'Not provided' %>
                                 <% } else { %>
-                                    Not provided
+                                Not provided
                                 <% } %>
                             </span>
-                            <input type="text" class="profile-edit-input" value="<%= user && typeof user === 'object' ? (user.full_name || user.name || '') : '' %>" style="display: none;">
+                            <input type="text" class="profile-edit-input" id="nameInput"
+                                value="<%= user && typeof user === 'object' ? (user.full_name || user.name || '') : '' %>"
+                                style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Email:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="emailValue">
                                 <% if (typeof user === 'object' && user !== null && user.email) { %>
-                                    <%= user.email %>
+                                <%= user.email %>
                                 <% } else { %>
-                                    Not provided
+                                Not provided
                                 <% } %>
                             </span>
-                            <input type="email" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.email ? user.email : '' %>" style="display: none;">
+                            <input type="email" class="profile-edit-input" id="emailInput"
+                                value="<%= typeof user === 'object' && user !== null && user.email ? user.email : '' %>"
+                                style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Phone:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="phoneValue">
                                 <% if (typeof user === 'object' && user !== null && user.phone) { %>
-                                    <%= user.phone %>
+                                <%= user.phone %>
                                 <% } else { %>
-                                    Not provided
+                                Not provided
                                 <% } %>
                             </span>
-                            <input type="tel" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.phone ? user.phone : '' %>" style="display: none;">
+                            <input type="tel" class="profile-edit-input" id="phoneInput"
+                                value="<%= typeof user === 'object' && user !== null && user.phone ? user.phone : '' %>"
+                                style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Age:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="ageValue">
                                 <% if (typeof user === 'object' && user !== null && user.dob) { 
                                     try {
                                         const today = new Date();
@@ -171,50 +179,64 @@
                                             age--;
                                         }
                                         %>
-                                        <%= age %> years
-                                    <% } catch(e) { %>
-                                        Not provided
-                                    <% }
+                                <%= age %> years
+                                <% } catch(e) { %>
+                                Not provided
+                                <% }
                                 } else { %>
-                                    Not provided
+                                Not provided
                                 <% } %>
                             </span>
-                            <input type="number" class="profile-edit-input" value="" style="display: none;">
+                            <input type="date" class="profile-edit-input" id="dobInput"
+                                value="<%= user && user.dob ? new Date(user.dob).toISOString().split('T')[0] : '' %>"
+                                style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Height:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="heightValue">
                                 <% if (typeof user === 'object' && user !== null && user.height) { %>
-                                    <%= user.height %> cm
+                                <%= user.height %> cm
                                 <% } else { %>
-                                    Not provided
+                                Not provided
                                 <% } %>
                             </span>
-                            <input type="number" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.height ? user.height : '' %>" style="display: none;">
+                            <input type="number" class="profile-edit-input" id="heightInput"
+                                value="<%= typeof user === 'object' && user !== null && user.height ? user.height : '' %>"
+                                placeholder="Height in cm" style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">Weight:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="weightValue">
                                 <% if (typeof user === 'object' && user !== null && user.weight) { %>
-                                    <%= user.weight %> kg
+                                <%= user.weight %> kg
                                 <% } else { %>
-                                    Not provided
+                                Not provided
                                 <% } %>
                             </span>
-                            <input type="number" class="profile-edit-input" value="<%= typeof user === 'object' && user !== null && user.weight ? user.weight : '' %>" style="display: none;">
+                            <input type="number" class="profile-edit-input" id="weightInput"
+                                value="<%= typeof user === 'object' && user !== null && user.weight ? user.weight : '' %>"
+                                placeholder="Weight in kg" style="display: none;">
                         </div>
+
                         <div class="profile-item">
                             <span class="profile-label">BMI:</span>
-                            <span class="profile-value">
+                            <span class="profile-value" id="bmiValue">
                                 <% if (typeof user === 'object' && user !== null && user.BMI) { %>
-                                    <%= user.BMI %>
+                                <%= user.BMI %>
                                 <% } else { %>
-                                    Not provided
+                                Not provided
                                 <% } %>
                             </span>
+                            <input type="number" class="profile-edit-input" id="bmiInput" readonly
+                                value="<%= typeof user === 'object' && user !== null && user.BMI ? user.BMI : '' %>"
+                                style="display: none;">
                         </div>
                     </div>
-                    <div class="profile-edit-actions" style="display: none;">
+
+                    <!-- Add Save/Cancel Buttons -->
+                    <div class="profile-edit-actions" id="editActions" style="display: none;">
                         <button class="save-btn" id="saveProfileBtn">Save Changes</button>
                         <button class="cancel-btn" id="cancelEditBtn">Cancel</button>
                     </div>
@@ -231,11 +253,11 @@
                         <div class="membership-badge premium">
                             <%= user && user.membershipType ? user.membershipType : 'Basic' %> Member
                         </div>
-                        <p class="membership-since">Member since: 
+                        <p class="membership-since">Member since:
                             <% if (user && user.created_at) { %>
-                                <%= new Date(user.created_at).toLocaleDateString() %>
+                            <%= new Date(user.created_at).toLocaleDateString() %>
                             <% } else { %>
-                                March 15, 2023
+                            March 15, 2023
                             <% } %>
                         </p>
                     </div>
@@ -246,10 +268,7 @@
                                 <%= user && user.membershipType ? user.membershipType : 'Basic' %>
                             </span>
                         </div>
-                        <div class="membership-item">
-                            <span class="membership-label">Renewal Date:</span>
-                            <span class="membership-value">March 15, 2024</span>
-                        </div>
+
                         <div class="membership-item">
                             <span class="membership-label">Status:</span>
                             <span class="membership-value active">
@@ -260,661 +279,775 @@
                     <div class="membership-features">
                         <h3>Features Included:</h3>
                         <ul class="features-list">
-                            <li><i class="fas fa-check"></i> Unlimited workout plans</li>
-                            <li><i class="fas fa-check"></i> Personal trainer consultations</li>
-                            <li><i class="fas fa-check"></i> Nutrition planning</li>
-                            <li><i class="fas fa-check"></i> Advanced progress tracking</li>
+                            <% if (user.membershipType === 'Platinum') { %>
+                            <!-- Platinum Features -->
+                            <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                            <li><i class="fas fa-check"></i> Basic Workout Plans</li>
+                            <li><i class="fas fa-check"></i> Nutritional Tips</li>
+                            <li><i class="fas fa-check"></i> Current Stats Tracking</li>
+                            <li><i class="fas fa-check"></i> Online Classes</li>
+                            <li><i class="fas fa-check"></i> Personal Training Sessions</li>
+                            <% } else if (user.membershipType === 'Gold') { %>
+                            <!-- Gold Features -->
+                            <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                            <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
+                            <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
+                            <li><i class="fas fa-check"></i> Current Stats Tracking</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Online Classes</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Personal Training Sessions</li>
+                            <% } else { %>
+                            <!-- Basic Features -->
+                            <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                            <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
+                            <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Current Stats Tracking</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Online Classes</li>
+                            <li><i class="fas fa-times" style="color: #ff6b6b;"></i> Personal Training Sessions</li>
+                            <% } %>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Statistics Card -->
-        <div class="profile-wide-card">
+        <!-- Membership Extension Section - Below the two cards -->
+        <div class="profile-card membership-extension-card">
             <div class="card-header">
-                <h2>My Fitness Statistics</h2>
-            </div>
-            <div class="stats-content">
-                <div class="stats-summary">
-                    <div class="stat-box">
-                        <div class="stat-icon">
-                            <i class="fas fa-dumbbell"></i>
-                        </div>
-                        <div class="stat-value">
-                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.workoutsCompleted !== undefined) { %>
-                                <%= fitnessStats.workoutsCompleted %>
-                            <% } else { %>
-                                0
-                            <% } %>
-                        </div>
-                        <div class="stat-label">Workouts</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-icon">
-                            <i class="fas fa-fire"></i>
-                        </div>
-                        <div class="stat-value">
-                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.caloriesBurned !== undefined) { %>
-                                <%= fitnessStats.caloriesBurned.toLocaleString() %>
-                            <% } else { %>
-                                0
-                            <% } %>
-                        </div>
-                        <div class="stat-label">Calories Burned</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-value">
-                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.hoursActive !== undefined) { %>
-                                <%= fitnessStats.hoursActive %>
-                            <% } else { %>
-                                0
-                            <% } %>
-                        </div>
-                        <div class="stat-label">Hours Active</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-icon">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <div class="stat-value">
-                            <% if (typeof fitnessStats !== 'undefined' && fitnessStats.goalsAchieved !== undefined) { %>
-                                <%= fitnessStats.goalsAchieved %>
-                            <% } else { %>
-                                0
-                            <% } %>
-                        </div>
-                        <div class="stat-label">Goals Achieved</div>
-                    </div>
-                </div>
-                <div class="stats-charts">
-                    <div class="chart-container">
-                        <h3>Workout Frequency</h3>
-                        <canvas id="workoutFrequencyChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h3>Weight Progress</h3>
-                        <canvas id="weightProgressChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Workout History Card -->
-        <div class="profile-wide-card">
-            <div class="card-header">
-                <h2>Recent Workouts</h2>
+                <h2>Extend Membership</h2>
             </div>
             <div class="profile-content">
-                <div class="workout-history">
-                    <% 
-                    const mockWorkouts = [
-                        { day: '16', month: 'MAR', name: 'HIIT Training', duration: '45 min', calories: '450', exercises: '4', rating: 4 },
-                        { day: '14', month: 'MAR', name: 'Strength Training', duration: '60 min', calories: '380', exercises: '6', rating: 5 },
-                        { day: '12', month: 'MAR', name: 'Cardio Run', duration: '30 min', calories: '320', exercises: '1', rating: 4 }
-                    ];
-                    let recentWorkouts = [];
-                    if (user && user.workout_history && Array.isArray(user.workout_history)) {
-                        recentWorkouts = user.workout_history.slice(0, 3);
-                    } else {
-                        recentWorkouts = [];
-                    }
-                    %>
-                    <% if (recentWorkouts.length > 0) { %>
-                        <% recentWorkouts.forEach(workout => { %>
-                            <div class="workout-item" data-workout-id="<%= workout.id || '' %>">
-                                <div class="workout-date">
-                                    <span class="workout-day"><%= workout.day %></span>
-                                    <span class="workout-month"><%= workout.month %></span>
-                                </div>
-                                <div class="workout-info">
-                                    <h3 class="workout-name"><%= workout.name %></h3>
-                                    <div class="workout-stats">
-                                        <span><i class="fas fa-clock"></i> <%= workout.duration %></span>
-                                        <span><i class="fas fa-fire-alt"></i> <%= workout.calories %> cal</span>
-                                        <span><i class="fas fa-dumbbell"></i> <%= workout.exercises %> exercises</span>
-                                    </div>
-                                </div>
-                                <div class="workout-rating">
-                                    <% for (let i = 1; i <= 5; i++) { %>
-                                        <i class="fas fa-star <%= i <= workout.rating ? 'active' : '' %>"></i>
-                                    <% } %>
-                                </div>
-                            </div>
-                        <% }); %>
-                    <% } else { %>
-                        <div class="no-workouts-message">
-                            <p>No workout history available yet. Start tracking your workouts to see them here!</p>
-                        </div>
-                    <% } %>
+                <div class="membership-status-info">
+                    <div class="status-item">
+                        <span class="label">Current Status:</span>
+                        <span class="value status-<%= user && user.status ? user.status.toLowerCase() : 'active' %>">
+                            <%= user && user.status ? user.status : 'Active' %>
+
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Months Remaining:</span>
+                        <span class="value">
+                            <% if (user && user.membershipDuration) { %>
+                            <%= user.membershipDuration.months_remaining || 0 %>
+                            <% } else { %>
+                            0
+                            <% } %>
+                        </span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">End Date:</span>
+                        <span class="value">
+                            <% if (user && user.membershipDuration && user.membershipDuration.end_date) { %>
+                            <%= new Date(user.membershipDuration.end_date).toLocaleDateString() %>
+                            <% } else { %>
+                            Not set
+                            <% } %>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="extension-cta">
+                    <p>Extend your membership to continue enjoying all premium features!</p>
+                    <button class="extend-membership-btn" onclick="redirectToRenewal()">
+                        <i class="fas fa-credit-card"></i>
+                        Extend Membership
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="site-footer">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>GymRats</h3>
-                    <ul>
-                        <li><a href="/about">About Us</a></li>
-                        <li><a href="/trainers">Our Trainers</a></li>
-                        <li><a href="/testimonial">Testimonials</a></li>
-                        <li><a href="/blog">Blog</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Resources</h3>
-                    <ul>
-                        <li><a href="/isolation">Exercise Guide</a></li>
-                        <li><a href="/nutrition">Nutrition Tips</a></li>
-                        <li><a href="/workout_plans">Workout Plans</a></li>
-                        <li><a href="/calculators">Calculators</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Support</h3>
-                    <ul>
-                        <li><a href="/contact">Contact Us</a></li>
-                        <li><a href="/about">About us</a></li>
-                        <li><a href="/terms">Terms of Service</a></li>
-                        <li><a href="/privacy_policy">Privacy Policy</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Connect With Us</h3>
-                    <ul>
-                        <li><a href="/login_signup">Become a Trainer</a></li>
-                        <li><a href="/verifier_login">Become a Verifier</a></li>
-                    </ul>
-                    <div class="social-icons">
-                        <a href="#"><img src="/userdashboard/icons8-facebook.svg" alt="Facebook"></a>
-                        <a href="#"><img src="/userdashboard/icons8-instagram.svg" alt="Instagram"></a>
-                        <a href="#"><img src="/userdashboard/icons8-youtube.svg" alt="YouTube"></a>
-                    </div>
-                    <p class="copyright">GymRats © 2025. All rights reserved.</p>
-                </div>
-            </div>
-        </footer>
+
+    </div>
+
     </div>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const weeklyWorkoutData = <% if (typeof chartData !== 'undefined' && chartData.weeklyWorkouts) { %> 
-            <%= JSON.stringify(chartData.weeklyWorkouts) %> 
-        <% } else { %> 
-            [0, 0, 0, 0] 
-        <% } %>;
-        const weekLabels = <% if (typeof chartData !== 'undefined' && chartData.weekLabels) { %> 
-            <%= JSON.stringify(chartData.weekLabels) %> 
-        <% } else { %> 
-            ['Week 1', 'Week 2', 'Week 3', 'Week 4'] 
-        <% } %>;
-        const weightProgressData = <% if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData.weightProgress.length > 0) { %> 
-            <%= JSON.stringify(chartData.weightProgress.map(entry => entry.weight)) %> 
-        <% } else { %> 
-            [0, 0, 0, 0] 
-        <% } %>;
-        const weightLabels = <% if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData.weightProgress.length > 0) { %> 
-            <%= JSON.stringify(chartData.weightProgress.map(entry => entry.week)) %> 
-        <% } else { %> 
-            ['Week 1', 'Week 2', 'Week 3', 'Week 4'] 
-        <% } %>;
-        if (document.getElementById('workoutFrequencyChart')) {
-            const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart').getContext('2d');
-            new Chart(workoutFrequencyCtx, {
+        document.addEventListener('DOMContentLoaded', function () {
+            const weeklyWorkoutData = < %
+                if (typeof chartData !== 'undefined' && chartData.weeklyWorkouts) {
+                    %
+                    >
+                    <
+                    %= JSON.stringify(chartData.weeklyWorkouts) % >
+                        <
+                        %
+                } else {
+                    %
+                    >
+                    [0, 0, 0, 0] <
+                    %
+                } % > ;
+            const weekLabels = < %
+                if (typeof chartData !== 'undefined' && chartData.weekLabels) {
+                    %
+                    >
+                    <
+                    %= JSON.stringify(chartData.weekLabels) % >
+                        <
+                        %
+                } else {
+                    %
+                    >
+                    ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
+                    %
+                } % > ;
+            const weightProgressData = < %
+                if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData
+                    .weightProgress
+                    .length > 0) {
+                    %
+                    >
+                    <
+                    %= JSON.stringify(chartData.weightProgress.map(entry => entry.weight)) % >
+                        <
+                        %
+                } else {
+                    %
+                    >
+                    [0, 0, 0, 0] <
+                    %
+                } % > ;
+            const weightLabels = < %
+                if (typeof chartData !== 'undefined' && chartData.weightProgress && chartData
+                    .weightProgress
+                    .length > 0) {
+                    %
+                    >
+                    <
+                    %= JSON.stringify(chartData.weightProgress.map(entry => entry.week)) % >
+                        <
+                        %
+                } else {
+                    %
+                    >
+                    ['Week 1', 'Week 2', 'Week 3', 'Week 4'] <
+                    %
+                } % > ;
+            if (document.getElementById('workoutFrequencyChart')) {
+                const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart')
+                    .getContext(
+                        '2d');
+                new Chart(workoutFrequencyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: weekLabels,
+                        datasets: [{
+                            label: 'Workouts',
+                            data: weeklyWorkoutData,
+                            backgroundColor: '#8A2BE2',
+                            borderColor: '#8A2BE2',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+            if (document.getElementById('weightProgressChart')) {
+                const weightProgressCtx = document.getElementById('weightProgressChart').getContext(
+                    '2d');
+                new Chart(weightProgressCtx, {
+                    type: 'line',
+                    data: {
+                        labels: weightLabels,
+                        datasets: [{
+                            label: 'Weight (kg)',
+                            data: weightProgressData,
+                            backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                            borderColor: '#2ecc71',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointBackgroundColor: '#2ecc71',
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                suggestedMin: Math.min(...weightProgressData) - 1,
+                                suggestedMax: Math.max(...weightProgressData) + 1
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+    <!-- brimstone-->
+    <script>
+        function redirectToRenewal() {
+            window.location.href = '/membership_renewal';
+        }
+    </script>
+    <!-- Change Membership Modal -->
+    <div id="changeMembershipModal" class="modal">
+        <div class="modal-content membership-modal">
+            <div class="modal-header">
+                <h2>Change Membership Plan</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Current Membership Info -->
+                <div class="current-membership-info">
+                    <h3>Current Plan: <span id="currentPlanDisplay"><%= user.membershipType || 'Basic' %></span></h3>
+                </div>
+
+                <!-- Membership Selection -->
+                <div class="membership-selection">
+                    <h3>Select New Plan</h3>
+                    <div class="plan-options">
+                        <% if (user.membershipType === 'Basic') { %>
+                        <div class="plan-option" data-plan="gold">
+                            <h4>Gold Plan</h4>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
+                                <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
+                                <li><i class="fas fa-check"></i> Current Stats Tracking</li>
+                                <li><i class="fas fa-times"></i> Online Classes</li>
+                                <li><i class="fas fa-times"></i> Personal Training</li>
+                            </ul>
+                            <p class="plan-price">₹599/month</p>
+                        </div>
+                        <div class="plan-option" data-plan="platinum">
+                            <h4>Platinum Plan</h4>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> All Gold Features</li>
+                                <li><i class="fas fa-check"></i> Online Classes</li>
+                                <li><i class="fas fa-check"></i> Personal Training Sessions</li>
+                                <li><i class="fas fa-check"></i> Priority Support</li>
+                            </ul>
+                            <p class="plan-price">₹999/month</p>
+                        </div>
+                        <% } else if (user.membershipType === 'Gold') { %>
+                        <div class="plan-option" data-plan="basic">
+                            <h4>Basic Plan</h4>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                                <li><i class="fas fa-check"></i> Basic Workout Plans</li>
+                                <li><i class="fas fa-check"></i> Nutritional Tips</li>
+                                <li><i class="fas fa-times"></i> Current Stats Tracking</li>
+                                <li><i class="fas fa-times"></i> Online Classes</li>
+                            </ul>
+                            <p class="plan-price">₹299/month</p>
+                        </div>
+                        <div class="plan-option" data-plan="platinum">
+                            <h4>Platinum Plan</h4>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> All Gold Features</li>
+                                <li><i class="fas fa-check"></i> Online Classes</li>
+                                <li><i class="fas fa-check"></i> Personal Training Sessions</li>
+                                <li><i class="fas fa-check"></i> Priority Support</li>
+                            </ul>
+                            <p class="plan-price">₹999/month</p>
+                        </div>
+                        <% } else if (user.membershipType === 'Platinum') { %>
+                        <div class="plan-option" data-plan="basic">
+                            <h4>Basic Plan</h4>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> Access to Exercise Guide</li>
+                                <li><i class="fas fa-check"></i> Basic Workout Plans</li>
+                                <li><i class="fas fa-check"></i> Nutritional Tips</li>
+                                <li><i class="fas fa-times"></i> Current Stats Tracking</li>
+                                <li><i class="fas fa-times"></i> Online Classes</li>
+                            </ul>
+                            <p class="plan-price">₹299/month</p>
+                        </div>
+                        <div class="plan-option" data-plan="gold">
+                            <h4>Gold Plan</h4>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> Advanced Workout Plans</li>
+                                <li><i class="fas fa-check"></i> Detailed Nutritional Guidance</li>
+                                <li><i class="fas fa-check"></i> Current Stats Tracking</li>
+                                <li><i class="fas fa-times"></i> Online Classes</li>
+                                <li><i class="fas fa-times"></i> Personal Training</li>
+                            </ul>
+                            <p class="plan-price">₹599/month</p>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Duration Selection -->
+                <div class="duration-selection">
+                    <h3>Select Duration</h3>
+                    <div class="duration-options">
+                        <div class="duration-option" data-months="1">
+                            <h4>1 Month</h4>
+                            <p class="duration-price" id="durationPrice-1">-</p>
+                            <button class="select-duration">Select</button>
+                        </div>
+                        <div class="duration-option" data-months="3">
+                            <h4>3 Months</h4>
+                            <p class="duration-price" id="durationPrice-3">-</p>
+                            <p class="save-text">Save 15%</p>
+                            <button class="select-duration">Select</button>
+                        </div>
+                        <div class="duration-option" data-months="6">
+                            <h4>6 Months</h4>
+                            <p class="duration-price" id="durationPrice-6">-</p>
+                            <p class="save-text">Save 25%</p>
+                            <button class="select-duration">Select</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Section -->
+                <div class="payment-section" id="paymentSection" style="display: none;">
+                    <h3>Payment Details</h3>
+                    <div class="selected-plan-summary">
+                        <p><strong>Plan:</strong> <span id="selectedPlan">-</span></p>
+                        <p><strong>Duration:</strong> <span id="selectedDuration">-</span></p>
+                        <p><strong>Total Amount:</strong> ₹<span id="totalAmount">0</span></p>
+                    </div>
+
+                    <form id="paymentForm">
+                        <div class="form-group">
+                            <label for="cardNumber">Card Number</label>
+                            <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456"
+                                required maxlength="19">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expiryDate">Expiration Date</label>
+                                <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" required
+                                    maxlength="5">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" name="cvv" placeholder="123" required maxlength="3">
+                            </div>
+                        </div>
+
+
+
+                        <button type="submit" class="process-payment-btn">
+                            <i class="fas fa-lock"></i>
+                            Process Payment - ₹<span id="paymentAmount">0</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const menuIcon = document.getElementById('menuIcon');
+        const closeBtn = document.getElementById('closeBtn');
+        const sideNavbar = document.getElementById('sideNavbar');
+        if (menuIcon && closeBtn && sideNavbar) {
+            menuIcon.addEventListener('click', function () {
+                sideNavbar.style.width = '250px';
+            });
+            closeBtn.addEventListener('click', function () {
+                sideNavbar.style.width = '0';
+            });
+        }
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const profileImgOverlay = document.getElementById('profileImgOverlay');
+        const profilePictureInput = document.getElementById('profilePictureInput');
+        const profileImage = document.getElementById('profileImage');
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', enableProfileEditing);
+        }
+        if (saveProfileBtn) {
+            saveProfileBtn.addEventListener('click', saveProfileChanges);
+        }
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', cancelProfileEditing);
+        }
+        if (profileImgOverlay) {
+            profileImgOverlay.addEventListener('click', function () {
+                profilePictureInput.click();
+            });
+        }
+        if (profilePictureInput) {
+            profilePictureInput.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        profileImage.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function enableProfileEditing() {
+            if (profileImgOverlay) {
+                profileImgOverlay.classList.add('active');
+            }
+            const profileItems = document.querySelectorAll('.profile-item');
+            profileItems.forEach(item => {
+                const valueElement = item.querySelector('.profile-value');
+                const inputElement = item.querySelector('.profile-edit-input');
+                if (valueElement && inputElement) {
+                    valueElement.style.display = 'none';
+                    inputElement.style.display = 'block';
+                }
+            });
+            const editActions = document.querySelector('.profile-edit-actions');
+            if (editActions) {
+                editActions.style.display = 'flex';
+            }
+            editProfileBtn.style.display = 'none';
+        }
+
+        function saveProfileChanges() {
+            const profileItems = document.querySelectorAll('.profile-item');
+            profileItems.forEach(item => {
+                const valueElement = item.querySelector('.profile-value');
+                const inputElement = item.querySelector('.profile-edit-input');
+                if (valueElement && inputElement) {
+                    if (inputElement.tagName.toLowerCase() === 'select') {
+                        valueElement.textContent = inputElement.options[inputElement.selectedIndex]
+                            .text;
+                    } else {
+                        valueElement.textContent = inputElement.value;
+                    }
+                    valueElement.style.display = 'block';
+                    inputElement.style.display = 'none';
+                }
+            });
+            if (profileImgOverlay) {
+                profileImgOverlay.classList.remove('active');
+            }
+            const editActions = document.querySelector('.profile-edit-actions');
+            if (editActions) {
+                editActions.style.display = 'none';
+            }
+            editProfileBtn.style.display = 'flex';
+        }
+
+        function cancelProfileEditing() {
+            const profileItems = document.querySelectorAll('.profile-item');
+            profileItems.forEach(item => {
+                const valueElement = item.querySelector('.profile-value');
+                const inputElement = item.querySelector('.profile-edit-input');
+                if (valueElement && inputElement) {
+                    if (inputElement.tagName.toLowerCase() === 'select') {
+                        for (let i = 0; i < inputElement.options.length; i++) {
+                            if (inputElement.options[i].text === valueElement.textContent.trim()) {
+                                inputElement.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    } else {
+                        inputElement.value = valueElement.textContent;
+                    }
+                    valueElement.style.display = 'block';
+                    inputElement.style.display = 'none';
+                }
+            });
+            if (profileImgOverlay) {
+                profileImgOverlay.classList.remove('active');
+            }
+            const editActions = document.querySelector('.profile-edit-actions');
+            if (editActions) {
+                editActions.style.display = 'none';
+            }
+            editProfileBtn.style.display = 'flex';
+        }
+        setupCharts();
+        const statsTimeframeSelect = document.getElementById('statsTimeframeSelect');
+        if (statsTimeframeSelect) {
+            statsTimeframeSelect.addEventListener('change', function () {
+                updateStatistics(this.value);
+            });
+        }
+        setupModals();
+        setupWorkoutInteractions();
+    });
+
+    function setupCharts() {
+        const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart');
+        if (workoutFrequencyCtx) {
+            window.workoutFrequencyChart = new Chart(workoutFrequencyCtx, {
                 type: 'bar',
-                data: {
-                    labels: weekLabels,
-                    datasets: [{
-                        label: 'Workouts',
-                        data: weeklyWorkoutData,
-                        backgroundColor: '#8A2BE2',
-                        borderColor: '#8A2BE2',
-                        borderWidth: 1
-                    }]
-                },
+                data: getWorkoutFrequencyData('month'),
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                precision: 0
+                                color: '#aaa'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
                             }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
+                        },
+                        x: {
+                            ticks: {
+                                color: '#aaa'
+                            },
+                            grid: {
+                                display: false
+                            }
                         }
                     }
                 }
             });
         }
-        if (document.getElementById('weightProgressChart')) {
-            const weightProgressCtx = document.getElementById('weightProgressChart').getContext('2d');
-            new Chart(weightProgressCtx, {
+        const weightProgressCtx = document.getElementById('weightProgressChart');
+        if (weightProgressCtx) {
+            window.weightProgressChart = new Chart(weightProgressCtx, {
                 type: 'line',
-                data: {
-                    labels: weightLabels,
-                    datasets: [{
-                        label: 'Weight (kg)',
-                        data: weightProgressData,
-                        backgroundColor: 'rgba(46, 204, 113, 0.2)',
-                        borderColor: '#2ecc71',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        pointBackgroundColor: '#2ecc71',
-                        pointRadius: 4
-                    }]
-                },
+                data: getWeightProgressData('month'),
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            suggestedMin: Math.min(...weightProgressData) - 1,
-                            suggestedMax: Math.max(...weightProgressData) + 1
-                        }
-                    },
                     plugins: {
                         legend: {
-                            display: false
+                            position: 'top',
+                            labels: {
+                                color: '#aaa'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                color: '#aaa'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#aaa'
+                            },
+                            grid: {
+                                display: false
+                            }
                         }
                     }
                 }
             });
         }
-    });
-</script>
-</body>
+    }
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const menuIcon = document.getElementById('menuIcon');
-    const closeBtn = document.getElementById('closeBtn');
-    const sideNavbar = document.getElementById('sideNavbar');
-    if (menuIcon && closeBtn && sideNavbar) {
-        menuIcon.addEventListener('click', function() {
-            sideNavbar.style.width = '250px';
-        });
-        closeBtn.addEventListener('click', function() {
-            sideNavbar.style.width = '0';
-        });
-    }
-    const editProfileBtn = document.getElementById('editProfileBtn');
-    const saveProfileBtn = document.getElementById('saveProfileBtn');
-    const cancelEditBtn = document.getElementById('cancelEditBtn');
-    const profileImgOverlay = document.getElementById('profileImgOverlay');
-    const profilePictureInput = document.getElementById('profilePictureInput');
-    const profileImage = document.getElementById('profileImage');
-    if (editProfileBtn) {
-        editProfileBtn.addEventListener('click', enableProfileEditing);
-    }
-    if (saveProfileBtn) {
-        saveProfileBtn.addEventListener('click', saveProfileChanges);
-    }
-    if (cancelEditBtn) {
-        cancelEditBtn.addEventListener('click', cancelProfileEditing);
-    }
-    if (profileImgOverlay) {
-        profileImgOverlay.addEventListener('click', function() {
-            profilePictureInput.click();
-        });
-    }
-    if (profilePictureInput) {
-        profilePictureInput.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    profileImage.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-    function enableProfileEditing() {
-        if (profileImgOverlay) {
-            profileImgOverlay.classList.add('active');
+    function updateStatistics(timeframe) {
+        updateSummaryCards(timeframe);
+        if (window.workoutFrequencyChart) {
+            window.workoutFrequencyChart.data = getWorkoutFrequencyData(timeframe);
+            window.workoutFrequencyChart.update();
         }
-        const profileItems = document.querySelectorAll('.profile-item');
-        profileItems.forEach(item => {
-            const valueElement = item.querySelector('.profile-value');
-            const inputElement = item.querySelector('.profile-edit-input');
-            if (valueElement && inputElement) {
-                valueElement.style.display = 'none';
-                inputElement.style.display = 'block';
-            }
-        });
-        const editActions = document.querySelector('.profile-edit-actions');
-        if (editActions) {
-            editActions.style.display = 'flex';
+        if (window.weightProgressChart) {
+            window.weightProgressChart.data = getWeightProgressData(timeframe);
+            window.weightProgressChart.update();
         }
-        editProfileBtn.style.display = 'none';
     }
-    function saveProfileChanges() {
-        const profileItems = document.querySelectorAll('.profile-item');
-        profileItems.forEach(item => {
-            const valueElement = item.querySelector('.profile-value');
-            const inputElement = item.querySelector('.profile-edit-input');
-            if (valueElement && inputElement) {
-                if (inputElement.tagName.toLowerCase() === 'select') {
-                    valueElement.textContent = inputElement.options[inputElement.selectedIndex].text;
-                } else {
-                    valueElement.textContent = inputElement.value;
-                }
-                valueElement.style.display = 'block';
-                inputElement.style.display = 'none';
+
+    function updateSummaryCards(timeframe) {
+        const summaryData = getSummaryData(timeframe);
+        document.getElementById('workoutCount').textContent = summaryData.workouts;
+        document.getElementById('caloriesBurned').textContent = summaryData.calories;
+        document.getElementById('hoursActive').textContent = summaryData.hours;
+        document.getElementById('goalsAchieved').textContent = summaryData.goals;
+    }
+
+    function getSummaryData(timeframe) {
+        const data = {
+            month: {
+                workouts: '42',
+                calories: '48,650',
+                hours: '64',
+                goals: '12'
+            },
+            '3months': {
+                workouts: '112',
+                calories: '132,450',
+                hours: '168',
+                goals: '28'
+            },
+            '6months': {
+                workouts: '224',
+                calories: '248,750',
+                hours: '312',
+                goals: '42'
+            },
+            year: {
+                workouts: '395',
+                calories: '517,800',
+                hours: '568',
+                goals: '65'
             }
-        });
-        if (profileImgOverlay) {
-            profileImgOverlay.classList.remove('active');
+        };
+        return data[timeframe] || data.month;
+    }
+
+    function getWorkoutFrequencyData(timeframe) {
+        let labels, data;
+        switch (timeframe) {
+            case 'month':
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                data = [10, 12, 8, 12];
+                break;
+            case '3months':
+                labels = ['Jan', 'Feb', 'Mar'];
+                data = [38, 42, 32];
+                break;
+            case '6months':
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+                data = [38, 42, 32, 40, 36, 36];
+                break;
+            case 'year':
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                data = [38, 42, 32, 40, 36, 36, 30, 28, 34, 42, 38, 29];
+                break;
+            default:
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                data = [10, 12, 8, 12];
         }
-        const editActions = document.querySelector('.profile-edit-actions');
-        if (editActions) {
-            editActions.style.display = 'none';
+        return {
+            labels: labels,
+            datasets: [{
+                label: 'Workouts',
+                data: data,
+                backgroundColor: 'rgba(138, 43, 226, 0.7)',
+                borderColor: '#8A2BE2',
+                borderWidth: 1
+            }]
+        };
+    }
+
+    function getWeightProgressData(timeframe) {
+        let labels, weightData;
+        switch (timeframe) {
+            case 'month':
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                weightData = [77, 76.5, 75.8, 75];
+                break;
+            case '3months':
+                labels = ['Jan', 'Feb', 'Mar'];
+                weightData = [80, 77, 75];
+                break;
+            case '6months':
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+                weightData = [82, 80, 77, 76, 75.5, 75];
+                break;
+            case 'year':
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                weightData = [85, 84, 82, 80, 78, 77, 76, 75.5, 75, 74.5, 74, 75];
+                break;
+            default:
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                weightData = [77, 76.5, 75.8, 75];
         }
-        editProfileBtn.style.display = 'flex';
+        return {
+            labels: labels,
+            datasets: [{
+                label: 'Weight (kg)',
+                data: weightData,
+                borderColor: '#4CAF50',
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        };
     }
-    function cancelProfileEditing() {
-        const profileItems = document.querySelectorAll('.profile-item');
-        profileItems.forEach(item => {
-            const valueElement = item.querySelector('.profile-value');
-            const inputElement = item.querySelector('.profile-edit-input');
-            if (valueElement && inputElement) {
-                if (inputElement.tagName.toLowerCase() === 'select') {
-                    for (let i = 0; i < inputElement.options.length; i++) {
-                        if (inputElement.options[i].text === valueElement.textContent.trim()) {
-                            inputElement.selectedIndex = i;
-                            break;
-                        }
-                    }
-                } else {
-                    inputElement.value = valueElement.textContent;
-                }
-                valueElement.style.display = 'block';
-                inputElement.style.display = 'none';
-            }
-        });
-        if (profileImgOverlay) {
-            profileImgOverlay.classList.remove('active');
-        }
-        const editActions = document.querySelector('.profile-edit-actions');
-        if (editActions) {
-            editActions.style.display = 'none';
-        }
-        editProfileBtn.style.display = 'flex';
-    }
-    setupCharts();
-    const statsTimeframeSelect = document.getElementById('statsTimeframeSelect');
-    if (statsTimeframeSelect) {
-        statsTimeframeSelect.addEventListener('change', function() {
-            updateStatistics(this.value);
-        });
-    }
-    setupModals();
-    setupWorkoutInteractions();
-});
-function setupCharts() {
-    const workoutFrequencyCtx = document.getElementById('workoutFrequencyChart');
-    if (workoutFrequencyCtx) {
-        window.workoutFrequencyChart = new Chart(workoutFrequencyCtx, {
-            type: 'bar',
-            data: getWorkoutFrequencyData('month'),
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: '#aaa'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            color: '#aaa'
-                        },
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
-            }
-        });
-    }
-    const weightProgressCtx = document.getElementById('weightProgressChart');
-    if (weightProgressCtx) {
-        window.weightProgressChart = new Chart(weightProgressCtx, {
-            type: 'line',
-            data: getWeightProgressData('month'),
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            color: '#aaa'
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        ticks: {
-                            color: '#aaa'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            color: '#aaa'
-                        },
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
-            }
-        });
-    }
-}
-function updateStatistics(timeframe) {
-    updateSummaryCards(timeframe);
-    if (window.workoutFrequencyChart) {
-        window.workoutFrequencyChart.data = getWorkoutFrequencyData(timeframe);
-        window.workoutFrequencyChart.update();
-    }
-    if (window.weightProgressChart) {
-        window.weightProgressChart.data = getWeightProgressData(timeframe);
-        window.weightProgressChart.update();
-    }
-}
-function updateSummaryCards(timeframe) {
-    const summaryData = getSummaryData(timeframe);
-    document.getElementById('workoutCount').textContent = summaryData.workouts;
-    document.getElementById('caloriesBurned').textContent = summaryData.calories;
-    document.getElementById('hoursActive').textContent = summaryData.hours;
-    document.getElementById('goalsAchieved').textContent = summaryData.goals;
-}
-function getSummaryData(timeframe) {
-    const data = {
-        month: {
-            workouts: '42',
-            calories: '48,650',
-            hours: '64',
-            goals: '12'
-        },
-        '3months': {
-            workouts: '112',
-            calories: '132,450',
-            hours: '168',
-            goals: '28'
-        },
-        '6months': {
-            workouts: '224',
-            calories: '248,750',
-            hours: '312',
-            goals: '42'
-        },
-        year: {
-            workouts: '395',
-            calories: '517,800',
-            hours: '568',
-            goals: '65'
-        }
-    };
-    return data[timeframe] || data.month;
-}
-function getWorkoutFrequencyData(timeframe) {
-    let labels, data;
-    switch(timeframe) {
-        case 'month':
-            labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-            data = [10, 12, 8, 12];
-            break;
-        case '3months':
-            labels = ['Jan', 'Feb', 'Mar'];
-            data = [38, 42, 32];
-            break;
-        case '6months':
-            labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-            data = [38, 42, 32, 40, 36, 36];
-            break;
-        case 'year':
-            labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            data = [38, 42, 32, 40, 36, 36, 30, 28, 34, 42, 38, 29];
-            break;
-        default:
-            labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-            data = [10, 12, 8, 12];
-    }
-    return {
-        labels: labels,
-        datasets: [{
-            label: 'Workouts',
-            data: data,
-            backgroundColor: 'rgba(138, 43, 226, 0.7)',
-            borderColor: '#8A2BE2',
-            borderWidth: 1
-        }]
-    };
-}
-function getWeightProgressData(timeframe) {
-    let labels, weightData;
-    switch(timeframe) {
-        case 'month':
-            labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-            weightData = [77, 76.5, 75.8, 75];
-            break;
-        case '3months':
-            labels = ['Jan', 'Feb', 'Mar'];
-            weightData = [80, 77, 75];
-            break;
-        case '6months':
-            labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-            weightData = [82, 80, 77, 76, 75.5, 75];
-            break;
-        case 'year':
-            labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            weightData = [85, 84, 82, 80, 78, 77, 76, 75.5, 75, 74.5, 74, 75];
-            break;
-        default:
-            labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-            weightData = [77, 76.5, 75.8, 75];
-    }
-    return {
-        labels: labels,
-        datasets: [{
-            label: 'Weight (kg)',
-            data: weightData,
-            borderColor: '#4CAF50',
-            backgroundColor: 'rgba(76, 175, 80, 0.1)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4
-        }]
-    };
-}
-function setupModals() {
-    const allModals = document.querySelectorAll('.modal');
-    const closeButtons = document.querySelectorAll('.close-modal');
-    closeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const modal = this.closest('.modal');
-            if (modal) {
-                modal.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-        });
-    });
-    allModals.forEach(modal => {
-        modal.addEventListener('click', function(event) {
-            if (event.target === this) {
-                modal.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-        });
-    });
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            allModals.forEach(modal => {
-                if (modal.classList.contains('active')) {
+
+    function setupModals() {
+        const allModals = document.querySelectorAll('.modal');
+        const closeButtons = document.querySelectorAll('.close-modal');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const modal = this.closest('.modal');
+                if (modal) {
                     modal.classList.remove('active');
                     document.body.style.overflow = 'auto';
                 }
             });
-        }
-    });
-}
-function setupWorkoutInteractions() {
-    const viewAllBtn = document.querySelector('.view-all-btn');
-    const allWorkoutsModal = document.getElementById('allWorkoutsModal');
-    if (viewAllBtn && allWorkoutsModal) {
-        viewAllBtn.addEventListener('click', function() {
-            populateAllWorkouts();
-            allWorkoutsModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+        });
+        allModals.forEach(modal => {
+            modal.addEventListener('click', function (event) {
+                if (event.target === this) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                allModals.forEach(modal => {
+                    if (modal.classList.contains('active')) {
+                        modal.classList.remove('active');
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            }
         });
     }
-    document.addEventListener('click', function(event) {
-        const detailsBtn = event.target.closest('.details-btn');
-        if (detailsBtn) {
-            const workoutItem = detailsBtn.closest('.workout-item');
-            if (workoutItem) {
-                const workoutName = workoutItem.querySelector('.workout-name').textContent;
-                const day = workoutItem.querySelector('.day').textContent;
-                const month = workoutItem.querySelector('.month').textContent;
-                showWorkoutDetails(workoutName, `${day} ${month}`);
-            }
+
+    function setupWorkoutInteractions() {
+        const viewAllBtn = document.querySelector('.view-all-btn');
+        const allWorkoutsModal = document.getElementById('allWorkoutsModal');
+        if (viewAllBtn && allWorkoutsModal) {
+            viewAllBtn.addEventListener('click', function () {
+                populateAllWorkouts();
+                allWorkoutsModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
         }
-    });
-}
-function populateAllWorkouts() {
-    const allWorkoutsContainer = document.querySelector('.all-workouts');
-    if (allWorkoutsContainer) {
-        allWorkoutsContainer.innerHTML = '';
-        const workouts = getAllWorkoutsData();
-        workouts.forEach(workout => {
-            const workoutItem = document.createElement('div');
-            workoutItem.className = 'workout-item';
-            workoutItem.innerHTML = `
+        document.addEventListener('click', function (event) {
+            const detailsBtn = event.target.closest('.details-btn');
+            if (detailsBtn) {
+                const workoutItem = detailsBtn.closest('.workout-item');
+                if (workoutItem) {
+                    const workoutName = workoutItem.querySelector('.workout-name').textContent;
+                    const day = workoutItem.querySelector('.day').textContent;
+                    const month = workoutItem.querySelector('.month').textContent;
+                    showWorkoutDetails(workoutName, `${day} ${month}`);
+                }
+            }
+        });
+    }
+
+    function populateAllWorkouts() {
+        const allWorkoutsContainer = document.querySelector('.all-workouts');
+        if (allWorkoutsContainer) {
+            allWorkoutsContainer.innerHTML = '';
+            const workouts = getAllWorkoutsData();
+            workouts.forEach(workout => {
+                const workoutItem = document.createElement('div');
+                workoutItem.className = 'workout-item';
+                workoutItem.innerHTML = `
                 <div class="workout-date">
                     <div class="date-circle">
                         <span class="day">${workout.day}</span>
@@ -936,31 +1069,33 @@ function populateAllWorkouts() {
                     <button class="details-btn">Details</button>
                 </div>
             `;
-            allWorkoutsContainer.appendChild(workoutItem);
-        });
-    }
-}
-function getStarsHTML(rating) {
-    let starsHTML = '';
-    for (let i = 1; i <= 5; i++) {
-        if (i <= rating) {
-            starsHTML += '<i class="fas fa-star"></i>';
-        } else {
-            starsHTML += '<i class="far fa-star"></i>';
+                allWorkoutsContainer.appendChild(workoutItem);
+            });
         }
     }
-    return starsHTML;
-}
-function showWorkoutDetails(workoutName, workoutDate) {
-    const detailsModal = document.getElementById('workoutDetailsModal');
-    const detailTitle = document.getElementById('workoutDetailTitle');
-    const detailContent = document.getElementById('workoutDetailContent');
-    if (detailsModal && detailTitle && detailContent) {
-        detailTitle.textContent = `${workoutName} - ${workoutDate}`;
-        const workoutDetail = getWorkoutDetails(workoutName);
-        let contentHTML = '';
-        workoutDetail.exercises.forEach(exercise => {
-            contentHTML += `
+
+    function getStarsHTML(rating) {
+        let starsHTML = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                starsHTML += '<i class="fas fa-star"></i>';
+            } else {
+                starsHTML += '<i class="far fa-star"></i>';
+            }
+        }
+        return starsHTML;
+    }
+
+    function showWorkoutDetails(workoutName, workoutDate) {
+        const detailsModal = document.getElementById('workoutDetailsModal');
+        const detailTitle = document.getElementById('workoutDetailTitle');
+        const detailContent = document.getElementById('workoutDetailContent');
+        if (detailsModal && detailTitle && detailContent) {
+            detailTitle.textContent = `${workoutName} - ${workoutDate}`;
+            const workoutDetail = getWorkoutDetails(workoutName);
+            let contentHTML = '';
+            workoutDetail.exercises.forEach(exercise => {
+                contentHTML += `
                 <div class="exercise-item">
                     <div class="exercise-header">
                         <div class="exercise-name">${exercise.name}</div>
@@ -984,331 +1119,949 @@ function showWorkoutDetails(workoutName, workoutDate) {
                     </div>
                 </div>
             `;
-        });
-        if (workoutDetail.notes) {
-            contentHTML += `
+            });
+            if (workoutDetail.notes) {
+                contentHTML += `
                 <div class="workout-notes">
                     <h3>Notes</h3>
                     <p>${workoutDetail.notes}</p>
                 </div>
             `;
+            }
+            detailContent.innerHTML = contentHTML;
+            detailsModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
-        detailContent.innerHTML = contentHTML;
-        detailsModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
     }
-}
-function getAllWorkoutsData() {
-    return [
-        {
-            day: '16',
-            month: 'MAR',
-            name: 'HIIT Training',
-            duration: '45 min',
-            calories: '450',
-            exercises: '4',
-            rating: 4
-        },
-        {
-            day: '14',
-            month: 'MAR',
-            name: 'Strength Training',
-            duration: '60 min',
-            calories: '380',
-            exercises: '6',
-            rating: 5
-        },
-        {
-            day: '12',
-            month: 'MAR',
-            name: 'Cardio Run',
-            duration: '30 min',
-            calories: '320',
-            exercises: '1',
-            rating: 4
-        },
-        {
-            day: '10',
-            month: 'MAR',
-            name: 'Yoga Session',
-            duration: '50 min',
-            calories: '200',
-            exercises: '12',
-            rating: 5
-        },
-        {
-            day: '08',
-            month: 'MAR',
-            name: 'Circuit Training',
-            duration: '55 min',
-            calories: '480',
-            exercises: '8',
-            rating: 3
-        },
-        {
-            day: '06',
-            month: 'MAR',
-            name: 'Swimming',
-            duration: '40 min',
-            calories: '350',
-            exercises: '3',
-            rating: 4
-        },
-        {
-            day: '04',
-            month: 'MAR',
-            name: 'Leg Day',
-            duration: '65 min',
-            calories: '420',
-            exercises: '5',
-            rating: 4
-        },
-        {
-            day: '02',
-            month: 'MAR',
-            name: 'Upper Body',
-            duration: '50 min',
-            calories: '380',
-            exercises: '6',
-            rating: 5
-        },
-        {
-            day: '28',
-            month: 'FEB',
-            name: 'Cycling',
-            duration: '60 min',
-            calories: '520',
-            exercises: '1',
-            rating: 5
-        },
-        {
-            day: '26',
-            month: 'FEB',
-            name: 'Full Body Workout',
-            duration: '70 min',
-            calories: '550',
-            exercises: '10',
-            rating: 4
-        }
-    ];
-}
-function getWorkoutDetails(workoutName) {
-    const workoutDetails = {
-        'HIIT Training': {
-            exercises: [
-                {
-                    name: 'Burpees',
-                    type: 'HIIT',
-                    sets: [
-                        { weight: 'Body weight', reps: '12', rest: '30 sec' },
-                        { weight: 'Body weight', reps: '10', rest: '30 sec' },
-                        { weight: 'Body weight', reps: '8', rest: '30 sec' }
-                    ]
-                },
-                {
-                    name: 'Mountain Climbers',
-                    type: 'HIIT',
-                    sets: [
-                        { weight: 'Body weight', reps: '30 sec', rest: '20 sec' },
-                        { weight: 'Body weight', reps: '30 sec', rest: '20 sec' },
-                        { weight: 'Body weight', reps: '30 sec', rest: '20 sec' }
-                    ]
-                },
-                {
-                    name: 'Jump Squats',
-                    type: 'HIIT',
-                    sets: [
-                        { weight: 'Body weight', reps: '15', rest: '30 sec' },
-                        { weight: 'Body weight', reps: '15', rest: '30 sec' },
-                        { weight: 'Body weight', reps: '15', rest: '30 sec' }
-                    ]
-                },
-                {
-                    name: 'Plank to Push-up',
-                    type: 'HIIT',
-                    sets: [
-                        { weight: 'Body weight', reps: '10', rest: '30 sec' },
-                        { weight: 'Body weight', reps: '8', rest: '30 sec' },
-                        { weight: 'Body weight', reps: '6', rest: '30 sec' }
-                    ]
-                }
-            ],
-            notes: 'Complete all exercises in a circuit, repeat 3 times. Rest 1 minute between circuits. Great progress on burpees, but need to improve on the plank to push-ups.'
-        },
-        'Strength Training': {
-            exercises: [
-                {
-                    name: 'Bench Press',
-                    type: 'Chest',
-                    sets: [
-                        { weight: '135 lbs', reps: '12', rest: '60 sec' },
-                        { weight: '155 lbs', reps: '10', rest: '60 sec' },
-                        { weight: '175 lbs', reps: '8', rest: '60 sec' },
-                        { weight: '185 lbs', reps: '6', rest: '60 sec' }
-                    ]
-                },
-                {
-                    name: 'Barbell Row',
-                    type: 'Back',
-                    sets: [
-                        { weight: '135 lbs', reps: '12', rest: '60 sec' },
-                        { weight: '155 lbs', reps: '10', rest: '60 sec' },
-                        { weight: '175 lbs', reps: '8', rest: '60 sec' }
-                    ]
-                },
-                {
-                    name: 'Shoulder Press',
-                    type: 'Shoulders',
-                    sets: [
-                        { weight: '95 lbs', reps: '12', rest: '60 sec' },
-                        { weight: '105 lbs', reps: '10', rest: '60 sec' },
-                        { weight: '115 lbs', reps: '8', rest: '60 sec' }
-                    ]
-                },
-                {
-                    name: 'Bicep Curls',
-                    type: 'Arms',
-                    sets: [
-                        { weight: '40 lbs', reps: '12', rest: '45 sec' },
-                        { weight: '45 lbs', reps: '10', rest: '45 sec' },
-                        { weight: '50 lbs', reps: '8', rest: '45 sec' }
-                    ]
-                },
-                {
-                    name: 'Tricep Extensions',
-                    type: 'Arms',
-                    sets: [
-                        { weight: '60 lbs', reps: '12', rest: '45 sec' },
-                        { weight: '70 lbs', reps: '10', rest: '45 sec' },
-                        { weight: '80 lbs', reps: '8', rest: '45 sec' }
-                    ]
-                },
-                {
-                    name: 'Cable Fly',
-                    type: 'Chest',
-                    sets: [
-                        { weight: '40 lbs', reps: '15', rest: '45 sec' },
-                        { weight: '45 lbs', reps: '12', rest: '45 sec' },
-                        { weight: '50 lbs', reps: '10', rest: '45 sec' }
-                    ]
-                }
-            ],
-            notes: 'New PR on bench press! Felt strong today, increased weights on most exercises. Need to work on shoulder press form.'
-        },
-        'Cardio Run': {
-            exercises: [
-                {
+
+    function getAllWorkoutsData() {
+        return [{
+                day: '16',
+                month: 'MAR',
+                name: 'HIIT Training',
+                duration: '45 min',
+                calories: '450',
+                exercises: '4',
+                rating: 4
+            },
+            {
+                day: '14',
+                month: 'MAR',
+                name: 'Strength Training',
+                duration: '60 min',
+                calories: '380',
+                exercises: '6',
+                rating: 5
+            },
+            {
+                day: '12',
+                month: 'MAR',
+                name: 'Cardio Run',
+                duration: '30 min',
+                calories: '320',
+                exercises: '1',
+                rating: 4
+            },
+            {
+                day: '10',
+                month: 'MAR',
+                name: 'Yoga Session',
+                duration: '50 min',
+                calories: '200',
+                exercises: '12',
+                rating: 5
+            },
+            {
+                day: '08',
+                month: 'MAR',
+                name: 'Circuit Training',
+                duration: '55 min',
+                calories: '480',
+                exercises: '8',
+                rating: 3
+            },
+            {
+                day: '06',
+                month: 'MAR',
+                name: 'Swimming',
+                duration: '40 min',
+                calories: '350',
+                exercises: '3',
+                rating: 4
+            },
+            {
+                day: '04',
+                month: 'MAR',
+                name: 'Leg Day',
+                duration: '65 min',
+                calories: '420',
+                exercises: '5',
+                rating: 4
+            },
+            {
+                day: '02',
+                month: 'MAR',
+                name: 'Upper Body',
+                duration: '50 min',
+                calories: '380',
+                exercises: '6',
+                rating: 5
+            },
+            {
+                day: '28',
+                month: 'FEB',
+                name: 'Cycling',
+                duration: '60 min',
+                calories: '520',
+                exercises: '1',
+                rating: 5
+            },
+            {
+                day: '26',
+                month: 'FEB',
+                name: 'Full Body Workout',
+                duration: '70 min',
+                calories: '550',
+                exercises: '10',
+                rating: 4
+            }
+        ];
+    }
+
+    function getWorkoutDetails(workoutName) {
+        const workoutDetails = {
+            'HIIT Training': {
+                exercises: [{
+                        name: 'Burpees',
+                        type: 'HIIT',
+                        sets: [{
+                                weight: 'Body weight',
+                                reps: '12',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '10',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '8',
+                                rest: '30 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Mountain Climbers',
+                        type: 'HIIT',
+                        sets: [{
+                                weight: 'Body weight',
+                                reps: '30 sec',
+                                rest: '20 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '30 sec',
+                                rest: '20 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '30 sec',
+                                rest: '20 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Jump Squats',
+                        type: 'HIIT',
+                        sets: [{
+                                weight: 'Body weight',
+                                reps: '15',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '15',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '15',
+                                rest: '30 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Plank to Push-up',
+                        type: 'HIIT',
+                        sets: [{
+                                weight: 'Body weight',
+                                reps: '10',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '8',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '6',
+                                rest: '30 sec'
+                            }
+                        ]
+                    }
+                ],
+                notes: 'Complete all exercises in a circuit, repeat 3 times. Rest 1 minute between circuits. Great progress on burpees, but need to improve on the plank to push-ups.'
+            },
+            'Strength Training': {
+                exercises: [{
+                        name: 'Bench Press',
+                        type: 'Chest',
+                        sets: [{
+                                weight: '135 lbs',
+                                reps: '12',
+                                rest: '60 sec'
+                            },
+                            {
+                                weight: '155 lbs',
+                                reps: '10',
+                                rest: '60 sec'
+                            },
+                            {
+                                weight: '175 lbs',
+                                reps: '8',
+                                rest: '60 sec'
+                            },
+                            {
+                                weight: '185 lbs',
+                                reps: '6',
+                                rest: '60 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Barbell Row',
+                        type: 'Back',
+                        sets: [{
+                                weight: '135 lbs',
+                                reps: '12',
+                                rest: '60 sec'
+                            },
+                            {
+                                weight: '155 lbs',
+                                reps: '10',
+                                rest: '60 sec'
+                            },
+                            {
+                                weight: '175 lbs',
+                                reps: '8',
+                                rest: '60 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Shoulder Press',
+                        type: 'Shoulders',
+                        sets: [{
+                                weight: '95 lbs',
+                                reps: '12',
+                                rest: '60 sec'
+                            },
+                            {
+                                weight: '105 lbs',
+                                reps: '10',
+                                rest: '60 sec'
+                            },
+                            {
+                                weight: '115 lbs',
+                                reps: '8',
+                                rest: '60 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Bicep Curls',
+                        type: 'Arms',
+                        sets: [{
+                                weight: '40 lbs',
+                                reps: '12',
+                                rest: '45 sec'
+                            },
+                            {
+                                weight: '45 lbs',
+                                reps: '10',
+                                rest: '45 sec'
+                            },
+                            {
+                                weight: '50 lbs',
+                                reps: '8',
+                                rest: '45 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Tricep Extensions',
+                        type: 'Arms',
+                        sets: [{
+                                weight: '60 lbs',
+                                reps: '12',
+                                rest: '45 sec'
+                            },
+                            {
+                                weight: '70 lbs',
+                                reps: '10',
+                                rest: '45 sec'
+                            },
+                            {
+                                weight: '80 lbs',
+                                reps: '8',
+                                rest: '45 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Cable Fly',
+                        type: 'Chest',
+                        sets: [{
+                                weight: '40 lbs',
+                                reps: '15',
+                                rest: '45 sec'
+                            },
+                            {
+                                weight: '45 lbs',
+                                reps: '12',
+                                rest: '45 sec'
+                            },
+                            {
+                                weight: '50 lbs',
+                                reps: '10',
+                                rest: '45 sec'
+                            }
+                        ]
+                    }
+                ],
+                notes: 'New PR on bench press! Felt strong today, increased weights on most exercises. Need to work on shoulder press form.'
+            },
+            'Cardio Run': {
+                exercises: [{
                     name: 'Outdoor Run',
                     type: 'Cardio',
-                    sets: [
-                        { weight: 'N/A', reps: '30 min', rest: 'N/A' }
-                    ]
-                }
-            ],
-            notes: 'Ran 3.5 miles at an average pace of 8:34 min/mile. Weather was great, felt energized throughout the run.'
-        },
-        'Yoga Session': {
-            exercises: [
-                {
+                    sets: [{
+                        weight: 'N/A',
+                        reps: '30 min',
+                        rest: 'N/A'
+                    }]
+                }],
+                notes: 'Ran 3.5 miles at an average pace of 8:34 min/mile. Weather was great, felt energized throughout the run.'
+            },
+            'Yoga Session': {
+                exercises: [{
                     name: 'Vinyasa Flow',
                     type: 'Flexibility/Strength',
-                    sets: [
-                        { weight: 'Body weight', reps: '50 min', rest: 'N/A' }
-                    ]
-                }
-            ],
-            notes: 'Focused on hip openers and shoulder mobility. Feeling much more flexible after consistent practice.'
-        },
-        'Circuit Training': {
-            exercises: [
-                {
-                    name: 'Kettlebell Swings',
-                    type: 'Full Body',
-                    sets: [
-                        { weight: '16 kg', reps: '20', rest: '30 sec' },
-                        { weight: '20 kg', reps: '15', rest: '30 sec' },
-                        { weight: '24 kg', reps: '12', rest: '30 sec' }
-                    ]
-                },
-                {
-                    name: 'Battle Ropes',
-                    type: 'Cardio/Arms',
-                    sets: [
-                        { weight: 'N/A', reps: '30 sec', rest: '30 sec' },
-                        { weight: 'N/A', reps: '30 sec', rest: '30 sec' },
-                        { weight: 'N/A', reps: '30 sec', rest: '30 sec' }
-                    ]
-                },
-                {
-                    name: 'Box Jumps',
-                    type: 'Legs/Explosive',
-                    sets: [
-                        { weight: 'Body weight', reps: '12', rest: '30 sec' },
-                        { weight: 'Body weight', reps: '10', rest: '30 sec' },
-                        { weight: 'Body weight', reps: '8', rest: '30 sec' }
-                    ]
-                },
-                {
-                    name: 'TRX Rows',
-                    type: 'Back',
-                    sets: [
-                        { weight: 'Body weight', reps: '15', rest: '30 sec' },
-                        { weight: 'Body weight', reps: '12', rest: '30 sec' },
-                        { weight: 'Body weight', reps: '10', rest: '30 sec' }
-                    ]
-                },
-                {
-                    name: 'Medicine Ball Slams',
-                    type: 'Full Body',
-                    sets: [
-                        { weight: '20 lbs', reps: '15', rest: '30 sec' },
-                        { weight: '20 lbs', reps: '15', rest: '30 sec' },
-                        { weight: '20 lbs', reps: '15', rest: '30 sec' }
-                    ]
-                },
-                {
-                    name: 'Rowing Machine',
-                    type: 'Cardio',
-                    sets: [
-                        { weight: 'N/A', reps: '250m', rest: '30 sec' },
-                        { weight: 'N/A', reps: '250m', rest: '30 sec' },
-                        { weight: 'N/A', reps: '250m', rest: '30 sec' }
-                    ]
-                },
-                {
-                    name: 'Plank',
-                    type: 'Core',
-                    sets: [
-                        { weight: 'Body weight', reps: '60 sec', rest: '30 sec' },
-                        { weight: 'Body weight', reps: '45 sec', rest: '30 sec' },
-                        { weight: 'Body weight', reps: '30 sec', rest: '30 sec' }
-                    ]
-                },
-                {
-                    name: 'Dumbbell Walking Lunges',
-                    type: 'Legs',
-                    sets: [
-                        { weight: '25 lbs each', reps: '20 steps', rest: '30 sec' },
-                        { weight: '30 lbs each', reps: '16 steps', rest: '30 sec' },
-                        { weight: '35 lbs each', reps: '12 steps', rest: '30 sec' }
-                    ]
-                }
-            ],
-            notes: 'Completed 3 full circuit rounds. Really pushed hard on the battle ropes and rowing machine. Felt exhausted but accomplished!'
-        }
-    };
-    return workoutDetails[workoutName] || {
-        exercises: [
-            {
+                    sets: [{
+                        weight: 'Body weight',
+                        reps: '50 min',
+                        rest: 'N/A'
+                    }]
+                }],
+                notes: 'Focused on hip openers and shoulder mobility. Feeling much more flexible after consistent practice.'
+            },
+            'Circuit Training': {
+                exercises: [{
+                        name: 'Kettlebell Swings',
+                        type: 'Full Body',
+                        sets: [{
+                                weight: '16 kg',
+                                reps: '20',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: '20 kg',
+                                reps: '15',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: '24 kg',
+                                reps: '12',
+                                rest: '30 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Battle Ropes',
+                        type: 'Cardio/Arms',
+                        sets: [{
+                                weight: 'N/A',
+                                reps: '30 sec',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'N/A',
+                                reps: '30 sec',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'N/A',
+                                reps: '30 sec',
+                                rest: '30 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Box Jumps',
+                        type: 'Legs/Explosive',
+                        sets: [{
+                                weight: 'Body weight',
+                                reps: '12',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '10',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '8',
+                                rest: '30 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'TRX Rows',
+                        type: 'Back',
+                        sets: [{
+                                weight: 'Body weight',
+                                reps: '15',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '12',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '10',
+                                rest: '30 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Medicine Ball Slams',
+                        type: 'Full Body',
+                        sets: [{
+                                weight: '20 lbs',
+                                reps: '15',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: '20 lbs',
+                                reps: '15',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: '20 lbs',
+                                reps: '15',
+                                rest: '30 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Rowing Machine',
+                        type: 'Cardio',
+                        sets: [{
+                                weight: 'N/A',
+                                reps: '250m',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'N/A',
+                                reps: '250m',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'N/A',
+                                reps: '250m',
+                                rest: '30 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Plank',
+                        type: 'Core',
+                        sets: [{
+                                weight: 'Body weight',
+                                reps: '60 sec',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '45 sec',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: 'Body weight',
+                                reps: '30 sec',
+                                rest: '30 sec'
+                            }
+                        ]
+                    },
+                    {
+                        name: 'Dumbbell Walking Lunges',
+                        type: 'Legs',
+                        sets: [{
+                                weight: '25 lbs each',
+                                reps: '20 steps',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: '30 lbs each',
+                                reps: '16 steps',
+                                rest: '30 sec'
+                            },
+                            {
+                                weight: '35 lbs each',
+                                reps: '12 steps',
+                                rest: '30 sec'
+                            }
+                        ]
+                    }
+                ],
+                notes: 'Completed 3 full circuit rounds. Really pushed hard on the battle ropes and rowing machine. Felt exhausted but accomplished!'
+            }
+        };
+        return workoutDetails[workoutName] || {
+            exercises: [{
                 name: 'Exercise Information',
                 type: 'Not Available',
-                sets: [
-                    { weight: 'N/A', reps: 'N/A', rest: 'N/A' }
-                ]
+                sets: [{
+                    weight: 'N/A',
+                    reps: 'N/A',
+                    rest: 'N/A'
+                }]
+            }],
+            notes: 'Detailed information for this workout is not available.'
+        };
+    }
+    // Add this to your existing JavaScript section
+    document.addEventListener('DOMContentLoaded', function () {
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const editActions = document.getElementById('editActions');
+
+        let originalValues = {};
+
+        // Edit button click handler
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', enableProfileEditing);
+        }
+
+        // Save button click handler
+        if (saveProfileBtn) {
+            saveProfileBtn.addEventListener('click', saveProfileChanges);
+        }
+
+        // Cancel button click handler
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', cancelProfileEditing);
+        }
+
+        // BMI calculation when height or weight changes
+        const heightInput = document.getElementById('heightInput');
+        const weightInput = document.getElementById('weightInput');
+        const bmiInput = document.getElementById('bmiInput');
+
+        if (heightInput && weightInput && bmiInput) {
+            heightInput.addEventListener('input', calculateBMI);
+            weightInput.addEventListener('input', calculateBMI);
+        }
+
+        function enableProfileEditing() {
+            // Store original values
+            originalValues = {
+                name: document.getElementById('nameInput').value,
+                email: document.getElementById('emailInput').value,
+                phone: document.getElementById('phoneInput').value,
+                dob: document.getElementById('dobInput').value,
+                height: document.getElementById('heightInput').value,
+                weight: document.getElementById('weightInput').value,
+                bmi: document.getElementById('bmiInput').value
+            };
+
+            // Hide all values and show inputs
+            document.querySelectorAll('.profile-value').forEach(value => {
+                value.style.display = 'none';
+            });
+
+            document.querySelectorAll('.profile-edit-input').forEach(input => {
+                input.style.display = 'block';
+            });
+
+            // Show save/cancel buttons
+            editActions.style.display = 'flex';
+
+            // Hide edit button
+            editProfileBtn.style.display = 'none';
+
+            // Calculate BMI with current values
+            calculateBMI();
+        }
+
+        function calculateBMI() {
+            const height = parseFloat(heightInput.value);
+            const weight = parseFloat(weightInput.value);
+
+            if (height && weight && height > 0) {
+                const heightInMeters = height / 100;
+                const bmi = weight / (heightInMeters * heightInMeters);
+                bmiInput.value = bmi.toFixed(1);
+            } else {
+                bmiInput.value = '';
             }
-        ],
-        notes: 'Detailed information for this workout is not available.'
-    };
+        }
+
+        function saveProfileChanges() {
+            const updatedData = {
+                full_name: document.getElementById('nameInput').value,
+                email: document.getElementById('emailInput').value,
+                phone: document.getElementById('phoneInput').value,
+                dob: document.getElementById('dobInput').value,
+                height: parseFloat(document.getElementById('heightInput').value),
+                weight: parseFloat(document.getElementById('weightInput').value),
+                BMI: parseFloat(document.getElementById('bmiInput').value) || null
+            };
+
+            // Validate required fields
+            if (!updatedData.full_name || !updatedData.email || !updatedData.phone) {
+                alert('Please fill in all required fields: Name, Email, and Phone');
+                return;
+            }
+
+            // Validate email format
+            const emailRegex = /^\S+@\S+\.\S+$/;
+            if (!emailRegex.test(updatedData.email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            // Validate phone format
+            const phoneRegex = /^\+?[\d\s-]{10,}$/;
+            if (!phoneRegex.test(updatedData.phone)) {
+                alert('Please enter a valid phone number');
+                return;
+            }
+
+            // Show loading state
+            saveProfileBtn.textContent = 'Saving...';
+            saveProfileBtn.disabled = true;
+
+            // Send update request
+            fetch('/user/profile/update', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update displayed values
+                        document.getElementById('nameValue').textContent = updatedData.full_name;
+                        document.getElementById('emailValue').textContent = updatedData.email;
+                        document.getElementById('phoneValue').textContent = updatedData.phone;
+                        document.getElementById('heightValue').textContent = updatedData.height ?
+                            updatedData.height + ' cm' : 'Not provided';
+                        document.getElementById('weightValue').textContent = updatedData.weight ?
+                            updatedData.weight + ' kg' : 'Not provided';
+                        document.getElementById('bmiValue').textContent = updatedData.BMI || 'Not provided';
+
+                        // Update age display
+                        if (updatedData.dob) {
+                            const today = new Date();
+                            const birthDate = new Date(updatedData.dob);
+                            let age = today.getFullYear() - birthDate.getFullYear();
+                            const m = today.getMonth() - birthDate.getMonth();
+                            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                                age--;
+                            }
+                            document.getElementById('ageValue').textContent = age + ' years';
+                        }
+
+                        // Exit edit mode
+                        cancelProfileEditing();
+
+                        alert('Profile updated successfully!');
+                    } else {
+                        throw new Error(data.message || 'Failed to update profile');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating profile:', error);
+                    alert('Error updating profile: ' + error.message);
+                })
+                .finally(() => {
+                    saveProfileBtn.textContent = 'Save Changes';
+                    saveProfileBtn.disabled = false;
+                });
+        }
+
+        function cancelProfileEditing() {
+            // Restore original values to inputs
+            document.getElementById('nameInput').value = originalValues.name;
+            document.getElementById('emailInput').value = originalValues.email;
+            document.getElementById('phoneInput').value = originalValues.phone;
+            document.getElementById('dobInput').value = originalValues.dob;
+            document.getElementById('heightInput').value = originalValues.height;
+            document.getElementById('weightInput').value = originalValues.weight;
+            document.getElementById('bmiInput').value = originalValues.bmi;
+
+            // Show all values and hide inputs
+            document.querySelectorAll('.profile-value').forEach(value => {
+                value.style.display = 'block';
+            });
+
+            document.querySelectorAll('.profile-edit-input').forEach(input => {
+                input.style.display = 'none';
+            });
+
+            // Hide save/cancel buttons
+            editActions.style.display = 'none';
+
+            // Show edit button
+            editProfileBtn.style.display = 'block';
+        }
+    });
+    // Add this to your existing JavaScript
+    let selectedPlan = null;
+    let selectedMonths = null;
+    let selectedPrice = 0;
+
+    function openChangeMembershipModal() {
+        const modal = document.getElementById('changeMembershipModal');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        resetSelections();
+    }
+
+    function resetSelections() {
+        selectedPlan = null;
+        selectedMonths = null;
+        selectedPrice = 0;
+
+        // Reset UI
+        document.querySelectorAll('.plan-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+
+        document.querySelectorAll('.duration-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+
+        document.getElementById('paymentSection').style.display = 'none';
+    }
+
+    // Plan selection
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.plan-option')) {
+            const planOption = e.target.closest('.plan-option');
+            selectedPlan = planOption.dataset.plan;
+
+            // Update UI
+            document.querySelectorAll('.plan-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            planOption.classList.add('selected');
+
+            // Update prices based on selected plan
+            updateDurationPrices();
+        }
+
+        if (e.target.closest('.select-duration')) {
+            const durationOption = e.target.closest('.duration-option');
+            selectedMonths = parseInt(durationOption.dataset.months);
+
+            // Update UI
+            document.querySelectorAll('.duration-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            durationOption.classList.add('selected');
+
+            // Show payment section
+            showPaymentSection();
+        }
+    });
+
+    function updateDurationPrices() {
+        const prices = getPlanPrices(selectedPlan);
+
+        document.getElementById('durationPrice-1').textContent = `₹${prices[1]}`;
+        document.getElementById('durationPrice-3').textContent = `₹${prices[3]}`;
+        document.getElementById('durationPrice-6').textContent = `₹${prices[6]}`;
+    }
+
+    function getPlanPrices(plan) {
+        const priceMap = {
+            'basic': {
+                1: 299,
+                3: 750,
+                6: 1350
+            },
+            'gold': {
+                1: 599,
+                3: 1550,
+                6: 2700
+            },
+            'platinum': {
+                1: 999,
+                3: 2500,
+                6: 4500
+            }
+        };
+        return priceMap[plan] || priceMap['basic'];
+    }
+
+    function showPaymentSection() {
+        if (selectedPlan && selectedMonths) {
+            const prices = getPlanPrices(selectedPlan);
+            selectedPrice = prices[selectedMonths];
+
+            // Update payment summary
+            document.getElementById('selectedPlan').textContent = selectedPlan.charAt(0).toUpperCase() + selectedPlan
+                .slice(1);
+            document.getElementById('selectedDuration').textContent =
+                `${selectedMonths} Month${selectedMonths > 1 ? 's' : ''}`;
+            document.getElementById('totalAmount').textContent = selectedPrice;
+            document.getElementById('paymentAmount').textContent = selectedPrice;
+
+            // Show payment section
+            document.getElementById('paymentSection').style.display = 'block';
+
+            // Scroll to payment section
+            document.getElementById('paymentSection').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    // Payment form submission
+    document.getElementById('paymentForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        if (!selectedPlan || !selectedMonths) {
+            alert('Please select a plan and duration');
+            return;
+        }
+
+        // Validate card details
+        if (!validateCardDetails()) {
+            return;
+        }
+
+        processPayment();
+    });
+
+    // Add this function specifically for MM/YY format
+function validateExpiryDateMMYY(expiryDate) {
+    if (!expiryDate || !/^\d{2}\/\d{2}$/.test(expiryDate)) {
+        return false;
+    }
+    
+    const [month, year] = expiryDate.split('/').map(Number);
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear() % 100; // Get last 2 digits
+    const currentMonth = currentDate.getMonth() + 1;
+    
+    // Check if month is valid (1-12)
+    if (month < 1 || month > 12) {
+        return false;
+    }
+    
+    // Check if date is in the future
+    if (year < currentYear) {
+        return false; // Expired - year in past
+    }
+    
+    if (year === currentYear && month < currentMonth) {
+        return false; // Expired - same year but month in past
+    }
+    
+    return true;
 }
+
+    function validateCardDetails() {
+    const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+    const expiryDate = document.getElementById('expiryDate').value;
+    const cvv = document.getElementById('cvv').value;
+
+    // Basic validation
+    if (cardNumber.length !== 16 || !/^\d+$/.test(cardNumber)) {
+        alert('Please enter a valid 16-digit card number');
+        return false;
+    }
+
+    if (!validateExpiryDateMMYY(expiryDate)) {
+        alert('Please enter a valid expiration date that is not in the past (MM/YY format)');
+        return false;
+    }
+
+    if (cvv.length !== 3 || !/^\d+$/.test(cvv)) {
+        alert('Please enter a valid 3-digit CVV');
+        return false;
+    }
+
+    return true;
+}
+
+
+    function processPayment() {
+        const paymentData = {
+            newMembershipType: selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1),
+            duration: selectedMonths,
+            amount: selectedPrice,
+            cardLastFour: document.getElementById('cardNumber').value.slice(-4)
+        };
+
+        const processBtn = document.querySelector('.process-payment-btn');
+        processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        processBtn.disabled = true;
+
+        fetch('/user/membership/change', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(paymentData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Membership updated successfully!');
+                    // Close modal and refresh page
+                    document.getElementById('changeMembershipModal').classList.remove('active');
+                    window.location.reload();
+                } else {
+                    throw new Error(data.message || 'Payment failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Payment failed: ' + error.message);
+                processBtn.innerHTML = '<i class="fas fa-lock"></i> Process Payment - ₹' + selectedPrice;
+                processBtn.disabled = false;
+            });
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('modal')) {
+            e.target.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    });
 </script>
+
 </html>

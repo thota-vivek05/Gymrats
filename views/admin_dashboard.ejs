@@ -39,28 +39,13 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin_nutrition" class="nav-link">
-                        <span>Nutrition Plans</span>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="/admin_exercises" class="nav-link">
                         <span>Exercises</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin_workouts" class="nav-link">
-                        <span>Workout Plans</span>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="/admin_verifier" class="nav-link">
                         <span>Verifiers</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/admin_settings" class="nav-link">
-                        <span>Settings</span>
                     </a>
                 </li>
             </ul>
@@ -72,10 +57,6 @@
             <div class="header">
                 <h2>Admin Dashboard</h2>
                 <div class="right-container">
-                    <div class="search-container">
-                        <img src="/home/icons8-search.svg" height="18px" alt="Search Icon" />
-                        <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-                    </div>
                     <div class="user-info">
                         <div class="avatar">A</div>
                         <span>Admin</span>
@@ -91,8 +72,7 @@
                             <div class="stats-header">
                                 <h3>Total Users</h3>
                             </div>
-                            <div class="stats-number">12,452</div>
-                            <div class="stats-label">+12% from last month</div>
+                            <div class="stats-number"><%= stats.totalUsers.toLocaleString() %></div>
                         </div>
                     </div>
                 </div>
@@ -102,8 +82,7 @@
                             <div class="stats-header">
                                 <h3>Active Members</h3>
                             </div>
-                            <div class="stats-number">8,574</div>
-                            <div class="stats-label">+5% from last month</div>
+                            <div class="stats-number"><%= stats.activeMembers.toLocaleString() %></div>
                         </div>
                     </div>
                 </div>
@@ -113,8 +92,7 @@
                             <div class="stats-header">
                                 <h3>Personal Trainers</h3>
                             </div>
-                            <div class="stats-number">157</div>
-                            <div class="stats-label">+9% from last month</div>
+                            <div class="stats-number"><%= stats.personalTrainers.toLocaleString() %></div>
                         </div>
                     </div>
                 </div>
@@ -124,8 +102,7 @@
                             <div class="stats-header">
                                 <h3>Content Verifiers</h3>
                             </div>
-                            <div class="stats-number">68</div>
-                            <div class="stats-label">+15% from last month</div>
+                            <div class="stats-number"><%= stats.contentVerifiers.toLocaleString() %></div>
                         </div>
                     </div>
                 </div>
@@ -139,8 +116,7 @@
                             <div class="stats-header">
                                 <h3>Total Revenue</h3>
                             </div>
-                            <div class="stats-number">$892,845</div>
-                            <div class="stats-label">All-time platform revenue</div>
+                            <div class="stats-number">$<%= stats.totalRevenue.toLocaleString() %></div>
                         </div>
                     </div>
                 </div>
@@ -150,8 +126,7 @@
                             <div class="stats-header">
                                 <h3>Monthly Revenue</h3>
                             </div>
-                            <div class="stats-number">$108,976</div>
-                            <div class="stats-label">+8% from last month</div>
+                            <div class="stats-number">$<%= stats.monthlyRevenue.toLocaleString() %></div>
                         </div>
                     </div>
                 </div>
@@ -161,8 +136,7 @@
                             <div class="stats-header">
                                 <h3>Platinum Members</h3>
                             </div>
-                            <div class="stats-number">3,254</div>
-                            <div class="stats-label">+12% from last month</div>
+                            <div class="stats-number"><%= stats.platinumMembers.toLocaleString() %></div>
                         </div>
                     </div>
                 </div>
@@ -172,8 +146,7 @@
                             <div class="stats-header">
                                 <h3>New Signups</h3>
                             </div>
-                            <div class="stats-number">462</div>
-                            <div class="stats-label">+5% from last week</div>
+                            <div class="stats-number"><%= stats.newSignups.toLocaleString() %></div>
                         </div>
                     </div>
                 </div>
@@ -199,7 +172,6 @@
                 </div>
             </div>
 
-            <!-- User Activity Section -->
             <!-- User Activity Section -->
             <div class="section">
                 <div class="section-header">
@@ -265,7 +237,12 @@
                             <% if (typeof trainers !== 'undefined' && trainers.length > 0) { %>
                             <% trainers.forEach(trainer => { %>
                             <tr>
-                                
+                                <td>
+                                    <div class="user-info">
+                                        <div class="avatar"><%= trainer.name.charAt(0) %></div>
+                                        <span><%= trainer.name %></span>
+                                    </div>
+                                </td>
                                 <td>
                                     <div class="specialization-tags">
                                         <% if (trainer.specializations && trainer.specializations.length > 0) { %>
@@ -281,9 +258,7 @@
                                     </div>
                                 </td>
                                 <td><%= trainer.experience %> years</td>
-                                <td><span
-                                        class="status <%= trainer.status.toLowerCase() %>"><%= trainer.status %></span>
-                                </td>
+                                <td><span class="status <%= trainer.status.toLowerCase() %>"><%= trainer.status %></span></td>
                                 <td><%= trainer.email %></td>
                             </tr>
                             <% }); %>

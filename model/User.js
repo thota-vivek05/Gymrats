@@ -48,6 +48,12 @@ const userSchema = new mongoose.Schema({
         min: 0,
         default: null 
     },
+    // brimstone
+    workout_type: {
+    type: String,
+    enum: ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding'],
+    default: null
+},
 
     // ✅ Added fields
     bodyFat: { 
@@ -70,15 +76,6 @@ const userSchema = new mongoose.Schema({
         enum: ['Basic', 'Gold', 'Platinum'],
         default: 'Basic'
     },
-
-    // REYNA
-    // In User.js schema, add this field after the BMI field:
-    workout_type: {
-    type: String,
-    enum: ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding'],
-    default: null
-    },
-
 
   // NEW: Membership Duration Fields
     membershipDuration: {
@@ -114,14 +111,15 @@ const userSchema = new mongoose.Schema({
             default: 90,
             min: 0 
         },
-        weight_goal: { 
-            type: Number, 
-            min: 0,
-            default: null 
-        }
+        // Brimstone
+        weight_goal: {
+        type: Number,
+        required: true,
+        min: 20,
+        max: 300
     },
-
-
+    // Brimstone
+    },
 
     trainer: { 
         type: mongoose.Schema.Types.ObjectId, 
@@ -132,6 +130,7 @@ const userSchema = new mongoose.Schema({
     // New Fields for relations
     workout_history: [{ type: mongoose.Schema.Types.ObjectId, ref: 'WorkoutHistory' }],
     nutrition_history: [{ type: mongoose.Schema.Types.ObjectId, ref: 'NutritionHistory' }],
+
 
 
 
@@ -158,7 +157,22 @@ const userSchema = new mongoose.Schema({
         description: { 
             type: String 
         }
-    }]
+    }],
+
+     // OMEN
+    // Add to models/User.js (in the schema)
+exercisePreferences: {
+  preferredCategories: [{ type: String }],
+  dislikedCategories: [{ type: String }],
+  favoriteExercises: [{ 
+    exerciseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Exercise' },
+    rating: { type: Number },
+    addedAt: { type: Date, default: Date.now }
+  }],
+  lastRatedAt: { type: Date }
+}
+
+
 });
 
 // REYNA
@@ -197,5 +211,7 @@ userSchema.methods.decreaseMembershipMonth = function() {
     }
     return Promise.resolve(this);
 };
+
+
 
 module.exports = mongoose.model('User', userSchema);

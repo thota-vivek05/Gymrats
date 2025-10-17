@@ -80,44 +80,46 @@
                 <option value="10+">10+ years</option>
               </select>
             </div>
+
+            <div>
             <div class="form-group">
-              <label for="specialization">Specialization</label>
-              <div class="checkbox-group">
-                <div class="checkbox-container">
-                  <input type="checkbox" id="weightLoss" value="Weight Loss" />
-                  <label for="weightLoss">Weight Loss</label>
-                </div>
-                <div class="checkbox-container">
-                  <input type="checkbox" id="muscleGain" value="Muscle Gain" />
-                  <label for="muscleGain">Muscle Gain</label>
-                </div>
-                <div class="checkbox-container">
-                  <input type="checkbox" id="flexibility" value="Flexibility" />
-                  <label for="flexibility">Flexibility</label>
-                </div>
-                <div class="checkbox-container">
-                  <input type="checkbox" id="cardio" value="Cardiovascular" />
-                  <label for="cardio">Cardiovascular</label>
-                </div>
-                <div class="checkbox-container">
-                  <input type="checkbox" id="strength" value="Strength Training" />
-                  <label for="strength">Strength Training</label>
-                </div>
-                <div class="checkbox-container">
-                  <input type="checkbox" id="postRehab" value="Post-Rehab" />
-                  <label for="postRehab">Post-Rehab</label>
-                </div>
-                <div class="checkbox-container">
-                  <input type="checkbox" id="sports" value="Sports Performance" />
-                  <label for="sports">Sports Performance</label>
-                </div>
-                <div class="checkbox-container">
-                  <input type="checkbox" id="nutrition" value="Nutrition" />
-                  <label for="nutrition">Nutrition</label>
-                </div>
+            <label for="specialization">Specialization</label>
+            <div class="checkbox-group">
+              <div class="checkbox-container">
+                <input type="checkbox" id="calisthenics" value="Calisthenics" />
+                <label for="calisthenics">Calisthenics</label>
+              </div>
+              <div class="checkbox-container">
+                <input type="checkbox" id="weightLoss" value="Weight Loss" />
+                <label for="weightLoss">Weight Loss</label>
+              </div>
+              <div class="checkbox-container">
+                <input type="checkbox" id="hiit" value="HIIT" />
+                <label for="hiit">HIIT</label>
+              </div>
+              <div class="checkbox-container">
+                <input type="checkbox" id="competitive" value="Competitive" />
+                <label for="competitive">Competitive</label>
+              </div>
+              <div class="checkbox-container">
+                <input type="checkbox" id="strength" value="Strength Training" />
+                <label for="strength">Strength Training</label>
+              </div>
+              <div class="checkbox-container">
+                <input type="checkbox" id="cardio" value="Cardio" />
+                <label for="cardio">Cardio</label>
+              </div>
+              <div class="checkbox-container">
+                <input type="checkbox" id="flexibility" value="Flexibility" />
+                <label for="flexibility">Flexibility</label>
+              </div>
+              <div class="checkbox-container">
+                <input type="checkbox" id="bodybuilding" value="Bodybuilding" />
+                <label for="bodybuilding">Bodybuilding</label>
               </div>
             </div>
-          </div>
+            </div>
+
 
           <div class="form-group terms">
             <input type="checkbox" id="termsAgree" required />
@@ -140,32 +142,25 @@
     <footer class="site-footer">
       <div class="footer-content">
         <div class="footer-column">
-          <h3>GymRats</h3>
+          <h3>User</h3>
           <ul>
-            <li><a href="/about">About Us</a></li>
-            <li><a href="/trainers">Our Trainers</a></li>
-            <li><a href="/testimonial">Testimonials</a></li>
-            <li><a href="/blog">Blog</a></li>
+             <li><a href="/login_signup">User Login</a></li>
           </ul>
         </div>
 
         <div class="footer-column">
-          <h3>Resources</h3>
+          <h3>Verifier</h3>
           <ul>
-            <li><a href="/isolation">Exercise Guide</a></li>
-            <li><a href="/nutrition">Nutrition Tips</a></li>
-            <li><a href="/workout_plans">Workout Plans</a></li>
-            <li><a href="/calculators">Calculators</a></li>
+               <li><a href="/verifier_login">Verifier Login</a></li>
+
           </ul>
         </div>
 
         <div class="footer-column">
-          <h3>Support</h3>
+          <h3>Trainer</h3>
           <ul>
-            <li><a href="/contact">Contact Us</a></li>
-            <li><a href="/about">About us</a></li>
-            <li><a href="/terms">Terms of Service</a></li>
-            <li><a href="/privacy_policy">Privacy Policy</a></li>
+              <li><a href="/trainer_login">Trainer Login</a></li>
+
           </ul>
         </div>
 
@@ -173,13 +168,10 @@
           <h3>Connect With Us</h3>
           <ul>
             <li><a href="/trainer_form">Become a Trainer</a></li>
-            <li><a href="/verifier_login">Become a Verifier</a></li>
           </ul>
-          <div class="social-icons">
-            <a href="#"><img src="/home/icons8-facebook.svg" alt="Facebook"></a>
-            <a href="#"><img src="/home/icons8-instagram.svg" alt="Instagram"></a>
-            <a href="#"><img src="/home/icons8-youtube.svg" alt="YouTube"></a>
-          </div>
+          <ul>
+                    <li><a href="/contact">Contact Us</a></li>
+                </ul>
           <p class="copyright">GymRats © 2025. All rights reserved.</p>
         </div>
       </div>
@@ -187,6 +179,36 @@
   </div>
 
   <script>
+    
+    // Validation functions
+function validateName(name) {
+    return /^[A-Za-z\s]{2,50}$/.test(name); // 2-50 letters and spaces only
+}
+
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); // Basic email format
+}
+
+function validatePassword(password) {
+    return password.length >= 3; // At least 3 characters
+}
+
+function validatePhoneNumber(phone) {
+    // Remove all non-digit characters and check if it's exactly 10 digits
+    const cleanedPhone = phone.replace(/\D/g, '');
+    return /^\d{10}$/.test(cleanedPhone);
+}
+
+function validatePasswordStrength(password) {
+    // Optional: Add strength requirements
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    return password.length >= 8 && hasUpperCase && hasLowerCase && hasNumbers;
+}
+
     document.getElementById('trainerSignupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -206,6 +228,33 @@
         specializations,
         termsAgree: document.getElementById('termsAgree').checked
       };
+
+      // Add this validation check after collecting formData
+if (!validateName(formData.firstName) || !validateName(formData.lastName)) {
+    alert('Please enter valid names (2-50 letters only, no numbers or special characters)');
+    return;
+}
+
+if (!validateEmail(formData.email)) {
+    alert('Please enter a valid email address');
+    return;
+}
+
+if (!validatePassword(formData.password)) {
+    alert('Password must be at least 3 characters long');
+    return;
+}
+
+ if (!validatePhoneNumber(formData.phone)) {
+    alert('Please enter a valid 10-digit phone number');
+        return;
+    }
+
+if (formData.password !== formData.confirmPassword) {
+    alert('Passwords do not match');
+    return;
+}
+
 
       try {
         const response = await fetch('/trainer-signup', {

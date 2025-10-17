@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// In Verifier.js - update the schema
 const verifierSchema = new mongoose.Schema({
     name: { 
         type: String, 
@@ -15,7 +16,7 @@ const verifierSchema = new mongoose.Schema({
         type: String,
         match: [/^\+?[\d\s-]{10,}$/, 'Please enter a valid phone number']
     },
-    password: {
+    password: {  
         type: String,
         required: true
     },

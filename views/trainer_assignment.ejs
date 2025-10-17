@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,222 +12,478 @@
             margin: 0 auto;
             padding: 20px;
         }
-        
+
         .filters {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            color: white;
         }
-        
+
+        .filters h3 {
+            margin: 0 0 20px 0;
+            font-size: 1.4em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filters h3 i {
+            font-size: 1.2em;
+        }
+
         .filter-group {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             align-items: center;
             flex-wrap: wrap;
         }
-        
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-item label {
+            font-weight: 500;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .filter-control {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 0.95em;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-control:focus {
+            outline: none;
+            border-color: #8A2BE2;
+            background: white;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.2);
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #8A2BE2, #7B1FA2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 25px;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+            background: linear-gradient(135deg, #7B1FA2, #6A1B9A);
+        }
+
+        .refresh-btn:active {
+            transform: translateY(0);
+        }
+
         .users-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
+            gap: 25px;
             margin-top: 20px;
         }
-        
+
         .user-card {
             background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-left: 4px solid #8A2BE2;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #8A2BE2;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8A2BE2, #667eea);
+        }
+
         .user-header {
             display: flex;
-            justify-content: between;
-            align-items: center;
-            margin-bottom: 15px;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
         }
-        
+
         .user-name {
-            font-size: 1.2em;
+            font-size: 1.3em;
             font-weight: bold;
             color: #333;
+            margin: 0;
         }
-        
+
         .workout-type {
-            background: #8A2BE2;
+            background: linear-gradient(135deg, #8A2BE2, #667eea);
             color: white;
-            padding: 4px 12px;
+            padding: 6px 15px;
             border-radius: 20px;
-            font-size: 0.9em;
+            font-size: 0.85em;
+            font-weight: 500;
+            white-space: nowrap;
         }
-        
+
         .user-details {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
-        
+
         .detail-item {
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-size: 0.9em;
             color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
+
+        .detail-item strong {
+            color: #333;
+            min-width: 100px;
+        }
+
         .assign-btn {
-            background: #8A2BE2;
+            background: linear-gradient(135deg, #8A2BE2, #7B1FA2);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 25px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9em;
-            transition: background 0.3s;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
         }
-        
+
         .assign-btn:hover {
-            background: #7B1FA2;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+            background: linear-gradient(135deg, #7B1FA2, #6A1B9A);
         }
-        
+
         .assign-btn:disabled {
             background: #ccc;
+            transform: none;
+            box-shadow: none;
             cursor: not-allowed;
         }
-        
+
         .assign-btn.assigned {
-            background: #4CAF50;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
         }
-        
+
         .no-users {
             text-align: center;
-            padding: 40px;
+            padding: 60px 40px;
             color: #666;
             font-size: 1.1em;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
-        
-        .back-link {
-            display: inline-block;
+
+        .no-users i {
+            font-size: 3em;
+            color: #8A2BE2;
             margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 25px;
             color: #8A2BE2;
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 600;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
-        
+
         .back-link:hover {
-            text-decoration: underline;
+            transform: translateX(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .welcome-banner h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.2em;
+            font-weight: 700;
+        }
+
+        .welcome-banner p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-item {
+                min-width: auto;
+            }
+
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .assignment-container {
+                padding: 15px;
+            }
+
+            .filters {
+                padding: 20px;
+            }
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation (same as trainer.ejs) -->
     <div class="main-navbar">
-        <header>
+       <header>
             <div class="brand-logo">
-                <a href="/home" class="brand-name">GymRats</a>
+                <a href="/trainer" class="brand-name">GymRats</a>
             </div>
             <div class="nav-menu">
-                <a href="/home">Home</a>
-                <a href="/isolation">Exercises</a>
-                <a href="/nutrition">Nutrition</a>
-                <a href="/about">About</a>
-                <a href="/contact">Contact</a>
+                <a href="/trainer">Home</a>
             </div>
             <div class="right-container">
                 <div class="login-button">
                     <a href="/trainer_login">Logout</a>
                 </div>
             </div>
+            <div class="mobile-menu-icon" id="menuIcon">
+                <img src="/trainer/menu.jpg" alt="Menu" height="25px" />
+            </div>
         </header>
     </div>
 
+    <!-- Mobile Side Navigation -->
+    <div class="mobile-sidebar" id="sideNavbar">
+        <a href="javascript:void(0)" class="close-button" id="closeBtn">×</a>
+        <a href="/trainer">Home</a>
+        <a href="/trainer_login">Logout</a>
+    </div>
+    
     <div class="assignment-container">
-        <a href="/trainer" class="back-link">← Back to Dashboard</a>
-        
+        <a href="/trainer" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+
         <div class="welcome-banner">
             <h1>Available Clients</h1>
             <p>Assign clients that match your specializations: <%= trainerSpecializations.join(', ') %></p>
         </div>
 
         <div class="filters">
+            <h3><i class="fas fa-filter"></i> Filter Clients</h3>
             <div class="filter-group">
-                <label for="workoutTypeFilter">Filter by Workout Type:</label>
-                <select id="workoutTypeFilter" class="form-control">
-                    <option value="all">All Types</option>
-                    <% trainerSpecializations.forEach(type => { %>
+                <div class="filter-item">
+                    <label for="workoutTypeFilter">Workout Type</label>
+                    <select id="workoutTypeFilter" class="filter-control">
+                        <option value="all">All Workout Types</option>
+                        <% trainerSpecializations.forEach(type => { %>
                         <option value="<%= type %>"><%= type %></option>
-                    <% }) %>
-                </select>
-                <button id="refreshBtn" class="btn">Refresh</button>
+                        <% }) %>
+                    </select>
+                </div>
             </div>
+            <button id="refreshBtn" class="refresh-btn">
+                <i class="fas fa-sync-alt"></i> Refresh Clients
+            </button>
         </div>
 
         <div id="usersContainer">
-            <% if (typeof unassignedUsers !== 'undefined' && unassignedUsers.length > 0) { %>
-                <div class="no-users">
-                    <p>No unassigned clients available that match your specializations.</p>
-                    <p>New clients will appear here as they sign up.</p>
-                </div>
+            <% if (typeof unassignedUsers !== 'undefined' && unassignedUsers.length === 0) { %>
+            <div class="no-users">
+                <i class="fas fa-users"></i>
+                <h3>No Clients Available</h3>
+                <p>No unassigned clients available that match your specializations.</p>
+                <p>New clients will appear here as they sign up.</p>
+            </div>
             <% } else { %>
-                <div class="users-grid">
-                    <% unassignedUsers.forEach(user => { %>
-                        <div class="no-users">No unassigned clients available.</div>
-                        <div class="user-card" data-user-id="<%= user._id %>" data-workout-type="<%= user.workout_type %>">
-                            <div class="user-header">
-                                <div class="user-name"><%= user.full_name %></div>
-                                <div class="workout-type"><%= user.workout_type %></div>
+            <div class="users-grid">
+                <% if (typeof unassignedUsers !== 'undefined' && unassignedUsers.length > 0) { %>
+                <% unassignedUsers.forEach(user => { %>
+                <div class="user-card" data-user-id="<%= user._id %>" data-workout-type="<%= user.workout_type %>">
+                    <!-- In the user-card section - Update the user-header div with this: -->
+                    <div class="user-header">
+                        <div>
+                            <div class="user-name">
+                                <%= user.full_name %>
+                                <span
+                                    class="membership-badge membership-<%= user.membershipType ? user.membershipType.toLowerCase() : 'basic' %>">
+                                    <%= user.membershipType || 'Basic' %>
+                                </span>
                             </div>
-                            <div class="user-details">
-                                <div class="detail-item"><strong>Email:</strong> <%= user.email %></div>
-                                <div class="detail-item"><strong>Joined:</strong> <%= new Date(user.created_at).toLocaleDateString() %></div>
-                                <% if (user.weight && user.height) { %>
-                                    <div class="detail-item"><strong>Stats:</strong> <%= user.weight %>kg, <%= user.height %>cm</div>
-                                <% } %>
-                                <% if (user.BMI) { %>
-                                    <div class="detail-item"><strong>BMI:</strong> <%= user.BMI.toFixed(1) %></div>
-                                <% } %>
-                                <% if (user.fitness_goals && user.fitness_goals.weight_goal) { %>
-                                    <div class="detail-item"><strong>Goal Weight:</strong> <%= user.fitness_goals.weight_goal %>kg</div>
-                                <% } %>
-                            </div>
-                            <button class="assign-btn" onclick="assignUser('<%= user._id %>', this)">
-                                Assign to Me
-                            </button>
                         </div>
-                    <% }) %>
+                        <div class="workout-type"><%= user.workout_type %></div>
+                    </div>
+                    <div class="user-details">
+                        <div class="detail-item">
+                            <strong>Email:</strong>
+                            <span><%= user.email %></span>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Joined:</strong>
+                            <span><%= new Date(user.created_at).toLocaleDateString() %></span>
+                        </div>
+                        <% if (user.weight && user.height) { %>
+                        <div class="detail-item">
+                            <strong>Stats:</strong>
+                            <span><%= user.weight %>kg, <%= user.height %>cm</span>
+                        </div>
+                        <% } %>
+                        <% if (user.BMI) { %>
+                        <div class="detail-item">
+                            <strong>BMI:</strong>
+                            <span><%= user.BMI.toFixed(1) %></span>
+                        </div>
+                        <% } %>
+                        <% if (user.fitness_goals && user.fitness_goals.weight_goal) { %>
+                        <div class="detail-item">
+                            <strong>Goal Weight:</strong>
+                            <span><%= user.fitness_goals.weight_goal %>kg</span>
+                        </div>
+                        <% } %>
+                    </div>
+                    <button class="assign-btn" onclick="assignUser('<%= user._id %>', this)">
+                        <i class="fas fa-user-plus"></i> Assign to Me
+                    </button>
                 </div>
+                <% }) %>
+                <% } else { %>
+                <div class="no-users">
+                    <i class="fas fa-users"></i>
+                    <h3>No Clients Available</h3>
+                    <p>No unassigned clients available at the moment.</p>
+                </div>
+                <% } %>
+            </div>
             <% } %>
         </div>
     </div>
 
     <script>
         // Filter users by workout type
-        document.getElementById('workoutTypeFilter').addEventListener('change', function() {
+        document.getElementById('workoutTypeFilter').addEventListener('change', function () {
             const selectedType = this.value;
             const userCards = document.querySelectorAll('.user-card');
-            
+            let visibleCount = 0;
+
             userCards.forEach(card => {
                 if (selectedType === 'all' || card.dataset.workoutType === selectedType) {
                     card.style.display = 'block';
+                    visibleCount++;
                 } else {
                     card.style.display = 'none';
                 }
             });
+
+            // Show no users message if no cards are visible
+            const noUsersElement = document.querySelector('.no-users');
+            const usersGrid = document.querySelector('.users-grid');
+
+            if (visibleCount === 0 && usersGrid) {
+                if (!noUsersElement) {
+                    usersGrid.innerHTML = `
+                        <div class="no-users">
+                            <i class="fas fa-search"></i>
+                            <h3>No Matching Clients</h3>
+                            <p>No clients found matching the selected filter.</p>
+                            <p>Try selecting a different workout type or refresh the list.</p>
+                        </div>
+                    `;
+                }
+            }
         });
 
         // Refresh users list
-        document.getElementById('refreshBtn').addEventListener('click', async function() {
+        document.getElementById('refreshBtn').addEventListener('click', async function () {
+            const button = this;
+            const originalText = button.innerHTML;
+
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+            button.disabled = true;
+
             const filter = document.getElementById('workoutTypeFilter').value;
+
             try {
                 const response = await fetch(`/trainer/unassigned-users?workoutType=${filter}`);
                 const data = await response.json();
-                
+
                 if (data.success) {
                     updateUsersList(data.users);
+                    // Show success feedback
+                    button.innerHTML = '<i class="fas fa-check"></i> Refreshed!';
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }, 1500);
                 } else {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
                     alert('Error refreshing users: ' + data.error);
                 }
             } catch (error) {
                 console.error('Error refreshing users:', error);
+                button.innerHTML = originalText;
+                button.disabled = false;
                 alert('Error refreshing users');
             }
         });
@@ -234,40 +491,44 @@
         // Assign user to trainer
         async function assignUser(userId, button) {
             if (button.disabled) return;
-            
+
+            const originalText = button.innerHTML;
             button.disabled = true;
-            button.textContent = 'Assigning...';
-            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Assigning...';
+
             try {
                 const response = await fetch('/trainer/assign-user', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ userId })
+                    body: JSON.stringify({
+                        userId
+                    })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
-                    button.textContent = 'Assigned ✓';
+                    button.innerHTML = '<i class="fas fa-check"></i> Assigned Successfully!';
                     button.classList.add('assigned');
                     button.disabled = true;
-                    
-                    // Remove card after a delay
+
+                    // Remove card after a delay with animation
                     setTimeout(() => {
                         const card = button.closest('.user-card');
+                        card.style.transform = 'scale(0.9)';
                         card.style.opacity = '0';
                         setTimeout(() => card.remove(), 300);
-                    }, 1500);
+                    }, 2000);
                 } else {
-                    button.textContent = 'Assign to Me';
+                    button.innerHTML = originalText;
                     button.disabled = false;
                     alert('Error: ' + data.error);
                 }
             } catch (error) {
                 console.error('Error assigning user:', error);
-                button.textContent = 'Assign to Me';
+                button.innerHTML = originalText;
                 button.disabled = false;
                 alert('Error assigning user');
             }
@@ -276,41 +537,75 @@
         // Update users list (for refresh functionality)
         function updateUsersList(users) {
             const container = document.getElementById('usersContainer');
-            
+
             if (users.length === 0) {
                 container.innerHTML = `
                     <div class="no-users">
+                        <i class="fas fa-users"></i>
+                        <h3>No Clients Available</h3>
                         <p>No unassigned clients available that match your specializations.</p>
                         <p>New clients will appear here as they sign up.</p>
                     </div>
                 `;
                 return;
             }
-            
+
             let html = '<div class="users-grid">';
-            users.forEach(user => {
-                html += `
-                    <div class="user-card" data-user-id="${user._id}" data-workout-type="${user.workout_type}">
-                        <div class="user-header">
-                            <div class="user-name">${user.full_name}</div>
-                            <div class="workout-type">${user.workout_type}</div>
-                        </div>
-                        <div class="user-details">
-                            <div class="detail-item"><strong>Email:</strong> ${user.email}</div>
-                            <div class="detail-item"><strong>Joined:</strong> ${new Date(user.created_at).toLocaleDateString()}</div>
-                            ${user.weight && user.height ? `<div class="detail-item"><strong>Stats:</strong> ${user.weight}kg, ${user.height}cm</div>` : ''}
-                            ${user.BMI ? `<div class="detail-item"><strong>BMI:</strong> ${user.BMI.toFixed(1)}</div>` : ''}
-                            ${user.fitness_goals && user.fitness_goals.weight_goal ? `<div class="detail-item"><strong>Goal Weight:</strong> ${user.fitness_goals.weight_goal}kg</div>` : ''}
-                        </div>
-                        <button class="assign-btn" onclick="assignUser('${user._id}', this)">
-                            Assign to Me
-                        </button>
+users.forEach(user => {
+    html += `
+        <div class="user-card" data-user-id="${user._id}" data-workout-type="${user.workout_type}">
+            <div class="user-header">
+                <div>
+                    <div class="user-name">
+                        ${user.full_name}
+                        <span class="membership-badge membership-${user.membershipType ? user.membershipType.toLowerCase() : 'basic'}">
+                            ${user.membershipType || 'Basic'}
+                        </span>
                     </div>
-                `;
-            });
-            html += '</div>';
+                </div>
+                <div class="workout-type">${user.workout_type}</div>
+            </div>
+            <div class="user-details">
+                <div class="detail-item">
+                    <strong>Email:</strong> 
+                    <span>${user.email}</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Joined:</strong> 
+                    <span>${new Date(user.created_at).toLocaleDateString()}</span>
+                </div>
+                ${user.weight && user.height ? `
+                    <div class="detail-item">
+                        <strong>Stats:</strong> 
+                        <span>${user.weight}kg, ${user.height}cm</span>
+                    </div>
+                ` : ''}
+                ${user.BMI ? `
+                    <div class="detail-item">
+                        <strong>BMI:</strong> 
+                        <span>${user.BMI.toFixed(1)}</span>
+                    </div>
+                ` : ''}
+                ${user.fitness_goals && user.fitness_goals.weight_goal ? `
+                    <div class="detail-item">
+                        <strong>Goal Weight:</strong> 
+                        <span>${user.fitness_goals.weight_goal}kg</span>
+                    </div>
+                ` : ''}
+            </div>
+            <button class="assign-btn" onclick="assignUser('${user._id}', this)">
+                <i class="fas fa-user-plus"></i> Assign to Me
+            </button>
+        </div>
+    `;
+});
+html += '</div>';
             container.innerHTML = html;
         }
     </script>
+
+    <!-- Font Awesome for icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
+
 </html>

@@ -6,6 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const methodOverride = require('method-override');
 const sqlite3 = require('sqlite3').verbose();
+process.env.TZ = 'Asia/Kolkata';
 
 
 const app = express();
@@ -145,7 +146,6 @@ app.get('/admin_trainers', (req, res) => res.redirect('/admin/trainers'));
 app.get('/admin_membership', (req, res) => res.redirect('/admin/memberships'));
 app.get('/admin_nutrition', (req, res) => res.redirect('/admin/nutrition-plans'));
 app.get('/admin_exercises', (req, res) => res.redirect('/admin/exercises'));
-app.get('/admin_workouts', (req, res) => res.redirect('/admin/workout-plans'));
 app.get('/admin_verifier', (req, res) => res.redirect('/admin/verifier'));
 app.get('/admin_settings', (req, res) => res.redirect('/admin/settings'));
 

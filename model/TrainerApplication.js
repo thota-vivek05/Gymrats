@@ -31,7 +31,7 @@ const trainerApplicationSchema = new mongoose.Schema({
     },
     specializations: [{ 
         type: String, 
-        enum: ['Weight Loss', 'Muscle Gain', 'Flexibility', 'Cardiovascular', 'Strength Training', 'Post-Rehab', 'Sports Performance', 'Nutrition']
+        enum: ['Calisthenics', 'Weight Loss', 'HIIT', 'Competitive', 'Strength Training', 'Cardio', 'Flexibility', 'Bodybuilding'] // Removed 'Nutrition'
     }],
     status: { 
         type: String, 

@@ -6,53 +6,71 @@
     <title>GymRats - Edit Workout Plan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="/workout_plans/workoutplan_edit.css" />
+    <style>
+        /* Exercise selection improvements */
+        .exercise-select-details {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .exercise-select-details small {
+            font-size: 0.75em;
+            color: #888;
+        }
+
+        .no-exercises {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Current week indicator */
+        .current-week-indicator {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            border-left: 4px solid #8A2BE2;
+        }
+
+        .current-week-indicator h3 {
+            margin: 0;
+            color: #8A2BE2;
+            font-size: 1.2em;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation Bar -->
     <div class="main-navbar">
         <header>
-            <!-- Header Branding -->
             <div class="brand-logo">
-                <a href="/home" class="brand-name">GymRats</a>
+                <a href="/trainer" class="brand-name">GymRats</a>
             </div>
-            
             <div class="nav-menu">
-                <a href="/home">Home</a>
-                <a href="/isolation">Exercises</a>
-                <a href="/nutrition">Nutrition</a>
-                <a href="/blog">Blog</a>
-                <a href="/about">About</a>
+                <a href="/trainer">Home</a>
             </div>
-            
             <div class="right-container">
-                <div class="search-container">
-                    <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
-                    <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-                </div>
-                
-                <div class="user-profile">
-                    <a href="/trainer" class="active">
-                        <span><%= trainer.name %></span>
-                    </a>
+                <div class="login-button">
+                    <a href="/trainer_login">Logout</a>
                 </div>
             </div>
-
             <div class="mobile-menu-icon" id="menuIcon">
-                <img src="/userdashboard/menu.jpg" alt="Menu" height="25px" />
-            </div>
-
-            <div class="mobile-sidebar" id="sideNavbar">
-                <a href="javascript:void(0)" class="close-button" id="closeBtn">&times;</a>
-                <a href="/home">Home</a>
-                <a href="/isolation">Exercises</a>
-                <a href="/nutrition">Nutrition</a>
-                <a href="/blog">Blog</a>
-                <a href="/about">About</a>
-                <div class="sidebar-profile">
-                    <span><%= trainer.name %></span>
-                </div>
+                <img src="/trainer/menu.jpg" alt="Menu" height="25px" />
             </div>
         </header>
+    </div>
+
+    <!-- Mobile Side Navigation -->
+    <div class="mobile-sidebar" id="sideNavbar">
+        <a href="javascript:void(0)" class="close-button" id="closeBtn">×</a>
+        <a href="/trainer">Home</a>
+        <a href="/trainer_login">Logout</a>
+    </div>
+        
     </div>
     <!-- Page Header -->
     <div class="page-header">
@@ -77,10 +95,9 @@
             <form id="workoutPlanForm" class="workout-plan-form">
                 <input type="hidden" id="clientId" name="clientId" value="<%= id %>">
                 
-                <!-- Week Navigation -->
-                <div class="week-navigation">
-                    <button type="button" class="week-nav-btn active" data-week="current">Current Week</button>
-                    <button type="button" class="week-nav-btn" data-week="next">Next Week</button>
+                <!-- Current Week Indicator -->
+                <div class="current-week-indicator">
+                    <h3>Current Week Workout Plan</h3>
                 </div>
                 
                 <!-- Days of the Week Container -->
@@ -146,46 +163,39 @@
                     <input type="text" id="exerciseSearch" placeholder="Search exercises...">
                 </div>
                 <div class="exercise-categories">
-                    <button class="category-btn active" data-category="all">All</button>
-                    <button class="category-btn" data-category="chest">Chest</button>
-                    <button class="category-btn" data-category="back">Back</button>
-                    <button class="category-btn" data-category="legs">Legs</button>
-                    <button class="category-btn" data-category="shoulders">Shoulders</button>
-                    <button class="category-btn" data-category="arms">Arms</button>
-                    <button class="category-btn" data-category="core">Core</button>
-                    <button class="category-btn" data-category="cardio">Cardio</button>
-                </div>
+    <button class="category-btn active" data-category="all">All</button>
+    <button class="category-btn" data-category="calisthenics">Calisthenics</button>
+    <button class="category-btn" data-category="strength training">Strength Training</button>
+    <button class="category-btn" data-category="hiit">HIIT</button>
+    <button class="category-btn" data-category="cardio">Cardio</button>
+    <button class="category-btn" data-category="bodybuilding">Bodybuilding</button>
+    <button class="category-btn" data-category="weight loss">Weight Loss</button>
+    <button class="category-btn" data-category="flexibility">Flexibility</button>
+    <button class="category-btn" data-category="competitive">Competitive</button>
+</div>
                 <div class="exercise-list">
                     <div class="exercise-grid" id="exerciseGrid">
-                        <!-- Sample exercises -->
-                        <div class="exercise-select-item" data-name="Bench Press" data-category="chest">
-                            <div class="exercise-select-name">Bench Press</div>
-                            <div class="exercise-select-target">Chest</div>
-                        </div>
-                        <div class="exercise-select-item" data-name="Deadlift" data-category="back">
-                            <div class="exercise-select-name">Deadlift</div>
-                            <div class="exercise-select-target">Back</div>
-                        </div>
-                        <div class="exercise-select-item" data-name="Squat" data-category="legs">
-                            <div class="exercise-select-name">Squat</div>
-                            <div class="exercise-select-target">Legs</div>
-                        </div>
-                        <div class="exercise-select-item" data-name="Overhead Press" data-category="shoulders">
-                            <div class="exercise-select-name">Overhead Press</div>
-                            <div class="exercise-select-target">Shoulders</div>
-                        </div>
-                        <div class="exercise-select-item" data-name="Bicep Curl" data-category="arms">
-                            <div class="exercise-select-name">Bicep Curl</div>
-                            <div class="exercise-select-target">Arms</div>
-                        </div>
-                        <div class="exercise-select-item" data-name="Plank" data-category="core">
-                            <div class="exercise-select-name">Plank</div>
-                            <div class="exercise-select-target">Core</div>
-                        </div>
-                        <div class="exercise-select-item" data-name="Treadmill" data-category="cardio">
-                            <div class="exercise-select-name">Treadmill</div>
-                            <div class="exercise-select-target">Cardio</div>
-                        </div>
+                        <!-- Dynamic exercises from database -->
+                        <% if (exercises && exercises.length > 0) { %>
+                            <% exercises.forEach(exercise => { %>
+                                <div class="exercise-select-item" 
+                                     data-name="<%= exercise.name %>" 
+                                     data-category="<%= exercise.category.toLowerCase() %>"
+                                     data-sets="<%= exercise.defaultSets %>"
+                                     data-reps="<%= exercise.defaultRepsOrDuration %>">
+                                    <div class="exercise-select-name"><%= exercise.name %></div>
+                                    <div class="exercise-select-target"><%= exercise.category %></div>
+                                    <div class="exercise-select-details">
+                                        <%= exercise.defaultSets %> sets × <%= exercise.defaultRepsOrDuration %>
+                                        <% if (exercise.targetMuscles && exercise.targetMuscles.length > 0) { %>
+                                            <br><small>Target: <%= exercise.targetMuscles.slice(0, 2).join(', ') %></small>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="no-exercises">No exercises available in the database.</div>
+                        <% } %>
                     </div>
                 </div>
             </div>
@@ -219,144 +229,7 @@
         // Modal functionality
         const modal = document.getElementById('exerciseModal');
         const closeModal = document.querySelector('.close-modal');
-        const addExerciseBtns = document.querySelectorAll('.add-exercise-btn');
         const selectExerciseBtn = document.getElementById('selectExerciseBtn');
-        
-        // Week navigation functionality
-        const weekNavBtns = document.querySelectorAll('.week-nav-btn');
-        const daysContainer = document.getElementById('daysContainer');
-        
-        // Create a copy of the initial week data for the current week
-        let currentWeekHTML = daysContainer.innerHTML;
-        
-        // Create empty template for next week
-        let nextWeekHTML = `
-            <!-- Monday -->
-            <div class="day-card" id="next-day-0">
-                <div class="day-header">
-                    <h3>Monday</h3>
-                    <div class="day-actions">
-                        <button type="button" class="add-exercise-btn" data-day="next-0"><i class="fas fa-plus"></i> Add</button>
-                        <button type="button" class="rest-day-btn" data-day="next-0"><i class="fas fa-moon"></i> Rest</button>
-                    </div>
-                </div>
-                <div class="exercises-list" id="exercises-next-day-0">
-                    <div class="rest-day-message"><i class="fas fa-moon"></i> Rest Day</div>
-                </div>
-            </div>
-
-            <!-- Tuesday -->
-            <div class="day-card" id="next-day-1">
-                <div class="day-header">
-                    <h3>Tuesday</h3>
-                    <div class="day-actions">
-                        <button type="button" class="add-exercise-btn" data-day="next-1"><i class="fas fa-plus"></i> Add</button>
-                        <button type="button" class="rest-day-btn" data-day="next-1"><i class="fas fa-moon"></i> Rest</button>
-                    </div>
-                </div>
-                <div class="exercises-list" id="exercises-next-day-1">
-                    <div class="rest-day-message"><i class="fas fa-moon"></i> Rest Day</div>
-                </div>
-            </div>
-
-            <!-- Wednesday -->
-            <div class="day-card" id="next-day-2">
-                <div class="day-header">
-                    <h3>Wednesday</h3>
-                    <div class="day-actions">
-                        <button type="button" class="add-exercise-btn" data-day="next-2"><i class="fas fa-plus"></i> Add</button>
-                        <button type="button" class="rest-day-btn" data-day="next-2"><i class="fas fa-moon"></i> Rest</button>
-                    </div>
-                </div>
-                <div class="exercises-list" id="exercises-next-day-2">
-                    <div class="rest-day-message"><i class="fas fa-moon"></i> Rest Day</div>
-                </div>
-            </div>
-
-            <!-- Thursday -->
-            <div class="day-card" id="next-day-3">
-                <div class="day-header">
-                    <h3>Thursday</h3>
-                    <div class="day-actions">
-                        <button type="button" class="add-exercise-btn" data-day="next-3"><i class="fas fa-plus"></i> Add</button>
-                        <button type="button" class="rest-day-btn" data-day="next-3"><i class="fas fa-moon"></i> Rest</button>
-                    </div>
-                </div>
-                <div class="exercises-list" id="exercises-next-day-3">
-                    <div class="rest-day-message"><i class="fas fa-moon"></i> Rest Day</div>
-                </div>
-            </div>
-
-            <!-- Friday -->
-            <div class="day-card" id="next-day-4">
-                <div class="day-header">
-                    <h3>Friday</h3>
-                    <div class="day-actions">
-                        <button type="button" class="add-exercise-btn" data-day="next-4"><i class="fas fa-plus"></i> Add</button>
-                        <button type="button" class="rest-day-btn" data-day="next-4"><i class="fas fa-moon"></i> Rest</button>
-                    </div>
-                </div>
-                <div class="exercises-list" id="exercises-next-day-4">
-                    <div class="rest-day-message"><i class="fas fa-moon"></i> Rest Day</div>
-                </div>
-            </div>
-
-            <!-- Saturday -->
-            <div class="day-card" id="next-day-5">
-                <div class="day-header">
-                    <h3>Saturday</h3>
-                    <div class="day-actions">
-                        <button type="button" class="add-exercise-btn" data-day="next-5"><i class="fas fa-plus"></i> Add</button>
-                        <button type="button" class="rest-day-btn" data-day="next-5"><i class="fas fa-moon"></i> Rest</button>
-                    </div>
-                </div>
-                <div class="exercises-list" id="exercises-next-day-5">
-                    <div class="rest-day-message"><i class="fas fa-moon"></i> Rest Day</div>
-                </div>
-            </div>
-
-            <!-- Sunday -->
-            <div class="day-card" id="next-day-6">
-                <div class="day-header">
-                    <h3>Sunday</h3>
-                    <div class="day-actions">
-                        <button type="button" class="add-exercise-btn" data-day="next-6"><i class="fas fa-plus"></i> Add</button>
-                        <button type="button" class="rest-day-btn" data-day="next-6"><i class="fas fa-moon"></i> Rest</button>
-                    </div>
-                </div>
-                <div class="exercises-list" id="exercises-next-day-6">
-                    <div class="rest-day-message"><i class="fas fa-moon"></i> Rest Day</div>
-                </div>
-            </div>
-        `;
-        
-        // Week navigation event handlers
-        weekNavBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const weekType = this.getAttribute('data-week');
-                
-                // Update active button
-                weekNavBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Save the current week's state before switching
-                if (document.querySelector('[data-week="current"]').classList.contains('active')) {
-                    currentWeekHTML = daysContainer.innerHTML;
-                } else {
-                    nextWeekHTML = daysContainer.innerHTML;
-                }
-                
-                // Switch to the selected week
-                if (weekType === 'current') {
-                    daysContainer.innerHTML = currentWeekHTML;
-                } else {
-                    daysContainer.innerHTML = nextWeekHTML;
-                }
-                
-                // Reattach event listeners for the new content
-                attachEventListeners();
-            });
-        });
         
         // Function to attach event listeners to dynamically created elements
         function attachEventListeners() {
@@ -372,13 +245,7 @@
             document.querySelectorAll('.rest-day-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const dayIndex = this.getAttribute('data-day');
-                    let dayContainer;
-                    
-                    if (dayIndex.startsWith('next-')) {
-                        dayContainer = document.getElementById(`exercises-next-day-${dayIndex.split('-')[1]}`);
-                    } else {
-                        dayContainer = document.getElementById(`exercises-day-${dayIndex}`);
-                    }
+                    const dayContainer = document.getElementById(`exercises-day-${dayIndex}`);
                     
                     // Clear all exercises
                     dayContainer.innerHTML = '';
@@ -439,22 +306,12 @@
             });
         });
         
-        // Add selected exercise to the day
+        // Add selected exercise to the day with default values
         selectExerciseBtn.addEventListener('click', function() {
             if (selectedExercise) {
-                let dayContainer;
-                let dayName;
-                let weekPrefix = 'currentWeek';
-                
-                if (currentSelectedDay.toString().startsWith('next-')) {
-                    const dayIndex = currentSelectedDay.split('-')[1];
-                    dayContainer = document.getElementById(`exercises-next-day-${dayIndex}`);
-                    dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][dayIndex];
-                    weekPrefix = 'nextWeek';
-                } else {
-                    dayContainer = document.getElementById(`exercises-day-${currentSelectedDay}`);
-                    dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][currentSelectedDay];
-                }
+                const selectedExerciseElement = document.querySelector('.exercise-select-item.selected');
+                const dayContainer = document.getElementById(`exercises-day-${currentSelectedDay}`);
+                const dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][currentSelectedDay];
                 
                 // Remove rest day message if it exists
                 const restDayMsg = dayContainer.querySelector('.rest-day-message');
@@ -466,16 +323,20 @@
                 const existingExercises = dayContainer.querySelectorAll('.exercise-item');
                 const exerciseIndex = existingExercises.length;
                 
-                // Create new exercise item
+                // Get default values from the selected exercise
+                const defaultSets = selectedExerciseElement.getAttribute('data-sets') || '3';
+                const defaultReps = selectedExerciseElement.getAttribute('data-reps') || '10-12';
+                
+                // Create new exercise item with default values
                 const exerciseItem = document.createElement('div');
                 exerciseItem.className = 'exercise-item';
                 exerciseItem.innerHTML = `
                     <div class="exercise-details">
-                        <input type="text" name="${weekPrefix}[${dayName}][${exerciseIndex}][name]" class="exercise-name-input" value="${selectedExercise}" placeholder="Exercise name">
+                        <input type="text" name="currentWeek[${dayName}][${exerciseIndex}][name]" class="exercise-name-input" value="${selectedExercise}" placeholder="Exercise name" readonly>
                         <div class="exercise-params">
-                            <input type="text" name="${weekPrefix}[${dayName}][${exerciseIndex}][sets]" class="sets-input" placeholder="Sets">
-                            <input type="text" name="${weekPrefix}[${dayName}][${exerciseIndex}][reps]" class="reps-input" placeholder="Reps">
-                            <input type="text" name="${weekPrefix}[${dayName}][${exerciseIndex}][weight]" class="weight-input" placeholder="Weight">
+                            <input type="text" name="currentWeek[${dayName}][${exerciseIndex}][sets]" class="sets-input" value="${defaultSets}" placeholder="Sets">
+                            <input type="text" name="currentWeek[${dayName}][${exerciseIndex}][reps]" class="reps-input" value="${defaultReps}" placeholder="Reps">
+                            <input type="text" name="currentWeek[${dayName}][${exerciseIndex}][weight]" class="weight-input" placeholder="Weight (kg)">
                         </div>
                     </div>
                     <button type="button" class="remove-exercise-btn"><i class="fas fa-trash"></i></button>
@@ -502,32 +363,39 @@
                 modal.style.display = 'none';
                 
                 // Clear selection
-                exerciseItems.forEach(i => i.classList.remove('selected'));
+                document.querySelectorAll('.exercise-select-item').forEach(i => i.classList.remove('selected'));
                 selectedExercise = null;
             }
         });
         
         // Category filtering
-        const categoryBtns = document.querySelectorAll('.category-btn');
+        // Category filtering - UPDATED for exercise types
+const categoryBtns = document.querySelectorAll('.category-btn');
+
+categoryBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+        const category = this.getAttribute('data-category');
         
-        categoryBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const category = this.getAttribute('data-category');
-                
-                // Update active button
-                categoryBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Filter exercises
-                exerciseItems.forEach(item => {
-                    if (category === 'all' || item.getAttribute('data-category') === category) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
+        // Update active button
+        categoryBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Filter exercises
+        exerciseItems.forEach(item => {
+            if (category === 'all') {
+                item.style.display = 'block';
+            } else {
+                const itemCategory = item.getAttribute('data-category');
+                // Handle case-insensitive matching
+                if (itemCategory && itemCategory.toLowerCase() === category.toLowerCase()) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            }
         });
+    });
+});
         
         // Exercise search functionality
         const exerciseSearch = document.getElementById('exerciseSearch');
@@ -553,23 +421,22 @@
         });
         
         // Form submission
+        // Form submission - FIXED VERSION
 const workoutPlanForm = document.getElementById('workoutPlanForm');
 
 workoutPlanForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
-    // Prepare data structure for both weeks
+    // Prepare data structure for current week only
     const workoutData = {
         clientId: document.getElementById('clientId').value,
         notes: document.getElementById('plan-notes').value,
-        currentWeek: {},
-        nextWeek: {}
+        currentWeek: {}
     };
 
-    // Process current week data - FIXED VERSION
+    // Process current week data
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     
-    // Process CURRENT WEEK (visible in the DOM)
     days.forEach((day, index) => {
         const dayContainer = document.getElementById(`exercises-day-${index}`);
         if (!dayContainer) return;
@@ -605,67 +472,7 @@ workoutPlanForm.addEventListener('submit', function(e) {
         });
     });
 
-    // Process NEXT WEEK (we need to temporarily switch to it)
-    const currentActiveWeek = document.querySelector('.week-nav-btn.active').getAttribute('data-week');
-    const wasCurrentWeek = currentActiveWeek === 'current';
-    
-    // If we're on current week, switch to next week to process it
-    if (wasCurrentWeek) {
-        daysContainer.innerHTML = nextWeekHTML;
-        attachEventListeners();
-    }
-    
-    // Now process next week data
-    days.forEach((day, index) => {
-        const dayContainer = document.getElementById(`exercises-next-day-${index}`);
-        if (!dayContainer) return;
-        
-        const exerciseItems = dayContainer.querySelectorAll('.exercise-item');
-        workoutData.nextWeek[day] = [];
-        
-        exerciseItems.forEach(item => {
-            const nameInput = item.querySelector('input.exercise-name-input');
-            const setsInput = item.querySelector('input.sets-input');
-            const repsInput = item.querySelector('input.reps-input');
-            const weightInput = item.querySelector('input.weight-input');
-            
-            if (nameInput && nameInput.value) {
-                const exerciseData = {
-                    name: nameInput.value,
-                    day: day
-                };
-                
-                // Only add fields that have actual values
-                if (setsInput && setsInput.value && setsInput.value.trim() !== '') {
-                    exerciseData.sets = setsInput.value;
-                }
-                if (repsInput && repsInput.value && repsInput.value.trim() !== '') {
-                    exerciseData.reps = repsInput.value;
-                }
-                if (weightInput && weightInput.value && weightInput.value.trim() !== '') {
-                    exerciseData.weight = weightInput.value;
-                }
-                
-                workoutData.nextWeek[day].push(exerciseData);
-            }
-        });
-    });
-    
-    // Restore the original view
-    if (wasCurrentWeek) {
-        daysContainer.innerHTML = currentWeekHTML;
-        attachEventListeners();
-        
-        // Reactivate the current week button
-        document.querySelectorAll('.week-nav-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.getAttribute('data-week') === 'current') {
-                btn.classList.add('active');
-            }
-        });
-    }
-
-    console.log('Sending workout data:', workoutData);
+    //  console.log('Sending workout data:', workoutData);
 
     // Send data to server via fetch API
     fetch('/save-workout-plan', {
@@ -677,7 +484,7 @@ workoutPlanForm.addEventListener('submit', function(e) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Success:', data);
+        //  console.log('Success:', data);
         
         // Show success message
         const successToast = document.getElementById('successToast');
@@ -686,8 +493,13 @@ workoutPlanForm.addEventListener('submit', function(e) {
         // Hide toast after 3 seconds
         setTimeout(() => {
             successToast.classList.remove('show');
-            // Redirect to trainer dashboard
-            window.location.href = '/trainer';
+            // FIX: Use the redirect URL from server response instead of hardcoding
+            if (data.redirect) {
+                window.location.href = data.redirect; // This will include the clientId
+            } else {
+                // Fallback to hardcoded URL if no redirect provided
+                window.location.href = '/trainer';
+            }
         }, 3000);
     })
     .catch((error) => {
@@ -695,7 +507,7 @@ workoutPlanForm.addEventListener('submit', function(e) {
         alert('There was an error saving the workout plan.');
     });
 });
-        ;
+
     </script>
 </body>
 </html>
