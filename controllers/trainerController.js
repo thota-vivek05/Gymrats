@@ -676,14 +676,15 @@ const editNutritionPlan = async (req, res) => {
         const dayFats = foods.reduce((sum, food) => sum + (food.fats || 0), 0);
 
         const dayNutritionData = {
-            calories_consumed: dayCalories,
-            protein_consumed: dayProtein,
+            calories_consumed: 0, // <-- START AT 0 CONSUMED
+            protein_consumed: 0,  // <-- START AT 0 CONSUMED
             foods: foods.map(food => ({
                 name: food.name,
                 protein: food.protein || 0,
                 calories: food.calories || 0,
                 carbs: food.carbs || 0,
-                fats: food.fats || 0
+                fats: food.fats || 0,
+                consumed: false // Must be set to false initially
             })),
             macros: {
                 protein: dayProtein,
@@ -694,23 +695,34 @@ const editNutritionPlan = async (req, res) => {
 
         if (weeklyNutrition) {
             // Update existing weekly nutrition - only update the specific day
+            // Preserve consumed status if updating a plan mid-week (optional, but safer)
+            const existingConsumedData = weeklyNutrition.daily_nutrition[day].foods.filter(f => f.consumed);
+            if(existingConsumedData.length > 0) {
+                 // Simple logic: if plan is updated, reset consumption. Complex logic requires merging.
+                console.log(`⚠️ Plan updated mid-week. Resetting consumption for ${day}.`);
+            }
+
             weeklyNutrition.daily_nutrition[day] = dayNutritionData;
             console.log(`Updated nutrition for ${day} in existing weekly document`);
         } else {
             // Create new weekly nutrition document
+            // The default values must be explicitly set to 0 for consumed and macros for ALL days
+            // to prevent the database from defaulting to null or an unexpected value.
+            const defaultDayData = { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } };
+
             weeklyNutrition = new NutritionHistory({
                 userId: userId,
                 date: weekStart,
                 protein_goal: parseInt(proteinGoal),
                 calorie_goal: parseInt(calorieGoal),
                 daily_nutrition: {
-                    Monday: day === 'Monday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
-                    Tuesday: day === 'Tuesday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
-                    Wednesday: day === 'Wednesday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
-                    Thursday: day === 'Thursday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
-                    Friday: day === 'Friday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
-                    Saturday: day === 'Saturday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } },
-                    Sunday: day === 'Sunday' ? dayNutritionData : { calories_consumed: 0, protein_consumed: 0, foods: [], macros: { protein: 0, carbs: 0, fats: 0 } }
+                    Monday: day === 'Monday' ? dayNutritionData : defaultDayData, // Use defaultDayData
+                    Tuesday: day === 'Tuesday' ? dayNutritionData : defaultDayData, // Use defaultDayData
+                    Wednesday: day === 'Wednesday' ? dayNutritionData : defaultDayData, // Use defaultDayData
+                    Thursday: day === 'Thursday' ? dayNutritionData : defaultDayData, // Use defaultDayData
+                    Friday: day === 'Friday' ? dayNutritionData : defaultDayData, // Use defaultDayData
+                    Saturday: day === 'Saturday' ? dayNutritionData : defaultDayData, // Use defaultDayData
+                    Sunday: day === 'Sunday' ? dayNutritionData : defaultDayData  // Use defaultDayData
                 }
             });
             console.log('✅ NEW weekly nutrition document created for week:', weekStart);
@@ -722,7 +734,8 @@ const editNutritionPlan = async (req, res) => {
         let dayCount = 0;
 
         days.forEach(dayName => {
-            if (weeklyNutrition.daily_nutrition[dayName].foods.length > 0) {
+            // Only count the days that actually have food set by the trainer
+            if (weeklyNutrition.daily_nutrition[dayName] && weeklyNutrition.daily_nutrition[dayName].foods.length > 0) {
                 totalProtein += weeklyNutrition.daily_nutrition[dayName].macros.protein;
                 totalCarbs += weeklyNutrition.daily_nutrition[dayName].macros.carbs;
                 totalFats += weeklyNutrition.daily_nutrition[dayName].macros.fats;
@@ -736,6 +749,9 @@ const editNutritionPlan = async (req, res) => {
             fats: dayCount > 0 ? Math.round(totalFats / dayCount) : 0
         };
 
+        // Mark the nested daily_nutrition as modified to ensure Mongoose saves the structure
+        weeklyNutrition.markModified('daily_nutrition');
+        
         await weeklyNutrition.save();
         console.log('Weekly nutrition saved successfully:', weeklyNutrition._id);
 

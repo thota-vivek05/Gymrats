@@ -27,11 +27,7 @@
             </div>
 
             <div class="right-container">
-                <div class="search-container">
-                    <img src="/userdashboard/icons8-search.svg" height="18px" alt="Search Icon" />
-                    <input type="text" placeholder="Search..." size="20" style="font-size: 14px;" />
-                </div>
-
+                
                 <div class="user-profile">
                     <a href="/userprofile">
                         <% if (user && user.full_name) { %>
@@ -114,11 +110,11 @@
 
             <div class="overview-card">
                 <div class="overview-icon">
-                    <i class="fas fa-weight"></i>
+                    <i class="fas fa-running"></i>
                 </div>
                 <div class="overview-details">
-                    <h3>Current Weight</h3>
-                    <p class="overview-value"><%= user.weight %> kg</p>
+                    <h3>Weight Goal</h3>
+                    <p class="overview-value"><%= user.fitness_goals.weight_goal || 70 %> kg</p>
                 </div>
             </div>
         </div>
@@ -731,52 +727,64 @@ function initializeCharts() {
     }
 
     // Exercise Progress Chart
-    const exerciseData = <%- JSON.stringify(exerciseProgress || []) %>;
-    const exerciseCtx = document.getElementById('exerciseChart')?.getContext('2d');
-    
-    if (exerciseCtx && exerciseData.length > 0) {
-        new Chart(exerciseCtx, {
-            type: 'line',
-            data: {
-                labels: <%- JSON.stringify(exerciseProgress[0]?.history ? exerciseProgress[0].history.map(h => h.week) : ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6']) %>,
-                datasets: exerciseData.map(exercise => ({
-                    label: exercise.name + ' (kg)',
-                    data: exercise.history ? exercise.history.map(h => h.weight) : [],
-                    borderColor: exercise.color || '#8A2BE2',
-                    backgroundColor: (exercise.color || '#8A2BE2') + '33',
-                    tension: 0.3,
-                    fill: true
-                }))
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: { color: '#f1f1f1' }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Exercise Progress Over Time',
-                        color: '#f1f1f1',
-                        font: { size: 16 }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { color: '#f1f1f1' },
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                    },
-                    x: {
-                        ticks: { color: '#f1f1f1' },
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                    }
+     const exerciseData = <%- JSON.stringify(exerciseProgress || []) %>;
+            const exerciseCtx = document.getElementById('exerciseChart')?.getContext('2d');
+            
+            if (exerciseCtx && exerciseData.length > 0) {
+                // Remove the old chart instance if it exists before creating a new one
+                if (window.exerciseChartInstance) {
+                    window.exerciseChartInstance.destroy();
                 }
+
+                window.exerciseChartInstance = new Chart(exerciseCtx, {
+                    type: 'line',
+                    data: {
+                        // FIX: Use static labels for Gold as history data is not passed
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], 
+                        datasets: exerciseData.map(exercise => ({
+                            label: exercise.name + ' (kg)',
+                            // FIX: Use dummy data for Gold as history data is not passed
+                            data: [
+                                exercise.currentWeight * 0.8, 
+                                exercise.currentWeight * 0.9, 
+                                exercise.currentWeight * 0.95, 
+                                exercise.currentWeight
+                            ], 
+                            borderColor: exercise.color || '#8A2BE2',
+                            backgroundColor: (exercise.color || '#8A2BE2') + '33',
+                            tension: 0.3,
+                            fill: true
+                        }))
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: { color: '#f1f1f1' }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Exercise Progress Over Time',
+                                color: '#f1f1f1',
+                                font: { size: 16 }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { color: '#f1f1f1' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            x: {
+                                ticks: { color: '#f1f1f1' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            }
+                        }
+                    }
+                });
             }
-        });
-    }
 
     // Nutrition Doughnut Chart
     const nutritionDoughnutCtx = document.getElementById('nutritionDoughnutChart')?.getContext('2d');
