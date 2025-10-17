@@ -598,11 +598,11 @@ const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'F
             return res.status(404).json({ error: 'Workout not found' });
         }
 
-        console.log('✅ Workout found:', {
-            id: workout._id,
-            exerciseCount: workout.exercises.length,
-            exercises: workout.exercises.map(e => ({ name: e.name, day: e.day, completed: e.completed }))
-        });
+        // console.log('✅ Workout found:', {
+        //     id: workout._id,
+        //     exerciseCount: workout.exercises.length,
+        //     exercises: workout.exercises.map(e => ({ name: e.name, day: e.day, completed: e.completed }))
+        // });
         
         // --- START FIX FOR DAY MISMATCH ---
         let exerciseIndex = -1;
@@ -662,12 +662,11 @@ const todayDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'F
         }
 
         // Save to database
-        console.log('💾 Saving to database...');
         // Mark the entire document as modified to ensure nested changes are saved
         workout.markModified('exercises'); 
         await workout.save();
         
-        console.log('✅=== MARK EXERCISE COMPLETED SUCCESS ===');
+        //console.log('✅=== MARK EXERCISE COMPLETED SUCCESS ===');
         
         res.json({ 
             success: true,
@@ -1026,7 +1025,7 @@ const getUserDashboard = async (req, res, membershipCode) => {
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
 
-        console.log('✅ Local Week Range (Sunday to Saturday):', weekStart.toString(), 'to', weekEnd.toString());
+        // console.log('✅ Local Week Range (Sunday to Saturday):', weekStart.toString(), 'to', weekEnd.toString());
 
         // 2. Query WorkoutHistory for the current week
         const weeklyWorkoutHistory = await WorkoutHistory.find({
