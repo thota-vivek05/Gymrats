@@ -356,56 +356,8 @@
                 </div>
             </div>
         </div>
-        <!-- Workout History Card -->
-        <div class="profile-wide-card">
-            <div class="card-header">
-                <h2>Recent Workouts</h2>
-            </div>
-            <div class="profile-content">
-                <div class="workout-history">
-                    <% 
-                    const mockWorkouts = [
-                        { day: '16', month: 'MAR', name: 'HIIT Training', duration: '45 min', calories: '450', exercises: '4', rating: 4 },
-                        { day: '14', month: 'MAR', name: 'Strength Training', duration: '60 min', calories: '380', exercises: '6', rating: 5 },
-                        { day: '12', month: 'MAR', name: 'Cardio Run', duration: '30 min', calories: '320', exercises: '1', rating: 4 }
-                    ];
-                    let recentWorkouts = [];
-                    if (user && user.workout_history && Array.isArray(user.workout_history)) {
-                        recentWorkouts = user.workout_history.slice(0, 3);
-                    } else {
-                        recentWorkouts = [];
-                    }
-                    %>
-                    <% if (recentWorkouts.length > 0) { %>
-                    <% recentWorkouts.forEach(workout => { %>
-                    <div class="workout-item" data-workout-id="<%= workout.id || '' %>">
-                        <div class="workout-date">
-                            <span class="workout-day"><%= workout.day %></span>
-                            <span class="workout-month"><%= workout.month %></span>
-                        </div>
-                        <div class="workout-info">
-                            <h3 class="workout-name"><%= workout.name %></h3>
-                            <div class="workout-stats">
-                                <span><i class="fas fa-clock"></i> <%= workout.duration %></span>
-                                <span><i class="fas fa-fire-alt"></i> <%= workout.calories %> cal</span>
-                                <span><i class="fas fa-dumbbell"></i> <%= workout.exercises %> exercises</span>
-                            </div>
-                        </div>
-                        <div class="workout-rating">
-                            <% for (let i = 1; i <= 5; i++) { %>
-                            <i class="fas fa-star <%= i <= workout.rating ? 'active' : '' %>"></i>
-                            <% } %>
-                        </div>
-                    </div>
-                    <% }); %>
-                    <% } else { %>
-                    <div class="no-workouts-message">
-                        <p>No workout history available yet. Start tracking your workouts to see them here!</p>
-                    </div>
-                    <% } %>
-                </div>
-            </div>
-        </div>
+     
+        
     </div>
 
     <!-- Footer
