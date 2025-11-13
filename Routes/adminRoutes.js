@@ -3,6 +3,26 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
 
+//server
+// Admin Authentication Routes
+router.get('/login', adminController.getAdminLogin);
+router.post('/login', adminController.postAdminLogin);
+
+// Add admin authentication middleware
+const isAdminAuthenticated = (req, res, next) => {
+    if (req.session.userId && req.session.user && req.session.user.role === 'admin') {
+        next();
+    } else {
+        res.redirect('/admin/login');
+    }
+};
+
+// Protect all admin routes with authentication
+router.use(isAdminAuthenticated);
+
+router.get('/logout', adminController.adminLogout);
+//server end
+
 // Dashboard Route
 router.get('/dashboard', adminController.getDashboard);
 router.get('/', (req, res) => res.redirect('/admin/dashboard'));

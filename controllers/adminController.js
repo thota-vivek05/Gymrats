@@ -8,6 +8,137 @@ const WorkoutHistory = require('../model/WorkoutHistory');
 const NutritionHistory = require('../model/NutritionHistory');
 const bcrypt = require('bcryptjs');
 
+// fixing server
+const sqlite3 = require('sqlite3').verbose();
+
+// Initialize SQLite database for admins
+const db = new sqlite3.Database(':memory:', (err) => {
+    if (err) {
+        console.error('Error initializing SQLite database:', err);
+        process.exit(1);
+    }
+    console.log('Connected to SQLite database for admins');
+});
+
+// Create admins table and insert static admin data
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS admins (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        full_name TEXT NOT NULL
+    )`);
+
+    // Insert static admin users (passwords are hashed)
+    const adminUsers = [
+        {
+            email: 'admin1@gymrats.com',
+            password: 'Password123',
+            full_name: 'Admin One'
+        },
+        {
+            email: 'admin2@gymrats.com',
+            password: 'Password123',
+            full_name: 'Admin Two'
+        }
+    ];
+
+    adminUsers.forEach(async (admin) => {
+        const hashedPassword = await bcrypt.hash(admin.password, 10);
+        db.run(
+            'INSERT OR IGNORE INTO admins (email, password_hash, full_name) VALUES (?, ?, ?)',
+            [admin.email, hashedPassword, admin.full_name],
+            (err) => {
+                if (err) {
+                    console.error('Error inserting admin:', err);
+                }
+            }
+        );
+    });
+});
+// server end
+
+// server
+// Admin Login Methods
+const adminAuthController = {
+    // Admin Login Route (GET)
+    getAdminLogin: (req, res) => {
+        res.render('admin_login', {
+            pageTitle: 'Admin Login',
+            errorMessage: null,
+            successMessage: null,
+            email: ''
+        });
+    },
+
+    // Admin Login Route (POST)
+    postAdminLogin: async (req, res) => {
+        try {
+            const { email, password, redirectUrl } = req.body;
+
+            if (!email || !password) {
+                return res.status(400).json({ success: false, message: 'Email and password are required' });
+            }
+
+            // Query SQLite database for admin
+            db.get(
+                'SELECT * FROM admins WHERE email = ?',
+                [email],
+                async (err, admin) => {
+                    if (err) {
+                        console.error('Database error:', err);
+                        return res.status(500).json({ success: false, message: 'Internal server error' });
+                    }
+
+                    if (!admin) {
+                        return res.status(401).json({ success: false, message: 'Invalid email or password' });
+                    }
+
+                    // Compare password
+                    const passwordMatch = await bcrypt.compare(password, admin.password_hash);
+
+                    if (!passwordMatch) {
+                        return res.status(401).json({ success: false, message: 'Invalid email or password' });
+                    }
+
+                    // Store admin in session
+                    req.session.userId = admin.id;
+                    req.session.email = admin.email;
+                    req.session.fullName = admin.full_name;
+                    req.session.user = {
+                        id: admin.id,
+                        name: admin.full_name,
+                        email: admin.email,
+                        role: 'admin'
+                    };
+
+                    // Return success with redirect URL
+                    return res.json({ 
+                        success: true, 
+                        message: 'Admin login successful', 
+                        redirectUrl: redirectUrl || '/admin/dashboard'
+                    });
+                }
+            );
+        } catch (err) {
+            console.error('Admin login error:', err);
+            return res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    },
+
+    // Admin Logout
+    adminLogout: (req, res) => {
+        req.session.destroy(err => {
+            if (err) {
+                console.error('Error destroying session:', err);
+                return res.status(500).json({ success: false, message: 'Error logging out' });
+            }
+            res.redirect('/admin_login');
+        });
+    }
+};
+// server end
+
 const adminController = {
   // Dashboard
 getDashboard: async (req, res) => {
@@ -1254,4 +1385,7 @@ createVerifier: async (req, res) => {
 
 }; // End of adminController object
 
-module.exports = adminController;
+module.exports = {
+    ...adminController,
+    ...adminAuthController
+};
